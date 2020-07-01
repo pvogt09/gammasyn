@@ -1,0 +1,17 @@
+*.bak
+*.exp
+/slprj
+/*_grt_rtw
+*.mexw32
+*.mexw64
+*.mexa32
+*.mexa64
+*.asv
+*.mdl.autosave
+*.pdb
+*.slx.autosave
+/hs_err_pid*.log
+*_asd.log
+*.TMP
+*.obj
+*.lib
