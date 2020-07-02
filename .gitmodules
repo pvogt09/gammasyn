@@ -1,0 +1,3 @@
+[submodule "lib/optimization/KSOPT"]
+	path = lib/optimization/KSOPT
+	url = https://github.com/pvogt09/KSOPT_mex.git
