@@ -1,0 +1,22 @@
+Feature:Area:
+  - +control/+design/+area/*
+  - +control/+design/+area/**/*
+Feature:Documentation:
+  - docs/**/*
+  - README.md
+Feature:gammasyn:
+  - +control/+design/+gamma/gammsyn.m
+Feature:optimize:
+  - +optimization/*
+  - +optimization/**/*
+  - lib/optimization/*
+  - lib/optimization/**/*
+Feature:OutputFeedback:
+  - +control/+design/+outputfeedback/*
+  - +control/+design/+outputfeedback/**/*
+Feature:oplace:
+  - lib/oplace/*
+  - lib/oplace/**/*
+Feature:CodeGeneration:
+  - +compile/*
+  - +compile/**/*
