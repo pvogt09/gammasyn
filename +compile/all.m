@@ -17,9 +17,14 @@ function [success, filelist] = all(overwrite, nobuild)
 		@compile.eig3d,							[];
 		@compile.mtimes3d,						[];
 		@compile.yalmip.all,					@compile.yalmip.needupdate;
-		@compile.rolmip.all,					@compile.rolmip.needupdate;
-		@compile.ksopt,							[]
+		@compile.rolmip.all,					@compile.rolmip.needupdate
  	};
+	ksopt = which('compile.ksopt');
+	if ~isempty(ksopt) && exist(ksopt, 'file')
+		buildfiles(end + 1, :) = {
+			@compile.ksopt, []
+		};
+	end
 	success = false(size(buildfiles, 1), 1);
 	if nargout >= 2
 		filelist = buildfiles;
