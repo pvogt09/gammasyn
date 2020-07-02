@@ -1,2 +1,10 @@
-- name: EditorConfig-Action
-  uses: zbeekman/EditorConfig-Action@v1.1.1
+name: EditorConfig-Action
+on: [pull_request, push]
+
+jobs:
+  label:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: zbeekman/EditorConfig-Action@v1.1.1
