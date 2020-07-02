@@ -121,7 +121,7 @@ As only the position is measured, the poles cannot be placed arbitrarily.
 
 The target region is the sector shown in the following image.
 
-<img src="doc/images/tex/tikz_ext/ex-omo-area.png" width=25%/>
+<img src="docs/images/tex/tikz_ext/ex-omo-area.png" width=25%/>
 
 It can be defined by
 ```matlab
@@ -243,13 +243,13 @@ This task proves to be feasible, i.e. there exists a controller gain for which t
 
 The following image shows the poles of all five closed loop systems 
 
-<img src="doc/images/tex/tikz_ext/ex-omo-area-probust-sol.png" width=25%/>
+<img src="docs/images/tex/tikz_ext/ex-omo-area-probust-sol.png" width=25%/>
 
 This multiple model approach is heuristic and makes no guarantees about the $`\Gamma`$-stability of the other systems described by the given parameter ranges.
 It is advisable to check the properties for a larger subset of the admissible systems.
 This is made in the following image, where the poles of 100 additional closed loop systems are shown in gray.
 
-<img src="doc/images/tex/tikz_ext/ex-omo-area-probust-sol2.png" width=25%/>
+<img src="docs/images/tex/tikz_ext/ex-omo-area-probust-sol2.png" width=25%/>
 
 ## Method/Theory
 
@@ -371,7 +371,7 @@ The eigenvalues or poles of the closed loop are the solution of the generalized 
 
 The structure is depicted here:
 
-<img src="doc/images/tex/tikz_ext/augsys-cl-full.png" width=75%/>
+<img src="docs/images/tex/tikz_ext/augsys-cl-full.png" width=75%/>
 
 
 
@@ -397,7 +397,7 @@ The discrete time analogous "derivative" output $`y'_k`$ is only defined for acc
 
 The structure is depicted here:
 
-<img src="doc/images/tex/tikz_ext/augsys-cl-full-discrete.png" width=75%/>
+<img src="docs/images/tex/tikz_ext/augsys-cl-full-discrete.png" width=75%/>
 
 
 
@@ -1096,12 +1096,12 @@ However, it is advisable to specify at least the "minimal" hard region, i.e. the
 
 | Area | Parameters | Description | |
 | ----------- | --- | --- | --- |
-| Circle <br/> Circlesquare | R | R: Radius | <img src="doc/images/tex/tikz_ext/area-circle.png" width=50%/>
-| Ellipse <br/> Ellipsesquare | a, b | a: semi axis along real axis <br/> b: semi axis along imaginary axis |  <img src="doc/images/tex/tikz_ext/area-ellipse.png" width=50%/>
-| Hyperbola <br/> Hyperbolasquare | a, b | a: semi axis along real axis <br/> b: semi axis along imaginary axis | <img src="doc/images/tex/tikz_ext/area-hyperbola.png" width=50%/>
-| Imag | a, b | Vertical line <br/> For left part: a: 1, b: neg. position of line on real axis <br/> For right part: a: -1, b: position of line on real axis | <img src="doc/images/tex/tikz_ext/area-imag-left.png" width=50%/> <img src="doc/images/tex/tikz_ext/area-imag-right.png" width=50%/>
-| Line | a, b | a: slope <br/> b: intercept <br/> The "left" area is always the part above the line! | <img src="doc/images/tex/tikz_ext/area-line.png" width=50%/>
-| LogSpiral | r, k | r: start point on real axis <br/> k: polar slope | <img src="doc/images/tex/tikz_ext/area-logspiral.png" width=50%/>
+| Circle <br/> Circlesquare | R | R: Radius | <img src="docs/images/tex/tikz_ext/area-circle.png" width=50%/>
+| Ellipse <br/> Ellipsesquare | a, b | a: semi axis along real axis <br/> b: semi axis along imaginary axis |  <img src="docs/images/tex/tikz_ext/area-ellipse.png" width=50%/>
+| Hyperbola <br/> Hyperbolasquare | a, b | a: semi axis along real axis <br/> b: semi axis along imaginary axis | <img src="docs/images/tex/tikz_ext/area-hyperbola.png" width=50%/>
+| Imag | a, b | Vertical line <br/> For left part: a: 1, b: neg. position of line on real axis <br/> For right part: a: -1, b: position of line on real axis | <img src="docs/images/tex/tikz_ext/area-imag-left.png" width=50%/> <img src="docs/images/tex/tikz_ext/area-imag-right.png" width=50%/>
+| Line | a, b | a: slope <br/> b: intercept <br/> The "left" area is always the part above the line! | <img src="docs/images/tex/tikz_ext/area-line.png" width=50%/>
+| LogSpiral | r, k | r: start point on real axis <br/> k: polar slope | <img src="docs/images/tex/tikz_ext/area-logspiral.png" width=50%/>
 | None |
 | PolyEllipse <br/> PolyEllipsesquare |
 
@@ -1661,7 +1661,7 @@ optimizer = optimization.solver.Optimizer.IPOPT;
 
 If a more ambitious region is targeted, as the one with the darker shade in the following image, and only a P-controller is to be used, there is no feasible solution.
 
-<img src="doc/images/tex/tikz_ext/ex-omo-area-soft.png" width=25%/>
+<img src="docs/images/tex/tikz_ext/ex-omo-area-soft.png" width=25%/>
 
 Therefore, this region can be defined as a soft region.
 
@@ -1710,7 +1710,7 @@ The following image shows the poles of the closed loop systems.
 The poles which aren't shown lie to the left of the shown section and are less critical concerning the defined region.)
 Clearly, some poles lie outside of the soft region, but all poles lie inside of the lighter shaded hard region.
 
-<img src="doc/images/tex/tikz_ext/ex-omo-area-soft-sol1.png" width=25%/>
+<img src="docs/images/tex/tikz_ext/ex-omo-area-soft-sol1.png" width=25%/>
 
 With the weights the designer can influence the result further.
 If for the problem at hand the velocity of the closed loop system is more important than its oscillation, the weight of the vertical border at -2 could be increased by
@@ -1719,7 +1719,7 @@ weight = {1, [1, 10]};
 ```
 As a result, the poles respect the right border of the soft region more, while the distances to the upper and lower borders increase.
 
-<img src="doc/images/tex/tikz_ext/ex-omo-area-soft-sol2.png" width=25%/>
+<img src="docs/images/tex/tikz_ext/ex-omo-area-soft-sol2.png" width=25%/>
 
 
 
