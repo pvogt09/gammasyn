@@ -1,7 +1,7 @@
 name: EditorConfig-Action
 on: [pull_request, push]
-branches-ignore:
-  - '**'
+  branches-ignore:
+    - '**'
 
 jobs:
   label:
