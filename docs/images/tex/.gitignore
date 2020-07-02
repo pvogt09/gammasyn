@@ -1,0 +1,13 @@
+/*.aux
+/*.auxlock
+/*.dpth
+/*.figlist
+/*.log
+/*.makefile
+/*.pdf
+/*.synctex
+tikz_ext/*.pdf
+tikz_ext/*.dpth
+tikz_ext/*.log
+tikz_ext/*.md5
+/*.tps

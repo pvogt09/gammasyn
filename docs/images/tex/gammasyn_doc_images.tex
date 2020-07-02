@@ -1,0 +1,76 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+\input{setup_math.tex}
+
+
+\usepackage{etoolbox}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{pgf}
+
+\input{setup_tikz.tex}
+
+\tikzset{every picture/.style = {auto, >=stealth'}}
+
+
+\usetikzlibrary{external}
+
+\tikzexternalize[prefix=tikz_ext/,
+                 %mode=list and make
+                ]
+
+\tikzset{external/force remake}
+
+\makeatletter
+\edef\PERCENTSYMBOL{\@percentchar}
+\makeatother
+
+\tikzset{png export/.style={
+	external/system call={
+		pdflatex \tikzexternalcheckshellescape
+			-halt-on-error -interaction=batchmode -jobname "\image" "\texsource" &
+		convert -units pixelsperinch -density 300 -resize "100\PERCENTSYMBOL" -background white -alpha remove -alpha off "\image.pdf" "\image.png"
+}}}
+
+\tikzset{png export}
+
+
+\newcommand{\addtikzimage}[1]{%
+  \tikzsetnextfilename{#1}
+  \begin{tabular}{|l|}
+    \hline
+    \textbf{#1.pdf} \\
+    \hline
+    \\
+    \input{tikz_src/#1.tikz} \\
+    \hline
+    #1.png \\
+    \hline
+    \\
+    \includegraphics{tikz_ext/#1.png} \\
+    \hline
+  \end{tabular}
+}
+
+\begin{document}
+
+  %\addtikzimage{area-circle}
+  %\addtikzimage{area-ellipse}
+  %\addtikzimage{area-hyperbola}
+  %\addtikzimage{area-line}
+  %\addtikzimage{area-imag-left}
+  %\addtikzimage{area-imag-right}
+  %\addtikzimage{area-logspiral}
+
+  %\addtikzimage{augsys-cl-full}
+  \addtikzimage{augsys-cl-full-discrete}
+  
+  %\addtikzimage{ex-omo-area}
+  %\addtikzimage{ex-omo-area-soft}
+  %\addtikzimage{ex-omo-area-soft-sol1}
+  %\addtikzimage{ex-omo-area-soft-sol2}
+  %\addtikzimage{ex-omo-area-probust-sol}
+  %\addtikzimage{ex-omo-area-probust-sol2}
+\end{document}
+

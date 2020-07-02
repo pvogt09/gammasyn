@@ -1,0 +1,45 @@
+Index: configure
+===================================================================
+--- configure	(Revision 2701)
++++ configure	(Arbeitskopie)
+@@ -37206,11 +37207,11 @@
+   MATLAB_HOME="$use_matlab_home"
+   echo "$as_me:$LINENO: result: $MATLAB_HOME" >&5
+ echo "${ECHO_T}$MATLAB_HOME" >&6
+-  if test ! -x "$MATLAB_HOME/bin/mex$batext"; then
+-    { { echo "$as_me:$LINENO: error: Matlab compiler $MATLAB_HOME/bin/mex$batext not found or not executable" >&5
+-echo "$as_me: error: Matlab compiler $MATLAB_HOME/bin/mex$batext not found or not executable" >&2;}
+-   { (exit 1); exit 1; }; }
+-  fi
++  #if test ! -x "$MATLAB_HOME/bin/mex$batext"; then
++  #  { { echo "$as_me:$LINENO: error: Matlab compiler $MATLAB_HOME/bin/mex$batext not found or not executable" >&5
++#echo "$as_me: error: Matlab compiler $MATLAB_HOME/bin/mex$batext not found or not executable" >&2;}
++  # { (exit 1); exit 1; }; }
++  #fi
+ fi
+ 
+ MEXSUFFIX=
+@@ -37218,10 +37219,10 @@
+ if test x"$MATLAB_HOME" != x; then
+   echo "$as_me:$LINENO: checking for Matlab executable extension (MEXSUFFIX)" >&5
+ echo $ECHO_N "checking for Matlab executable extension (MEXSUFFIX)... $ECHO_C" >&6
+-  if ! test -x "$MATLAB_HOME/bin/mexext$batext"; then
+-    { echo "$as_me:$LINENO: WARNING: Cannot find $MATLAB_HOME/bin/mexext$batext executable to determine MEXSUFFIX" >&5
+-echo "$as_me: WARNING: Cannot find $MATLAB_HOME/bin/mexext$batext executable to determine MEXSUFFIX" >&2;}
+-  else
++  #if ! test -x "$MATLAB_HOME/bin/mexext$batext"; then
++  #  { echo "$as_me:$LINENO: WARNING: Cannot find $MATLAB_HOME/bin/mexext$batext executable to determine MEXSUFFIX" >&5
++#echo "$as_me: WARNING: Cannot find $MATLAB_HOME/bin/mexext$batext executable to determine MEXSUFFIX" >&2;}
++  #else
+     case $build in
+       *-mingw*)
+         # MinGW cannot execute .bat files natively, so use cmd /c
+@@ -37242,7 +37243,7 @@
+     esac
+     echo "$as_me:$LINENO: result: $MEXSUFFIX" >&5
+ echo "${ECHO_T}$MEXSUFFIX" >&6
+-  fi
++  #fi
+ 
+   # check whether to use Matlab's MA57
+   # Check whether --enable-matlab-ma57 or --disable-matlab-ma57 was given.

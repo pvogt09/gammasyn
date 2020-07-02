@@ -1,0 +1,26 @@
+%Optimization parameter options. You can set or change the values of these parameters 
+
+%Print   - Level of display. A value of '0' displays no ouput. A negativ value of Print
+%          prints the number of iterations, the number of function evaluations, the
+%          function value and the norm of the gradient at each 'Print'th iteration. A
+%          positiv value of Print prints in addition to the above the individual values
+%          of x and the gradient.
+%MaxFun  - Maximum number of function evaluations allowed.
+%MaxIter - Maximum number of iterations allowed.
+%TolFun  - Termination tolerance on the function value.
+%TolX    - Termination tolerance on x.
+%TolGrad - Termination tolerance on the norm of the gradient.
+
+
+Print
+-5
+MaxFun
+900
+MaxIter
+600
+TolFun
+1.0000d-012
+TolX
+1.0000d-012
+TolGrad
+1.0000d-012

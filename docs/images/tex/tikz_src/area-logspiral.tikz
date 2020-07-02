@@ -1,0 +1,28 @@
+\begin{tikzpicture}
+  \begin{axis}[
+      width = 4cm, height = 4cm,
+      scale only axis,
+      xlabel={$\sigma$},
+      ylabel={$\iu \omega$},
+      axis x line = center,
+			axis y line = center,
+      xmin=-1.5, xmax=1.5,
+      ymin=-1.5, ymax=1.5,
+      xtick={\empty},
+      ytick={\empty},
+      axis on top,
+    ]
+    
+    \fill[green!25!white, domain=0:-pi, smooth, samples=60, variable=\t] plot ({exp(2*\t/pi)*cos(\t r)}, {-exp(2*\t/pi)*sin(\t r)}) coordinate(end);
+    \fill[green!25!white, domain=0:-pi, smooth, samples=60, variable=\t] plot ({exp(2*\t/pi)*cos(\t r)}, {exp(2*\t/pi)*sin(\t r)}) coordinate(end);
+
+    \draw[black, domain=0:-pi, smooth, samples=60, variable=\t] plot ({exp(2*\t/pi)*cos(\t r)}, {-exp(2*\t/pi)*sin(\t r)}) coordinate(end);
+    \draw[black, domain=0:-pi, smooth, samples=60, variable=\t] plot ({exp(2*\t/pi)*cos(\t r)}, {exp(2*\t/pi)*sin(\t r)}) coordinate(end);
+    
+    \draw[dashed] (1, 1) -- (1, -1);
+    \draw[<->] (0, 0.7) -- node[midway,sloped,above]{$r$} (1, 0.7);
+    
+    \draw[dashed] (1, 0) -- (0.2, -1.067);
+    \draw[] (0.3, -0.933) -- node[below]{1} (0.6, -0.933) -- node[midway,swap]{$k$} (0.6, -0.533);
+  \end{axis}
+\end{tikzpicture}

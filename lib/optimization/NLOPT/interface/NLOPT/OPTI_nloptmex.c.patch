@@ -1,0 +1,51 @@
+ Solvers/Source/nloptmex.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/Solvers/Source/nloptmex.c b/Solvers/Source/nloptmex.c
+index e4fa636..3dbc34e 100644
+--- a/Solvers/Source/nloptmex.c
++++ b/Solvers/Source/nloptmex.c
+@@ -226,7 +226,7 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
+             econ.ncon = (int)mxGetNumberOfElements(pNLE);
+         }
+         //Create contype array
+-        contype = mxCalloc(ncon,sizeof(char));
++        contype = (char*) mxCalloc(ncon,sizeof(char));
+         for(i=0;i<ncon;i++)
+             if(nle[i] == 0)
+                 contype[i] = EQ;
+@@ -332,8 +332,8 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
+     NLOPT_ERR( opt = nlopt_create(algorithm, (int)ndec), "Error creating NLOPT structure. Ensure algorithm is set correctly." );
+     
+     //Set Bounds
+-    alb = mxCalloc(ndec,sizeof(double));
+-    aub = mxCalloc(ndec,sizeof(double));
++    alb = (double*) mxCalloc(ndec,sizeof(double));
++    aub = (double*) mxCalloc(ndec,sizeof(double));
+     if(pLB && !mxIsEmpty(pLB)) {
+         lb = mxGetPr(pLB);
+         for(i = 0; i < (int)ndec; i++)
+@@ -371,7 +371,7 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
+     NLOPT_ERR( nlopt_set_vector_storage(opt, vecstore), "Error setting vector storage" );
+     
+     //Set Default Options
+-    zeros = mxCalloc(ndec,sizeof(double));
++    zeros = (double*) mxCalloc(ndec,sizeof(double));
+     for(i = 0; i < (int)ndec; i++)
+         zeros[i] = 0.0;
+     
+@@ -452,11 +452,11 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
+     }
+     
+     //Create Global Memory for storing previous evaluations
+-    X = mxCalloc(ndec,sizeof(double));
++    X = (double*) mxCalloc(ndec,sizeof(double));
+     if(ncon) {
+-        C = mxCalloc(ncon,sizeof(double));
++        C = (double*) mxCalloc(ncon,sizeof(double));
+         if(icon.nrhs_g || econ.nrhs_g)
+-            J = mxCalloc(ncon*ndec,sizeof(double));
++            J = (double*) mxCalloc(ncon*ndec,sizeof(double));
+     }
+     
+     //Print Header

@@ -1,0 +1,32 @@
+\begin{tikzpicture}[]
+  \begin{axis}[
+      width = 4cm, height = 4cm,
+      scale only axis,
+      xlabel={$\sigma$},
+      ylabel={$\iu \omega$},
+      axis x line = center,
+			axis y line = center,
+      xmin=-1.5, xmax=1.5,
+      ymin=-1.5, ymax=1.5,
+      xtick={\empty},
+      ytick={-0.5},
+      yticklabels={$b$},
+      axis on top,
+    ]
+    
+  \addplot[name path=f]
+  coordinates {
+      (-2,-1.5)
+      (2, 0.5)
+  };
+
+  \path[name path=axis] (axis cs:-2,2) -- (axis cs:2,2);
+
+  \addplot[fill=green!25!white] fill between[of=f and axis];
+              
+  %\draw[<->] (0, 0) -- node[midway,sloped,above]{$R$} (0.866, 0.5);
+  
+  \draw[] (-1, -1) -- node[below]{1} (-0.5, -1) -- node[midway,sloped,below]{$a$} (-0.5, -0.75);
+    
+  \end{axis}
+\end{tikzpicture}

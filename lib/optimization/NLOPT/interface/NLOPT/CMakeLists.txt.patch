@@ -1,0 +1,18 @@
+ CMakeLists.txt | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index bc85520..a5b3ec5 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -278,6 +278,10 @@ if (NOT BUILD_SHARED_LIBS)
+     set (CMAKE_C_FLAGS "-fPIC ${CMAKE_C_FLAGS}")
+     set (CMAKE_CXX_FLAGS "-fPIC ${CMAKE_CXX_FLAGS}")
+   endif ()
++  set (CMAKE_CXX_FLAGS "-static-libgcc -static-libstdc++ ${CMAKE_CXX_FLAGS}")
++  set (CMAKE_C_FLAGS "-static-libgcc -static-libstdc++ ${CMAKE_C_FLAGS}")
++  set (CMAKE_LD_FLAGS "-static-libgcc -static-libstdc++ ${CMAKE_LD_FLAGS}")
++  set (CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++ ${CMAKE_EXE_LINKER_FLAGS}")
+ endif ()
+ 
+ install ( TARGETS ${nlopt_lib}

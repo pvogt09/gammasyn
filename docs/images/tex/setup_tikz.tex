@@ -1,0 +1,183 @@
+\pgfplotsset{compat=newest}
+
+\usepgfplotslibrary{fillbetween}
+\usepgfplotslibrary{colormaps}
+
+\usetikzlibrary{
+		matrix, shapes, calc, through, positioning, chains, automata, arrows,
+		decorations.pathmorphing, backgrounds, fit, decorations.pathreplacing,
+		patterns, through, plotmarks, fadings, intersections, fillbetween}
+
+\pgfplotsset{x tick label style={/pgf/number format/1000 sep=\,},
+				y tick label style={/pgf/number format/1000 sep=\,},
+				z tick label style={/pgf/number format/1000 sep=\,},
+				every axis legend/.append style={nodes={right}},
+				every axis/.append style={line width=0ex,solid}}
+
+\pgfplotsset{
+	/pgfplots/xlabel near ticks/.style={
+		/pgfplots/every axis x label/.style={
+			at={(ticklabel cs:0.5)},anchor=near ticklabel
+		}
+	},
+	/pgfplots/ylabel near ticks/.style={
+		/pgfplots/every axis y label/.style={
+			at={(ticklabel cs:0.5)},rotate=90,anchor=near ticklabel
+		}
+	}
+}
+
+\pgfplotsset{every axis/.append style={line width=.5pt},
+				every tick/.append style={line width=0.5pt, black}}
+
+
+% =================================================================================
+
+
+\tikzstyle{block} = [draw,rectangle,thick,minimum height=2em,minimum width=2em]
+\tikzstyle{hblock} = [draw,rectangle,thick,minimum height=3em,minimum width=2em]
+\tikzstyle{Hblock} = [draw,rectangle,thick,minimum height=4em,minimum width=2em]
+\tikzstyle{sum} = [draw,circle,inner sep=0mm,minimum size=2mm]
+\tikzstyle{line} = [semithick]
+\tikzstyle{branch} = [circle,inner sep=0pt,minimum size=1mm,fill=black,draw=black]
+\tikzstyle{guide} = []
+\tikzstyle{connector} = [->,semithick]
+\tikzstyle{connectorbw} = [<-,semithick]
+
+
+\pgfkeys{
+	sumsign/.is family,
+	sumsign,
+	%symbol/.code=$-$,
+	symbol/.initial=m,
+	font/.initial=\tiny,
+	color/.initial=black,
+	m/.append style={symbol=m},
+	p/.append style={symbol=p},
+	pm/.append style={symbol=pm},
+	mp/.append style={symbol=mp},
+}
+
+\newcommand\sumsignset[1]{\pgfkeys{sumsign,#1}}
+
+\sumsignset{
+	sumsigndefault/.style={
+		symbol=$-$,
+		font=\tiny,
+		color=black,
+	}
+}
+
+\newcommand\sumsign[3][sumsigndefault]{
+	\sumsignset{#1,
+		symbol/.get = \symb,
+		color/.get = \symbcolor,
+		font/.get = \symbfont
+	}
+	\draw #2 ++(#3+18:4mm) node[\symbcolor,inner sep=0pt,anchor=center]%
+			{\symbfont 	\ifdefstring{\symb}{m}{$-$}%
+										{\ifdefstring{\symb}{p}{$+$}%
+											{\ifdefstring{\symb}{pm}{$\pm$}%
+												{\ifdefstring{\symb}{mp}{$\mp$}{\symb}%
+												}%
+											}%
+										}%
+			};
+}
+
+
+\tikzset{xcenter axis/.style={execute at end picture={%
+  \useasboundingbox let \p0 = (current bounding box.south west),
+												\p1 = (current bounding box.north east),
+                        \p2 = (#1.south)
+                    in
+        ({min(\x2 + \x2 - \x1,\x0)},\y0) rectangle ({max(\x2 + \x2 - \x0,\x1)},\y1);
+}}}
+
+\tikzset{xcenter twoaxis/.style 2 args={execute at end picture={%
+  \useasboundingbox let \p0 = (current bounding box.south west),
+												\p1 = (current bounding box.north east),
+                        \p2 = (#1.south),
+												\p3 = (#2.south)
+                    in
+        ({min(\x3 + \x2 - \x1,\x0)},\y0) rectangle ({max(\x3 + \x2 - \x0,\x1)},\y1);
+}}}
+
+
+
+\tikzstyle{flowenterexit} = [draw, rounded rectangle, thick, text badly centered, text width=4.5cm]
+\tikzstyle{flowsub} = [draw, double, thick, text width = 4cm, minimum height=1.5cm, text centered]
+\tikzstyle{flowcond} = [draw, diamond, shape aspect = 2, thick, text badly centered, inner sep=0pt, minimum width=4.5cm, minimum height=1.5cm]
+\tikzstyle{flowaction} = [draw, thick, text width = 4cm, minimum height=1.5cm, text centered]
+ 
+
+\tikzstyle{Rgain} = [draw, isosceles triangle, inner sep=1pt, minimum height=2em, thick, isosceles triangle apex angle=60]
+\tikzstyle{Lgain} = [draw, isosceles triangle, inner sep=1pt, minimum height=2em, thick, isosceles triangle apex angle=60, shape border rotate=180]
+\tikzstyle{Ugain} = [draw, isosceles triangle, inner sep=1pt, minimum height=2em, thick, isosceles triangle apex angle=60, shape border rotate=90]
+\tikzstyle{Dgain} = [draw, isosceles triangle, inner sep=1pt, minimum height=2em, thick, isosceles triangle apex angle=60, shape border rotate=-90]
+
+
+
+\newcommand{\TikZsaturation}{
+\begin{tikzpicture}
+	% Koordinatensystem
+	\draw[->, very thin] (-3mm,0) -- (3mm,0);
+	\draw[->, very thin] (0,-3mm) -- (0,3mm);
+
+	% Saturation
+	\draw[thin] (-3mm,-1.5mm) -- (-1.5mm,-1.5mm);
+	\draw[thin] (-1.5mm,-1.5mm) -- ( 1.5mm, 1.5mm);
+	\draw[thin] ( 1.5mm, 1.5mm) -- ( 3mm, 1.5mm);
+\end{tikzpicture}
+}
+
+\newcommand{\TikZzoh}{
+\begin{tikzpicture}
+	% Koordinatensystem
+	\draw[thin] (-3mm,-1.5mm) -| (-1.5mm,-0.5mm) -| (0mm,2mm) -| (1.5mm,0mm) -| (3mm,1mm);
+\end{tikzpicture}
+}
+
+\newcommand{\TikZsampler}{
+	\begin{tikzpicture}
+		\draw[thin] (-3mm,-1.5mm) -- (-1.5mm,-1.5mm) -- (1.5mm,-0mm);
+		\draw[thin] (1.5mm,-1.5mm) -- (3mm,-1.5mm);
+		\node[anchor=south,inner sep=0cm,minimum height=0em,minimum width=0em] at (0mm,0.5mm) {};
+		%\node[anchor=south,inner sep=0cm,minimum height=0em,minimum width=0em] at (0mm,0.5mm) {\tiny $T_0$};%\tiny $T_0$
+	\end{tikzpicture}
+}
+
+\newcommand{\TikZzohD}{
+\begin{tikzpicture}
+	% Koordinatensystem
+	\draw[thin] (-3mm,-1.5mm) -| (-1.5mm,-0.5mm) -| (0mm,2mm) -| (1.5mm,0mm) -| (3mm,1mm);
+	\node[anchor=north west,inner sep=0cm,minimum height=0em,minimum width=0em] at (-3mm,3mm) {\tiny $\delta$};
+\end{tikzpicture}
+}
+
+\newcommand{\TikZsamplerD}{
+	\begin{tikzpicture}
+		\draw[thin] (-3mm,-1.5mm) -- (-1.5mm,-1.5mm) -- (1.5mm,-0mm);
+		\draw[thin] (1.5mm,-1.5mm) -- (3mm,-1.5mm);
+		\node[anchor=south,inner sep=0cm,minimum height=0em,minimum width=0em] at (0mm,0.5mm) {};
+		\node[anchor=north west,inner sep=0cm,minimum height=0em,minimum width=0em] at (-3mm,3mm) {\tiny $\delta$};
+		%\node[anchor=south,inner sep=0cm,minimum height=0em,minimum width=0em] at (0mm,0.5mm) {\tiny $T_0$};%\tiny $T_0$
+	\end{tikzpicture}
+}
+
+
+\newcommand{\TikZdelay}[1]{
+\begin{tikzpicture}
+	% Koordinatensystem
+	\draw[->, very thin] (-2.5mm,-2mm) -- (2.5mm,-2mm);
+	\draw[->, very thin] (-2mm,-2.5mm) -- (-2mm,2.5mm);
+
+	% Saturation
+	\draw[thin] (-2.5mm,-2mm) -- (0mm,-2mm);
+	\draw[thin] (0mm,-2mm) -- ( 0mm, 1.5mm);
+	\draw[thin] ( 0mm, 1.5mm) -- ( 2.5mm, 1.5mm);
+	
+	\draw[very thin,->] ( -2mm, -0.75mm) -- (0mm, -0.75mm);
+	\node[anchor=south,inner sep=0cm,minimum height=0em,minimum width=0em,scale=0.75] at (-1mm,-0.25mm) {\tiny #1};
+\end{tikzpicture}
+}

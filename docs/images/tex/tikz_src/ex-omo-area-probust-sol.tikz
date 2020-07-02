@@ -1,0 +1,27 @@
+\begin{tikzpicture}[]
+  \begin{axis}[
+      width = 4cm, height = 4cm,
+      scale only axis,
+      xlabel={$\sigma$},
+      ylabel={$\iu \omega$},
+      axis x line = center,
+			axis y line = center,
+      xmin=-12, xmax=4,
+      ymin=-8, ymax=8,
+      xtick={-1},
+%      xtick={\empty},
+      ytick={-1, 1},
+      y tick label style={anchor=west,xshift=1mm},
+      x tick label style={xshift=-3mm},
+      axis on top,
+    ]
+    
+  \draw[fill=green!25!white] (-15, 15) -- (-1, 1) -- (-1, -1) -- (-15, -15) -- cycle;
+  
+  \addplot[mark=x,only marks,black,thick] coordinates {
+(-4.44444, 3.12639) (-4.44444, -3.12639) (-3.63636, 3.30691) (-3.63636, -3.30691) (-2.80441, 0) (-10.5289, 0) (-3.08953, 0) (-7.81956, 0) (-5, 1.25485) (-5, -1.25485)
+  };
+  
+    
+  \end{axis}
+\end{tikzpicture}

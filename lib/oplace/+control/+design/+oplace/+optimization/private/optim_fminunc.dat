@@ -1,0 +1,89 @@
+%Optimization parameter options. You can set or change the values of these parameters using the
+%optimset function. Some parameters apply to all algorithms, some are only relevant when
+%using the large-scale algorithm, and others are only relevant when using the medium-scale
+%algorithm. 
+
+%We start by describing the LargeScale option since it states a preference for which algorithm
+%to use. It is only a preference since certain conditions must be met to use the large-scale
+%algorithm. For fminunc, the gradient must be provided (see the description of fun above to
+%see how) or else the medium-scale algorithm will be used.
+
+%LargeScale - Use large-scale algorithm if possible when set to 'on'. Use
+%medium-scale algorithm when set to 'off'. 
+
+%Parameters used by both the large-scale and medium-scale algorithms:
+
+%Diagnostics - Print diagnostic information about the function to be minimized. 
+%Display - Level of display. 'off' displays no output; 'iter' displays output at each
+%iteration; 'final' displays just the final output. 
+%GradObj - Gradient for the objective function defined by user. See the description of
+%fun under the Arguments section above to see how to define the gradient in fun. The
+%gradient must be provided to use the large-scale method. It is optional for the
+%medium-scale method. 
+%MaxFunEvals - Maximum number of function evaluations allowed. 
+%MaxIter - Maximum number of iterations allowed. 
+%TolFun - Termination tolerance on the function value. 
+%TolX - Termination tolerance on x. 
+
+%Parameters used by the large-scale algorithm only:
+
+%Hessian - Hessian for the objective function defined by user. See the description of fun
+%under the Arguments section above to see how to define the Hessian in fun. 
+%HessPattern - Sparsity pattern of the Hessian for finite-differencing. If it is not
+%convenient to compute the sparse Hessian matrix H in fun, the large-scale method in
+%fminunc can approximate H via sparse finite-differences (of the gradient) provided the
+%sparsity structure of H -- i.e., locations of the nonzeros -- is supplied as the value for
+%HessPattern. In the worst case, if the structure is unknown, you can set HessPattern
+%to be a dense matrix and a full finite-difference approximation will be computed at each
+%iteration (this is the default). This can be very expensive for large problems so it is usually
+%worth the effort to determine the sparsity structure. 
+
+%MaxPCGIter - Maximum number of PCG (preconditioned conjugate gradient) iterations
+%(see the Algorithm section below). 
+%PrecondBandWidth - Upper bandwidth of preconditioner for PCG. By default,
+%diagonal preconditioning is used (upper bandwidth of 0). For some problems, increasing
+%the bandwidth reduces the number of PCG iterations. 
+%TolPCG - Termination tolerance on the PCG iteration. 
+%TypicalX - Typical x values. 
+
+%Parameters used by the medium-scale algorithm only:
+
+%DerivativeCheck - Compare user-supplied derivatives (gradient) to finite-differencing
+%derivatives. 
+%DiffMaxChange - Maximum change in variables for finite-difference gradients. 
+%DiffMinChange - Minimum change in variables for finite-difference gradients. 
+%LineSearchType - Line search algorithm choice. 
+
+
+Diagnostics
+off
+DiffMaxChange
+0.1000
+DiffMinChange
+1.0000e-008
+Display
+iter
+GradObj
+on
+HessUpdate
+bfgs
+LargeScale
+on
+LineSearchType
+quadcubic
+MaxFunEvals
+%100*numberOfVariables
+[]
+MaxIter
+400
+MaxPCGIter
+%max(1,floor(numberOfVariables/2))
+[]
+PrecondBandWidth
+0
+TolFun
+1.0000e-014
+TolPCG
+0.1000
+TolX
+1.0000e-014

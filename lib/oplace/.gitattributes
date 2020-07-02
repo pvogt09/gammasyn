@@ -1,0 +1,16 @@
+*			text=auto
+*.fig		binary -crlf -merge
+*.mdl		-crlf
+*.mdlp		binary -crlf -merge
+*.slx		diff=slx -crlf -merge
+*.slxp		binary -crlf -merge
+*.pdf		diff=pdf -crlf -merge
+*.mat		binary -crlf
+*.mexw32	binary -crlf -merge
+*.mexw64	binary -crlf -merge
+*.mexa32	binary -crlf -merge
+*.mexa64	binary -crlf -merge
+*.p			binary -crlf -merge
+*.sh		text eol=lf
+*.bat		text eol=crlf
+*.com		text eol=crlf
