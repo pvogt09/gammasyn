@@ -1,0 +1,26 @@
+# EditorConfig is awesome: https://editorconfig.org/
+
+# top-most EditorConfig file
+root = true
+
+[*]
+insert_final_newline = false
+indent_style = tab
+indent_size = tab
+tab_width = 4
+charset = utf-8
+trim_trailing_whitespace = true
+
+# Matches multiple files with brace expansion notation
+# Set default charset
+[*.{m}]
+charset = latin1
+
+[*.{sh}]
+end_of_line = lf
+insert_final_newline = true
+
+[*.{bat}]
+end_of_line = crlf
+insert_final_newline = false
+charset = latin1
