@@ -5,3 +5,6 @@
 	path = lib/ROLMIP
 	url = https://github.com/pvogt09/ROLMIP.git
 	branch = get_hash
+[submodule "lib/YALMIP"]
+	path = lib/YALMIP
+	url = https://github.com/pvogt09/YALMIP.git

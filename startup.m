@@ -39,11 +39,11 @@ GUROBI_HOME = getenv('GUROBI_HOME');
 if ~isempty(GUROBI_HOME) && exist(GUROBI_HOME, 'dir')
 	addpath(realpath(fullfile(GUROBI_HOME, 'matlab')));
 end
-addpath(genpath(realpath(fullfile(path, 'simulink'))));
 addpath(genpath(realpath(fullfile(path, 'mex'))));
 addpath(genpath(realpath(fullfile(path, 'lib', 'mex', 'lib'))));
 addpath(realpath(fullfile(path, 'lib', 'mex', 'MinGW')));
-addpath(realpath(fullfile(path, 'lib', 'ROLMIP')));
+addpath(genpath_exclude(realpath(fullfile(path, 'lib', 'YALMIP')), {'.git', 'demos'}));
+addpath(genpath_exclude(realpath(fullfile(path, 'lib', 'ROLMIP')), {'.git', 'manual_examples'}));
 if exist(realpath(fullfile(path, 'lib', 'oplace')), 'dir')
 	addpath(realpath(fullfile(path, 'lib', 'oplace')));
 end
