@@ -8,6 +8,6 @@ jobs:
 
     steps:
     - uses: zbeekman/EditorConfig-Action@v1.1.1
-        env:
-            EC_FIX_ERROR: false
-            ALWAYS_LINT_ALL_FILES: true
+      env:
+        EC_FIX_ERROR: false
+        ALWAYS_LINT_ALL_FILES: true
