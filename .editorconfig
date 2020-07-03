@@ -11,16 +11,23 @@ tab_width = 4
 charset = utf-8
 trim_trailing_whitespace = true
 
-# Matches multiple files with brace expansion notation
-# Set default charset
-[*.{m}]
+# Matlab files
+[*.m]
 charset = latin1
 
-[*.{sh}]
+# shell scripts unix
+[*.sh]
 end_of_line = lf
 insert_final_newline = true
 
-[*.{bat}]
+# shell scripts windows
+[*.bat]
 end_of_line = crlf
 insert_final_newline = false
 charset = latin1
+
+# YAML files
+[*.{package.json,yml,yaml}]
+indent_style = space
+indent_size = 2
+tab_width = 2
