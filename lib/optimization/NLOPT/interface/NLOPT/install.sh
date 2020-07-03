@@ -8,7 +8,7 @@ arch=64
 # make OPTI MEX interface with gnumex
 makeOPTIMEXGnumex=true
 # path to current file directory
-basedir=$(cd $(dirname "$0") && pwd)
+basedir=$(cd "$(dirname "$0")" && pwd)
 repositoryurlgit="https://github.com/stevengj/nlopt.git"
 repositoryurlOPTIgit="https://github.com/jonathancurrie/OPTI.git"
 MATLABhome64=/C/Progra~1/MATLAB/R2015b
@@ -26,7 +26,7 @@ if [ "$arch" -eq 32 ]; then
 	MEXsuffix="mexw32"
 fi
 rootdir="${rootdir}/"
-cd "$basedir"
+cd "$basedir" || (echo "Could not change directory" && exit 10)
 
 majorversion="$(echo $nloptversion | cut -d'.' -f1)"
 minorversion="$(echo $nloptversion | cut -d'.' -f2)"
@@ -112,7 +112,7 @@ else
 	static=""
 fi
 # start build process
-cmake -G"MSYS Makefiles" $static -DMatlab_ROOT_DIR=$MATLABhome -DCMAKE_INSTALL_PREFIX=$directoryLIB -DINSTALL_MEX_DIR=$directoryMEX -DINSTALL_OCT_DIR=$directoryOCT -DINSTALL_M_DIR=$directoryOCT ".."
+cmake -G"MSYS Makefiles" "$static" -DMatlab_ROOT_DIR="$MATLABhome" -DCMAKE_INSTALL_PREFIX="$directoryLIB" -DINSTALL_MEX_DIR="$directoryMEX" -DINSTALL_OCT_DIR="$directoryOCT" -DINSTALL_M_DIR="$directoryOCT" ".."
 if [ $? -gt 0 ]; then
 	echo -e "${RED}Could not configure NLOPT${NC}"
 	exit 5
@@ -168,8 +168,8 @@ directoryOPTIwindows="D:${directoryOPTIwindows}"
 mexINCLUDEstring="-I${directoryBuildwindows}/lib/include -IInclude/Nlopt -Inlopt/Include -I${directoryOPTIwindows}/Solvers/Source/opti -I${directoryOPTIwindows}/Solvers/Source/nlopt"
 if [ ! "$makeOPTIMEXGnumex" = "true" ]; then
 	mexSRCstring="${directoryOPTIwindows}/Solvers/Source/nloptmex.c ${directoryOPTIwindows}/Solvers/Source/opti/opti_mex_utils.cpp"
-	mexCXX_OPTS='CXXFLAGS='\''$CXXFLAGS -fpermissive -std=c++11'\'''
-	mexCOMP_OPTS='LDFLAGS='\''$LDFLAGS -fpermissive -std=c++11'\'''
+	mexCXX_OPTS="CXXFLAGS='$CXXFLAGS -fpermissive -std=c++11'"
+	mexCOMP_OPTS="LDFLAGS='$LDFLAGS -fpermissive -std=c++11'"
 	mexLIBstring="${directoryBuildwindows}/lib/lib/libnlopt.a ${directoryBuildwindows}/matlab/libnlopt_optimize.dll.a -L${directoryLIBwindows} ${directoryBuildwindows}/src/octave/CMakeFiles/nlopt_optimize-mex.dir/objects.a"
 	mexbuildstring="mex -v -largeArrayDims ${mexINCLUDEstring} ${mexLIBstring} -DML_VER=8.6 -DOPTI_VER=2.28 ${mexSRCstring} ${mexCOMP_OPTS} ${mexCXX_OPTS}"
 	echo "$mexbuildstring"
@@ -180,7 +180,7 @@ if [ ! "$makeOPTIMEXGnumex" = "true" ]; then
 	fi
 	exit 0
 else
-	cd "$directoryOPTI"
+	cd "$directoryOPTI" || (echo "Could not change directory" && exit 10)
 	cp "$rootdir/../get.Gnumex" "$directoryMEX"
 	cp "$rootdir/../Makefile.in" "$directoryMEX/Makefile"
 	prefix="/mingw64"

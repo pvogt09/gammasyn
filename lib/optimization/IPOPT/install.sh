@@ -62,7 +62,7 @@ if [ ! -d "$rootdir" ]; then
 fi
 majorversion="$(echo $ipoptversion | cut -d'.' -f1)"
 minorversion="$(echo $ipoptversion | cut -d'.' -f2)"
-if [ "$majorversion" -ge 3] && [ "$minorversion" -ge 13 ]; then
+if [ "$majorversion" -ge 3 ] && [ "$minorversion" -ge 13 ]; then
 	# there has been a major change in the build system in version 3.13.0
 	echo 'build system of IPOPT has changed in 3.13.0 so this is likely to not work as expected'
 	echo 'IPOPT does not build successfully because of missing LAPACK and BLAS dependencies'
