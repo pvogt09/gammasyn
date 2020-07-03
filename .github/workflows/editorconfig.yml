@@ -1,0 +1,13 @@
+name: EditorConfig-Action
+on: push
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: EditorConfig-Action
+      env:
+        EC_FIX_ERROR: false
+        ALWAYS_LINT_ALL_FILES: true
+      uses: zbeekman/EditorConfig-Action@v1.1.1
