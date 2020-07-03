@@ -293,7 +293,7 @@ if [ "$majorversion" -ge 3 ] && [ "$minorversion" -ge 13 ]; then
 EOF
 		libdirLAPACK="$libdir"
 		liblineLAPACK=$(grep '^Libs: ' "$dependencyfileLAPACK" | cut -f2- -d' ')
-		liblineLAPACK=$(echo $liblineLAPACK | sed -e "s;\${libdir};$libdirLAPACK;")
+		liblineLAPACK=$(echo "$liblineLAPACK" | sed -e "s;\${libdir};$libdirLAPACK;")
 	else
 		echo "LAPACK was not installed correctly"
 		exit 5
@@ -305,12 +305,12 @@ EOF
 EOF
 		libdirBLAS="$libdir"
 		liblineBLAS=$(grep '^Libs: ' "$dependencyfileBLAS" | cut -f2- -d' ')
-		liblineBLAS=$(echo $liblineBLAS | sed -e "s;\${libdir};$libdirBLAS;")
+		liblineBLAS=$(echo "$liblineBLAS" | sed -e "s;\${libdir};$libdirBLAS;")
 	else
 		echo "BLAS was not installed correctly"
 		exit 5
 	fi
-	if [ -z "$libdirLAPACK" -a -z "$liblineLAPACK" ]; then
+	if [ -z "$libdirLAPACK" ] && [ -z "$liblineLAPACK" ]; then
 		configureLAPACK=--with-lapack=build
 	else
 		configureLAPACK='--with-lapack="'
@@ -319,7 +319,7 @@ EOF
 		configureLAPACK+='"'
 		#configureLAPACK=$(printf '--with-lapack="%s"' $liblineLAPACK)
 	fi
-	if [ -z "$libdirBLAS" -a -z "$liblineBLAS" ]; then
+	if [ -z "$libdirBLAS" ] && [ -z "$liblineBLAS" ]; then
 		configureBLAS=--with-blas=build
 	else
 		configureBLAS='--with-blas="'
@@ -329,7 +329,7 @@ EOF
 	fi
 	configureBLAS=""
 	configureLAPACK=""
-	cd "$rootdir"
+	cd "$rootdir" || (echo "Could not change directory" && exit 10)
 	if [ -d "$rootdir/build" ]; then
 		echo "build directory already exists"
 		echo "Maybe it needs to be deleted in order to build successfully"
