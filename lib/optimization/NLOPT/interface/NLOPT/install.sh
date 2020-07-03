@@ -150,7 +150,7 @@ if [ ! -d "$directoryOPTI" ]; then
 	fi
 	# patch opti_mex_utils.cpp to work with C++
 	cd "$directoryOPTI"
-	git apply "$rootdir/../../opti_mex_utils.cpp.patch"
+	git apply "$rootdir/../../OPTI_opti_mex_utils.cpp.patch"
 	if [ $? -gt 0 ]; then
 		echo -e "${RED}Could not apply patch for opti_mex_utils.cpp${NC}"
 		exit 1
