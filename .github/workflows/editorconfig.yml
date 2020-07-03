@@ -11,6 +11,3 @@ jobs:
         EC_FIX_ERROR: false
         ALWAYS_LINT_ALL_FILES: true
       uses: zbeekman/EditorConfig-Action@master
-      with:
-        EC_FIX_ERROR: false
-        ALWAYS_LINT_ALL_FILES: true
