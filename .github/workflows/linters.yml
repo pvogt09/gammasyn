@@ -1,0 +1,16 @@
+name: Linting
+on:
+  [push, pull_request]
+
+jobs:
+  build:
+    name: Linting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: YAML Lint
+        uses: ibiqlik/action-yamllint@v1
+        with:
+          file_or_dir: .
+      - name: shellcheck
+        uses: ludeeus/action-shellcheck@master
