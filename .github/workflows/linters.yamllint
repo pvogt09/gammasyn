@@ -1,0 +1,7 @@
+extends: default
+
+rules:
+  ignore: |
+    .github/workflows-deactivated/
+  document-start: disable
+  line-length: disable
