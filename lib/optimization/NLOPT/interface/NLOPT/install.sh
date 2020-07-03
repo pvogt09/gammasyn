@@ -8,7 +8,7 @@ arch=64
 # make OPTI MEX interface with gnumex
 makeOPTIMEXGnumex=true
 # path to current file directory
-basedir=$(cd `dirname $0` && pwd)
+basedir=$(cd $(dirname "$0") && pwd)
 repositoryurlgit="https://github.com/stevengj/nlopt.git"
 repositoryurlOPTIgit="https://github.com/jonathancurrie/OPTI.git"
 MATLABhome64=/C/Progra~1/MATLAB/R2015b
@@ -28,12 +28,12 @@ fi
 rootdir="${rootdir}/"
 cd "$basedir"
 
-majorversion="$(cut -d'.' -f1 <<<$nloptversion)"
-minorversion="$(cut -d'.' -f2 <<<$nloptversion)"
-bugfixversion="$(cut -d'.' -f3 <<<$nloptversion)"
+majorversion="$(echo $nloptversion | cut -d'.' -f1)"
+minorversion="$(echo $nloptversion | cut -d'.' -f2)"
+bugfixversion="$(echo $nloptversion | cut -d'.' -f3)"
 # get requested NLOPT version and checkout/clone into working directory
 hasgit=0
-if [ "$majorversion" -ge 2 -a "$minorversion" -ge 6 ]; then
+if [ "$majorversion" -ge 2 ] && [ "$minorversion" -ge 6 ]; then
 	nloptbranch="v${nloptversion}"
 else
 	nloptbranch="nlopt-${nloptversion}"
@@ -59,7 +59,7 @@ if [ ! -d "$rootdir" ]; then
 fi
 
 directoryBuild="$rootdir/build"
-cd "$rootdir"
+cd "$rootdir" || (echo "Could not change directory" && exit 10)
 if [ ! -d "$directoryBuild" ]; then
 	mkdir "$directoryBuild"
 	if [ $? -gt 0 ]; then
@@ -91,7 +91,7 @@ if [ ! -d "$directoryOCT" ]; then
 		exit 1
 	fi
 fi
-cd "$directoryBuild"
+cd "$directoryBuild" || (echo "Could not change directory" && exit 10)
 
 if [ "$arch" -eq 32 ]; then
 	echo -e "${YELLOW}32 bit compilation is currently not supported and may generate 64 bit MEX files as well${NC}"
@@ -100,7 +100,7 @@ else
 	MATLABhome=$MATLABhome64
 fi
 # set options for static linking
-if [ "$1" == "-static" ]; then
+if [ "$1" = "-static" ]; then
 	static=" -DBUILD_SHARED_LIBS=OFF"
 	# on windows libstdc and libstc++ are linked statically
 	git apply "$rootdir/../CMakeLists.txt.patch"
@@ -115,17 +115,17 @@ fi
 cmake -G"MSYS Makefiles" $static -DMatlab_ROOT_DIR=$MATLABhome -DCMAKE_INSTALL_PREFIX=$directoryLIB -DINSTALL_MEX_DIR=$directoryMEX -DINSTALL_OCT_DIR=$directoryOCT -DINSTALL_M_DIR=$directoryOCT ".."
 if [ $? -gt 0 ]; then
 	echo -e "${RED}Could not configure NLOPT${NC}"
-	exit -2
+	exit 5
 fi
 make -j3
 if [ $? -gt 0 ]; then
 	echo -e "${RED}Could not make NLOPT${NC}"
-	exit -2
+	exit 5
 fi
 make install
 if [ $? -gt 0 ]; then
 	echo -e "${RED}Could not install NLOPT${NC}"
-	exit -2
+	exit 5
 fi
 
 # build OPTI interface
@@ -149,13 +149,13 @@ if [ ! -d "$directoryOPTI" ]; then
 		exit 1
 	fi
 	# patch opti_mex_utils.cpp to work with C++
-	cd "$directoryOPTI"
+	cd "$directoryOPTI" || (echo "Could not change directory" && exit 10)
 	git apply "$rootdir/../../OPTI_opti_mex_utils.cpp.patch"
 	if [ $? -gt 0 ]; then
 		echo -e "${RED}Could not apply patch for opti_mex_utils.cpp${NC}"
 		exit 1
 	fi
-	cd "$directoryBuild"
+	cd "$directoryBuild" || (echo "Could not change directory" && exit 10)
 fi
 
 echo -e "${GREEN}build OPTI MEX interface${NC}"
@@ -166,17 +166,17 @@ directoryLIBwindows="D:${directoryLIBwindows}"
 directoryOPTIwindows=${directoryOPTI#"/D"}
 directoryOPTIwindows="D:${directoryOPTIwindows}"
 mexINCLUDEstring="-I${directoryBuildwindows}/lib/include -IInclude/Nlopt -Inlopt/Include -I${directoryOPTIwindows}/Solvers/Source/opti -I${directoryOPTIwindows}/Solvers/Source/nlopt"
-if [ ! "$makeOPTIMEXGnumex" == "true" ]; then
+if [ ! "$makeOPTIMEXGnumex" = "true" ]; then
 	mexSRCstring="${directoryOPTIwindows}/Solvers/Source/nloptmex.c ${directoryOPTIwindows}/Solvers/Source/opti/opti_mex_utils.cpp"
 	mexCXX_OPTS='CXXFLAGS='\''$CXXFLAGS -fpermissive -std=c++11'\'''
 	mexCOMP_OPTS='LDFLAGS='\''$LDFLAGS -fpermissive -std=c++11'\'''
 	mexLIBstring="${directoryBuildwindows}/lib/lib/libnlopt.a ${directoryBuildwindows}/matlab/libnlopt_optimize.dll.a -L${directoryLIBwindows} ${directoryBuildwindows}/src/octave/CMakeFiles/nlopt_optimize-mex.dir/objects.a"
 	mexbuildstring="mex -v -largeArrayDims ${mexINCLUDEstring} ${mexLIBstring} -DML_VER=8.6 -DOPTI_VER=2.28 ${mexSRCstring} ${mexCOMP_OPTS} ${mexCXX_OPTS}"
 	echo "$mexbuildstring"
-	$MATLABhome/bin/matlab -r "${mexbuildstring};exit('force')"
+	"$MATLABhome/bin/matlab" -r "${mexbuildstring};exit('force')"
 	if [ $? -gt 0 ]; then
 		echo -e "${RED}Could not make MEX interface${NC}"
-		exit -1
+		exit 3
 	fi
 	exit 0
 else
@@ -229,11 +229,11 @@ else
 		sed -i "s,@MEX_STATIC_TRUE@,#," "$directoryMEX/Makefile"
 	fi
 	echo -e "${GREEN}getting GNUMEX${NC}"
-	cd "$directoryMEX"
+	cd "$directoryMEX" || (echo "Could not change directory" && exit 10)
 	sh get.Gnumex
 	if [ $? -gt 0 ]; then
 		echo -e "${RED}Could not get GNUMEX${NC}"
-		exit -2
+		exit 5
 	fi
 	# copy files from OPTI to MEX interface directory
 	if [ ! -d "$directoryMEX/src/" ]; then
@@ -246,13 +246,13 @@ else
 	sed -i "s|#define BUGFIX_VERSION 2|#define BUGFIX_VERSION $bugfixversion|" "${directoryOPTI}/Solvers/Source/nlopt/config.h"
 	sed -i "s|#define PACKAGE_VERSION \"2.4.2\"|#define PACKAGE_VERSION \"$majorversion.$minorversion.$bugfixversion\"|" "${directoryOPTI}/Solvers/Source/nlopt/config.h"
 	# build mex file
-	cd "$directoryMEX"
+	cd "$directoryMEX" || (echo "Could not change directory" && exit 10)
 	# libtool crashes when creating def files for 'microsoft' libraries
 	sed -i 's/\\extern\\lib\\win64\\microsoft/\\extern\\lib\\win64\\mingw64/g' "$directoryMEX/gnumex/gnumex.m"
 	make gnumex --always-make
 	if [ $? -gt 0 ]; then
 		echo -e "${RED}Could not configure MATLAB${NC}"
-		exit -2
+		exit 5
 	fi
 	# add libut to gnumex libdef path
 	if [ "$arch" -eq 32 ]; then
@@ -273,23 +273,23 @@ else
 	nm "$directoryMEX/gnumex/libdef/libut.lib" | grep ' T ' | sed 's/.* T //' >> "$directoryMEX/gnumex/libdef/libut.def"
 	if [ $? -gt 0 ]; then
 		echo -e "${RED}Could not export def for libut${NC}"
-		exit -2
+		exit 5
 	fi
 	make mexopts
 	if [ $? -gt 0 ]; then
 		echo -e "${RED}Could not make mexopts${NC}"
-		exit -2
+		exit 5
 	fi
 	# compile static
 	sed -i 's/\(set GM_ADD_LIBS=\)\(-llibmx -llibmex -llibmat -llibut.*\)/\1-static \2/' 'mexopts.bat'
 	if [ $? -gt 0 ]; then
 		echo -e "${RED}Could not edit mexopts${NC}"
-		exit -2
+		exit 5
 	fi
 	make install
 	if [ $? -gt 0 ]; then
 		echo -e "${RED}Could not make mex file${NC}"
-		exit -2
+		exit 5
 	fi
 	exit 0
 fi
