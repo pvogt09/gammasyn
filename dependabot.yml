@@ -1,0 +1,11 @@
+version: 2
+updates:
+  # Keep submodule dependencies up to date
+  - package-ecosystem: "gitsubmodule"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    target-branch: "development"
+    # Use custom labels on pull requests for updates
+    labels:
+      - "Type:Dependency"
