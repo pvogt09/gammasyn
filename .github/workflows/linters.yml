@@ -7,9 +7,9 @@ jobs:
     name: Linting
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: YAML Lint
-        uses: ibiqlik/action-yamllint@v1
+        uses: bewuethr/yamllint-action@v1
         with:
           file_or_dir: .
       - name: shellcheck
