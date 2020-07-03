@@ -15,3 +15,5 @@ jobs:
           config-file: .github/workflows/linters.yamllint
       - name: shellcheck
         uses: ludeeus/action-shellcheck@master
+        env:
+          SHELLCHECK_OPTS: -e SC2181 -e SC2039
