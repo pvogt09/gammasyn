@@ -6,5 +6,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: EditorConfig-Action
-      uses: greut/eclint-action@v0
+    - name: EditorConfig lint
+      uses: reviewdog/action-eclint@v1
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN  }}
+        reporter: github-pr-review
