@@ -83,6 +83,7 @@ $$
         y & = \begin{bmatrix} 1 & 0 \end{bmatrix} \cdot \begin{bmatrix} x \\ \dot x \end{bmatrix}
     \end{aligned}
 $$
+
 The nominal parameters are $m = 1$, $d = 10$ and $c = 1000$.
 For the robust design the parameters $m$ and $d$ are assumed to be uncertain, given by
 
@@ -136,6 +137,7 @@ For this example the solution can be determined analytically:
 $$
     R \in [-991,\ -950]
 $$
+
 ($R$ is negative, which means that it is actually positive feedback.
 This is correct, as with this feedback structure the only possibility to dampen the system is to partly "compensate" the spring $c$.)
 
@@ -266,17 +268,20 @@ $$
         y & = C x
     \end{aligned}
 $$
+
 and the control loop is to be closed with the controller
 
 $$
     u = -R y + F r
 $$
+
 where $r$ is the reference value.
 This leads to a closed loop 
 
 $$
     \dot x = (A - B R C) \cdot x + B F r
 $$
+
 whose poles $\lambda_\nu$ are the solutions of the eigenvalue problem
 
 $$
@@ -294,6 +299,7 @@ $$
         y & = C x
     \end{aligned}
 $$
+
 with the *invertible* mass matrix $E$.
 
 The feedback has the same form as above which leads to the associated eigenvalue problem
@@ -301,6 +307,7 @@ The feedback has the same form as above which leads to the associated eigenvalue
 $$
     \det(E \lambda_\nu - (A - B R C)) = 0
 $$
+
 to determine the eigenvalues or poles of the closed loop system.
 
 
@@ -315,6 +322,7 @@ $$
         y' & = C' \dot x
     \end{aligned}
 $$
+
 for which the controller has the structure
 
 $$
@@ -357,6 +365,7 @@ $$
         y_\mathrm{ref} & = C_\mathrm{ref} x + D_\mathrm{ref} u
     \end{aligned}
 $$
+
 where $E$ must be an invertible matrix and the controller is given by
 
 $$
@@ -387,6 +396,7 @@ $$
         y_{\mathrm{ref}, k} & = C_\mathrm{ref} x_k + D_\mathrm{ref} u_k
     \end{aligned}
 $$
+
 where $E$ must be an invertible matrix and the controller is given by
 
 $$
@@ -416,11 +426,13 @@ $$
         y & = C x
     \end{aligned}
 $$
+
 is to be controlled by a PI-controller
 
 $$
     u = K_\mathrm{P} e + K_\mathrm{I} \int e \mathrm{d} \tau
 $$
+
 with $e = r - y$, $r$ being the reference value, which can be written in the state space representation
 
 $$
@@ -429,6 +441,7 @@ $$
         u & = K_\mathrm{I} x_\mathrm{I} - K_\mathrm{P} y + K_\mathrm{P} r
     \end{aligned}
 $$
+
 the resulting augmented system is
 
 $$
@@ -446,6 +459,7 @@ $$
                 \begin{bmatrix} x \\ x_\mathrm{I} \end{bmatrix}
     \end{aligned}
 $$
+
 to which the static output feedback
 
 $$
@@ -454,6 +468,7 @@ $$
             - \underbrace{\begin{bmatrix} K_\mathrm{P} & -K_\mathrm{I} \\ I & 0 \end{bmatrix}}_{K} y_\mathrm{a}
             + \begin{bmatrix} K_\mathrm{P} \\ I \end{bmatrix} r
 $$
+
 is applied.
 This is a *structured* feedback, as the second row of the feedback matrix $R$ doesn't contain any free parameter but values which must not be altered by the optimizer.
 
@@ -465,6 +480,7 @@ $$
         u & = C_\mathrm{D} x_\mathrm{D} + D_\mathrm{D} y + F_2 r
     \end{aligned}
 $$
+
 (where $A_\mathrm{D}$ to $D_\mathrm{D}$ may be structured) the augmented system is
 
 $$
@@ -482,11 +498,13 @@ $$
                 \begin{bmatrix} x \\ x_\mathrm{D} \end{bmatrix}
     \end{aligned}
 $$
+
 which is closed by
 
 $$
     u_\mathrm{a} = - \underbrace{\begin{bmatrix} -D_\mathrm{D} & -C_\mathrm{D} \\ -B_\mathrm{D} & -A_\mathrm{D} \end{bmatrix}}_{K} y_\mathrm{a} + \underbrace{\begin{bmatrix} F_2 \\ F_1 \end{bmatrix}}_{F} r
 $$
+
 where $R$ (and $F$) are generally structured corresponding to the structure of $A_\mathrm{D}$ to $D_\mathrm{D}$ (and $F_1$ and $F_2$).
 
 As such structure is mandatory to achieve given controller structures as for example PI or PID controllers, this toolbox provides the possibility to define such structures.
@@ -539,6 +557,7 @@ For the robust case, where $m$ models are to be considered, the condition is
 $$
     z_{\mu \rho}(\sigma_{\mu \nu},\ \omega_{\mu \nu}) \leq 0 \forall \rho = 1,\ \ldots,\ r_\mu, \ \forall \nu = 1,\ \ldots, n_\mu, \ \forall \mu = 1,\ \ldots,\ m
 $$
+
 * The region may depend on the model $\mu$. This can be important from a practical point of view. If the uncertainty is rather large one may have to loosen the performance goals, described by the region, for corner case models.
 * The system order $n_\mu$ may depend on the model $\mu$ as well.
 
@@ -560,6 +579,7 @@ $$
 
 Generally it is structured feedback, that is, the matrices cannot be chosen freely but certain entries are fixed and there may be additional conditions to be respected.
 Mathematically fixed entries and linear dependencies between different entries can be expressed in the form
+
 $$
     \begin{aligned}
         Z_\mathrm{R,{\scriptscriptstyle=}} \cdot \mathrm{vec}(R) & = z_\mathrm{R,{\scriptscriptstyle=}} \\
@@ -567,12 +587,15 @@ $$
         Z_\mathrm{F,{\scriptscriptstyle=}} \cdot \mathrm{vec}(F) & = z_\mathrm{F,{\scriptscriptstyle=}}
     \end{aligned}
 $$
+
 which allows dependecies of entries of the same matrix only or the more general form
+
 $$
     \begin{aligned}
         Z_\mathrm{RKF,{\scriptscriptstyle=}} \cdot \begin{bmatrix}\mathrm{vec}(R)\\\mathrm{vec}(K)\\\mathrm{vec}(F)\end{bmatrix} & = z_\mathrm{RKF,{\scriptscriptstyle=}}
     \end{aligned}
 $$
+
 where $\mathrm{vec}$ is the vectorization operator.
 Mathematically the latter form comprises the precedent three equations, but this framework allows the specification in either form or both forms simultanously.
 
@@ -591,7 +614,9 @@ $$
         Z_\mathrm{F,{\scriptscriptstyle\leq}} \cdot \mathrm{vec}(F) & \leq z_\mathrm{F,{\scriptscriptstyle\leq}}
     \end{aligned}
 $$
+
 and
+
 $$
     \begin{aligned}
         Z_\mathrm{RKF,{\scriptscriptstyle\leq}} \cdot \begin{bmatrix}\mathrm{vec}(R)\\\mathrm{vec}(K)\\\mathrm{vec}(F)\end{bmatrix} & \leq z_\mathrm{RKF,{\scriptscriptstyle\leq}}
@@ -616,6 +641,7 @@ Instead of referring to these seven equations and seven inequalities in the feas
 $$
     (R,\ K,\ F) \in \mathcal{S}
 $$
+
 For example
 
 $$
@@ -661,6 +687,7 @@ In most cases the resulting objective function has the form
 $$
     J_\Gamma = \sum_{\mu=1}^m \sum_{\nu=1}^{n_\mu} \sum_{\rho=1}^{r_\mu} j(z_{\mu \rho}(\sigma_{\mu \nu},\ \omega_{\mu \nu}))
 $$
+
 i.e. for each combination of model, pole and area the value of $z_{\mu \rho}(\sigma_{\mu \nu},\ \omega_{\mu \nu})$ is assessed by some loss function $j$ and the sum is used as objective function.
 The following table lists the most common choices for $j$:
 
@@ -680,6 +707,7 @@ An alternative objective function is based on the Kreisselmeier-Steinhauser func
 $$
     J = f_\mathrm{max,KM} + \frac{1}{\rho_\mathrm{KM}} \cdot \ln\left( \sum_{\mu=1}^m \sum_{\nu=1}^{n_\mu} \sum_{\rho=1}^{r_\mu} \exp(\rho_\mathrm{KM} w_{\mu \rho} z_{\mu \rho}(\cdot,\cdot) - f_\mathrm{max,KM}) \right)
 $$
+
 which is an (rough) approximation of $\max (w_{\mu \rho} z_{\mu \rho}(\cdot,\cdot))$.
 
 The resulting optimization problem is
@@ -711,14 +739,17 @@ Additional objective functions can be selected.
 
 ##### Controller norm
 In order to get a small control action, the controller matrices can be minimized by the choice of `GammaJType.NORMGAIN` as objective type with the objective function
+
 $$
     J_\mathrm{Ctrl} = \| W_\mathrm{R} \odot (R - S_\mathrm{R}) \|_\mathrm{F}^2 + \| W_\mathrm{K} \odot (K - S_\mathrm{K}) \|_\mathrm{F}^2 + \| W_\mathrm{F} \odot (F - S_\mathrm{F}) \|_\mathrm{F}^2
 $$
+
 where the matrices $W$ of appropriate dimension are chosen for weighting.
 
 
 ##### Condition of the eigenvector matrix
 For greater robustness of the closed loop, the condition number of the eigenvector matrix can be minimized by the choice of `GammaJType.EIGENVALUECONDITION` with the objective function
+
 $$
     J_\mathrm{EV} = \mathrm{cond}(V)
 $$
@@ -726,9 +757,11 @@ $$
 ##### Norm of the Lyapunov matrix
 Another possibility for achieving greater robustness against time varying unstructured uncertainty in the system matrix of the closed loop, is the minimization of the norm of the Lyapunov matrix of the closed loop system, which can be achieved by the choice of `GammaJType.LYAPUNOV`.
 The objective function in this case has the form
+
 $$
     J_\mathrm{Lyap} = -\frac{1}{\|\tilde{P}_{11}\|_{F}^2} + \frac{1}{\|\tilde{P}_{22}\|_{F}^2}
 $$
+
 where the matrices $Q$ in the Lyapunov equation can be chosen independently for every multiple model.
 The matrices $\tilde{P}_{11}$ and $\tilde{P}_{22}$ which correspond to the unstable and stable part of the system respectively stem from a Schur decomposition of the closed loop system matrix where the unstable system matrix is replaced by $-A$ in the continuous time case and $A^{-1}$ in the discrete time case.
 
@@ -738,6 +771,7 @@ The matrices $\tilde{P}_{11}$ and $\tilde{P}_{22}$ which correspond to the unsta
 ##### Constrained optimizers
 
 For constrained optimizers the "full" optimization problem is
+
 $$
     \begin{aligned}
         & (R^\star,\ K^\star,\ F^\star) = \underset{(R,\ K,\ F) \in \mathcal{S}}{\arg \min} w_\Gamma J_\mathrm{\Gamma,soft} + w_\mathrm{Ctrl} J_\mathrm{Ctrl} + w_\mathrm{EV} J_\mathrm{EV} \\
@@ -746,9 +780,11 @@ $$
 $$
 
 For unconstrained optimizers the "full" optimization problem is
+
 $$
     (R^\star,\ K^\star,\ F^\star) = \underset{(R,\ K,\ F) \in \mathcal{S}}{\arg \min} w_\Gamma J_\mathrm{\Gamma,hard} + w_\mathrm{Ctrl} J_\mathrm{Ctrl} + w_\mathrm{EV} J_\mathrm{EV}
 $$
+
 In this case only "simple" linear equality conditions can be imposed for the entries of $R$, $K$ and $F'$ which can be incorporated directly by reducing the number of optimization variables.
 
 
@@ -810,6 +846,7 @@ $$
         y_\mathrm{ref} & = C_\mathrm{ref} x + D_\mathrm{ref} u
     \end{aligned}
 $$
+
 where $E$ must be an invertible matrix.
 
 | Fields | Remark |
@@ -872,6 +909,7 @@ Rfixed = {Ra_fixed}
   $$
     \sum_{i,j} (Z_k \odot R) = z_k
   $$
+
   where $\odot$ means element-wise multiplication (Hadamard product).
   If there is more than one equation $k$, the matrices $Z_k$ are stacked along the third dimension in `Zlhs`.
   I.e, if `Nz` linear dependencies are specified, the dimensions of `Zlhs` and `zrhs` are `size(Zlhs): [size(R, 1), size(R, 2), Nz]` (for the combined constraints `size(Zlhs): [size(R, 1), size(R, 2) + size(K, 2) + size(F, 2), Nz]`) and `size(Zrhs): [Nz, 1]`, resp.
@@ -893,9 +931,11 @@ Rfixed = {Ra_fixed}
     }
   ```
   * As said above, linear dependencies for `K` and `F` can be specified in the same way in `Ka_fixed` and `Fa_fixed`. For dependecies involving all matrices `RKFa_fixed` can be used, specifying `{Zlhs, Zrhs}` corresponding to
-    $$
+
+  $$
       \sum_{i,j} (Z_k \odot \begin{bmatrix} R & K & F \end{bmatrix}) = z_k
-    $$
+  $$
+
 * Symbolic dependencies between controller parameters
 If the Symbolic Math Toolbox is available, it is also possible, to formulate the controller coefficient constraints as symbolic expressions.
 This can be achieved by specifying the symbolic gain matrix in the first element of a cell array and the symbolic equation system in the second element of the cell array for every gain matrix like in
@@ -1147,6 +1187,7 @@ In square form, the area is defined by
 $$
     z(\sigma,\ \omega) = R^2 - \underbrace{(\sigma^2 + \omega^2)}_{\textnormal{distance}^2}
 $$
+
 which gives the derivatives
 
 $$
@@ -1339,9 +1380,11 @@ When the option `allowvarorder` is set to `true` and therefore systems with diff
 If more than one objective function term is selected by `type`, their weighting can be specified by `weight` which is a numeric vector of the same dimension as `type` with the corresponding non-negative weights.
 
 If for example the objective function
+
 $$
     J = 1 \cdot J_\mathrm{\Gamma,soft} + 10^{-5} \cdot J_\mathrm{Ctrl} 
 $$
+
 is to be used, the following options are to be set:
 ```matlab
     'type'   : [GammaJType.SQUAREPENALTY; GammaJType.NORMGAIN]
@@ -1506,9 +1549,11 @@ The bounds of $R$ ($K$ and $F$ analogously) are defined by
 Ka_bounds = {Zlhs, Zrhs}
 ```
 where `Zlhs` and `Zrhs` correspond to $Z_{\mathrm{Bd},k}$ and $z_{\mathrm{Bd},k}$, resp., in
+
 $$
-\sum_{i,j} (Z_{\mathrm{Bd},k} \odot R) \leq z_{\mathrm{Bd},k}
+    \sum_{i,j} (Z_{\mathrm{Bd},k} \odot R) \leq z_{\mathrm{Bd},k}
 $$
+
 where $\odot$ means element-wise multiplication (Hadamard product).
 If there is more than one inequality $k$, the matrices $Z_k$ are stacked along the third dimension in `Zlhs`.
 I.e, if `Nz` linear inequalities are specified, the dimensions of `Zlhs` and `zrhs` are `size(Zlhs): [size(R, 1), size(R, 2), Nz]` (`size(Zlhs): [size(R, 1), size(R, 2) + size(K, 2) + size(F, 2), Nz]` for combined constraints) and `size(Zrhs): [Nz, 1]`, resp.
@@ -1551,19 +1596,23 @@ size(gineq_R) : [size(R, 1), size(R, 2), length(cineq_R) ]
 
 ##### Example
 If the controller matrix is
+
 $$
 R =
     \begin{bmatrix}
         r_1 & r_2 & r_3 \\ r_4 & r_5 & r_6
     \end{bmatrix}
 $$
+
 and the constraints
+
 $$
     \begin{aligned}
         r_2^2 & \leq 9 \\
         r_2 + r_6^2 & \leq 4
     \end{aligned}
 $$
+
 are given (and ignoring that the first constraint can be expressed as two simpler linear constraints), the `Rnonlin_wrapper` would be
 ```matlab
 function [cineq_R, ceq_R, cineq_K, ceq_K, cineq_F, ceq_F] = Rnonlin_wrapper(R, K, F)
