@@ -455,7 +455,7 @@ $$
                 u_\mathrm{a} \\
         y_\mathrm{a}
             & =
-                \begin{bmatrix} C & 0 \\ 0 & 0 \end{bmatrix}
+                \begin{bmatrix} C & 0 \\ 0 & I \end{bmatrix}
                 \begin{bmatrix} x \\ x_\mathrm{I} \end{bmatrix}
     \end{aligned}
 $$
@@ -494,7 +494,7 @@ $$
                 u_\mathrm{a} \\
         y_\mathrm{a}
             & =
-                \begin{bmatrix} C & 0 \\ 0 & 0 \end{bmatrix}
+                \begin{bmatrix} C & 0 \\ 0 & I\end{bmatrix}
                 \begin{bmatrix} x \\ x_\mathrm{D} \end{bmatrix}
     \end{aligned}
 $$
