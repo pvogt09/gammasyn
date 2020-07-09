@@ -219,8 +219,8 @@ function [R_bounds, bound_system, bound_border, rg_bounds, hasbounds_R, onlyboun
 		end
 		bound_border = R_bounds{2};
 		rg_bounds = rank(bound_system);
-		if rg_bounds ~= size(bound_system, 1)% TODO: >= or no condition at all?
-			error('control:design:gamma:dimension', 'Bounded %s gain constraint system must have column rank %d.', gaintype, rg_bounds);
+		if rg_bounds ~= size(bound_system, 1)% TODO: rank condition has to be replaced by solvability condition for inequality systems
+			%error('control:design:gamma:dimension', 'Bounded %s gain constraint system must have column rank %d.', gaintype, rg_bounds);
 		end
 		hasbounds_R = size(bound_system, 1) > 0;
 		R_bounds_lower = -Inf(number_controls*number_measurements, 1);
@@ -232,7 +232,7 @@ function [R_bounds, bound_system, bound_border, rg_bounds, hasbounds_R, onlyboun
 				if R_bounds{1}(idxrow, idxcol, ii) > 0
 					R_bounds_upper(sub2ind(size(R_bounds{1}), idxrow, idxcol), 1) = R_bounds{2}(ii, 1)/R_bounds{1}(idxrow, idxcol, ii);
 				else
-					R_bounds_lower(sub2ind(size(R_bounds{1}), idxrow, idxcol), 1) = -R_bounds{2}(ii, 1)/R_bounds{1}(idxrow, idxcol, ii);
+					R_bounds_lower(sub2ind(size(R_bounds{1}), idxrow, idxcol), 1) = R_bounds{2}(ii, 1)/R_bounds{1}(idxrow, idxcol, ii);
 				end
 			end
 			R_bounds = {reshape(R_bounds_lower, number_controls, number_measurements), reshape(R_bounds_upper, number_controls, number_measurements)};
