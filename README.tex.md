@@ -455,7 +455,7 @@ $$
                 u_\mathrm{a} \\
         y_\mathrm{a}
             & =
-                \begin{bmatrix} C & 0 \\ 0 & 0 \end{bmatrix}
+                \begin{bmatrix} C & 0 \\ 0 & I \end{bmatrix}
                 \begin{bmatrix} x \\ x_\mathrm{I} \end{bmatrix}
     \end{aligned}
 $$
@@ -494,7 +494,7 @@ $$
                 u_\mathrm{a} \\
         y_\mathrm{a}
             & =
-                \begin{bmatrix} C & 0 \\ 0 & 0 \end{bmatrix}
+                \begin{bmatrix} C & 0 \\ 0 & I\end{bmatrix}
                 \begin{bmatrix} x \\ x_\mathrm{D} \end{bmatrix}
     \end{aligned}
 $$
@@ -1040,7 +1040,7 @@ In this case, `R0` is a cell array containing two matrices,
 R0 = {Ra0, Ka0}
 ```
 If the structure employs differential feedback but no initial value for $K$ is given, it is set to $0$.
-Supplying an initial value for the prefilter gain `$F$` is possbile with three matrices
+Supplying an initial value for the prefilter gain $F$ is possbile with three matrices
 ```matlab
 R0 = {Ra0, Ka0, Fa0}
 ```
