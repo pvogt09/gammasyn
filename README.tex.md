@@ -1040,7 +1040,7 @@ In this case, `R0` is a cell array containing two matrices,
 R0 = {Ra0, Ka0}
 ```
 If the structure employs differential feedback but no initial value for $K$ is given, it is set to $0$.
-Supplying an initial value for the prefilter gain `$F$` is possbile with three matrices
+Supplying an initial value for the prefilter gain $F$ is possbile with three matrices
 ```matlab
 R0 = {Ra0, Ka0, Fa0}
 ```
