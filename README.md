@@ -823,7 +823,7 @@ In this case, `R0` is a cell array containing two matrices,
 R0 = {Ra0, Ka0}
 ```
 If the structure employs differential feedback but no initial value for <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/d6328eaebbcd5c358f426dbea4bdbf70.svg?invert_in_darkmode" align=middle width=15.13700594999999pt height=22.465723500000017pt/> is given, it is set to <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/29632a9bf827ce0200454dd32fc3be82.svg?invert_in_darkmode" align=middle width=8.219209349999991pt height=21.18721440000001pt/>.
-Supplying an initial value for the prefilter gain `<img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/b8bc815b5e9d5177af01fd4d3d3c2f10.svg?invert_in_darkmode" align=middle width=12.85392569999999pt height=22.465723500000017pt/>` is possbile with three matrices
+Supplying an initial value for the prefilter gain <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/b8bc815b5e9d5177af01fd4d3d3c2f10.svg?invert_in_darkmode" align=middle width=12.85392569999999pt height=22.465723500000017pt/> is possbile with three matrices
 ```matlab
 R0 = {Ra0, Ka0, Fa0}
 ```
