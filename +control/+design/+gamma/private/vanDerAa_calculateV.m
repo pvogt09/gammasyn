@@ -72,7 +72,11 @@ function [X_norm, Y_norm, lambda_R, diffLambdas_R, diffLambdas_size_R, part_R, p
 			% new partitioning
 			part(k + 1) = M - P;
 			%part = [part, P];
-			part(k + 2) = P;
+			if size(part, 1) <= k + 2
+				part(k + 2) = P;
+			else
+				error('control:design:gamma:eigenvalues', 'Matrix has too many multiple eigenvalues and multiple derivatives and might not be differentiable.');
+			end
 			lambda(:, :, k + 1) = diffLambda(M, M);
 			% last P columns are not determined uniquely yet
 			%[X, Y, lambda, diffLambdas, diffLambdas_size, part] = vanDerAa_calculateV(A, Lambda, X, Y, lambda, diffLambdas, diffLambdas_size, part, k + 1, options);
