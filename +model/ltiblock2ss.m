@@ -32,7 +32,7 @@ function [ltiss] = ltiblock2ss(lti)
 		B = lti.B;
 		C = lti.C;
 		D = lti.D;
-		ltiss = ltiblock.ss(lti.Name, size(A, 1), size(B, 2), size(C, 1), lti.Ts);
+		ltiss = ltiblock.ss(lti.Name, size(A.Value, 1), size(C.Value, 1), size(B.Value, 2), lti.Ts);
 		ltiss.a.Value = A.Value;
 		ltiss.a.Minimum = A.Minimum;
 		ltiss.a.Maximum = A.Maximum;
@@ -74,7 +74,7 @@ function [ltiss] = ltiblock2ss(lti)
 			den = lti.den;
 		else
 			num = lti.Numerator;
-			den = lti.Denomiator;
+			den = lti.Denominator;
 		end
 		if iscell(lti.den)
 			system_order = max(cellfun(@length, den, 'UniformOutput', true)) - 1;
@@ -83,14 +83,14 @@ function [ltiss] = ltiblock2ss(lti)
 		end
 		ltiss = ltiblock.ss(lti.Name, system_order, size(lti, 1), size(lti, 2), lti.Ts);
 		ltiss.a.Value(1:end - 1, 1:end) = [
-			zeros(system_order - 1, 1),	eye(system_order - 1, 1)
+			zeros(system_order - 1, 1),	eye(system_order - 1, system_order - 1)
 		];
 		ltiss.a.Free(1:end - 1, 1:end) = false;
 		ltiss.a.Maximum(1:end - 1, 1:end) = [
-			zeros(system_order - 1, 1),	eye(system_order - 1, 1)
+			zeros(system_order - 1, 1),	eye(system_order - 1, system_order - 1)
 		];
 		ltiss.a.Minimum(1:end - 1, 1:end) = [
-			zeros(system_order - 1, 1),	eye(system_order - 1, 1)
+			zeros(system_order - 1, 1),	eye(system_order - 1, system_order - 1)
 		];
 		ltiss.a.Scale(1:end - 1, 1:end) = 1;
 		ltiss.a.Value(end, :) = -fliplr(den.Value(2:end));
@@ -274,7 +274,7 @@ function [ltiss] = ltiblock2ss(lti)
 					D_I.Minimum = K_I.Minimum*T;
 					D_I.Maximum = K_I.Maximum*T;
 					D_I.Scale = K_I.Scale*T;
-				elseif strcmpi(IFormula, 'Trapeziod')
+				elseif any(strcmpi(IFormula, {'Trapezoid', 'Trapezoidal'}))
 					A_I.Value = 1;
 					A_I.Free = false;
 					A_I.Minimum = 1;
@@ -351,7 +351,7 @@ function [ltiss] = ltiblock2ss(lti)
 					D_D.Minimum = -Inf;
 					D_D.Maximum = Inf;
 					D_D.Scale = K_D.Scale/T_F.Scale;
-				elseif strcmpi(DFormula, 'Trapeziod')
+				elseif any(strcmpi(DFormula, {'Trapezoid', 'Trapezoidal'}))
 					A_D.Value = -(T/2 - T_F.Value)/(T_F.Value + T/2);
 					A_D.Free = T_F.Free;
 					A_D.Minimum = -Inf;
@@ -572,17 +572,17 @@ function [ltiss] = ltiblock2ss(lti)
 				ltiss.a.Maximum = [];
 				ltiss.a.Scale = [];
 
-				ltiss.b.Value = [];
-				ltiss.b.Free = [];
-				ltiss.b.Minimum = [];
-				ltiss.b.Maximum = [];
-				ltiss.b.Scale = [];
+				ltiss.b.Value = zeros(0, 1);
+				ltiss.b.Free = false(0, 1);
+				ltiss.b.Minimum = -Inf(0, 1);
+				ltiss.b.Maximum = Inf(0, 1);
+				ltiss.b.Scale = ones(0, 1);
 
-				ltiss.c.Value = [];
-				ltiss.c.Free = [];
-				ltiss.c.Minimum = [];
-				ltiss.c.Maximum = [];
-				ltiss.c.Scale = [];
+				ltiss.c.Value = zeros(1, 0);
+				ltiss.c.Free = false(1, 0);
+				ltiss.c.Minimum = -Inf(1, 0);
+				ltiss.c.Maximum = Inf(1, 0);
+				ltiss.c.Scale = ones(1, 0);
 			end
 
 			if hasD
