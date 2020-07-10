@@ -16,14 +16,14 @@ function [pass] = ltiblockTest(~)
 		ltiblock.pid('PD', 'PD', 0.001),		{'IFormula', 'DFormula'},	repmat({{'ForwardEuler', 'BackwardEuler', 'Trapezoidal'}}, 1, 2);
 		ltiblock.pid('PID', 'PID'),				{'IFormula', 'DFormula'},	repmat({{'ForwardEuler', 'BackwardEuler', 'Trapezoidal'}}, 1, 2);
 		ltiblock.pid('PID', 'PID', 0.001),		{'IFormula', 'DFormula'},	repmat({{'ForwardEuler', 'BackwardEuler', 'Trapezoidal'}}, 1, 2);
-% 		ltiblock.pid2('P2', 'P'),				{'IFormula', 'DFormula'},	repmat({{'ForwardEuler', 'BackwardEuler', 'Trapezoidal'}}, 1, 2);
-% 		ltiblock.pid2('P2', 'P', 0.001),		{'IFormula', 'DFormula'},	repmat({{'ForwardEuler', 'BackwardEuler', 'Trapezoidal'}}, 1, 2);
-% 		ltiblock.pid2('PI2', 'PI'),				{'IFormula', 'DFormula'},	repmat({{'ForwardEuler', 'BackwardEuler', 'Trapezoidal'}}, 1, 2);
-% 		ltiblock.pid2('PI2', 'PI', 0.001),		{'IFormula', 'DFormula'},	repmat({{'ForwardEuler', 'BackwardEuler', 'Trapezoidal'}}, 1, 2);
-% 		ltiblock.pid2('PD2', 'PD'),				{'IFormula', 'DFormula'},	repmat({{'ForwardEuler', 'BackwardEuler', 'Trapezoidal'}}, 1, 2);
-% 		ltiblock.pid2('PD2', 'PD', 0.001),		{'IFormula', 'DFormula'},	repmat({{'ForwardEuler', 'BackwardEuler', 'Trapezoidal'}}, 1, 2);
-% 		ltiblock.pid2('PID2', 'PID'),			{'IFormula', 'DFormula'},	repmat({{'ForwardEuler', 'BackwardEuler', 'Trapezoidal'}}, 1, 2);
-% 		ltiblock.pid2('PID2', 'PID', 0.001),	{'IFormula', 'DFormula'},	repmat({{'ForwardEuler', 'BackwardEuler', 'Trapezoidal'}}, 1, 2);
+		ltiblock.pid2('P2', 'P'),				{'IFormula', 'DFormula'},	repmat({{'ForwardEuler', 'BackwardEuler', 'Trapezoidal'}}, 1, 2);
+		ltiblock.pid2('P2', 'P', 0.001),		{'IFormula', 'DFormula'},	repmat({{'ForwardEuler', 'BackwardEuler', 'Trapezoidal'}}, 1, 2);
+		ltiblock.pid2('PI2', 'PI'),				{'IFormula', 'DFormula'},	repmat({{'ForwardEuler', 'BackwardEuler', 'Trapezoidal'}}, 1, 2);
+		ltiblock.pid2('PI2', 'PI', 0.001),		{'IFormula', 'DFormula'},	repmat({{'ForwardEuler', 'BackwardEuler', 'Trapezoidal'}}, 1, 2);
+		ltiblock.pid2('PD2', 'PD'),				{'IFormula', 'DFormula'},	repmat({{'ForwardEuler', 'BackwardEuler', 'Trapezoidal'}}, 1, 2);
+		ltiblock.pid2('PD2', 'PD', 0.001),		{'IFormula', 'DFormula'},	repmat({{'ForwardEuler', 'BackwardEuler', 'Trapezoidal'}}, 1, 2);
+		ltiblock.pid2('PID2', 'PID'),			{'IFormula', 'DFormula'},	repmat({{'ForwardEuler', 'BackwardEuler', 'Trapezoidal'}}, 1, 2);
+		ltiblock.pid2('PID2', 'PID', 0.001),	{'IFormula', 'DFormula'},	repmat({{'ForwardEuler', 'BackwardEuler', 'Trapezoidal'}}, 1, 2);
 		ltiblock.ss('ss', 4, 2, 3),				{},							{};
 		ltiblock.ss('ss', 4, 2, 3, 0.001),		{},							{};
 		ltiblock.tf('tf', 2, 4),				{},							{};
@@ -42,14 +42,14 @@ function [pass] = ltiblockTest(~)
 				tunablePID('PD', 'PD', 0.001),		{'IFormula', 'DFormula'},	repmat({{'ForwardEuler', 'BackwardEuler', 'Trapezoidal'}}, 1, 2);
 				tunablePID('PID', 'PID'),			{'IFormula', 'DFormula'},	repmat({{'ForwardEuler', 'BackwardEuler', 'Trapezoidal'}}, 1, 2);
 				tunablePID('PID', 'PID', 0.001),	{'IFormula', 'DFormula'},	repmat({{'ForwardEuler', 'BackwardEuler', 'Trapezoidal'}}, 1, 2);
-% 				tunablePID2('P2', 'P'),				{'IFormula', 'DFormula'},	repmat({{'ForwardEuler', 'BackwardEuler', 'Trapezoidal'}}, 1, 2);
-% 				tunablePID2('P2', 'P', 0.001),		{'IFormula', 'DFormula'},	repmat({{'ForwardEuler', 'BackwardEuler', 'Trapezoidal'}}, 1, 2);
-% 				tunablePID2('PI2', 'PI'),			{'IFormula', 'DFormula'},	repmat({{'ForwardEuler', 'BackwardEuler', 'Trapezoidal'}}, 1, 2);
-% 				tunablePID2('PI2', 'PI', 0.001),	{'IFormula', 'DFormula'},	repmat({{'ForwardEuler', 'BackwardEuler', 'Trapezoidal'}}, 1, 2);
-% 				tunablePID2('PD2', 'PD'),			{'IFormula', 'DFormula'},	repmat({{'ForwardEuler', 'BackwardEuler', 'Trapezoidal'}}, 1, 2);
-% 				tunablePID2('PD2', 'PD', 0.001),	{'IFormula', 'DFormula'},	repmat({{'ForwardEuler', 'BackwardEuler', 'Trapezoidal'}}, 1, 2);
-% 				tunablePID2('PID2', 'PID'),			{'IFormula', 'DFormula'},	repmat({{'ForwardEuler', 'BackwardEuler', 'Trapezoidal'}}, 1, 2);
-% 				tunablePID2('PID2', 'PID', 0.001),	{'IFormula', 'DFormula'},	repmat({{'ForwardEuler', 'BackwardEuler', 'Trapezoidal'}}, 1, 2);
+				tunablePID2('P2', 'P'),				{'IFormula', 'DFormula'},	repmat({{'ForwardEuler', 'BackwardEuler', 'Trapezoidal'}}, 1, 2);
+				tunablePID2('P2', 'P', 0.001),		{'IFormula', 'DFormula'},	repmat({{'ForwardEuler', 'BackwardEuler', 'Trapezoidal'}}, 1, 2);
+				tunablePID2('PI2', 'PI'),			{'IFormula', 'DFormula'},	repmat({{'ForwardEuler', 'BackwardEuler', 'Trapezoidal'}}, 1, 2);
+				tunablePID2('PI2', 'PI', 0.001),	{'IFormula', 'DFormula'},	repmat({{'ForwardEuler', 'BackwardEuler', 'Trapezoidal'}}, 1, 2);
+				tunablePID2('PD2', 'PD'),			{'IFormula', 'DFormula'},	repmat({{'ForwardEuler', 'BackwardEuler', 'Trapezoidal'}}, 1, 2);
+				tunablePID2('PD2', 'PD', 0.001),	{'IFormula', 'DFormula'},	repmat({{'ForwardEuler', 'BackwardEuler', 'Trapezoidal'}}, 1, 2);
+				tunablePID2('PID2', 'PID'),			{'IFormula', 'DFormula'},	repmat({{'ForwardEuler', 'BackwardEuler', 'Trapezoidal'}}, 1, 2);
+				tunablePID2('PID2', 'PID', 0.001),	{'IFormula', 'DFormula'},	repmat({{'ForwardEuler', 'BackwardEuler', 'Trapezoidal'}}, 1, 2);
 				tunableSS('ss', 4, 2, 3),			{},							{};
 				tunableSS('ss', 4, 2, 3, 0.001),	{},							{};
 				tunableTF('tf', 2, 4),				{},							{};
@@ -62,11 +62,17 @@ function [pass] = ltiblockTest(~)
 			for jj = 1:numel(testcases{ii, 2})
 				for kk = 1:numel(testcases{ii, 3}{jj})
 					testcases{ii, 1}.(testcases{ii, 2}{jj}) = testcases{ii, 3}{jj}{kk};
+					o = model.ltiblock2ss(testcases{ii, 1});
 					test.TestSuite.assertNoException('o = model.ltiblock2ss(testcases{ii, 1});', 'model:lti:test', 'conversion to ltiblock.ss must not throw an exception.');
+					test.TestSuite.assert(~any(isnan(o.a.Minimum(:))), 'model:lti:test', 'Minimum value must not be NaN.');
+					test.TestSuite.assert(~any(isnan(o.a.Maximum(:))), 'model:lti:test', 'Maximum value must not be NaN.');
 				end
 			end
 		else
+			o = model.ltiblock2ss(testcases{ii, 1});
 			test.TestSuite.assertNoException('o = model.ltiblock2ss(testcases{ii, 1});', 'model:lti:test', 'conversion to ltiblock.ss must not throw an exception.');
+			test.TestSuite.assert(~any(isnan(o.a.Minimum(:))), 'model:lti:test', 'Minimum value must not be NaN.');
+			test.TestSuite.assert(~any(isnan(o.a.Maximum(:))), 'model:lti:test', 'Maximum value must not be NaN.');
 		end
 	end
 end

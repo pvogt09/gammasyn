@@ -748,7 +748,7 @@ function [ltiss] = ltiblock2ss(lti)
 					D_I.Scale = [
 						K_I.Scale*T,	K_I.Scale*T
 					];
-				elseif strcmpi(IFormula, 'Trapeziod')
+				elseif any(strcmpi(IFormula, {'Trapezoid', 'Trapezoidal'}))
 					A_I.Value = 1;
 					A_I.Free = false;
 					A_I.Minimum = 1;
@@ -885,7 +885,7 @@ function [ltiss] = ltiblock2ss(lti)
 					D_D.Scale = [
 						C_R.Scale*K_D.Scale/T_F.Scale,			K_D.Scale/T_F.Scale
 					];
-				elseif strcmpi(DFormula, 'Trapeziod')
+				elseif any(strcmpi(DFormula, {'Trapezoid', 'Trapezoidal'}))
 					A_D.Value = -(T/2 - T_F.Value)/(T_F.Value + T/2);
 					A_D.Free = T_F.Free;
 					A_D.Minimum = -Inf;
@@ -1129,7 +1129,7 @@ function [ltiss] = ltiblock2ss(lti)
 				ltiss.a.Scale = 1/T_F.Scale;
 				
 				ltiss.b.Value = [
-					C_R/T_F.Value,				-1/T_F.Value
+					C_R.Value/T_F.Value,		-1/T_F.Value
 				];
 				ltiss.b.Free = [
 					C_R.Free | T_F.Free,		T_F.Free
@@ -1156,17 +1156,17 @@ function [ltiss] = ltiblock2ss(lti)
 				ltiss.a.Maximum = [];
 				ltiss.a.Scale = [];
 				
-				ltiss.b.Value = [];
-				ltiss.b.Free = [];
-				ltiss.b.Minimum = [];
-				ltiss.b.Maximum = [];
-				ltiss.b.Scale = [];
+				ltiss.b.Value = zeros(0, 2);
+				ltiss.b.Free = false(0, 2);
+				ltiss.b.Minimum = -Inf(0, 2);
+				ltiss.b.Maximum = Inf(0, 2);
+				ltiss.b.Scale = ones(0, 2);
 				
-				ltiss.c.Value = [];
-				ltiss.c.Free = [];
-				ltiss.c.Minimum = [];
-				ltiss.c.Maximum = [];
-				ltiss.c.Scale = [];
+				ltiss.c.Value = zeros(1, 0);
+				ltiss.c.Free = false(1, 0);
+				ltiss.c.Minimum = -Inf(1, 0);
+				ltiss.c.Maximum = Inf(1, 0);
+				ltiss.c.Scale = ones(1, 0);
 			end
 			
 			if hasD
@@ -1187,7 +1187,7 @@ function [ltiss] = ltiblock2ss(lti)
 				];
 			else
 				ltiss.d.Value = [
-					B_R*K_P.Value,				-K_P.Value
+					B_R.Value*K_P.Value,		-K_P.Value
 				];
 				ltiss.d.Free = [
 					B_R.Free | K_P.Free,		K_P.Free
