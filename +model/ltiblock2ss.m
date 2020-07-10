@@ -602,9 +602,9 @@ function [ltiss] = ltiblock2ss(lti)
 		return;
 	end
 	% pid2 block
-    if isa(lti, 'ltiblock.pid2') || isa(lti, 'tunablePID2')
-	    T = lti.Ts;
-	    K_P = lti.Kp;
+	if isa(lti, 'ltiblock.pid2') || isa(lti, 'tunablePID2')
+		T = lti.Ts;
+		K_P = lti.Kp;
 		K_I = lti.Ki;
 		K_D = lti.Kd;
 		T_F = lti.Tf;
@@ -613,63 +613,62 @@ function [ltiss] = ltiblock2ss(lti)
 		IFormula = lti.IFormula;
 		DFormula = lti.DFormula;
 		if T > 0
-			%ltiss = ltiblock.ss(lti.Name, 2, 1, 2, T);
 			A_I = struct(...
 				'Value',	[],...
 				'Minimum',	[],...
 				'Maximum',	[],...
 				'Free',		[],...
 				'Scale',	[]...
-				);
+			);
 			B_I = struct(...
 				'Value',	[],...
 				'Minimum',	[],...
 				'Maximum',	[],...
 				'Free',		[],...
 				'Scale',	[]...
-				);
+			);
 			C_I = struct(...
 				'Value',	[],...
 				'Minimum',	[],...
 				'Maximum',	[],...
 				'Free',		[],...
 				'Scale',	[]...
-				);
+			);
 			D_I = struct(...
 				'Value',	[],...
 				'Minimum',	[],...
 				'Maximum',	[],...
 				'Free',		[],...
 				'Scale',	[]...
-				);
+			);
 			A_D = struct(...
 				'Value',	[],...
 				'Minimum',	[],...
 				'Maximum',	[],...
 				'Free',		[],...
 				'Scale',	[]...
-				);
+			);
 			B_D = struct(...
 				'Value',	[],...
 				'Minimum',	[],...
 				'Maximum',	[],...
 				'Free',		[],...
 				'Scale',	[]...
-				);
+			);
 			C_D = struct(...
 				'Value',	[],...
 				'Minimum',	[],...
 				'Maximum',	[],...
 				'Free',		[],...
 				'Scale',	[]...
-				);
+			);
 			D_D = struct(...
 				'Value',	[],...
 				'Minimum',	[],...
 				'Maximum',	[],...
 				'Free',		[],...
 				'Scale',	[]...
-				);
+			);
 			if K_I.Free || (~K_I.Free && K_I.Value ~= 0)
 				if strcmpi(IFormula, 'ForwardEuler')
 					A_I.Value = 1;
@@ -679,20 +678,20 @@ function [ltiss] = ltiblock2ss(lti)
 					A_I.Scale = 1;
 					
 					B_I.Value = [
-						1,  -1
-						];
+						1,		-1
+					];
 					B_I.Free = [
 						false,  false
-						];
+					];
 					B_I.Minimum = [
-						1,  -1
-						];
+						1,		-1
+					];
 					B_I.Maximum = [
-						1,  -1
-						];
+						1,		-1
+					];
 					B_I.Scale = [
-						1,  1
-						];
+						1,		1
+					];
 					
 					C_I.Value = K_I.Value*T;
 					C_I.Free = K_I.Free;
@@ -713,20 +712,20 @@ function [ltiss] = ltiblock2ss(lti)
 					A_I.Scale = 1;
 					
 					B_I.Value = [
-						1,  -1
-						];
+						1,		-1
+					];
 					B_I.Free = [
-						false,  false
-						];
+						false,	false
+					];
 					B_I.Minimum = [
-						1,  -1
-						];
+						1,		-1
+					];
 					B_I.Maximum = [
-						1,  -1
-						];
+						1,		-1
+					];
 					B_I.Scale = [
-						1,  1
-						];
+						1,		1
+					];
 					
 					C_I.Value = K_I.Value*T;
 					C_I.Free = K_I.Free;
@@ -735,20 +734,20 @@ function [ltiss] = ltiblock2ss(lti)
 					C_I.Scale = K_I.Scale*T;
 					
 					D_I.Value = [
-						K_I.Value*T,  -K_I.Value*T
-						];
+						K_I.Value*T,	-K_I.Value*T
+					];
 					D_I.Free = [
-						K_I.Free,  K_I.Free
-						];
+						K_I.Free,		K_I.Free
+					];
 					D_I.Minimum = [
-						K_I.Minimum*T,  -K_I.Maximum*T
-						];
+						K_I.Minimum*T,	-K_I.Maximum*T
+					];
 					D_I.Maximum = [
-						K_I.Maximum*T,  -K_I.Minimum*T
-						];
+						K_I.Maximum*T,	-K_I.Minimum*T
+					];
 					D_I.Scale = [
-						K_I.Scale*T,  K_I.Scale*T
-						];
+						K_I.Scale*T,	K_I.Scale*T
+					];
 				elseif strcmpi(IFormula, 'Trapeziod')
 					A_I.Value = 1;
 					A_I.Free = false;
@@ -757,20 +756,20 @@ function [ltiss] = ltiblock2ss(lti)
 					A_I.Scale = 1;
 					
 					B_I.Value = [
-						2,  -2
-						];
+						2,	-2
+					];
 					B_I.Free = [
-						false,  false
-						];
+						false,	false
+					];
 					B_I.Minimum = [
-						2,  -2
-						];
+						2,	-2
+					];
 					B_I.Maximum = [
-						2,  -2
-						];
+						2,	-2
+					];
 					B_I.Scale = [
-						1,  1
-						];
+						1,	1
+					];
 					
 					C_I.Value = K_I.Value*T/2;
 					C_I.Free = K_I.Free;
@@ -779,20 +778,20 @@ function [ltiss] = ltiblock2ss(lti)
 					C_I.Scale = K_I.Scale*T/2;
 					
 					D_I.Value = [
-						K_I.Value*T/2,  -K_I.Value*T/2
-						];
+						K_I.Value*T/2,		-K_I.Value*T/2
+					];
 					D_I.Free = [
-						K_I.Free,  K_I.Free
-						];
+						K_I.Free,			K_I.Free
+					];
 					D_I.Minimum = [
-						K_I.Minimum*T/2,  -K_I.Maximum*T/2
-						];
+						K_I.Minimum*T/2,	-K_I.Maximum*T/2
+					];
 					D_I.Maximum = [
-						K_I.Maximum*T/2,  -K_I.Minimum*T/2
-						];
+						K_I.Maximum*T/2,	-K_I.Minimum*T/2
+					];
 					D_I.Scale = [
-						K_I.Scale*T/2,  K_I.Scale*T/2
-						];
+						K_I.Scale*T/2,		K_I.Scale*T/2
+					];
 				else
 					error('model:ltiblock:input', 'Undefined discretization method ''%s'' for integral part of pid controller.', IFormula);
 				end
@@ -806,20 +805,20 @@ function [ltiss] = ltiblock2ss(lti)
 					A_D.Scale = T/T_F.Scale;
 					
 					B_D.Value = [
-						C_R.Value*T/T_F.Value,  -T/T_F.Value
-						];
+						C_R.Value*T/T_F.Value,		-T/T_F.Value
+					];
 					B_D.Free = [
-						C_R.Free | T_F.Free,  T_F.Free
-						];
+						C_R.Free | T_F.Free,		T_F.Free
+					];
 					B_D.Maximum = [
-						C_R.Maximum*T/T_F.Minimum,  -T/T_F.Maximum
-						];
+						C_R.Maximum*T/T_F.Minimum,	-T/T_F.Maximum
+					];
 					B_D.Minimum = [
-						C_R.Minimum*T/T_F.Maximum,  -T/T_F.Minimum
-						];
+						C_R.Minimum*T/T_F.Maximum,	-T/T_F.Minimum
+					];
 					B_D.Scale = [
-						C_R.Scale*T/T_F.Scale,  T/T_F.Scale
-						];
+						C_R.Scale*T/T_F.Scale,		T/T_F.Scale
+					];
 					
 					C_D.Value = K_D.Value/T_F.Value;
 					C_D.Free = K_D.Free | T_F.Free;
@@ -828,20 +827,20 @@ function [ltiss] = ltiblock2ss(lti)
 					C_D.Scale = K_D.Scale/T_F.Scale;
 					
 					D_D.Value = [
-						C_R.Value*K_D.Value/T_F.Value,  -K_D.Value/T_F.Value
-						];
+						C_R.Value*K_D.Value/T_F.Value,			-K_D.Value/T_F.Value
+					];
 					D_D.Free = [
-						C_R.Free | K_D.Value | T_F.Free,  K_D.Value | T_F.Free
-						];
+						C_R.Free | K_D.Value | T_F.Free,		K_D.Value | T_F.Free
+					];
 					D_D.Maximum = [
-						C_R.Maximum*K_D.Maximum/T_F.Minimum,  K_D.Minimum/T_F.Maximum
-						];
+						C_R.Maximum*K_D.Maximum/T_F.Minimum,	K_D.Minimum/T_F.Maximum
+					];
 					D_D.Minimum = [
-						C_R.Minimum*K_D.Value/T_F.Maximum,  K_D.Maximum/T_F.Minimum
-						];
+						C_R.Minimum*K_D.Value/T_F.Maximum,		K_D.Maximum/T_F.Minimum
+					];
 					D_D.Scale = [
-						C_R.Scale*K_D.Value/T_F.Scale,  K_D.Value/T_F.Scale
-						];
+						C_R.Scale*K_D.Value/T_F.Scale,			K_D.Value/T_F.Scale
+					];
 				elseif strcmpi(DFormula, 'BackwardEuler')
 					A_D.Value = T_F.Value/(T_F.Value + T);
 					A_D.Free = T_F.Free;
@@ -850,20 +849,20 @@ function [ltiss] = ltiblock2ss(lti)
 					A_D.Scale = 1;
 					
 					B_D.Value = [
-						C_R.Value*T_F.Value/(T_F.Value + T) - 1,  1 - T_F.Value/(T_F.Value + T)
-						];
+						C_R.Value*T_F.Value/(T_F.Value + T) - 1,	1 - T_F.Value/(T_F.Value + T)
+					];
 					B_D.Free = [
-						C_R.Free | T_F.Free,  T_F.Free
-						];
+						C_R.Free | T_F.Free,						T_F.Free
+					];
 					B_D.Minimum = [
-						-C_R.Maximum,  -Inf
-						];
+						-C_R.Maximum,								-Inf
+					];
 					B_D.Maximum = [
-						C_R.Maximum*Inf,  1
-						];
+						C_R.Maximum*Inf,							1
+					];
 					B_D.Scale = [
-						C_R.Scale,  1
-						];
+						C_R.Scale,									1
+					];
 					
 					C_D.Value = K_D.Value/(T_F.Value + T);
 					C_D.Free = K_D.Free | T_F.Free;
@@ -872,20 +871,20 @@ function [ltiss] = ltiblock2ss(lti)
 					C_D.Scale = K_D.Scale/T_F.Scale;
 					
 					D_D.Value = [
-						C_R.Value*K_D.Value/(T_F.Value + T),  -K_D.Value/(T_F.Value + T)
-						];
+						C_R.Value*K_D.Value/(T_F.Value + T),	-K_D.Value/(T_F.Value + T)
+					];
 					D_D.Free = [
-						C_R.Free | K_D.Free | T_F.Free,  K_D.Free | T_F.Free
-						];
+						C_R.Free | K_D.Free | T_F.Free,			K_D.Free | T_F.Free
+					];
 					D_D.Minimum = [
-						-C_R.Maximum*Inf,  -Inf
-						];
+						-C_R.Maximum*Inf,						-Inf
+					];
 					D_D.Maximum = [
-						C_R.Maximum*Inf,  Inf
-						];
+						C_R.Maximum*Inf,						Inf
+					];
 					D_D.Scale = [
-						C_R.Scale*K_D.Scale/T_F.Scale,  K_D.Scale/T_F.Scale
-						];
+						C_R.Scale*K_D.Scale/T_F.Scale,			K_D.Scale/T_F.Scale
+					];
 				elseif strcmpi(DFormula, 'Trapeziod')
 					A_D.Value = -(T/2 - T_F.Value)/(T_F.Value + T/2);
 					A_D.Free = T_F.Free;
@@ -894,20 +893,20 @@ function [ltiss] = ltiblock2ss(lti)
 					A_D.Scale = 1;
 					
 					B_D.Value = [
-						C_R.Value + C_R.Value*(T/2 - T_F.Value)/(T_F.Value + T/2),  -1 - (T/2 - T_F.Value)/(T_F.Value + T/2)
-						];
+						C_R.Value + C_R.Value*(T/2 - T_F.Value)/(T_F.Value + T/2),	-1 - (T/2 - T_F.Value)/(T_F.Value + T/2)
+					];
 					B_D.Free = [
-						C_R.Free | T_F.Free,  T_F.Free
-						];
+						C_R.Free | T_F.Free,										T_F.Free
+					];
 					B_D.Minimum = [
-						-C_R.Maximum*Inf,  -Inf
-						];
+						-C_R.Maximum*Inf,											-Inf
+					];
 					B_D.Maximum = [
-						C_R.Maximum*Inf,  Inf
-						];
+						C_R.Maximum*Inf,											Inf
+					];
 					B_D.Scale = [
-						C_R.Scale,  1
-						];
+						C_R.Scale,													1
+					];
 					
 					C_D.Value = -K_D.Value/(T_F.Value + T/2);
 					C_D.Free = K_D.Free | T_F.Free;
@@ -916,20 +915,20 @@ function [ltiss] = ltiblock2ss(lti)
 					C_D.Scale = K_D.Scale/T_F.Scale;
 					
 					D_D.Value = [
-						C_R.Value*K_D.Value/(T_F.Value + T/2),  -K_D.Value/(T_F.Value + T/2)
-						];
+						C_R.Value*K_D.Value/(T_F.Value + T/2),	-K_D.Value/(T_F.Value + T/2)
+					];
 					D_D.Free = [
-						C_R.Free | K_D.Free | T_F.Free,  K_D.Free | T_F.Free
-						];
+						C_R.Free | K_D.Free | T_F.Free,			K_D.Free | T_F.Free
+					];
 					D_D.Minimum = [
-						-C_R.Maximum*Inf,  -Inf
-						];
+						-C_R.Maximum*Inf,						-Inf
+					];
 					D_D.Maximum = [
-						C_R.Maximum*Inf,  Inf
-						];
+						C_R.Maximum*Inf,						Inf
+					];
 					D_D.Scale = [
-						C_R.Scale*K_D.Scale/T_F.Scale,  K_D.Scale/T_F.Scale
-						];
+						C_R.Scale*K_D.Scale/T_F.Scale,			K_D.Scale/T_F.Scale
+					];
 				else
 					error('model:ltiblock:input', 'Undefined discretization method ''%s'' for derivative part of pid controller.', IFormula);
 				end
@@ -940,63 +939,63 @@ function [ltiss] = ltiblock2ss(lti)
 				'Maximum',	blkdiag(A_I.Maximum, A_D.Maximum),...
 				'Free',		blkdiag(A_I.Free, A_D.Free),...
 				'Scale',	blkdiag(A_I.Scale, A_D.Scale)...
-				);
+			);
 			B = struct(...
 				'Value',	[
-				B_I.Value;
-				B_D.Value
+					B_I.Value;
+					B_D.Value
 				],...
 				'Minimum',	[
-				B_I.Minimum;
-				B_D.Minimum
+					B_I.Minimum;
+					B_D.Minimum
 				],...
 				'Maximum',	[
-				B_I.Maximum;
-				B_D.Maximum
+					B_I.Maximum;
+					B_D.Maximum
 				],...
 				'Free',		[
-				B_I.Free;
-				B_D.Free
+					B_I.Free;
+					B_D.Free
 				],...
 				'Scale',	[
-				B_I.Scale;
-				B_D.Scale
+					B_I.Scale;
+					B_D.Scale
 				]...
-				);
+			);
 			C = struct(...
 				'Value',	[
-				C_I.Value,		C_D.Value
+					C_I.Value,		C_D.Value
 				],...
 				'Minimum',	[
-				C_I.Minimum,	C_D.Minimum
+					C_I.Minimum,	C_D.Minimum
 				],...
 				'Maximum',	[
-				C_I.Maximum,	C_D.Maximum
+					C_I.Maximum,	C_D.Maximum
 				],...
 				'Free',		[
-				C_I.Free,		C_D.Free
+					C_I.Free,		C_D.Free
 				],...
 				'Scale',	[
-				C_I.Scale,		C_D.Scale
+					C_I.Scale,		C_D.Scale
 				]...
-				);
+			);
 			D = struct(...
 				'Value',	[
-				B_R.Value*K_P.Value,  -K_P.Value
+					B_R.Value*K_P.Value,		-K_P.Value
 				],...
 				'Minimum',	[
-				B_R.Minimum*K_P.Minimum,  -K_P.Maximum
+					B_R.Minimum*K_P.Minimum,	-K_P.Maximum
 				],...
 				'Maximum',	[
-				B_R.Maximum*K_P.Maximum,  -K_P.Minimum
+					B_R.Maximum*K_P.Maximum,	-K_P.Minimum
 				],...
 				'Free',		[
-				B_R.Free | K_P.Free,  K_P.Free
+					B_R.Free | K_P.Free,		K_P.Free
 				],...
 				'Scale',	[
-				B_R.Scale*K_P.Scale,  K_P.Scale
+					B_R.Scale*K_P.Scale,		K_P.Scale
 				]...
-				);
+			);
 			if ~isempty(D_I.Value)
 				D.Value = D.Value + D_I.Value;
 				D.Minimum = D.Minimum + D_I.Minimum;
@@ -1040,60 +1039,60 @@ function [ltiss] = ltiblock2ss(lti)
 				ltiss.a.Value = [
 					0,	0;
 					0,	-1/T_F.Value
-					];
+				];
 				ltiss.a.Free = [
 					false,	false;
 					false,	T_F.Free
-					];
+				];
 				ltiss.a.Minimum = [
 					0,	0;
 					0,	-1/T_F.Minimum
-					];
+				];
 				ltiss.a.Maximum = [
 					0,	0;
 					0,	-1/T_F.Maximum
-					];
+				];
 				ltiss.a.Scale = [
 					1,	1;
 					1,	1/T_F.Scale
-					];
+				];
 				
 				ltiss.b.Value = [
-					K_I.Value,            -K_I.Value;
-					C_R.Value/T_F.Value,  -1/T_F.Value
-					];
+					K_I.Value,					-K_I.Value;
+					C_R.Value/T_F.Value,		-1/T_F.Value
+				];
 				ltiss.b.Free = [
-					K_I.Free,             K_I.Free;
-					C_R.Free | T_F.Free,  T_F.Free
-					];
+					K_I.Free,					K_I.Free;
+					C_R.Free | T_F.Free,		T_F.Free
+				];
 				ltiss.b.Minimum = [
-					K_I.Minimum,              -K_I.Maximum;
-					C_R.Minimum/T_F.Maximum,  -1/T_F.Minimum
-					];
+					K_I.Minimum,				-K_I.Maximum;
+					C_R.Minimum/T_F.Maximum,	-1/T_F.Minimum
+				];
 				ltiss.b.Maximum = [
-					K_I.Maximum,              -K_I.Minimum;
-					C_R.Maximum/T_F.Minimum,  -1/T_F.Maximum
-					];
+					K_I.Maximum,				-K_I.Minimum;
+					C_R.Maximum/T_F.Minimum,	-1/T_F.Maximum
+				];
 				ltiss.b.Scale = [
-					K_I.Scale,            K_I.Scale;
-					C_R.Scale/T_F.Scale,  1/T_F.Scale
-					];
+					K_I.Scale,					K_I.Scale;
+					C_R.Scale/T_F.Scale,		1/T_F.Scale
+				];
 				
 				ltiss.c.Value = [
 					1,	-K_D.Value/T_F.Value
-					];
+				];
 				ltiss.c.Free = [
 					false,	K_D.Free | T_F.Free
-					];
+				];
 				ltiss.c.Minimum = [
 					1,	K_D.Minimum/T_F.Maximum
-					];
+				];
 				ltiss.c.Maximum = [
 					1,	K_D.Maximum/T_F.Minimum
-					];
+				];
 				ltiss.c.Scale = [
 					1,	K_D.Scale/T_F.Scale
-					];
+				];
 			elseif hasI
 				ltiss.a.Value = 0;
 				ltiss.a.Free = false;
@@ -1102,20 +1101,20 @@ function [ltiss] = ltiblock2ss(lti)
 				ltiss.a.Scale = 1;
 				
 				ltiss.b.Value = [
-					K_I.Value,  -K_I.Value
-					];
+					K_I.Value,		-K_I.Value
+				];
 				ltiss.b.Free = [
-					K_I.Free,  K_I.Free
-					];
+					K_I.Free,		K_I.Free
+				];
 				ltiss.b.Minimum = [
-					K_I.Minimum,  -K_I.Maximum
-					];
+					K_I.Minimum,	-K_I.Maximum
+				];
 				ltiss.b.Maximum = [
-					K_I.Maximum,  -K_I.Minimum
-					];
+					K_I.Maximum,	-K_I.Minimum
+				];
 				ltiss.b.Scale = [
-					K_I.Scale,  K_I.Scale
-					];
+					K_I.Scale,		K_I.Scale
+				];
 				
 				ltiss.c.Value = 1;
 				ltiss.c.Free = false;
@@ -1130,20 +1129,20 @@ function [ltiss] = ltiblock2ss(lti)
 				ltiss.a.Scale = 1/T_F.Scale;
 				
 				ltiss.b.Value = [
-					C_R/T_F.Value,  -1/T_F.Value
-					];
+					C_R/T_F.Value,				-1/T_F.Value
+				];
 				ltiss.b.Free = [
-					C_R.Free | T_F.Free,  T_F.Free
-					];
+					C_R.Free | T_F.Free,		T_F.Free
+				];
 				ltiss.b.Minimum = [
-					C_R.Minimum/T_F.Maximum,  -1/T_F.Minimum
-					];
+					C_R.Minimum/T_F.Maximum,	-1/T_F.Minimum
+				];
 				ltiss.b.Maximum = [
-					C_R.Maximum/T_F.Minimum,  -1/T_F.Maximum
-					];
+					C_R.Maximum/T_F.Minimum,	-1/T_F.Maximum
+				];
 				ltiss.b.Scale = [
-					C_R.Scale/T_F.Scale,  1/T_F.Scale
-					];
+					C_R.Scale/T_F.Scale,		1/T_F.Scale
+				];
 				
 				ltiss.c.Value = -K_D.Value/T_F.Value;
 				ltiss.c.Free = K_D.Free | T_F.Free;
@@ -1172,40 +1171,40 @@ function [ltiss] = ltiblock2ss(lti)
 			
 			if hasD
 				ltiss.d.Value = [
-					B_R.Value*K_P.Value + C_R.Value*K_D.Value/T_F.Value,  -K_P.Value - K_D.Value/T_F.Value
-					];
+					B_R.Value*K_P.Value + C_R.Value*K_D.Value/T_F.Value,			-K_P.Value - K_D.Value/T_F.Value
+				];
 				ltiss.d.Free = [
-					B_R.Free | K_P.Free | C_R.Free | K_D.Free | T_F.Free,  K_P.Free | K_D.Free | T_F.Free
-					];
+					B_R.Free | K_P.Free | C_R.Free | K_D.Free | T_F.Free,			K_P.Free | K_D.Free | T_F.Free
+				];
 				ltiss.d.Minimum = [
-					B_R.Minimum*K_P.Minimum + C_R.Minimum*K_D.Minimum/T_F.Maximum,  -K_P.Maximum + K_D.Minimum/T_F.Maximum
-					];
+					B_R.Minimum*K_P.Minimum + C_R.Minimum*K_D.Minimum/T_F.Maximum,	-K_P.Maximum + K_D.Minimum/T_F.Maximum
+				];
 				ltiss.d.Maximum = [
-					B_R.Maximum*K_P.Maximum + C_R.Maximum*K_D.Maximum/T_F.Minimum,  -K_P.Minimum + K_D.Maximum/T_F.Minimum
-					];
+					B_R.Maximum*K_P.Maximum + C_R.Maximum*K_D.Maximum/T_F.Minimum,	-K_P.Minimum + K_D.Maximum/T_F.Minimum
+				];
 				ltiss.d.Scale = [
-					B_R.Scale*K_P.Scale + C_R.Scale*K_D.Scale/T_F.Scale,  K_P.Scale + K_D.Scale/T_F.Scale
-					];
+					B_R.Scale*K_P.Scale + C_R.Scale*K_D.Scale/T_F.Scale,			K_P.Scale + K_D.Scale/T_F.Scale
+				];
 			else
 				ltiss.d.Value = [
-					B_R*K_P.Value,  -K_P.Value
-					];
+					B_R*K_P.Value,				-K_P.Value
+				];
 				ltiss.d.Free = [
-					B_R.Free | K_P.Free,  K_P.Free
-					];
+					B_R.Free | K_P.Free,		K_P.Free
+				];
 				ltiss.d.Minimum = [
-					B_R.Minimum*K_P.Minimum,  -K_P.Maximum
-					];
+					B_R.Minimum*K_P.Minimum,	-K_P.Maximum
+				];
 				ltiss.d.Maximum = [
-					B_R.Maximum*K_P.Maximum,  -K_P.Minimum
-					];
+					B_R.Maximum*K_P.Maximum,	-K_P.Minimum
+				];
 				ltiss.d.Scale = [
-					B_R.Scale*K_P.Scale,  K_P.Scale
-					];
-		    end
-	    end
-	    return;
-    end
+					B_R.Scale*K_P.Scale,		K_P.Scale
+				];
+			end
+		end
+		return;
+	end
 	% no valid ltiblock
 	error('model:ltiblock:input', 'System must be supplied as ltiblock, not as ''%s''.', class(lti));
 end
