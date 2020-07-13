@@ -9,6 +9,14 @@ classdef(Enumeration) GammaEigenvalueFilterType < Simulink.IntEnumType
 		NEGATIVEIMAG(1);
 		% filter out eigenvalues with positive imaginary part and only keep eigenvalues with nonpositive imaginary part
 		POSITIVEIMAG(2);
+		% filter out positive infinite eigenvalues to -Inf
+		INFTOMINUSINF(4);
+		% filter out negative infinite eigenvalues to Inf
+		MINUSINFTOINF(8);
+		% filter out positive infinite eigenvalues to 0
+		INFTOZERO(16);
+		% filter out negative infinite eigenvalues to 0
+		MINUSINFTOZERO(32);
 	end
 	
 % must not be private to allow for type cast to GammaEigenvalueFilterType, types are automatically restricted to the defined ones internally
@@ -79,25 +87,86 @@ classdef(Enumeration) GammaEigenvalueFilterType < Simulink.IntEnumType
 				end
 			else
 				filter = repmat(GammaEigenvalueFilterType.getDefaultValue(), length(name), 1);
-				hasderivative = false(length(name), 1);
+				hasfilter = false(length(name), 1);
 				for jj = 1:length(name)
 					for ii = 1:length(enum)
 						if isinteger(name(jj)) && name(jj) == int32(enum(ii))
 							filter(jj, 1) = enum(ii);
-							hasderivative(jj, 1) = true;
+							hasfilter(jj, 1) = true;
 							break;
 						end
 						if isnumeric(name(jj)) && floor(name(jj)) == ceil(name(jj)) && floor(name(jj)) == int32(enum(ii))
 							filter(jj, 1) = enum(ii);
-							hasderivative(jj, 1) = true;
+							hasfilter(jj, 1) = true;
 							break;
 						end
 					end
 				end
-				if ~all(hasderivative)
+				if ~all(hasfilter)
 					filter = [];
 				else
 					filter = reshape(filter, size(name));
+				end
+			end
+			if isempty(filter)
+				error('control:design:gamma:filtertype:name', 'No GammaEigenvalueFilterType of specified name exists.');
+			end
+		end
+		
+		function [filter] = extract(name)
+			%EXTRACT create GammaEigenvalueFilterType from name
+			%	Input:
+			%		name:					name of a defined GammaEigenvalueFilterType
+			%	Output:
+			%		multiplicityhandling:	GammaEigenvalueFilterType, if one of the specified name exists
+			if isa(name, 'GammaEigenvalueFilterType')
+				filter = name;
+				return;
+			end
+			if ischar(name)
+				filter = GammaEigenvalueFilterType.fromname(name);
+				return;
+			else
+				pow2 = nextpow2(name) == name;
+				if all(pow2(:))
+					filter = GammaEigenvalueFilterType.fromname(name);
+					return;
+				end
+				enum = enumeration('GammaEigenvalueFilterType');
+				filter = cell(length(name), length(enum));
+				hasfilter = false(length(name), length(enum));
+				for jj = 1:length(name)
+					for ii = 1:length(enum)
+						if isinteger(name(jj)) && name(jj) == int32(enum(ii))
+							filter{jj, ii} = enum(ii);
+							hasfilter(jj, ii) = true;
+						end
+						if isinteger(name(jj)) && bitand(name(jj), int32(enum(ii)))
+							filter{jj, ii} = enum(ii);
+							hasfilter(jj, ii) = true;
+						end
+						if isnumeric(name(jj)) && floor(name(jj)) == ceil(name(jj)) && floor(name(jj)) == int32(enum(ii))
+							filter{jj, ii} = enum(ii);
+							hasfilter(jj, ii) = true;
+						end
+						if isnumeric(name(jj)) && floor(name(jj)) == ceil(name(jj)) && bitand(floor(name(jj)), int32(enum(ii)))
+							filter{jj, ii} = enum(ii);
+							hasfilter(jj, ii) = true;
+						end
+					end
+				end
+				% TODO: check for remainder after extraction of valid types?
+				[filter{~hasfilter}] = deal(GammaEigenvalueFilterType.NONE);
+				if ~all(any(hasfilter, 2))
+					filter = [];
+				else
+					enums = max(sum(hasfilter, 2));
+					filter_reduced = repmat(GammaEigenvalueFilterType.getDefaultValue(), [size(name), enums]);
+					for ii = 1:size(filter, 1)
+						[idx1, idx2] = ind2sub(size(name), ii);
+						filter_reduced(idx1, idx2, :) = [filter{ii, hasfilter(ii, :)}, repmat(GammaEigenvalueFilterType.NONE, 1, enums - sum(hasfilter(ii, :)))];
+					end
+					filter = filter_reduced;
 				end
 			end
 			if isempty(filter)

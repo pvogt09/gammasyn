@@ -1,4 +1,4 @@
-function [eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot, eigenvalue_2derivative, eigenvalue_2derivative_xdot, eigenvalue_2derivative_mixed, eigenvalue_2derivative_xdot_mixed] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads)
+function [eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot, eigenvalue_2derivative, eigenvalue_2derivative_xdot, eigenvalue_2derivative_mixed, eigenvalue_2derivative_xdot_mixed] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads, eigenvaluefilter)
 	%CALCULATE_EIGENVALUES helper function for calculation of eigenvalues for all systems
 	%	Input:
 	%		system:								structure with systems to calculate eigenvalues for
@@ -7,6 +7,7 @@ function [eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivativ
 	%		dimensions:							structure with information about dimensions of the different variables and systems
 	%		eigenvaluederivativetype:			GammaEigenvalueDerivativeType to indicate which method for eigenvalue derivative calculation should be used
 	%		numthreads:							number of threads to run loops in
+	%		eigenvaluefilter:					filter for calculated eigenvalues
 	%	Output:
 	%		eigenvalues:						eigenvalues of all systems (NaN for systems with fewer states than maximum number of states)
 	%		eigenvector_right:					right eigenvectors of all systems (NaN for systems with fewer states than maximum number of states)
@@ -146,9 +147,12 @@ function [eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivativ
 			else
 				if derivative_feedback || descriptor
 					[V_tilde, ev] = eig(A, E, 'vector');
+					% generalized eigenvalue problem can result in NaN eigenvalues
+					ev(isnan(ev)) = Inf;
 				else
 					[V_tilde, ev] = eig(A, 'vector');
 				end
+				ev = calculate_eigenvalue_filter_immediate(eigenvaluefilter, ev);
 				eigenvalues(:, ii) = [
 					ev;
 					(1 + 1i)*NaN(number_states - system_order, 1)
@@ -484,9 +488,12 @@ function [eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivativ
 				else
 					if derivative_feedback || descriptor
 						[eigenvectors_right, ev] = eig(A, E, 'vector');
+						% generalized eigenvalue problem can result in NaN eigenvalues
+						ev(isnan(ev)) = Inf;
 					else
 						[eigenvectors_right, ev] = eig(A, 'vector');
 					end
+					ev = calculate_eigenvalue_filter_immediate(eigenvaluefilter, ev);
 					eigenvalues(:, ii) = [
 						ev;
 						(1 + 1i)*NaN(number_states - system_order, 1)
@@ -989,29 +996,26 @@ function [eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivativ
 				else
 					if derivative_feedback
 						if descriptor
-							eigenvalues(:, ii) = [
-								eig(A, system(ii).E - system(ii).B*K*system(ii).C_dot, 'vector');
-								(1 + 1i)*NaN(number_states - system_order, 1)
-							];
+							ev = eig(A, system(ii).E - system(ii).B*K*system(ii).C_dot, 'vector');
 						else
-							eigenvalues(:, ii) = [
-								eig(A, eye(number_states) - system(ii).B*K*system(ii).C_dot, 'vector');
-								(1 + 1i)*NaN(number_states - system_order, 1)
-							];
+							ev = eig(A, eye(number_states) - system(ii).B*K*system(ii).C_dot, 'vector');
 						end
+						% generalized eigenvalue problem can result in NaN eigenvalues
+						ev(isnan(ev)) = Inf;
 					else
 						if descriptor
-							eigenvalues(:, ii) = [
-								eig(A, system(ii).E, 'vector');
-								(1 + 1i)*NaN(number_states - system_order, 1)
-							];
+							ev = eig(A, system(ii).E, 'vector');
+							% generalized eigenvalue problem can result in NaN eigenvalues
+							ev(isnan(ev)) = Inf;
 						else
-							eigenvalues(:, ii) = [
-								eig(A, 'vector');
-								(1 + 1i)*NaN(number_states - system_order, 1)
-							];
+							ev = eig(A, 'vector');
 						end
 					end
+					ev = calculate_eigenvalue_filter_immediate(eigenvaluefilter, ev);
+					eigenvalues(:, ii) = [
+						ev;
+						(1 + 1i)*NaN(number_states - system_order, 1)
+					];
 				end
 			end
 		end

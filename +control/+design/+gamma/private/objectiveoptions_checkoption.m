@@ -99,7 +99,7 @@ function [value, validvalue, errmsg, errid, validfield] = objectiveoptions_check
 		case {'eigenvaluefilter'}
 			if ~isa(value, 'GammaEigenvalueFilterType')
 				try
-					value = GammaEigenvalueFilterType.fromchar(value);
+					value = GammaEigenvalueFilterType.extract(value);
 					validvalue = true;
 					errid = '';
 					errmsg = '';
@@ -112,11 +112,6 @@ function [value, validvalue, errmsg, errid, validfield] = objectiveoptions_check
 				validvalue = true;
 				errid = '';
 				errmsg = '';
-			end
-			if ~isscalar(value)
-				validvalue = false;
-				errid = 'control:design:gamma:input';
-				errmsg = 'Objective option ''eigenvaluefilter'' must be scalar.';
 			end
 		case {'strategy'}
 			if ~isa(value, 'GammaSolutionStrategy')

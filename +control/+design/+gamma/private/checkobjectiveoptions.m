@@ -170,11 +170,14 @@ function [objective_options_strict, objective_options_loose, solution_strategy, 
 	if isempty(objectiveoptions.eigenvaluefilter)
 		objectiveoptions.eigenvaluefilter = GammaEigenvalueFilterType.getDefaultValue();
 	end
-	if ~isscalar(objectiveoptions.eigenvaluefilter)
-		error('control:design:gamma', 'Only one eigenvalue filter type may be supplied.');
+	if isnumeric(objectiveoptions.eigenvaluefilter) || ischar(objectiveoptions.eigenvaluefilter)
+		objectiveoptions.eigenvaluefilter = GammaEigenvalueFilterType.extract(objectiveoptions.eigenvaluefilter);
 	end
 	if ~isa(objectiveoptions.eigenvaluefilter, 'GammaEigenvalueFilterType')
 		error('control:design:gamma', 'Eigenvalue filter type must be of type ''GammaEigenvalueFilterType''.');
+	end
+	if ~isscalar(objectiveoptions.eigenvaluefilter)
+		objectiveoptions.eigenvaluefilter = cat(1, unique(objectiveoptions.eigenvaluefilter(:)));
 	end
 	if ~isscalar(objectiveoptions.strategy)
 		error('control:design:gamma', 'Only one solution strategy may be supplied.');

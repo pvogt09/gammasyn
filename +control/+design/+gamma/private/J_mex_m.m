@@ -51,7 +51,7 @@ function [J, gradJ, hessianJ] = J_mex_m(x, system, weight, areafun, dimensions, 
 			% TODO: calculate hessian for eigenvector dependent objective function
 			error('control:design:gamma:hessian', 'Hessian for eigenvector dependent objective function is not yet implemented.');
 			if derivative_feedback
-				[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads);
+				[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads, options.eigenvaluefilter);
 				[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot] = calculate_eigenvalue_filter(options.eigenvaluefilter, eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot);
 				[areaval, areaval_derivative] = calculate_areas_fixed_m(areafun, weight, eigenvalues, dimensions, numthreads);
 				[J, gradJtemp] = calculate_objective(areaval, weight, eigenvalue_derivative, eigenvalue_derivative_xdot, areaval_derivative, dimensions, options);
@@ -82,7 +82,7 @@ function [J, gradJ, hessianJ] = J_mex_m(x, system, weight, areafun, dimensions, 
 					gradJ = gradJ_row;
 				end
 			else
-				[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, ~, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads);
+				[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, ~, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads, options.eigenvaluefilter);
 				[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, ~, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot] = calculate_eigenvalue_filter(options.eigenvaluefilter, eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, [], eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot);
 				[areaval, areaval_derivative] = calculate_areas_fixed_m(areafun, weight, eigenvalues, dimensions, numthreads);
 				eigenvalue_derivative_xdot = zeros(number_states, number_controls, number_measurements_xdot, number_models) + 0i;
@@ -119,7 +119,7 @@ function [J, gradJ, hessianJ] = J_mex_m(x, system, weight, areafun, dimensions, 
 				% HINT: matlab R2015B does not recognize size of needseigenvalues correctly and assumes :?x:? instead of :?x1
 				needseigenvalues = GammaJType_needseigenvalues(options.type);
 				if any(needseigenvalues(:))
-					[eigenvalues, ~, ~, eigenvalue_derivative, eigenvalue_derivative_xdot, ~, ~, ~, ~, eigenvalue_2derivative, eigenvalue_2derivative_xdot, eigenvalue_2derivative_m, eigenvalue_2derivative_xdot_m] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads);
+					[eigenvalues, ~, ~, eigenvalue_derivative, eigenvalue_derivative_xdot, ~, ~, ~, ~, eigenvalue_2derivative, eigenvalue_2derivative_xdot, eigenvalue_2derivative_m, eigenvalue_2derivative_xdot_m] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads, options.eigenvaluefilter);
 					[eigenvalues, ~, ~, eigenvalue_derivative, eigenvalue_derivative_xdot, ~, ~, ~, ~, eigenvalue_2derivative, eigenvalue_2derivative_xdot, eigenvalue_2derivative_m, eigenvalue_2derivative_xdot_m] = calculate_eigenvalue_filter(options.eigenvaluefilter, eigenvalues, [], [], eigenvalue_derivative, eigenvalue_derivative_xdot, [], [], [], [], eigenvalue_2derivative, eigenvalue_2derivative_xdot, eigenvalue_2derivative_m, eigenvalue_2derivative_xdot_m);
 					[areaval, areaval_derivative, areaval_2_derivative] = calculate_areas_fixed_m(areafun, weight, eigenvalues, dimensions, numthreads);
 					[J, gradJtemp, hessianJ] = calculate_objective(areaval, weight, eigenvalue_derivative, eigenvalue_derivative_xdot, areaval_derivative, dimensions, options, eigenvalue_2derivative, areaval_2_derivative, eigenvalue_2derivative_xdot, eigenvalue_2derivative_m, eigenvalue_2derivative_xdot_m);
@@ -163,7 +163,7 @@ function [J, gradJ, hessianJ] = J_mex_m(x, system, weight, areafun, dimensions, 
 				% HINT: matlab R2015B does not recognize size of needseigenvalues correctly and assumes :?x:? instead of :?x1
 				needseigenvalues = GammaJType_needseigenvalues(options.type);
 				if any(needseigenvalues(:))
-					[eigenvalues, ~, ~, eigenvalue_derivative, ~, ~, ~, ~, ~, eigenvalue_2derivative] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads);
+					[eigenvalues, ~, ~, eigenvalue_derivative, ~, ~, ~, ~, ~, eigenvalue_2derivative] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads, options.eigenvaluefilter);
 					[eigenvalues, ~, ~, eigenvalue_derivative, ~, ~, ~, ~, ~, eigenvalue_2derivative] = calculate_eigenvalue_filter(options.eigenvaluefilter, eigenvalues, [], [], eigenvalue_derivative, [], [], [], [], [], eigenvalue_2derivative);
 					[areaval, areaval_derivative, areaval_2_derivative] = calculate_areas_fixed_m(areafun, weight, eigenvalues, dimensions, numthreads);
 					eigenvalue_derivative_xdot = zeros(number_states, number_controls, number_measurements_xdot, number_models) + 0i;
@@ -220,7 +220,7 @@ function [J, gradJ, hessianJ] = J_mex_m(x, system, weight, areafun, dimensions, 
 			gradJ = zeros(number_controls*(number_measurements + number_measurements_xdot), 1);
 		elseif any(options.type == GammaJType.EIGENVALUECONDITION)
 			if derivative_feedback
-				[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads);
+				[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads, options.eigenvaluefilter);
 				[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot] = calculate_eigenvalue_filter(options.eigenvaluefilter, eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot);
 				[areaval, areaval_derivative] = calculate_areas_fixed_m(areafun, weight, eigenvalues, dimensions, numthreads);
 				[J, gradJtemp] = calculate_objective(areaval, weight, eigenvalue_derivative, eigenvalue_derivative_xdot, areaval_derivative, dimensions, options);
@@ -251,7 +251,7 @@ function [J, gradJ, hessianJ] = J_mex_m(x, system, weight, areafun, dimensions, 
 					gradJ = gradJ_row;
 				end
 			else
-				[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, ~, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads);
+				[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, ~, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads, options.eigenvaluefilter);
 				[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, ~, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot] = calculate_eigenvalue_filter(options.eigenvaluefilter, eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, [], eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot);
 				[areaval, areaval_derivative] = calculate_areas_fixed_m(areafun, weight, eigenvalues, dimensions, numthreads);
 				eigenvalue_derivative_xdot = zeros(number_states, number_controls, number_measurements_xdot, number_models) + 0i;
@@ -288,7 +288,7 @@ function [J, gradJ, hessianJ] = J_mex_m(x, system, weight, areafun, dimensions, 
 				% HINT: matlab R2015B does not recognize size of needseigenvalues correctly and assumes :?x:? instead of :?x1
 				needseigenvalues = GammaJType_needseigenvalues(options.type);
 				if any(needseigenvalues(:))
-					[eigenvalues, ~, ~, eigenvalue_derivative, eigenvalue_derivative_xdot] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads);
+					[eigenvalues, ~, ~, eigenvalue_derivative, eigenvalue_derivative_xdot] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads, options.eigenvaluefilter);
 					[eigenvalues, ~, ~, eigenvalue_derivative, eigenvalue_derivative_xdot] = calculate_eigenvalue_filter(options.eigenvaluefilter, eigenvalues, [], [], eigenvalue_derivative, eigenvalue_derivative_xdot);
 					[areaval, areaval_derivative] = calculate_areas_fixed_m(areafun, weight, eigenvalues, dimensions, numthreads);
 					[J, gradJtemp] = calculate_objective(areaval, weight, eigenvalue_derivative, eigenvalue_derivative_xdot, areaval_derivative, dimensions, options);
@@ -325,7 +325,7 @@ function [J, gradJ, hessianJ] = J_mex_m(x, system, weight, areafun, dimensions, 
 				% HINT: matlab R2015B does not recognize size of needseigenvalues correctly and assumes :?x:? instead of :?x1
 				needseigenvalues = GammaJType_needseigenvalues(options.type);
 				if any(needseigenvalues(:))
-					[eigenvalues, ~, ~, eigenvalue_derivative] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads);
+					[eigenvalues, ~, ~, eigenvalue_derivative] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads, options.eigenvaluefilter);
 					[eigenvalues, ~, ~, eigenvalue_derivative] = calculate_eigenvalue_filter(options.eigenvaluefilter, eigenvalues, [], [], eigenvalue_derivative);
 					[areaval, areaval_derivative] = calculate_areas_fixed_m(areafun, weight, eigenvalues, dimensions, numthreads);
 					eigenvalue_derivative_xdot = zeros(number_states, number_controls, number_measurements_xdot, number_models) + 0i;
@@ -370,7 +370,7 @@ function [J, gradJ, hessianJ] = J_mex_m(x, system, weight, areafun, dimensions, 
 		if all(options.type == GammaJType.ZERO)
 			J = 0;
 		elseif any(options.type == GammaJType.EIGENVALUECONDITION)
-			[eigenvalues, eigenvector_right, eigenvector_left] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads);
+			[eigenvalues, eigenvector_right, eigenvector_left] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads, options.eigenvaluefilter);
 			[eigenvalues, eigenvector_right, eigenvector_left] = calculate_eigenvalue_filter(options.eigenvaluefilter, eigenvalues, eigenvector_right, eigenvector_left);
 			areaval = calculate_areas_fixed_m(areafun, weight, eigenvalues, dimensions, numthreads);
 			J = calculate_objective(areaval, weight, [], [], [], dimensions, options);
@@ -385,7 +385,7 @@ function [J, gradJ, hessianJ] = J_mex_m(x, system, weight, areafun, dimensions, 
 			% HINT: matlab R2015B does not recognize size of needseigenvalues correctly and assumes :?x:? instead of :?x1
 			needseigenvalues = GammaJType_needseigenvalues(options.type);
 			if any(needseigenvalues(:))
-				eigenvalues = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads);
+				eigenvalues = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads, options.eigenvaluefilter);
 				eigenvalues = calculate_eigenvalue_filter(options.eigenvaluefilter, eigenvalues);
 				areaval = calculate_areas_fixed_m(areafun, weight, eigenvalues, dimensions, numthreads);
 				J = calculate_objective(areaval, weight, [], [], [], dimensions, options);
