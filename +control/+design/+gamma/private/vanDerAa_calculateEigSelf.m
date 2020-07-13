@@ -21,18 +21,26 @@ function [V, D, W, M, lambda_multiple, P] = vanDerAa_calculateEigSelf(options, V
 	n = size(V, 1);
 	% vector for multiplicity of eigenvalues
 	mult = zeros(n, 1, 'int32');
-	% vector to store the different eigenvalues 
+	% vector to store the different eigenvalues
 	diffEigs = NaN(n, 1) + 1i*NaN(n, 1);
-	% matrix to store locations of the different eigenvalues 
+	% matrix to store locations of the different eigenvalues
 	diffEigsPosition = false(n, n);
 	currDiff = 1;
+	NaNfound = false;
 	for index = 1:n %#ok<FORPF> no parfor because of dependent iterations
-		% save current eigenvalue 
+		% save current eigenvalue
 		current = d_exact(index, 1);
 		% if eigenvalue at the current index has not been stored before
-		if ~any(abs(diffEigs - current) < tol)
+		if (~isinf(current) && ~isnan(current) && ~any(abs(diffEigs - current) < tol)) || (isinf(current) && ~any(isinf(diffEigs))) || (isnan(current) && ~NaNfound)
 			% variable to count multiplicity
-			sameeig = abs(d_exact - current) < tol;
+			if isinf(current)% infinite eigenvalues in generalized eigenvalue problem
+				sameeig = isinf(d_exact);
+			elseif isnan(current)% eigenvalues in generalized eigenvalue problem can become NaN
+				sameeig = isnan(d_exact);
+				NaNfound = true;
+			else
+				sameeig = abs(d_exact - current) < tol;
+			end
 			tmp = sum(int32(sameeig), 'native');
 			diffEigs(currDiff) = mean(d_exact(sameeig, 1));
 			diffEigsPosition(currDiff, :) = sameeig;

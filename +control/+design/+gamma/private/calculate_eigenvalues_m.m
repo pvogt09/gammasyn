@@ -176,7 +176,29 @@ function [eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivativ
 					V_tilde_k(:, 1, jj) = V_tilde(:, multiplicityidx(1, idxmap(jj, 1)));
 					k = 2;
 					for gg = 2:multiplicity(multiplicityidx(1, idxmap(jj, 1)), 1)
-						temp = orth([V_tilde_k(:, 1:k - 1, jj), null((ev(multiplicityidx(1, idxmap(jj, 1)))*E - A)^k)]) + 0i;
+						if descriptor || derivative_feedback
+							if isinf(ev(multiplicityidx(1, idxmap(jj, 1)))) || isnan(isinf(ev(multiplicityidx(1, idxmap(jj, 1)))))
+								evsysA = E;
+								evsysb = A*V_tilde_k(:, gg - 1, jj);
+							else
+								evsysA = (ev(multiplicityidx(1, idxmap(jj, 1)))*E - A);
+								evsysb = -E*V_tilde_k(:, gg - 1, jj);
+							end
+							if rank(evsysA) < size(evsysA, 1)
+								sol_particular = pinv(evsysA)*evsysb;
+							else
+								sol_particular = evsysA\evsysb;
+							end
+							sol = null(evsysA);
+							sol_particular(any(sol, 2), :) = 0;
+							sol = sol + repmat(sol_particular, 1, size(sol, 2));
+							temp = orth([V_tilde_k(:, 1:k - 1, jj), sol]) + 0i;
+							if size(temp, 2) > k
+								temp = temp(:, 1:k);
+							end
+						else
+							temp = orth([V_tilde_k(:, 1:k - 1, jj), null((ev(multiplicityidx(1, idxmap(jj, 1)))*E - A)^k)]) + 0i;
+						end
 						if size(temp, 1) ~= system_order || size(temp, 2) ~= k
 							error('control:design:gamma:eigenvalues', 'No regular basis of right eigenvectors could be found.');
 						end
@@ -492,7 +514,29 @@ function [eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivativ
 						eigenvectors_right_k(:, 1, jj) = eigenvectors_right(:, multiplicityidx(1, idxmap(jj, 1)));
 						k = 2;
 						for gg = 2:multiplicity(multiplicityidx(1, idxmap(jj, 1)), 1)
-							temp = orth([eigenvectors_right_k(:, 1:k - 1, jj), null((ev(multiplicityidx(1, idxmap(jj, 1)))*E - A)^k)]) + 0i;
+							if descriptor || derivative_feedback
+								if isinf(ev(multiplicityidx(1, idxmap(jj, 1)))) || isnan(isinf(ev(multiplicityidx(1, idxmap(jj, 1)))))
+									evsysA = E;
+									evsysb = A*eigenvectors_right_k(:, gg - 1, jj);
+								else
+									evsysA = (ev(multiplicityidx(1, idxmap(jj, 1)))*E - A);
+									evsysb = -E*eigenvectors_right_k(:, gg - 1, jj);
+								end
+								if rank(evsysA) < size(evsysA, 1)
+									sol_particular = pinv(evsysA)*evsysb;
+								else
+									sol_particular = evsysA\evsysb;
+								end
+								sol = null(evsysA);
+								sol_particular(any(sol, 2), :) = 0;
+								sol = sol + repmat(sol_particular, 1, size(sol, 2));
+								temp = orth([eigenvectors_right_k(:, 1:k - 1, jj), sol]) + 0i;
+								if size(temp, 2) > k
+									temp = temp(:, 1:k);
+								end
+							else
+								temp = orth([eigenvectors_right_k(:, 1:k - 1, jj), null((ev(multiplicityidx(1, idxmap(jj, 1)))*E - A)^k)]) + 0i;
+							end
 							if size(temp, 1) ~= system_order || size(temp, 2) ~= k
 								error('control:design:gamma:eigenvalues', 'No regular basis of right eigenvectors could be found.');
 							end
@@ -515,7 +559,8 @@ function [eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivativ
 					% if we get here, eigenvectors were removed from the eigenvector matrix, which should not occur under all circumstances
 					error('control:design:gamma:eigenvalues', 'Something went wrong in the eigenvector calculation, check the implementation.');
 				end
-				if (codegen_supports_recursion || ~codegen_is_generating) && (eigenvaluederivativetype == GammaEigenvalueDerivativeType.VANDERAA || any(multiplicity(:) > 1))
+				if (codegen_supports_recursion || ~codegen_is_generating) && (eigenvaluederivativetype == GammaEigenvalueDerivativeType.VANDERAA || (any(multiplicity(:) > 1) && ~(descriptor || derivative_feedback)))
+					% TODO: remove descriptor || derivative_feedback condition when generalized eigenvalue problem is implemented for van der Aa method
 					if ~codegen_supports_recursion && codegen_is_generating
 						error('control:design:gamma:eigenvalues:runtimerecursion', 'Van der Aa''s method is recursive, but runtime recursion is only supported since R2016B and this mex file was compiled with an older version.');
 					end
@@ -558,7 +603,11 @@ function [eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivativ
 									% TODO: only sort inside vanDerAa
 									% TODO: make D_eig and D_derv vectors
 									% TODO: transform V_derv and W_derv to original W and V for all coefficients
-									[V, D_eig, W, V_derv, D_derv, W_derv] = vanDerAa(A_derv, [], eigenvalue_options, eigenvectors_right, ev);
+									if descriptor || derivative_feedback
+										[V, D_eig, W, V_derv, D_derv, W_derv] = vanDerAa(A_derv, B_derv, eigenvalue_options, eigenvectors_right, ev);
+									else
+										[V, D_eig, W, V_derv, D_derv, W_derv] = vanDerAa(A_derv, [], eigenvalue_options, eigenvectors_right, ev);
+									end
 								end
 								if kk == 1 && jj == 1
 									eigenvalues(:, ii) = [
@@ -672,7 +721,7 @@ function [eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivativ
 							end
 						end
 					end
-				elseif ~codegen_supports_recursion && codegen_is_generating && (eigenvaluederivativetype == GammaEigenvalueDerivativeType.VANDERAA || any(multiplicity(:) > 1))
+				elseif ~codegen_supports_recursion && codegen_is_generating && (eigenvaluederivativetype == GammaEigenvalueDerivativeType.VANDERAA || (any(multiplicity(:) > 1) && ~(descriptor || derivative_feedback)))
 					error('control:design:gamma:eigenvalues:runtimerecursion', 'Van der Aa''s method is recursive, but runtime recursion is only supported since R2016B and this mex file was compiled with an older version.');
 				else
 					% use eigenvalue sensitivity or Rudisill/Chu method
@@ -680,7 +729,12 @@ function [eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivativ
 						eigenvectors_left = eigenvectors_right';
 					else
 						if descriptor || derivative_feedback
-							eigenvectors_left = inv(E*eigenvectors_right)';
+							if rank(E) < size(E, 2)
+								% TODO: replace by adequate algorithm for left eigenvectors
+								eigenvectors_left = pinv(E*eigenvectors_right)';
+							else
+								eigenvectors_left = inv(E*eigenvectors_right)';
+							end
 						else
 							eigenvectors_left = inv(eigenvectors_right)';
 						end

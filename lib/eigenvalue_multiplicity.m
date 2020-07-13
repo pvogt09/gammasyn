@@ -11,7 +11,7 @@ function [multiplicity, multiplicity_map] = eigenvalue_multiplicity(eigenvalues,
 		m = multiplicity_map(ii, :);
 		m(1, ii) = true;
 		for jj = ii + 1:size(eigenvalues, 1)
-			if abs(eigenvalues(ii, 1) - eigenvalues(jj, 1)) < tolerance
+			if abs(eigenvalues(ii, 1) - eigenvalues(jj, 1)) < tolerance || (isinf(eigenvalues(ii, 1)) && isinf(eigenvalues(jj, 1))) || (isnan(eigenvalues(ii, 1)) && isnan(eigenvalues(jj, 1)))
 				m(1, jj) = true;
 			end
 		end
