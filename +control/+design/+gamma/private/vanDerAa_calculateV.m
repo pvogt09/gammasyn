@@ -72,7 +72,7 @@ function [X_norm, Y_norm, lambda_R, diffLambdas_R, diffLambdas_size_R, part_R, p
 			% new partitioning
 			part(k + 1) = M - P;
 			%part = [part, P];
-			if size(part, 1) <= k + 2
+			if size(part, 1) >= k + 2
 				part(k + 2) = P;
 			else
 				error('control:design:gamma:eigenvalues', 'Matrix has too many multiple eigenvalues and multiple derivatives and might not be differentiable.');
