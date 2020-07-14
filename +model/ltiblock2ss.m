@@ -793,7 +793,7 @@ function [ltiss] = ltiblock2ss(lti)
 						K_I.Scale*T/2,		K_I.Scale*T/2
 					];
 				else
-					error('model:ltiblock:input', 'Undefined discretization method ''%s'' for integral part of pid controller.', IFormula);
+					error('model:ltiblock:input', 'Undefined discretization method ''%s'' for integral part of pid2 controller.', IFormula);
 				end
 			end
 			if K_D.Free || (~K_D.Free && K_D.Value ~= 0)
@@ -849,19 +849,19 @@ function [ltiss] = ltiblock2ss(lti)
 					A_D.Scale = 1;
 					
 					B_D.Value = [
-						C_R.Value*T_F.Value/(T_F.Value + T) - 1,	1 - T_F.Value/(T_F.Value + T)
+						C_R.Value*T_F.Value/(T_F.Value + T) - C_R.Value,	1 - T_F.Value/(T_F.Value + T)
 					];
 					B_D.Free = [
-						C_R.Free | T_F.Free,						T_F.Free
+						C_R.Free | T_F.Free,						        T_F.Free
 					];
 					B_D.Minimum = [
-						-C_R.Maximum,								-Inf
+						-C_R.Maximum,								        -Inf
 					];
 					B_D.Maximum = [
-						C_R.Maximum*Inf,							1
+						C_R.Maximum*Inf,							         1
 					];
 					B_D.Scale = [
-						C_R.Scale,									1
+						C_R.Scale,									         1
 					];
 					
 					C_D.Value = K_D.Value/(T_F.Value + T);
@@ -930,7 +930,7 @@ function [ltiss] = ltiblock2ss(lti)
 						C_R.Scale*K_D.Scale/T_F.Scale,			K_D.Scale/T_F.Scale
 					];
 				else
-					error('model:ltiblock:input', 'Undefined discretization method ''%s'' for derivative part of pid controller.', IFormula);
+					error('model:ltiblock:input', 'Undefined discretization method ''%s'' for derivative part of pid2 controller.', IFormula);
 				end
 			end
 			A = struct(...
