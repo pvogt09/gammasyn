@@ -37,6 +37,9 @@ function [J, gradJ, hessianJ] = calculate_objective(areaval, weight, eigenvalue_
 	needsgradient = nargout >= 2;
 	needshessian = nargout >= 3;
 	areaval_zero = zeros(size(areaval));% prevent NaN in 0*areaval if areaval is Inf
+	if options.eigenvalueignoreinf
+		areaval(isinf(areaval)) = 0;
+	end
 	parfor (ii = 1:int32(size(objective_type, 1)), numthreads)
 		Jtemp = areaval; %#ok<NASGU> prevent "The temporary variable Jtemp will be cleared at the beginning of each iteration of the parfor loop."
 		switch objective_type(ii, 1)

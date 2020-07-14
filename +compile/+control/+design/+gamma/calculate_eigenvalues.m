@@ -77,7 +77,7 @@ function [success, fileinfo] = calculate_eigenvalues(overwrite, nobuild)
 	Tdimensions = coder.typeof(dimensions);
 	Teigenvaluederivativetype = coder.newtype('GammaEigenvalueDerivativeType', [1, 1], [false, false]);
 	Tnumthreads = coder.typeof(uint32(1));
-	Teigenvaluefiltertype = coder.newtype('GammaEigenvalueFilterType', [Inf, 1], [true, false]);
+	Teigenvaluefiltertype = coder.newtype('GammaEigenvalueFilterType', [20, 1], [true, false]);% TODO: crashes matlab for size [Inf, 1]
 
     config = compile.constant();
     

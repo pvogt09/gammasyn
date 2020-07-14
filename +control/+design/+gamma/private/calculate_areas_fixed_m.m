@@ -1,4 +1,4 @@
-function [areaval, areaval_derivative, areaval_2_derivative] = calculate_areas_fixed_m(areafun, weight, eigenvalues, dimensions, numthreads)
+function [areaval, areaval_derivative, areaval_2_derivative] = calculate_areas_fixed_m(areafun, weight, eigenvalues, dimensions, numthreads, eigenvalueignoreinf)
 	%CALCULATE_AREAS_FIXED_M helper function for calculation of border function, gradient and hessian values for gamma pole placement for use with generated code
 	%	Input:
 	%		areafun:				border functions as cell array of function handles or matrix of GammaArea objects
@@ -6,6 +6,7 @@ function [areaval, areaval_derivative, areaval_2_derivative] = calculate_areas_f
 	%		eigenvalues:			eigenvalues used of all systems
 	%		dimensions:				structure with information about dimensions of the different variables and systems
 	%		numthreads:				number of threads to run loops in
+	%		eigenvalueignoreinf:	indicator wheter infinite eigenvalues should be ignored
 	%	Output:
 	%		areaval:				area border function value for current optimization value
 	%		areaval_derivative:		gradient of area border function for current optimization value
@@ -39,6 +40,18 @@ function [areaval, areaval_derivative, areaval_2_derivative] = calculate_areas_f
 	parfor (ii = 1:number_models, numthreads)
 		for kk = 1:number_states
 			if isnan(eigenvalues(kk, ii))
+				continue;
+			end
+			if eigenvalueignoreinf && isinf(eigenvalues(kk, ii))
+				signedinf = -sign(weight(ii, :)).*Inf(1, number_areas_max);
+				signedinf(isnan(signedinf)) = 0;% handle weight = 0
+				areaval(ii, :, kk) = signedinf;
+				if needsgradient
+					areaval_derivative(kk, :, :, ii) = zeros(1, number_areas_max, 2);
+					if needshessian
+						areaval_2_derivative(kk, :, :, ii) = zeros(number_areas_max, 4);
+					end
+				end
 				continue;
 			end
 			if needshessian

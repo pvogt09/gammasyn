@@ -67,10 +67,11 @@ function [success, fileinfo] = calculate_areas_fixed(overwrite, nobuild)
 	Teigenvalues = coder.typeof(1 + 1i, [max_system_states, max_number_of_systems], [true, true]);
 	Tdimensions = coder.typeof(dimensions);
 	Tnumthreads = coder.typeof(uint32(1));
+	Teigenvalueignoreinf = coder.typeof(true);
 
     config = compile.constant();
     
-	Args = '{Tareafun Tweight Teigenvalues Tdimensions Tnumthreads}';
+	Args = '{Tareafun Tweight Teigenvalues Tdimensions Tnumthreads Teigenvalueignoreinf}';
 	try
 		if overwrite
 			codegen([file, '_m.m'], '-args', Args, '-d', makePfad, '-config', 'config', '-o', [file, '_mex']);

@@ -11,6 +11,7 @@ classdef GammasynOptions < handle
 			'allowvarorder',		false,...
 			'eigenvaluederivative',	GammaEigenvalueDerivativeType.getDefaultValue(),...
 			'eigenvaluefilter',		GammaEigenvalueFilterType.getDefaultValue(),...
+			'eigenvalueignoreinf',	false,...
 			'objective',			struct(...
 				'preventNaN',		false,...
 				'kreisselmeier',	struct(...
@@ -42,6 +43,7 @@ classdef GammasynOptions < handle
 			'allowvarorder',		false,...
 			'eigenvaluederivative',	GammaEigenvalueDerivativeType.getDefaultValue(),...
 			'eigenvaluefilter',		GammaEigenvalueFilterType.getDefaultValue(),...
+			'eigenvalueignoreinf',	false,...
 			'objective',			struct(...
 				'preventNaN',		false,...
 				'kreisselmeier',	struct(...
@@ -88,6 +90,8 @@ classdef GammasynOptions < handle
 		eigenvaluederivative = [];
 		% filter for eigenvalues to use
 		eigenvaluefilter = [];
+		% indicator for ignoring infinte eigenvalues to use
+		eigenvalueignoreinf = [];
 		% options for objective functions
 		objective = [];
 		% indicator if negative weights are allowed
@@ -148,6 +152,8 @@ classdef GammasynOptions < handle
 		eigenvaluederivative_internal = [];
 		% filter for eigenvalues to use (internal)
 		eigenvaluefilter_internal = [];
+		% indicator for ignoring infinite eigenvalues to use (internal)
+		eigenvalueignoreinf_internal = [];
 		% options for objective functions (internal)
 		objective_internal = [];
 		% indicator if negative weights are allowed (internal)
@@ -177,6 +183,8 @@ classdef GammasynOptions < handle
 		eigenvaluederivative_user = false;
 		% indicator if user set 'eigenvaluefilter' option
 		eigenvaluefilter_user = false;
+		% indicator if user set 'eigenvalueignoreinf' option
+		eigenvalueignoreinf_user = false;
 		% indicator if user set 'objective' option
 		objective_user = struct(...
 			'preventNaN',		false,...
@@ -284,7 +292,7 @@ classdef GammasynOptions < handle
 		end
 		
 		function [eigenvaluederivative] = get.eigenvaluederivative(this)
-			%EIGENVALUEDERIVATIVE getter for typ of eigenvalue derivative method to use
+			%EIGENVALUEDERIVATIVE getter for type of eigenvalue derivative method to use
 			%	Input:
 			%		this:						instance
 			%	Output:
@@ -293,12 +301,21 @@ classdef GammasynOptions < handle
 		end
 		
 		function [eigenvaluefilter] = get.eigenvaluefilter(this)
-			%EIGENVALUEFILTER getter for typ of filter method to use for eigenvalues
+			%EIGENVALUEFILTER getter for type of filter method to use for eigenvalues
 			%	Input:
 			%		this:					instance
 			%	Output:
 			%		eigenvaluefilter:		type of filter method to use for eigenvalues
 			eigenvaluefilter = this.eigenvaluefilter_internal;
+		end
+		
+		function [eigenvalueignoreinf] = get.eigenvalueignoreinf(this)
+			%EIGENVALUEIGNOREINF getter for indicator wheter infinite eigenvalues are ignored
+			%	Input:
+			%		this:					instance
+			%	Output:
+			%		eigenvalueignoreinf:	indicator wheter infinite eigenvalues are ignored
+			eigenvalueignoreinf = this.eigenvalueignoreinf_internal;
 		end
 		
 		function [objective] = get.objective(this)
@@ -623,7 +640,7 @@ classdef GammasynOptions < handle
 		end
 		
 		function [] = set.eigenvaluederivative(this, eigenvaluederivative)
-			%EIGENVALUEDERIVATIVE setter for typ of eigenvalue derivative method to use
+			%EIGENVALUEDERIVATIVE setter for type of eigenvalue derivative method to use
 			%	Input:
 			%		this:						instance
 			%		eigenvaluederivative:		type of eigenvalue derivative method to use
@@ -632,12 +649,21 @@ classdef GammasynOptions < handle
 		end
 		
 		function [] = set.eigenvaluefilter(this, eigenvaluefilter)
-			%EIGENVALUEFILTER setter for typ of filter method to use for eigenvalues
+			%EIGENVALUEFILTER setter for type of filter method to use for eigenvalues
 			%	Input:
 			%		this:					instance
 			%		eigenvaluefilter:		type of filter method to use for eigenvalues
 			this.eigenvaluefilter_internal = this.checkProperty('eigenvaluefilter', eigenvaluefilter);
 			this.eigenvaluefilter_user = true;
+		end
+		
+		function [] = set.eigenvalueignoreinf(this, eigenvalueignoreinf)
+			%EIGENVALUEIGNOREINF setter for indicator to ignore inifite eigenvalues
+			%	Input:
+			%		this:					instance
+			%		eigenvalueignoreinf:	indicator to ignore inifite eigenvalues
+			this.eigenvalueignoreinf_internal = this.checkProperty('eigenvalueignoreinf', eigenvalueignoreinf);
+			this.eigenvalueignoreinf_user = true;
 		end
 		
 		function [] = set.objective(this, objective)
@@ -883,6 +909,7 @@ classdef GammasynOptions < handle
 				'allowvarorder',			true,	true,		{},									false;
 				'eigenvaluederivative',		true,	true,		{},									false;
 				'eigenvaluefilter',			true,	true,		{},									false;
+				'eigenvalueignoreinf',		true,	true,		{},									false;
 				'preventNaN',				false,	true,		{'objective'},						false;
 				'rho',						false,	true,		{'objective', 'kreisselmeier'},		false;
 				'max',						false,	true,		{'objective', 'kreisselmeier'},		false;
@@ -917,6 +944,7 @@ classdef GammasynOptions < handle
 			this.allowvarorder_user = false;
 			this.eigenvaluederivative_user = false;
 			this.eigenvaluefilter_user = false;
+			this.eigenvalueignoreinf_user = false;
 			this.objective_user = struct(...
 				'preventNaN',		false,...
 				'kreisselmeier',	struct(...
@@ -959,6 +987,7 @@ classdef GammasynOptions < handle
 			this.allowvarorder_internal = proto.allowvarorder;
 			this.eigenvaluederivative_internal = proto.eigenvaluederivative;
 			this.eigenvaluefilter_internal = proto.eigenvaluefilter;
+			this.eigenvalueignoreinf_internal = proto.eigenvalueignoreinf;
 			this.objective_internal = struct(...
 				'preventNaN',		proto.objective.preventNaN,...
 				'kreisselmeier',	struct(...
