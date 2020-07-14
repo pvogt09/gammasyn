@@ -852,16 +852,16 @@ function [ltiss] = ltiblock2ss(lti)
 						C_R.Value*T_F.Value/(T_F.Value + T) - C_R.Value,	1 - T_F.Value/(T_F.Value + T)
 					];
 					B_D.Free = [
-						C_R.Free | T_F.Free,						        T_F.Free
+						C_R.Free | T_F.Free,								T_F.Free
 					];
 					B_D.Minimum = [
-						-C_R.Maximum,								        -Inf
+						-C_R.Maximum,										-Inf
 					];
 					B_D.Maximum = [
-						C_R.Maximum*Inf,							         1
+						C_R.Maximum*Inf,									1
 					];
 					B_D.Scale = [
-						C_R.Scale,									         1
+						C_R.Scale,											1
 					];
 					
 					C_D.Value = K_D.Value/(T_F.Value + T);

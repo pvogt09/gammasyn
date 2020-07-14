@@ -533,7 +533,7 @@ function [lti] = ltiblockss2ltiblock(ltiss, type)
 			error('model:ltiblock:input', 'PID2 controller can have at most 2 states.');
 		end
 		if size(D.Value, 1) ~= 1 || size(D.Value, 2) ~= 2
-			error('model:ltiblock:input', 'PID2 controller must be a 2ISO system.');
+			error('model:ltiblock:input', 'PID2 controller must be a SISO system.');
 		end
 		IFormula = '';
 		DFormula = '';
