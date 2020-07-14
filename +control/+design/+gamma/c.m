@@ -49,13 +49,13 @@ function [c, ceq, gradc, gradceq, hessc, hessceq] = c(x, system, weight, areafun
 			if derivative_feedback
 				[eigenvalues, ~, ~, eigenvalue_derivative, eigenvalue_derivative_xdot, ~, ~, ~, ~, eigenvalue_2derivative, eigenvalue_2derivative_xdot, eigenvalue_2derivative_mixed, eigenvalue_2derivative_xdot_mixed] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads, options.eigenvaluefilter);
 				[eigenvalues, ~, ~, eigenvalue_derivative, eigenvalue_derivative_xdot, ~, ~, ~, ~, eigenvalue_2derivative, eigenvalue_2derivative_xdot, eigenvalue_2derivative_mixed, eigenvalue_2derivative_xdot_mixed] = calculate_eigenvalue_filter(options.eigenvaluefilter, eigenvalues, [], [], eigenvalue_derivative, eigenvalue_derivative_xdot, [], [], [], [], eigenvalue_2derivative, eigenvalue_2derivative_xdot, eigenvalue_2derivative_mixed, eigenvalue_2derivative_xdot_mixed);
-				[areaval, areaval_derivative, areaval_2_derivative] = calculate_areas(areafun, weight, eigenvalues, dimensions, numthreads);
+				[areaval, areaval_derivative, areaval_2_derivative] = calculate_areas(areafun, weight, eigenvalues, dimensions, options);
 				gradtemp = calculate_constraint_gradient(weight, eigenvalue_derivative, eigenvalue_derivative_xdot, areaval_derivative, dimensions, numthreads);
 				hesstemp = calculate_constraint_hessian(weight, eigenvalue_derivative, eigenvalue_derivative_xdot, areaval_derivative, dimensions, numthreads, areaval_2_derivative, eigenvalue_2derivative, eigenvalue_2derivative_xdot, eigenvalue_2derivative_mixed, eigenvalue_2derivative_xdot_mixed);
 			else
 				[eigenvalues, ~, ~, eigenvalue_derivative, ~, ~, ~, ~, ~, eigenvalue_2derivative] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads, options.eigenvaluefilter);
 				[eigenvalues, ~, ~, eigenvalue_derivative, ~, ~, ~, ~, ~, eigenvalue_2derivative] = calculate_eigenvalue_filter(options.eigenvaluefilter, eigenvalues, [], [], eigenvalue_derivative, [], [], [], [], [], eigenvalue_2derivative);
-				[areaval, areaval_derivative, areaval_2_derivative] = calculate_areas(areafun, weight, eigenvalues, dimensions, numthreads);
+				[areaval, areaval_derivative, areaval_2_derivative] = calculate_areas(areafun, weight, eigenvalues, dimensions, options);
 				gradtemp = calculate_constraint_gradient(weight, eigenvalue_derivative, [], areaval_derivative, dimensions, numthreads);
 				eigenvalue_derivative_xdot = NaN(number_states, number_controls, number_measurements_xdot, number_models) + 0i;
 				hesstemp = calculate_constraint_hessian(weight, eigenvalue_derivative, eigenvalue_derivative_xdot, areaval_derivative, dimensions, numthreads, areaval_2_derivative, eigenvalue_2derivative);
