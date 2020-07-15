@@ -376,7 +376,7 @@ function [ltiss] = ltiblock2ss(lti)
 					D_D.Maximum = Inf;
 					D_D.Scale = K_D.Scale/T_F.Scale;
 				else
-					error('model:ltiblock:input', 'Undefined discretization method ''%s'' for derivative part of pid controller.', IFormula);
+					error('model:ltiblock:input', 'Undefined discretization method ''%s'' for derivative part of pid controller.', DFormula);
 				end
 			end
 			A = struct(...
@@ -930,7 +930,7 @@ function [ltiss] = ltiblock2ss(lti)
 						C_R.Scale*K_D.Scale/T_F.Scale,			K_D.Scale/T_F.Scale
 					];
 				else
-					error('model:ltiblock:input', 'Undefined discretization method ''%s'' for derivative part of pid2 controller.', IFormula);
+					error('model:ltiblock:input', 'Undefined discretization method ''%s'' for derivative part of pid2 controller.', DFormula);
 				end
 			end
 			A = struct(...
@@ -1010,22 +1010,38 @@ function [ltiss] = ltiblock2ss(lti)
 				D.Free = D.Free | D_D.Free;
 				D.Scale = D.Scale + D_D.Scale;
 			end
-			ltiss = ltiblock.ss(lti.Name, size(A.Value, 1), size(C.Value, 1), size(B.Value, 2), lti.Ts);
+			ltiss = ltiblock.ss(lti.Name, size(A.Value, 1), 1, 2, lti.Ts);
 			ltiss.a.Value = A.Value;
 			ltiss.a.Minimum = A.Minimum;
 			ltiss.a.Maximum = A.Maximum;
 			ltiss.a.Free = A.Free;
 			ltiss.a.Scale = A.Scale;
-			ltiss.b.Value = B.Value;
-			ltiss.b.Minimum = B.Minimum;
-			ltiss.b.Maximum = B.Maximum;
-			ltiss.b.Free = B.Free;
-			ltiss.b.Scale = B.Scale;
-			ltiss.c.Value = C.Value;
-			ltiss.c.Minimum = C.Minimum;
-			ltiss.c.Maximum = C.Maximum;
-			ltiss.c.Free = C.Free;
-			ltiss.c.Scale = C.Scale;
+			if ~isempty(B.Value)
+				ltiss.b.Value = B.Value;
+				ltiss.b.Minimum = B.Minimum;
+				ltiss.b.Maximum = B.Maximum;
+				ltiss.b.Free = B.Free;
+				ltiss.b.Scale = B.Scale;
+			else
+				ltiss.b.Value = zeros(0, 2);
+				ltiss.b.Free = false(0, 2);
+				ltiss.b.Minimum = -Inf(0, 2);
+				ltiss.b.Maximum = Inf(0, 2);
+				ltiss.b.Scale = ones(0, 2);
+			end
+			if ~isempty(C.Value)
+				ltiss.c.Value = C.Value;
+				ltiss.c.Minimum = C.Minimum;
+				ltiss.c.Maximum = C.Maximum;
+				ltiss.c.Free = C.Free;
+				ltiss.c.Scale = C.Scale;
+			else
+				ltiss.c.Value = zeros(1, 0);
+				ltiss.c.Free = false(1, 0);
+				ltiss.c.Minimum = -Inf(1, 0);
+				ltiss.c.Maximum = Inf(1, 0);
+				ltiss.c.Scale = ones(1, 0);
+			end
 			ltiss.d.Value = D.Value;
 			ltiss.d.Minimum = D.Minimum;
 			ltiss.d.Maximum = D.Maximum;
