@@ -3,14 +3,6 @@
 # top-most EditorConfig file
 root = true
 
-[*]
-insert_final_newline = false
-indent_style = tab
-indent_size = tab
-tab_width = 4
-charset = utf-8
-trim_trailing_whitespace = true
-
 # patch files
 [*.patch]
 insert_final_newline = unset
@@ -19,9 +11,19 @@ indent_size = unset
 tab_width = unset
 trim_trailing_whitespace = unset
 
+# git files
+[*.{gitignore,gitattributes,gitmodules}]
+insert_final_newline = true
+trim_trailing_whitespace = true
+
 # Matlab files
-[*.m]
-charset = latin1
+[*.{m,c,cpp,h,hpp}]
+insert_final_newline = false
+indent_style = tab
+indent_size = tab
+tab_width = 4
+charset = unset
+trim_trailing_whitespace = true
 
 # shell scripts unix
 [*.sh]
