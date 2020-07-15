@@ -1,5 +1,5 @@
 classdef(Abstract) AbstractDynamicFeedback < control.design.outputfeedback.OutputFeedback
-	%ABSTRACTREFERENCEMODELFEEDBACK abstract class for casting a control system in output feedback form and specify the needed constraints on the resulting gain matrix, when a dynamic feedback of specified order is needed
+	%ABSTRACTDYNAMICFEEDBACK abstract class for casting a control system in output feedback form and specify the needed constraints on the resulting gain matrix, when a dynamic feedback of specified order is needed
 	
 	properties(SetAccess=protected)
 		% order of dynamic feedback
