@@ -288,7 +288,7 @@ function [lti] = ltiblockss2ltiblock(ltiss, type)
 		isctrb = isctrb && all(A.Value(1:end - 1, 1) == 0);
 		A_integrator_chain = A.Value(1:end - 1, 2:end);
 		isctrb = isctrb && all(all(A_integrator_chain == eye(size(A_integrator_chain, 1))));
-		
+
 		isobsv = C.Value(1, end) == 1 && all(C.Value(1, 1:end - 1) == 0);
 		isobsv = isobsv && all(A.Value(1, 1:end - 1) == 0);
 		A_integrator_chain = A.Value(2:end, 1:end - 1);
@@ -325,7 +325,7 @@ function [lti] = ltiblockss2ltiblock(ltiss, type)
 			den.Maximum = [1, -fliplr(A.Maximum(end, :))];
 			den.Free = [false, fliplr(A.Free(end, :))];
 			den.Scale = [1, -fliplr(A.Scale(end, :))];
-			
+
 			num.Value = C.Value - den.Value(1, 2:end)*D.Value;
 			num.Minimum = C.Minimum - den.Maximum(1, 2:end)*D.Maximum;
 			num.Maximum = C.Maximum - den.Minimum(1, 2:end)*D.Minimum;
@@ -337,7 +337,7 @@ function [lti] = ltiblockss2ltiblock(ltiss, type)
 			den.Maximum = [1, -A.Maximum(:, end)'];
 			den.Free = [false, A.Free(:, end)'];
 			den.Scale = [1, -A.Scale(:, end)'];
-			
+
 			num.Value = B.Value' - den.Value(1, 2:end)*D.Value;
 			num.Minimum = B.Minimum' - den.Maximum(1, 2:end)*D.Maximum;
 			num.Maximum = B.Maximum' - den.Minimum(1, 2:end)*D.Minimum;
@@ -455,16 +455,41 @@ function [lti] = ltiblockss2ltiblock(ltiss, type)
 			'Free',		[],...
 			'Scale',	[]...
 		);
+		D_I = struct(...
+			'Value',	[],...
+			'Minimum',	[],...
+			'Maximum',	[],...
+			'Free',		[],...
+			'Scale',	[]...
+		);
 		if ltiss.Ts > 0
+			D_I.Value = 0;
+			D_I.Minimum = 0;
+			D_I.Maximum = 0;
+			D_I.Free = false;
+			D_I.Scale = 1;
 			if position_I ~= 0
-				if ~strcmpi(IFormula, 'ForwardEuler') && ~strcmpi(IFormula, 'BackwardEuler') && ~any(strcmpi(IFormula, {'Trapezoid', 'Trapezoidal'}))
+				if strcmpi(IFormula, 'ForwardEuler')
+					K_I.Value = C.Value(1, position_I)*B.Value(position_I, 1)/ltiss.Ts;
+					K_I.Minimum = C.Minimum(1, position_I)*B.Minimum(position_I, 1)/ltiss.Ts;
+					K_I.Maximum = C.Maximum(1, position_I)*B.Maximum(position_I, 1)/ltiss.Ts;
+					K_I.Free = C.Free(1, position_I) || B.Free(position_I, 1);
+					K_I.Scale = C.Scale(1, position_I)*B.Scale(position_I, 1)/ltiss.Ts;
+				elseif strcmpi(IFormula, 'BackwardEuler')
+					D_I.Value = K_I.Value*ltiss.Ts;
+					D_I.Minimum = K_I.Minimum*ltiss.Ts;
+					D_I.Maximum = K_I.Maximum*ltiss.Ts;
+					D_I.Free = K_I.Free;
+					D_I.Scale = K_I.Scale*ltiss.Ts;
+				elseif any(strcmpi(IFormula, {'Trapezoid', 'Trapezoidal'}))
+					D_I.Value = K_I.Value*ltiss.Ts/2;
+					D_I.Minimum = K_I.Minimum*ltiss.Ts/2;
+					D_I.Maximum = K_I.Maximum*ltiss.Ts/2;
+					D_I.Free = K_I.Free;
+					D_I.Scale = K_I.Scale*ltiss.Ts/2;
+				else
 					error('model:ltiblock:input', 'Undefined discretization method ''%s'' for integral part of pid controller.', IFormula);
 				end
-				K_I.Value = C.Value(1, position_I)*B.Value(position_I, 1)/ltiss.Ts;
-				K_I.Minimum = C.Minimum(1, position_I)*B.Minimum(position_I, 1)/ltiss.Ts;
-				K_I.Maximum = C.Maximum(1, position_I)*B.Maximum(position_I, 1)/ltiss.Ts;
-				K_I.Free = C.Free(1, position_I) || B.Free(position_I, 1);
-				K_I.Scale = C.Scale(1, position_I)*B.Scale(position_I, 1)/ltiss.Ts;
 			end
 			if position_D ~= 0
 				if strcmpi(DFormula, 'ForwardEuler')
@@ -478,11 +503,11 @@ function [lti] = ltiblockss2ltiblock(ltiss, type)
 					K_D.Maximum = C.Maximum(1, position_D)*B.Maximum(position_D, 1)*T_F.Value^2/ltiss.Ts;
 					K_D.Free = C.Free(1, position_D) || B.Free(position_D, 1) || T_F.Free;
 					K_D.Scale = C.Scale(1, position_D)*B.Scale(position_D, 1)*T_F.Scale^2/ltiss.Ts;
-					K_P.Value = D.Value - K_D.Value/T_F.Value;
-					K_P.Minimum = D.Minimum - K_D.Minimum/T_F.Maximum;
-					K_P.Maximum = D.Maximum - K_D.Maximum/T_F.Minimum;
-					K_P.Free = D.Free || K_D.Free || T_F.Free;
-					K_P.Scale = D.Scale - K_D.Scale/T_F.Scale;
+					K_P.Value = D.Value - D_I.Value - K_D.Value/T_F.Value;
+					K_P.Minimum = D.Minimum - D_I.Minimum - K_D.Minimum/T_F.Maximum;
+					K_P.Maximum = D.Maximum - D_I.Maximum - K_D.Maximum/T_F.Minimum;
+					K_P.Free = D.Free || D_I.Value || K_D.Free || T_F.Free;
+					K_P.Scale = D.Scale - D_I.Scale - K_D.Scale/T_F.Scale;
 				elseif strcmpi(DFormula, 'BackwardEuler')
 					T_F.Value = A.Value(position_D, position_D)/(1 - A.Value(position_D, position_D))*ltiss.Ts;
 					T_F.Minimum = -Inf;
@@ -494,11 +519,11 @@ function [lti] = ltiblockss2ltiblock(ltiss, type)
 					K_D.Maximum = -C.Maximum(1, position_D)*B.Maximum(position_D, 1)*(T_F.Value + ltiss.Ts)^2/ltiss.Ts;
 					K_D.Free = C.Free(1, position_D) || B.Free(position_D, 1) || T_F.Free;
 					K_D.Scale = -C.Scale(1, position_D)*B.Scale(position_D, 1)*(T_F.Scale + ltiss.Ts)^2/ltiss.Ts;
-					K_P.Value = D.Value - K_D.Value/(T_F.Value + ltiss.Ts);
-					K_P.Minimum = D.Minimum - K_D.Minimum/(T_F.Maximum + ltiss.Ts);
-					K_P.Maximum = D.Maximum - K_D.Maximum/(T_F.Minimum + ltiss.Ts);
-					K_P.Free = D.Free || K_D.Free || T_F.Free;
-					K_P.Scale = D.Scale - K_D.Scale/(T_F.Scale + ltiss.Ts);
+					K_P.Value = D.Value - D_I.Value - K_D.Value/(T_F.Value + ltiss.Ts);
+					K_P.Minimum = D.Minimum - D_I.Minimum - K_D.Minimum/(T_F.Maximum + ltiss.Ts);
+					K_P.Maximum = D.Maximum - D_I.Maximum - K_D.Maximum/(T_F.Minimum + ltiss.Ts);
+					K_P.Free = D.Free || D_I.Free || K_D.Free || T_F.Free;
+					K_P.Scale = D.Scale - D_I.Scale - K_D.Scale/(T_F.Scale + ltiss.Ts);
 				elseif any(strcmpi(DFormula, {'Trapezoid', 'Trapezoidal'}))
 					T_F.Value = (1 + A.Value(position_D, position_D))/(1 - A.Value(position_D, position_D))*ltiss.Ts/2;
 					T_F.Minimum = -Inf;
@@ -510,20 +535,20 @@ function [lti] = ltiblockss2ltiblock(ltiss, type)
 					K_D.Maximum = -C.Maximum(1, position_D)*B.Maximum(position_D, 1)*(T_F.Value + ltiss.Ts/2)^2/ltiss.Ts;
 					K_D.Free = C.Free(1, position_D) || B.Free(position_D, 1) || T_F.Free;
 					K_D.Scale = -C.Scale(1, position_D)*B.Scale(position_D, 1)*(T_F.Scale + ltiss.Ts/2)^2/ltiss.Ts;
-					K_P.Value = D.Value - K_D.Value/(T_F.Value + ltiss.Ts/2);
-					K_P.Minimum = D.Minimum - K_D.Minimum/(T_F.Maximum + ltiss.Ts/2);
-					K_P.Maximum = D.Maximum - K_D.Maximum/(T_F.Minimum + ltiss.Ts/2);
-					K_P.Free = D.Free || K_D.Free || T_F.Free;
-					K_P.Scale = D.Scale - K_D.Scale/(T_F.Scale + ltiss.Ts/2);
+					K_P.Value = D.Value - D_I.Value - K_D.Value/(T_F.Value + ltiss.Ts/2);
+					K_P.Minimum = D.Minimum - D_I.Minimum - K_D.Minimum/(T_F.Maximum + ltiss.Ts/2);
+					K_P.Maximum = D.Maximum - D_I.Maximum - K_D.Maximum/(T_F.Minimum + ltiss.Ts/2);
+					K_P.Free = D.Free || D_I.Free || K_D.Free || T_F.Free;
+					K_P.Scale = D.Scale - D_I.Scale - K_D.Scale/(T_F.Scale + ltiss.Ts/2);
 				else
 					error('model:ltiblock:input', 'Undefined discretization method ''%s'' for derivative part of pid controller.', DFormula);
 				end
 			else
-				K_P.Value = D.Value;
-				K_P.Minimum = D.Minimum;
-				K_P.Maximum = D.Maximum;
-				K_P.Free = D.Free;
-				K_P.Scale = D.Scale;
+				K_P.Value = D.Value - D_I.Value;
+				K_P.Minimum = D.Minimum - D_I.Minimum;
+				K_P.Maximum = D.Maximum - D_I.Maximum;
+				K_P.Free = D.Free || D_I.Free;
+				K_P.Scale = D.Scale - D_I.Scale;
 			end
 		else
 			if position_I ~= 0
@@ -692,16 +717,41 @@ function [lti] = ltiblockss2ltiblock(ltiss, type)
 			'Free',		[],...
 			'Scale',	[]...
 		);
+		D_I = struct(...
+			'Value',	[],...
+			'Minimum',	[],...
+			'Maximum',	[],...
+			'Free',		[],...
+			'Scale',	[]...
+		);
 		if ltiss.Ts > 0
+			D_I.Value = 0;
+			D_I.Minimum = 0;
+			D_I.Maximum = 0;
+			D_I.Free = false;
+			D_I.Scale = 1;
 			if position_I ~= 0
-				if ~strcmpi(IFormula, 'ForwardEuler') && ~strcmpi(IFormula, 'BackwardEuler') && ~any(strcmpi(IFormula, {'Trapezoid', 'Trapezoidal'}))
-					error('model:ltiblock:input', 'Undefined discretization method ''%s'' for integral part of pid2 controller.', IFormula);
+				if strcmpi(IFormula, 'ForwardEuler')
+					K_I.Value = C.Value(1, position_I)*B.Value(position_I, position_R)/ltiss.Ts;
+					K_I.Minimum = C.Minimum(1, position_I)*B.Minimum(position_I, position_R)/ltiss.Ts;
+					K_I.Maximum = C.Maximum(1, position_I)*B.Maximum(position_I, position_R)/ltiss.Ts;
+					K_I.Free = C.Free(1, position_I) || B.Free(position_I, position_R);
+					K_I.Scale = C.Scale(1, position_I)*B.Scale(position_I, position_R)/ltiss.Ts;
+				elseif strcmpi(IFormula, 'BackwardEuler')
+					D_I.Value = K_I.Value*ltiss.Ts;
+					D_I.Minimum = K_I.Minimum*ltiss.Ts;
+					D_I.Maximum = K_I.Maximum*ltiss.Ts;
+					D_I.Free = K_I.Free;
+					D_I.Scale = K_I.Scale*ltiss.Ts;
+				elseif any(strcmpi(IFormula, {'Trapezoid', 'Trapezoidal'}))
+					D_I.Value = K_I.Value*ltiss.Ts/2;
+					D_I.Minimum = K_I.Minimum*ltiss.Ts/2;
+					D_I.Maximum = K_I.Maximum*ltiss.Ts/2;
+					D_I.Free = K_I.Free;
+					D_I.Scale = K_I.Scale*ltiss.Ts/2;
+				else
+					error('model:ltiblock:input', 'Undefined discretization method ''%s'' for integral part of pid controller.', IFormula);
 				end
-				K_I.Value = C.Value(1, position_I)*B.Value(position_I, position_R)/ltiss.Ts;
-				K_I.Minimum = C.Minimum(1, position_I)*B.Minimum(position_I, position_R)/ltiss.Ts;
-				K_I.Maximum = C.Maximum(1, position_I)*B.Maximum(position_I, position_R)/ltiss.Ts;
-				K_I.Free = C.Free(1, position_I) || B.Free(position_I, position_R);
-				K_I.Scale = C.Scale(1, position_I)*B.Scale(position_I, position_R)/ltiss.Ts;
 			end
 			if position_D ~= 0
 				if strcmpi(DFormula, 'ForwardEuler')
@@ -720,16 +770,16 @@ function [lti] = ltiblockss2ltiblock(ltiss, type)
 					C_R.Maximum = C.Maximum(1, position_D)*B.Maximum(position_D, position_R)*T_F.Value^2/ltiss.Ts/K_D.Minimum;
 					C_R.Free = C.Free(1, position_D) || B.Free(position_D, position_R) || T_F.Free || K_D.Free;
 					C_R.Scale = C.Scale(1, position_D)*B.Scale(position_D, position_R)*T_F.Scale^2/ltiss.Ts/K_D.Scale;
-					K_P.Value = -D.Value(1, position_Y) - K_D.Value/T_F.Value;
-					K_P.Minimum = -D.Minimum(1, position_Y) - K_D.Minimum/T_F.Maximum;
-					K_P.Maximum = -D.Maximum(1, position_Y) - K_D.Maximum/T_F.Minimum;
-					K_P.Free = D.Free(1, position_Y) || K_D.Free || T_F.Free;
-					K_P.Scale = -D.Scale(1, position_Y) - K_D.Scale/T_F.Scale;
-					B_R.Value = (D.Value(1, position_R) - C_R.Value*K_D.Value/T_F.Value)/K_P.Value;
-					B_R.Minimum = (D.Minimum(1, position_R) - C_R.Value*K_D.Minimum/T_F.Maximum)/K_P.Maximum;
-					B_R.Maximum = (D.Maximum(1, position_R) - C_R.Value*K_D.Maximum/T_F.Minimum)/K_P.Minimum;
-					B_R.Free = D.Free(1, position_R) || C_R.Free || K_D.Free || T_F.Free;
-					B_R.Scale = (D.Scale(1, position_R) - C_R.Scale*K_D.Scale/T_F.Scale)/K_P.Scale;
+					K_P.Value = -D.Value(1, position_Y) - D_I.Value - K_D.Value/T_F.Value;
+					K_P.Minimum = -D.Minimum(1, position_Y) - D_I.Minimum - K_D.Minimum/T_F.Maximum;
+					K_P.Maximum = -D.Maximum(1, position_Y) - D_I.Maximum - K_D.Maximum/T_F.Minimum;
+					K_P.Free = D.Free(1, position_Y) || D_I.Free || K_D.Free || T_F.Free;
+					K_P.Scale = -D.Scale(1, position_Y) - D_I.Scale - K_D.Scale/T_F.Scale;
+					B_R.Value = (D.Value(1, position_R) - D_I.Value - C_R.Value*K_D.Value/T_F.Value)/K_P.Value;
+					B_R.Minimum = (D.Minimum(1, position_R) - D_I.Minimum - C_R.Value*K_D.Minimum/T_F.Maximum)/K_P.Maximum;
+					B_R.Maximum = (D.Maximum(1, position_R) - D_I.Maximum - C_R.Value*K_D.Maximum/T_F.Minimum)/K_P.Minimum;
+					B_R.Free = D.Free(1, position_R) || D_I.Free || C_R.Free || K_D.Free || T_F.Free;
+					B_R.Scale = (D.Scale(1, position_R) - D_I.Scale - C_R.Scale*K_D.Scale/T_F.Scale)/K_P.Scale;
 				elseif strcmpi(DFormula, 'BackwardEuler')
 					T_F.Value = A.Value(position_D, position_D)/(1 - A.Value(position_D, position_D))*ltiss.Ts;
 					T_F.Minimum = -Inf;
@@ -746,16 +796,16 @@ function [lti] = ltiblockss2ltiblock(ltiss, type)
 					C_R.Maximum = -C.Maximum(1, position_D)*B.Maximum(position_D, position_R)*(T_F.Value + ltiss.Ts)^2/ltiss.Ts/K_D.Maximum;
 					C_R.Free = C.Free(1, position_D) || B.Free(position_D, position_R) || T_F.Free || K_D.Free;
 					C_R.Scale = -C.Scale(1, position_D)*B.Scale(position_D, position_R)*(T_F.Scale + ltiss.Ts)^2/ltiss.Ts/K_D.Scale;
-					K_P.Value = -D.Value(1, position_Y) - K_D.Value/(T_F.Value + ltiss.Ts);
-					K_P.Minimum = -D.Minimum(1, position_Y) - K_D.Minimum/(T_F.Maximum + ltiss.Ts);
-					K_P.Maximum = -D.Maximum(1, position_Y) - K_D.Maximum/(T_F.Minimum + ltiss.Ts);
-					K_P.Free = D.Free(1, position_Y) || K_D.Free || T_F.Free;
-					K_P.Scale = -D.Scale(1, position_Y) - K_D.Scale/(T_F.Scale + ltiss.Ts);
-					B_R.Value = (D.Value(1, position_R) - C_R.Value*K_D.Value/(T_F.Value + ltiss.Ts))/K_P.Value;
-					B_R.Minimum = (D.Minimum(1, position_R) - C_R.Minimum*K_D.Minimum/(T_F.Maximum + ltiss.Ts))/K_P.Minimum;
-					B_R.Maximum = (D.Maximum(1, position_R) - C_R.Maximum*K_D.Maximum/(T_F.Minimum + ltiss.Ts))/K_P.Maximum;
-					B_R.Free = D.Free(1, position_R) || C_R.Free || K_D.Free || T_F.Free || K_P.Free;
-					B_R.Scale = (D.Scale(1, position_R) - C_R.Scale*K_D.Scale/(T_F.Scale + ltiss.Ts))/K_P.Scale;
+					K_P.Value = -D.Value(1, position_Y) - D_I.Value - K_D.Value/(T_F.Value + ltiss.Ts);
+					K_P.Minimum = -D.Minimum(1, position_Y) - D_I.Minimum - K_D.Minimum/(T_F.Maximum + ltiss.Ts);
+					K_P.Maximum = -D.Maximum(1, position_Y) - D_I.Maximum - K_D.Maximum/(T_F.Minimum + ltiss.Ts);
+					K_P.Free = D.Free(1, position_Y) || D_I.Free || K_D.Free || T_F.Free;
+					K_P.Scale = -D.Scale(1, position_Y) - D_I.Scale - K_D.Scale/(T_F.Scale + ltiss.Ts);
+					B_R.Value = (D.Value(1, position_R) - D_I.Value - C_R.Value*K_D.Value/(T_F.Value + ltiss.Ts))/K_P.Value;
+					B_R.Minimum = (D.Minimum(1, position_R) - D_I.Minimum - C_R.Minimum*K_D.Minimum/(T_F.Maximum + ltiss.Ts))/K_P.Minimum;
+					B_R.Maximum = (D.Maximum(1, position_R) - D_I.Maximum - C_R.Maximum*K_D.Maximum/(T_F.Minimum + ltiss.Ts))/K_P.Maximum;
+					B_R.Free = D.Free(1, position_R)  || D_I.Free || C_R.Free || K_D.Free || T_F.Free || K_P.Free;
+					B_R.Scale = (D.Scale(1, position_R) - D_I.Scale - C_R.Scale*K_D.Scale/(T_F.Scale + ltiss.Ts))/K_P.Scale;
 				elseif any(strcmpi(DFormula, {'Trapezoid', 'Trapezoidal'}))
 					T_F.Value = (1 + A.Value(position_D, position_D))/(1 - A.Value(position_D, position_D))*ltiss.Ts/2;
 					T_F.Minimum = -Inf;
@@ -772,30 +822,30 @@ function [lti] = ltiblockss2ltiblock(ltiss, type)
 					C_R.Maximum = -C.Maximum(1, position_D)*B.Maximum(position_D, position_R)*(T_F.Value + ltiss.Ts/2)^2/ltiss.Ts/K_D.Maximum;
 					C_R.Free = C.Free(1, position_D) || B.Free(position_D, position_R) || T_F.Free || K_D.Free;
 					C_R.Scale = -C.Scale(1, position_D)*B.Scale(position_D, position_R)*(T_F.Scale + ltiss.Ts/2)^2/ltiss.Ts/K_D.Scale;
-					K_P.Value = -D.Value(1, position_Y) - K_D.Value/(T_F.Value + ltiss.Ts/2);
-					K_P.Minimum = -D.Minimum(1, position_Y) - K_D.Minimum/(T_F.Maximum + ltiss.Ts/2);
-					K_P.Maximum = -D.Maximum(1, position_Y) - K_D.Maximum/(T_F.Minimum + ltiss.Ts/2);
-					K_P.Free = D.Free(1, position_Y) || K_D.Free || T_F.Free;
-					K_P.Scale = -D.Scale(1, position_Y) - K_D.Scale/(T_F.Scale + ltiss.Ts/2);
-					B_R.Value = (D.Value(1, position_R) - C_R.Value*K_D.Value/(T_F.Value + ltiss.Ts/2))/K_P.Value;
-					B_R.Minimum = (D.Minimum(1, position_R) - C_R.Minimum*K_D.Minimum/(T_F.Maximum + ltiss.Ts/2))/K_P.Minimum;
-					B_R.Maximum = (D.Maximum(1, position_R) - C_R.Maximum*K_D.Maximum/(T_F.Minimum + ltiss.Ts/2))/K_P.Maximum;
-					B_R.Free = D.Free(1, position_R) || C_R.Free || K_D.Free || T_F.Free || K_P.Free;
-					B_R.Scale = (D.Scale(1, position_R) - C_R.Scale*K_D.Scale/(T_F.Scale + ltiss.Ts/2))/K_P.Scale;
+					K_P.Value = -D.Value(1, position_Y) - D_I.Value - K_D.Value/(T_F.Value + ltiss.Ts/2);
+					K_P.Minimum = -D.Minimum(1, position_Y) - D_I.Minimum - K_D.Minimum/(T_F.Maximum + ltiss.Ts/2);
+					K_P.Maximum = -D.Maximum(1, position_Y) - D_I.Maximum - K_D.Maximum/(T_F.Minimum + ltiss.Ts/2);
+					K_P.Free = D.Free(1, position_Y) || D_I.Free || K_D.Free || T_F.Free;
+					K_P.Scale = -D.Scale(1, position_Y) - D_I.Scale - K_D.Scale/(T_F.Scale + ltiss.Ts/2);
+					B_R.Value = (D.Value(1, position_R) - D_I.Value - C_R.Value*K_D.Value/(T_F.Value + ltiss.Ts/2))/K_P.Value;
+					B_R.Minimum = (D.Minimum(1, position_R) - D_I.Minimum - C_R.Minimum*K_D.Minimum/(T_F.Maximum + ltiss.Ts/2))/K_P.Minimum;
+					B_R.Maximum = (D.Maximum(1, position_R) - D_I.Maximum - C_R.Maximum*K_D.Maximum/(T_F.Minimum + ltiss.Ts/2))/K_P.Maximum;
+					B_R.Free = D.Free(1, position_R) || D_I.Free || C_R.Free || K_D.Free || T_F.Free || K_P.Free;
+					B_R.Scale = (D.Scale(1, position_R) - D_I.Scale - C_R.Scale*K_D.Scale/(T_F.Scale + ltiss.Ts/2))/K_P.Scale;
 				else
 					error('model:ltiblock:input', 'Undefined discretization method ''%s'' for derivative part of pid controller.', DFormula);
 				end
 			else
-				K_P.Value = -D.Value(1, position_Y);
-				K_P.Minimum = -D.Maximum(1, position_Y);
-				K_P.Maximum = -D.Minimum(1, position_Y);
-				K_P.Free = D.Free(1, position_Y);
-				K_P.Scale = -D.Scale(1, position_Y);
-				B_R.Value = D.Value(1, position_R)/K_P.Value;
-				B_R.Minimum = D.Minimum(1, position_R)/K_P.Maximum;
-				B_R.Maximum = D.Maximum(1, position_R)/K_P.Minimum;
-				B_R.Free = D.Free(1, position_R) || K_P.Free;
-				B_R.Scale = D.Scale(1, position_R)/K_P.Scale;
+				K_P.Value = -D.Value(1, position_Y) - D_I.Value;
+				K_P.Minimum = -D.Maximum(1, position_Y) - D_I.Maximum;
+				K_P.Maximum = -D.Minimum(1, position_Y) - D_I.Minimum;
+				K_P.Free = D.Free(1, position_Y) || D_I.Free;
+				K_P.Scale = -D.Scale(1, position_Y) - D_I.Scale;
+				B_R.Value = (D.Value(1, position_R) - D_I.Value)/K_P.Value;
+				B_R.Minimum = (D.Minimum(1, position_R) - D_I.Minimum)/K_P.Maximum;
+				B_R.Maximum = (D.Maximum(1, position_R) - D_I.Maximum)/K_P.Minimum;
+				B_R.Free = D.Free(1, position_R) || D_I.Free || K_P.Free;
+				B_R.Scale = (D.Scale(1, position_R) - D_I.Scale)/K_P.Scale;
 			end
 		else
 			if position_I ~= 0
