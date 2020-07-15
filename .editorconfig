@@ -11,6 +11,14 @@ tab_width = 4
 charset = utf-8
 trim_trailing_whitespace = true
 
+# patch files
+[*.patch]
+insert_final_newline = unset
+indent_style = unset
+indent_size = unset
+tab_width = unset
+trim_trailing_whitespace = unset
+
 # Matlab files
 [*.m]
 charset = latin1
