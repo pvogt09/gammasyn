@@ -124,17 +124,7 @@ function [system_cl, Jopt, information] = gammasyn_looptune(systems, areafun, we
 		else
 			B_sorted_type{ii, 1} = class(B_sorted_free{ii, 1});
 			B_sorted_names{ii, 1} = B_sorted_free{ii, 1}.Name;
-			try
-				% TODO: remove try catch
-				B_sorted_ss{ii, 1} = model.ltiblock2ss(B_sorted_free{ii, 1});
-			catch e
-				if strcmpi(e.identifier, 'model:ltiblock:input:todo')
-					warning(e.identifier, e.message);
-					error('model:ltiblock:input:todo', 'Not yet implemented conversion for tunable system description.');
-				else
-					rethrow(e);
-				end
-			end
+			B_sorted_ss{ii, 1} = model.ltiblock2ss(B_sorted_free{ii, 1});
 			if systems.Ts > 0 && B_sorted_ss{ii, 1}.Ts ~= systems.Ts
 				error('control:design:gamma', 'Sampling time must be equal for all tunable blocks and systems.');
 			end
@@ -393,17 +383,7 @@ function [system_cl, Jopt, information] = gammasyn_looptune(systems, areafun, we
 		if strcmpi(B_sorted_type{ii, 1}, 'realp')
 			B_sorted_solution{ii, 1} = realp(B_sorted_ss{ii, 1}.Name, R_opt_block{ii, 1});
 		else
-			try
-				% TODO: remove try catch
-				B_sorted_solution{ii, 1} = model.ltiblockss2ltiblock(B_sorted_ss{ii, 1}, B_sorted_type{ii, 1});
-			catch e
-				if strcmpi(e.identifier, 'model:ltiblock:input:todo')
-					warning(e.identifier, e.message);
-					error('model:ltiblock:input:todo', 'Not yet implemented conversion for tunable system description.');
-				else
-					rethrow(e);
-				end
-			end
+			B_sorted_solution{ii, 1} = model.ltiblockss2ltiblock(B_sorted_ss{ii, 1}, B_sorted_type{ii, 1});
 		end
 		if hasNaN(ii, 1)
 			% prevent substitution of NaN into values because that crashes lft below while substituting afterwards works
@@ -416,17 +396,7 @@ function [system_cl, Jopt, information] = gammasyn_looptune(systems, areafun, we
 			if strcmpi(B_sorted_type{ii, 1}, 'realp')
 				B_sorted_solution_notNaN{ii, 1} = realp(B_sorted_ss{ii, 1}.Name, R_opt_block_notNaN);
 			else
-				try
-					% TODO: remove try catch
-					B_sorted_solution_notNaN{ii, 1} = model.ltiblockss2ltiblock(B_sorted_ss_notNaN{ii, 1}, B_sorted_type{ii, 1});
-				catch e
-					if strcmpi(e.identifier, 'model:ltiblock:input:todo')
-						warning(e.identifier, e.message);
-						error('model:ltiblock:input:todo', 'Not yet implemented conversion for tunable system description.');
-					else
-						rethrow(e);
-					end
-				end
+				B_sorted_solution_notNaN{ii, 1} = model.ltiblockss2ltiblock(B_sorted_ss_notNaN{ii, 1}, B_sorted_type{ii, 1});
 			end
 		else
 			B_sorted_solution_notNaN{ii, 1} = B_sorted_solution{ii, 1};
