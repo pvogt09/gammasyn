@@ -1,6 +1,6 @@
 classdef(Enumeration) Version < handle
 	%class to represent a version of matlab
-	
+
 	enumeration
 		% currently running version
 		CURRENT();
@@ -61,7 +61,7 @@ classdef(Enumeration) Version < handle
 		% R2006A
 		R2006A('R2006A', 15, 7.2,	6.4);
 	end
-	
+
 	properties(SetAccess=private)
 		% name of matlab version
 		name,
@@ -72,7 +72,7 @@ classdef(Enumeration) Version < handle
 		% version number of simulink version
 		simulinkversion
 	end
-	
+
 	methods
 		function [isless] = less(this, that)
 			%LESS return, if version is less than given version
@@ -86,7 +86,7 @@ classdef(Enumeration) Version < handle
 			end
 			isless = this.matlabversion < that.matlabversion;
 		end
-		
+
 		function [islessoreq] = lessorequal(this, that)
 			%LESSOREQUAL return, if version is less or equal than given version
 			%	Input:
@@ -99,7 +99,7 @@ classdef(Enumeration) Version < handle
 			end
 			islessoreq = this.matlabversion <= that.matlabversion;
 		end
-		
+
 		function [isless] = lesssimulink(this, that)
 			%LESSSIMULINK return, if simulinkversion is less than given simulinkversion
 			%	Input:
@@ -112,7 +112,7 @@ classdef(Enumeration) Version < handle
 			end
 			isless = this.simulinkversion < that.simulinkversion;
 		end
-		
+
 		function [islessoreq] = lessorequalsimulink(this, that)
 			%LESSOREQUALSIMULINK return, if simulinkversion is less or equal than given simulinkversion
 			%	Input:
@@ -125,7 +125,7 @@ classdef(Enumeration) Version < handle
 			end
 			islessoreq = this.simulinkversion <= that.simulinkversion;
 		end
-		
+
 		function [isless] = lt(this, that)
 			%LT return, if version is less than given version
 			%	Input:
@@ -138,7 +138,7 @@ classdef(Enumeration) Version < handle
 			end
 			isless = this.less(that);
 		end
-		
+
 		function [islessoreq] = le(this, that)
 			%LE return, if version is less or equal than given version
 			%	Input:
@@ -151,7 +151,7 @@ classdef(Enumeration) Version < handle
 			end
 			islessoreq = this.lessorequal(that);
 		end
-		
+
 		function [isgreater] = gt(this, that)
 			%GT return, if version is greater than given version
 			%	Input:
@@ -164,7 +164,7 @@ classdef(Enumeration) Version < handle
 			end
 			isgreater = ~this.lessorequal(that);
 		end
-		
+
 		function [isgreateroreq] = ge(this, that)
 			%GE return, if version is greater or equal than given version
 			%	Input:
@@ -178,7 +178,7 @@ classdef(Enumeration) Version < handle
 			isgreateroreq = ~this.less(that);
 		end
 	end
-	
+
 	methods(Access=private)
 		function [this] = Version(name, number, matlabversion, simulinkversion)
 			%VERSION create new version object

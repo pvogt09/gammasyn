@@ -1,17 +1,17 @@
 function [ew_opt, P_opt, index] = weight_ev(ew,merker,P,npq)
-	% ew_opt = GEWICHTETE_EW(ew,merker,npq) eliminiert aus 
-	% den vorgegebenen EW diejenigen, die mit 0 gewichtet 
-	% sind, und liefert einen Vektor zurück, der nur die 
+	% ew_opt = GEWICHTETE_EW(ew,merker,npq) eliminiert aus
+	% den vorgegebenen EW diejenigen, die mit 0 gewichtet
+	% sind, und liefert einen Vektor zurÃ¼ck, der nur die
 	% gewichteten EW beinhaltet.
-	% 
+	%
 	% OUTPUT:
-	% ew_opt - für die Optimierung zu nutzende EW (nicht mit 0 gewichtet)
+	% ew_opt - fÃ¼r die Optimierung zu nutzende EW (nicht mit 0 gewichtet)
 	%
 	% INPUT:
 	% ew     - Vektor mit den vorgegebenen Eigenwerten
-	% merker - Vektor, der Aufschluß gibt, welcher EW mit 0 gewichtet ist 
-	%          (1: soll gewichtet werden, 0: wird mit 0 gewichtet)		
-	% npq    - Dimensionen der vorliegenden Matrizen bzw. Vektoren  
+	% merker - Vektor, der AufschluÃŸ gibt, welcher EW mit 0 gewichtet ist
+	%          (1: soll gewichtet werden, 0: wird mit 0 gewichtet)
+	% npq    - Dimensionen der vorliegenden Matrizen bzw. Vektoren
 
 	d = npq(1) - npq(4);
 	if npq(4)==0 | ~d

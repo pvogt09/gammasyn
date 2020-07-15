@@ -1,7 +1,7 @@
 function [is] = isparameterstruct(param)
-	%ISPARAMETERSTRUCT zurückgeben, ob eine Parameterstruktur vorliegt
+	%ISPARAMETERSTRUCT zurÃ¼ckgeben, ob eine Parameterstruktur vorliegt
 	%	Input:
-	%		param:	zu überprüfende Variable
+	%		param:	zu Ã¼berprÃ¼fende Variable
 	%	Output:
 	%		is:		true, wenn eine Parameterstruktur vorliegt, sonst false
 	%	TODO: Felder abfragen

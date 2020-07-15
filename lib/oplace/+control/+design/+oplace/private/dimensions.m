@@ -1,15 +1,15 @@
 function [npq,ew,w3,K0] = dimensions(sys,ew,K0,S,P,w3,W4)
-	% npq = DIMENSIONEN(A,B,C,ew,K0,S,P,w3,W4) kontrolliert 
-	% die Dimensionen der vorgegebenen Matrizen und legt in 
-	% npq die für die Berechnung und Optimierung benötigten
-	% Größen ab.
+	% npq = DIMENSIONEN(A,B,C,ew,K0,S,P,w3,W4) kontrolliert
+	% die Dimensionen der vorgegebenen Matrizen und legt in
+	% npq die fÃ¼r die Berechnung und Optimierung benÃ¶tigten
+	% GrÃ¶ÃŸen ab.
 	%
 	% OUTPUT:
 	% npq(1) = n - Systemordnung
-	% npq(2) = p - Anz. der Eingangsgrößen 
-	% npq(3) = q - Anz. der Ausgangsgrößen
-	% npq(4) = Anz. der für die Optimierung verwendeten EW
-	% npq(5) = Anz. der Stützstellen 
+	% npq(2) = p - Anz. der EingangsgrÃ¶ÃŸen
+	% npq(3) = q - Anz. der AusgangsgrÃ¶ÃŸen
+	% npq(4) = Anz. der fÃ¼r die Optimierung verwendeten EW
+	% npq(5) = Anz. der StÃ¼tzstellen
 	% npq(6) = Anz. der Parametervektoren
 	%
 	% INPUT:
@@ -17,11 +17,11 @@ function [npq,ew,w3,K0] = dimensions(sys,ew,K0,S,P,w3,W4)
 	% B      - Eingangsmatrix
 	% C      - Ausgangsmatrix
 	% ew     - Vektor mit den vorgegebenen Eigenwerten
-	% K0     - Startrückführungsmatrix für die Optimierung 
-	% S      - Matrix für eine mögliche Strukturbeschränkung
-	% P      - Matrix mit den Parametervektoren 
-	% w3     - Gewichtungsfaktoren für die einzelnen Parametervektoren
-	% W4     - Matrix mit den Gewichtungsfaktoren für das Gütekriterium 
+	% K0     - StartrÃ¼ckfÃ¼hrungsmatrix fÃ¼r die Optimierung
+	% S      - Matrix fÃ¼r eine mÃ¶gliche StrukturbeschrÃ¤nkung
+	% P      - Matrix mit den Parametervektoren
+	% w3     - Gewichtungsfaktoren fÃ¼r die einzelnen Parametervektoren
+	% W4     - Matrix mit den Gewichtungsfaktoren fÃ¼r das GÃ¼tekriterium
 	%          minimale Reglernorm
 
 	e = size(ew);
@@ -58,8 +58,8 @@ function [npq,ew,w3,K0] = dimensions(sys,ew,K0,S,P,w3,W4)
 	   error('oplace:arguments', 'The dimensions of S and K0 are not identical!');
 	end
 
-	if ~isempty(P) 	
-	   if p(1)~=b(2) 
+	if ~isempty(P)
+	   if p(1)~=b(2)
 		  usage;
 		  error('oplace:arguments', 'Wrong dimension (number of rows) of the parametervectors in P!');
 	   end

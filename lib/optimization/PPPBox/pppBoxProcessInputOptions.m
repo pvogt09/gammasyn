@@ -1,6 +1,6 @@
 function [numRandVecs,maxFunEvals,maxIter,optTol,progTol,...
-          DerivativeCheck,verbose,verboseI,debug,doPlot,...
-          useGurobi,alpha,beta,delta,armijoSimple,rho, numDiffType, maxTime, maxSQPIter] = pppBoxProcessInputOptions(o)
+	DerivativeCheck,verbose,verboseI,debug,doPlot,...
+	useGurobi,alpha,beta,delta,armijoSimple,rho, numDiffType, maxTime, maxSQPIter] = pppBoxProcessInputOptions(o)
 
 	% Set all provided fields in 'o' to upper case letters
 	o = toUpper(o);
@@ -28,7 +28,7 @@ function [numRandVecs,maxFunEvals,maxIter,optTol,progTol,...
 	verboseI = 0;    % Show information during iteration
 	debug = 0;      % even more information during iteration
 	doPlot = ~isempty(getOpt(o, 'PLOTFCN', {}));     % also show nice plots during the line search
-	
+
 	numDiffType = 2;
 	if isfield(o, 'FINDIFFTYPE')
 		if strcmpi(o.FINDIFFTYPE, 'forward')
@@ -37,7 +37,7 @@ function [numRandVecs,maxFunEvals,maxIter,optTol,progTol,...
 			numDiffType = 2;
 		end
 	end
-	
+
 
 	% Specify depth of display
 	if isfield(o, 'DISPLAY')

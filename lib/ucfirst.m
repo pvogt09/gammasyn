@@ -18,4 +18,3 @@ function [str] = ucfirst(str)
 		end
 	end
 end
-

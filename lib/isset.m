@@ -6,7 +6,7 @@ function [parameter] = isset(parameter, path, default, set)
 	%		default:	Wert des Elementes, wenn es noch nicht gesetzt ist
 	%		set:		Indikator, ob der Standardwert gesetzt werden soll, falls das vorletzte Element im Pfad ein Objekt ist oder Funktionszeiger auf eine Funktion, mit der ein vorhandener Wert konvertiert werden soll (diese Funktion muss idempotent sein)
 	%	Output:
-	%		parameter:	Struktur mit gesetzten oder übernommenen Werten
+	%		parameter:	Struktur mit gesetzten oder Ã¼bernommenen Werten
 	narginchk(3, 4);
 	setfunction = [];
 	if nargin <= 3

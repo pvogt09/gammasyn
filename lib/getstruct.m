@@ -1,7 +1,7 @@
 function [s] = getstruct(s, path)
-	%GETSTRUCT zurückgeben eines Elementes einer Struktur
+	%GETSTRUCT zurÃ¼ckgeben eines Elementes einer Struktur
 	%	Input:
-	%		s:		Struktur, deren Wert zurückgegeben werden sollen
+	%		s:		Struktur, deren Wert zurÃ¼ckgegeben werden sollen
 	%		path:	Pfad des zu lesenden Elementes
 	%	Output:
 	%		value:	Wert aus der Struktur

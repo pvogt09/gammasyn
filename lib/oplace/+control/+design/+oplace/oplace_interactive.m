@@ -3,29 +3,29 @@ function [K] = oplace_interactive(sys, ew, options, K0, S, P, w3, W4)
 	% Computes the constant feedback gain K of the output feedback u = -Ky = -KCx
 	% by pole or eigenvalue assignment.
 	% 
-	% Sie haben folgende Möglichkeiten:
+	% Sie haben folgende MÃ¶glichkeiten:
 	%
 	% K = POLEASSIGN(sys,ew) 
 	%   sys			 	- LTI system
 	%   ew(n,1)       - vector with n predefined closed loop eigenvalues
 	%
-	% K = POLEASSIGN(sys,ew,K0) 
+	% K = POLEASSIGN(sys,ew,K0)
 	%   sys			 	- LTI system
 	%   ew(n,1)       - vector with n predefined closed loop eigenvalues
 	%   K0(p,q)       - initial feedback matrix for optimization
 	%   All elements of K are considered unconstrained and used for solving
 	%   the underlying poleassignment problem.
 	%
-	% K = POLEASSIGN(sys,ew,K0,S) 
+	% K = POLEASSIGN(sys,ew,K0,S)
 	%   S(p,q)        - matrix of structural constraints
 	%   Only the elements of K0 with S(i,j)=0 are considered unconstrained
 	%   and used for solving the underlying poleassignment problem.
 	%   The remaining elements of K0 are kept constant.
-	% 
+	%
 	% K = POLEASSIGN(sys,ew,K0,S,P,w3)
-	%   P(p,x)        - matrix with predefined parameter vectors (the i-th column 
-	%                   corresponds to the i-th eigenvalue in ew). 
-	%   w3(x,1)       - Gewichtungsfaktoren für die einzelnen Parameter-
+	%   P(p,x)        - matrix with predefined parameter vectors (the i-th column
+	%                   corresponds to the i-th eigenvalue in ew).
+	%   w3(x,1)       - Gewichtungsfaktoren fÃ¼r die einzelnen Parameter-
 	%                   vektoren
 	%
 	% K = POLEASSIGN(sys,ew,K0,S,P,w3,W4)

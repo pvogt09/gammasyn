@@ -100,7 +100,7 @@ function [x, fval, exitflag, output] = pppNonSmooth(fun, x0, options, varargin)
 	end
 	solvertime = tic;
 	for count = 1:size(x0, 2)
-		% initial data; initial value is not necessarily a feasible point 
+		% initial data; initial value is not necessarily a feasible point
 		x           = x0(:, count);
 		x_old       = x;
 		fval_old    = 0;
@@ -147,7 +147,7 @@ function [x, fval, exitflag, output] = pppNonSmooth(fun, x0, options, varargin)
 			end
 
 			% solve QP to obtain the value (theta) of the optimality function and the
-			% corresponding search direction (h) 
+			% corresponding search direction (h)
 
 			% Set up QP subproblem, check if (in)equality constriants are
 			% present
@@ -190,11 +190,11 @@ function [x, fval, exitflag, output] = pppNonSmooth(fun, x0, options, varargin)
 			g = gradf*lagrangeMult;
 			h = xnew(1:end-1);
 
-			%% Step Size 
+			%% Step Size
 			switch armijoSimple
 				case 1
 					% Armijo type step size rule
-					k = 0;  
+					k = 0;
 					while (max(fun(x + beta^k*h, varargin{:})) - psi - beta^k*alpha*theta > 0) && k < 100
 						k = k + 1;
 					end
@@ -213,11 +213,11 @@ function [x, fval, exitflag, output] = pppNonSmooth(fun, x0, options, varargin)
 					else
 						t = min(1, t*2);
 					end
-					fval = max(fun(x, varargin{:})); 
+					fval = max(fun(x, varargin{:}));
 					[t, x, fval, ~, k] = ArmijoBacktrackMinMax(x, t, h, fval, psi, g, theta, alpha, LS_interp, LS_multi, progTol, debug, doPlot, 1, fun, varargin{:});
 				case 3
 					% Non-monotone line search
-					% STEP 1, 
+					% STEP 1,
 					% i.) already done -> h
 					% ii.)
 					ahHh = alpha*h'*H*h;
@@ -249,7 +249,7 @@ function [x, fval, exitflag, output] = pppNonSmooth(fun, x0, options, varargin)
 						k = 1;
 					else
 						% iii.) Solve another QP to get htilde
-						% solve QP to obtain search direction (htilde) 
+						% solve QP to obtain search direction (htilde)
 
 						% Set up QP subproblem, check if (in)equality constriants are
 						% present
@@ -286,7 +286,7 @@ function [x, fval, exitflag, output] = pppNonSmooth(fun, x0, options, varargin)
 						end
 
 						% iv) compute step size
-						k = 0; 
+						k = 0;
 						t = beta^k;
 						while ( max(fun(x + t*h + t^2*htilde, varargin{:})) > max([psi, psi1, psi2]) - t*ahHh ) && k < 500
 							k = k + 1;
@@ -345,9 +345,9 @@ function [x, fval, exitflag, output] = pppNonSmooth(fun, x0, options, varargin)
 
 			% ******************* Check for lack of progress *******************
 
-			if abs(fval_old - fval) < optTol 
+			if abs(fval_old - fval) < optTol
 				exitflag = 2;
-				msg = 'Function Value changing by less than optTol'; 
+				msg = 'Function Value changing by less than optTol';
 				break;
 			end
 			if norm(x - x_old) < progTol
@@ -369,7 +369,7 @@ function [x, fval, exitflag, output] = pppNonSmooth(fun, x0, options, varargin)
 				msg = 'Reached Maximum Number of Iterations';
 				break;
 			end
-			
+
 			if toc(solvertime) >= maxTime
 				exitflag = 0;
 				msg = 'Reached Maximum Time';
@@ -378,7 +378,7 @@ function [x, fval, exitflag, output] = pppNonSmooth(fun, x0, options, varargin)
 
 			% Save values for next iteration
 			x_old    = x;
-			fval_old = fval; 
+			fval_old = fval;
 			g_old    = g;
 
 			% Keep track of best point so far
@@ -403,7 +403,7 @@ function [x, fval, exitflag, output] = pppNonSmooth(fun, x0, options, varargin)
 				'time',				toc(solvertime),...
 				'trace',			trace...
 			);
-		end 
+		end
 	end
 
 	%% Set output

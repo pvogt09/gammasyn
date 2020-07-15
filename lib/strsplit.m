@@ -14,7 +14,7 @@ function terms = strsplit(s, delimiter, varargin)
 	%         part of the delimiter, and thus removed from the extracted
 	%         terms.
 	%       - If there are two consecutive non-whitespace delimiters, it is
-	%         regarded that there is an empty-string term between them.         
+	%         regarded that there is an empty-string term between them.
 	%   History
 	%   -------
 	%       - Created by Dahua Lin, on Oct 9, 2008
@@ -40,9 +40,9 @@ function terms = strsplit(s, delimiter, varargin)
 	end
 	%% main
 	if by_space
-		w = isspace(s);            
+		w = isspace(s);
 		if any(w)
-			% decide the positions of terms        
+			% decide the positions of terms
 			dw = diff(w);
 			if w(1)
 				sp = find(dw == -1) + 1;     % start positions of terms
@@ -50,19 +50,19 @@ function terms = strsplit(s, delimiter, varargin)
 				sp = [1, find(dw == -1) + 1];     % start positions of terms
 			end
 			ep = [find(dw == 1), length(s)];  % end positions of terms
-			% extract the terms        
+			% extract the terms
 			nt = numel(sp);
 			terms = cell(1, nt);
 			for i = 1 : nt
 				terms{i} = s(sp(i):ep(i));
-			end                
+			end
 		else
 			terms = {s};
 		end
-	else    
+	else
 		p = strfind(s, d);
-		if ~isempty(p)        
-			% extract the terms        
+		if ~isempty(p)
+			% extract the terms
 			nt = numel(p) + 1;
 			terms = cell(1, nt);
 			sp = 1;
@@ -70,10 +70,10 @@ function terms = strsplit(s, delimiter, varargin)
 			for i = 1 : nt-1
 				terms{i} = s(sp:p(i)-1);
 				sp = p(i) + dl;
-			end         
+			end
 			terms{nt} = s(sp:end);
 		else
 			terms = {s};
-		end        
+		end
 	end
 end

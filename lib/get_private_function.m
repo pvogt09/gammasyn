@@ -6,7 +6,7 @@ function [fun] = get_private_function(path, name)
 	%	Output:
 	%		fun:	Funktionszeiger auf die private Funktion
 	if ~ischar(path) || ~ischar(name)
-		error('getfun:path', 'Der Dateipfad und der Funktionsname müssen vom Typ ''char'' sein.');
+		error('getfun:path', 'Der Dateipfad und der Funktionsname mÃ¼ssen vom Typ ''char'' sein.');
 	end
 	oldDir = cd(path);
 	fun = str2func(name);

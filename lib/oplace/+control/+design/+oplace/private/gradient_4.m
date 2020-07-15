@@ -1,26 +1,19 @@
 function dK = gradient_4(K,W4,T1)
 % dK = GRADIENT_4(K,W4) berechnet den Gradienten
-% für das Gütekriterium J4
+% fÃ¼r das GÃ¼tekriterium J4
 %
 % OUTPUT:
-% dK     - Gradient der zu optimierenden Matrix für J4
+% dK     - Gradient der zu optimierenden Matrix fÃ¼r J4
 %
 % INPUT:
 % K      - die zu optimierende Matrix
-% W4     - Matrix mit den Gewichtungsfaktoren für das Gütekriterium 
+% W4     - Matrix mit den Gewichtungsfaktoren fÃ¼r das GÃ¼tekriterium
 %          der minimalen Reglernorm
 
-%--- Berechnung der Gradientenmatrix (Strukturbeschränkung in W4 enthalten)
+%--- Berechnung der Gradientenmatrix (StrukturbeschrÃ¤nkung in W4 enthalten)
 if isempty(T1)
-   dK = K.*W4;
+	dK = K.*W4;
 else
-   Kh = K*T1';
-   dK = (Kh.*W4)*T1;
+	Kh = K*T1';
+	dK = (Kh.*W4)*T1;
 end
-
-
-
-      
-      
-      
-      

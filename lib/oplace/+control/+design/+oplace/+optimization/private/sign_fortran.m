@@ -1,11 +1,9 @@
 function X = sign_fortran(A,B)
-% Emuliert die FORTRAN-Funktion sign(A,B) in MATLAB 
+% Emuliert die FORTRAN-Funktion sign(A,B) in MATLAB
 
 if(B>=0)
-   X=abs(A);
+	X=abs(A);
 else
-   X=-abs(A);
+	X=-abs(A);
 end
-
- 
 

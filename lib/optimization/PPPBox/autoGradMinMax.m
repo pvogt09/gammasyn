@@ -41,7 +41,7 @@ elseif type == 3 % Use Complex Differentials
 			diff(j, 1) = funObj(x + mu*1i*e_j);
 		end
 	end
-	
+
 	f = mean(real(diff));
 	g = imag(diff)/mu;
 else % Use Central Differencing

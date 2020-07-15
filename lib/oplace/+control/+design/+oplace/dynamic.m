@@ -1,6 +1,6 @@
 function [Ag,Bg,Cg] = dynamic(A,B,C,r)
 % [Ag,Bg,Cg] = dynamic(A,B,C,r) erzeugt bei einer dynamischen 
-% Ausgangsrückführung die erweiterten Matrizen Ag, Bg und Cg.
+% AusgangsrÃ¼ckfÃ¼hrung die erweiterten Matrizen Ag, Bg und Cg.
 %
 % OUTPUT:
 % Ag - Systemmatrix des erweiterten Systems
@@ -11,18 +11,18 @@ function [Ag,Bg,Cg] = dynamic(A,B,C,r)
 % A - Systemmatrix
 % B - Eingangsmatrix
 % C - Ausgangsmatrix
-% r - Ordnung der dynamische Ausgangsrückführung 
+% r - Ordnung der dynamische AusgangsrÃ¼ckfÃ¼hrung 
 
-if nargin < 4, error('dynamic benötigt 4 Eingangsgrößen'); end
+if nargin < 4, error('dynamic benÃ¶tigt 4 EingangsgrÃ¶ÃŸen'); end
    
 a = size(A);
 b = size(B);
 c = size(C);
 
-if a(1) == a(2) & b(1) == a(1) & c(2) == a(1) 
-   n = a(1);
-   p = b(2);
-   q = c(1);
+if a(1) == a(2) & b(1) == a(1) & c(2) == a(1)
+	n = a(1);
+	p = b(2);
+	q = c(1);
 else
 	error('Kontrollieren Sie bitte die Dimension Ihrer Matrizen')
 end

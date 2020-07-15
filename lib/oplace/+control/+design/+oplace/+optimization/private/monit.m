@@ -69,38 +69,38 @@ IDELX=5;
 
 IP=IV(IPRINT);
 if (IP ~= 0)
-   if (K ~= 5)
-      if (mod(IV(ITN),abs(IP))== 0)
-         IOUT=IV(IOUTNR);
-         IG=IV(IDVA);
-         IGN1=IG+N-1;
-         ITF1=IV(IDVTF)-1;
-         G2N=v2norm(N,DV(IG:IGN1));
-         if (IV(ITN)==0)
-            disp(sprintf('\n'));
-         end
-         if (IP<0)
-            disp(sprintf('IT=%d\t\t\tIF=%d\t\t\tF=%0.5g\t\t\tG=%0.5g',IV(ITN),IV(IFN),DV(IF),G2N));
-            % WRITE (IOUT,1000) IV(ITN),IV(IFN),DV(IF)
-            % 1000 FORMAT(1H ,'IT=',I5,10X,'IF=',I5,10X,'F=',1PD20.13)
-         else
-            disp(sprintf('IT=%d\t\t\tIF=%d\t\t\tF=%0.5g\t\t\tG=%0.5g',IV(ITN),IV(IFN),DV(IF),G2N));
-            % WRITE (IOUT,1001) IV(ITN),IV(IFN),IV(IGN),DV(IF)
-            % 1001 FORMAT(1H0,'IT=',I5,10X,'IF=',I5,10X,'IG=',I5,10X,'F=',1PD20.13)
-            disp(sprintf('Variables:\n'));
-            disp(X);
-            % WRITE(IOUT,1002) (IBL,I,X(I),I=1,N)
-            % 1002 FORMAT(5(A1,' X(',I2,')=',1PD13.6,2X))
-         end 
-         if (IP>=0 & K~=1)
-            if (K~=2)
-               disp(sprintf('Gradient:\n'));
-               X(:)=DV(IG:IGN1);
-               disp(X);
-               % WRITE(IOUT,1003) (IBL,I,DV(IG1+I),I=1,N)
-               % 1003 FORMAT(5(A1,' G(',I2,')=',1PD13.6,2X))
-            end 
-         end 
-      end 
-   end 
+	if (K ~= 5)
+		if (mod(IV(ITN),abs(IP))== 0)
+			IOUT=IV(IOUTNR);
+			IG=IV(IDVA);
+			IGN1=IG+N-1;
+			ITF1=IV(IDVTF)-1;
+			G2N=v2norm(N,DV(IG:IGN1));
+			if (IV(ITN)==0)
+				disp(sprintf('\n'));
+			end
+			if (IP<0)
+				disp(sprintf('IT=%d\t\t\tIF=%d\t\t\tF=%0.5g\t\t\tG=%0.5g',IV(ITN),IV(IFN),DV(IF),G2N));
+				% WRITE (IOUT,1000) IV(ITN),IV(IFN),DV(IF)
+				% 1000 FORMAT(1H ,'IT=',I5,10X,'IF=',I5,10X,'F=',1PD20.13)
+			else
+				disp(sprintf('IT=%d\t\t\tIF=%d\t\t\tF=%0.5g\t\t\tG=%0.5g',IV(ITN),IV(IFN),DV(IF),G2N));
+				% WRITE (IOUT,1001) IV(ITN),IV(IFN),IV(IGN),DV(IF)
+				% 1001 FORMAT(1H0,'IT=',I5,10X,'IF=',I5,10X,'IG=',I5,10X,'F=',1PD20.13)
+				disp(sprintf('Variables:\n'));
+				disp(X);
+				% WRITE(IOUT,1002) (IBL,I,X(I),I=1,N)
+				% 1002 FORMAT(5(A1,' X(',I2,')=',1PD13.6,2X))
+			end
+			if (IP>=0 & K~=1)
+				if (K~=2)
+					disp(sprintf('Gradient:\n'));
+					X(:)=DV(IG:IGN1);
+					disp(X);
+					% WRITE(IOUT,1003) (IBL,I,DV(IG1+I),I=1,N)
+					% 1003 FORMAT(5(A1,' G(',I2,')=',1PD13.6,2X))
+				end
+			end
+		end
+	end
 end

@@ -52,7 +52,7 @@
 %       -4 - halted due to roundoff errors
 %       -5 - user exit
 %
- 
+
 %   Based in parts on the original MEX interface by Prof. Steven Johnson.
 %
 %   Copyright (C) 2013 Jonathan Currie (IPL)
