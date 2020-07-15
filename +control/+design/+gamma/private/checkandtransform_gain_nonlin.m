@@ -224,7 +224,7 @@ function [R_nonlin, number_c_R, number_ceq_R, number_c_K, number_ceq_K, number_c
 						lhs = -temp(1) + temp(2);
 					else
 						lhs = temp(1) - temp(2);
-					end				
+					end
 					R_nonlin_sym(ii, 1) = lhs;
 				end
 				tempiseq = sym.isequation(R_nonlin_sym, 'any');
@@ -628,7 +628,7 @@ function [R_nonlin, number_c_R, number_ceq_R, number_c_K, number_ceq_K, number_c
 						lhs = -temp(1) + temp(2);
 					else
 						lhs = temp(1) - temp(2);
-					end				
+					end
 					R_nonlin_sym(ii, 1) = lhs;
 				end
 				tempiseq = sym.isequation(R_nonlin_sym, 'any');
@@ -970,7 +970,7 @@ function [R_nonlin, number_c_R, number_ceq_R, number_c_K, number_ceq_K, number_c
 						lhs = -temp(1) + temp(2);
 					else
 						lhs = temp(1) - temp(2);
-					end				
+					end
 					R_nonlin_sym(ii, 1) = lhs;
 				end
 				tempiseq = sym.isequation(R_nonlin_sym, 'any');

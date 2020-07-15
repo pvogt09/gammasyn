@@ -1,15 +1,15 @@
 classdef TestResult < uint8
-	%TESTRESULT Aufz‰hlung f¸r Testergebnisse
+	%TESTRESULT Aufz√§hlung f√ºr Testergebnisse
 	
 	enumeration
 		% misslungener Test
 		FAILED(255);
 		% bestandener Test
 		PASSED(0);
-		% ¸bersprungener Test
+		% √ºbersprungener Test
 		SKIPPED(1)
 	end
-	
+
 	methods(Static=true)
 		function [testresult] = getresult(res)
 			%GETRESULT Ergebnis eines Tests in ein TestResult umwandeln
@@ -45,26 +45,26 @@ classdef TestResult < uint8
 			end
 		end
 	end
-	
+
 	methods
 		function [passed] = ispassed(this)
-			%ISPASSED zur¸ckgeben, ob das Resultat als Bestanden gilt
+			%ISPASSED zur√ºckgeben, ob das Resultat als Bestanden gilt
 			%	Input:
 			%		this:	Instanz
 			%	Output:
 			%		passed:	Indikator, ob der Test als bestanden gilt
 			passed = false(size(this));
-			for i = 1:length(this) %#ok<FORPF> Initialisierung von parfor dauert l‰nger als der Vergleich
+			for i = 1:length(this) %#ok<FORPF> Initialisierung von parfor dauert l√§nger als der Vergleich
 				passed(i) = this(i) == identifier.TestResult.PASSED || this(i) == identifier.TestResult.SKIPPED;
 			end
 		end
-		
+
 		function [string] = tostring(this)
 			%TOSTRING Testergebnis in einen String umwandeln
 			%	Input:
 			%		this:	Instanz
 			%	Output:
-			%		string:	Stringrepr‰sentation des Testergebnisses
+			%		string:	Stringrepr√§sentation des Testergebnisses
 			string = char(this);
 		end
 	end

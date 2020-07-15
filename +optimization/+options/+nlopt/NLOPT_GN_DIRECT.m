@@ -2,4 +2,4 @@
 %
 % See nlopt_minimize for more information.
 function val = NLOPT_GN_DIRECT
-  val = 0;
+	val = 0;

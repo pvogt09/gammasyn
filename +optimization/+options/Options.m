@@ -1,12 +1,12 @@
 classdef(Abstract) Options < handle
 	%OPTIONS class for representation of options for optimization
-	
+
 	% https://de.mathworks.com/help/optim/ug/current-and-legacy-option-name-tables.html
 	properties(SetAccess=protected)
 		%SOLVER solver to use for optimization
 		Solver = [];
 	end
-	
+
 	properties(AbortSet=true)
 		%ALGORITHM Chooses the algorithm used by the solver
 		Algorithm;
@@ -104,7 +104,7 @@ classdef(Abstract) Options < handle
 		TypicalX = [];%'ones(numberOfVariables,1)';
 		%USEPARALLEL Estimate gradients in parallel
 		UseParallel = configuration.optimization.hasparallelsupport(false);
-		
+
 		% number of retries for the optimization (warm start in a loop with last solution)
 		Retries = 1;
 		% type of problem to solve
@@ -118,7 +118,7 @@ classdef(Abstract) Options < handle
 		% number of bound constraints
 		NumberConstraintsBounds = [];
 	end
-	
+
 	properties(Constant=true)
 		% prototype for structure with information about optimization run
 		INFORMATIONPROTOTYPE = struct(...
@@ -166,21 +166,21 @@ classdef(Abstract) Options < handle
 			'runs',				{{}}...
 		);
 	end
-	
+
 	properties(Constant=true, Access=protected)
 		% properties, where variable size options are allowed
 		VARIABLESIZEALLOWED = {
 			'PrecondBandWidth';
 			'MinAbsMax';
 			'GoalsExactAchieve';
-            'RelLineSrchBndDuration';
+			'RelLineSrchBndDuration';
 			'RelLineSearchBoundDuration';
 			'DisplayInterval';
-            'RootLPMaxIter';
+			'RootLPMaxIter';
 			'MaxFunctionEvaluations';
 			'MaxFunEvals';
 			'MaxProjCGIter';
-            'MaxSQPIter';
+			'MaxSQPIter';
 			'MaxPCGIter';
 			'MaxNodes';
 			'MaxIterations';
@@ -196,7 +196,7 @@ classdef(Abstract) Options < handle
 			'FiniteDifferenceStepSize'
 		};
 	end
-	
+
 	properties(Access=protected)
 		% indicator, if optimization algorithm supports optimset
 		supportsoptimset = false;
@@ -217,7 +217,7 @@ classdef(Abstract) Options < handle
 		% supported optimization problem types
 		supportedproblems;
 	end
-	
+
 	properties(Access=protected, Transient=true)% avoid saving "constant" properties containing property name mappings to files
 		% names for corresponding options in optimoptions
 		optimoptionsname;
@@ -232,9 +232,9 @@ classdef(Abstract) Options < handle
 		% names for corresponding options in structure
 		structname;
 		% user setable options for optimization
- 		options;
+		options;
 	end
-	
+
 	methods(Access=protected)
 		function [value, validvalue, errmsg, errid] = checkProperty(this, name, value, possValues, replacechar)
 			%CHECKPROPERTY set a value for a solver option
@@ -275,7 +275,7 @@ classdef(Abstract) Options < handle
 				throwAsCaller(ME);
 			end
 		end
-		
+
 		function [value] = convertProperty(this, name, value, optionstype, replacechar)
 			%CONVERTPROPERTY convert a property to the specified option type
 			%	Input:
@@ -299,7 +299,7 @@ classdef(Abstract) Options < handle
 			value = convertfield(this, name, value, optionstype, replacechar && replaceallowed);
 		end
 	end
-	
+
 	methods
 		function [optimoptionsname] = get.optimoptionsname(this)
 			%OPTIMOPTIONSNAME getter method for transient property optimoptionsname
@@ -313,7 +313,7 @@ classdef(Abstract) Options < handle
 				optimoptionsname = this.optimoptionsname;
 			end
 		end
-		
+
 		function [optimsetname] = get.optimsetname(this)
 			%OPTIMSETNAME getter method for transient property optimsetname
 			%	Input:
@@ -326,7 +326,7 @@ classdef(Abstract) Options < handle
 				optimsetname = this.optimsetname;
 			end
 		end
-		
+
 		function [optimsetganame] = get.optimsetganame(this)
 			%OPTIMSETGANAME getter method for transient property optimsetganame
 			%	Input:
@@ -339,7 +339,7 @@ classdef(Abstract) Options < handle
 				optimsetganame = this.optimsetganame;
 			end
 		end
-		
+
 		function [optimsetpsname] = get.optimsetpsname(this)
 			%OPTIMSETPSNAME getter method for transient property optimsetpsname
 			%	Input:
@@ -352,7 +352,7 @@ classdef(Abstract) Options < handle
 				optimsetpsname = this.optimsetpsname;
 			end
 		end
-		
+
 		function [optimsetsaname] = get.optimsetsaname(this)
 			%OPTIMSETSANAME getter method for transient property optimsetsaname
 			%	Input:
@@ -365,7 +365,7 @@ classdef(Abstract) Options < handle
 				optimsetsaname = this.optimsetsaname;
 			end
 		end
-		
+
 		function [structname] = get.structname(this)
 			%STRUCTNAME getter method for transient property structname
 			%	Input:
@@ -378,7 +378,7 @@ classdef(Abstract) Options < handle
 				structname = this.structname;
 			end
 		end
-		
+
 		function [options] = get.options(this)
 			%OPTIONS getter method for setable options
 			%	Input:
@@ -393,7 +393,7 @@ classdef(Abstract) Options < handle
 			end
 		end
 	end
-	
+
 	methods
 		function [this] = Options(solver, optionsupport, preferred, builtin, supportedproblems, preferredproblem)
 			%OPTIONS create new option set
@@ -428,7 +428,7 @@ classdef(Abstract) Options < handle
 			temp = fieldnames(this);
 			this.options = temp(~strcmpi(temp, 'Solver') & ~strcmpi(temp, 'NumberVariables') & ~strcmpi(temp, 'NumberConstraintsInequality') & ~strcmpi(temp, 'NumberConstraintsEquality') & ~strcmpi(temp, 'NumberConstraintsBounds') & ~strcmpi(temp, 'VARIABLESIZEALLOWED') & ~strcmpi(temp, 'INFORMATIONPROTOTYPE') & ~strcmpi(temp, 'OUTPUTPROTOTYPE') & ~strcmpi(temp, 'OUTPUTPROTOTYPEMULTIPLE'), :);
 		end
-		
+
 		function [options] = getpreferred(this)
 			%GETPREFERRED return current options in preferred option format
 			%	Input:
@@ -509,7 +509,7 @@ classdef(Abstract) Options < handle
 			end
 			options = this.setoptions(options);
 		end
-		
+
 		function [options] = getoptions(this, type, options)
 			%GETOPTIONS return options as specified type for current option set
 			%	Input:
@@ -868,7 +868,7 @@ classdef(Abstract) Options < handle
 			end
 			options = this.setoptions(options);
 		end
-		
+
 		function [] = useoptions(this, options, varargin)
 			%USEOPTIONS set supplied options to current option set
 			%	Input:
@@ -1010,7 +1010,7 @@ classdef(Abstract) Options < handle
 				end
 			end
 		end
-		
+
 		function [supports] = supportsProblem(this, problem)
 			%SUPPORTSPROBLEM return, if the selected solver supports the supplied problem type
 			%	Input:
@@ -1029,7 +1029,7 @@ classdef(Abstract) Options < handle
 				error('optimization:options:type', 'Undefined function of variable supportsProblem for input arguments of type ''%s''.', class(solver));
 			end
 		end
-		
+
 		function [supports] = supportsHessian(this)
 			%SUPPORTSHESSIAN return, if the selected solver supports hessian information
 			%	Input:
@@ -1038,7 +1038,7 @@ classdef(Abstract) Options < handle
 			%		supports:	true, if the selected solver supports hessian information, else false
 			supports = this.Solver.getHessianSupport();
 		end
-		
+
 		function [] = set.Solver(this, solver)
 			%SOLVER set solver to use
 			%	Input:
@@ -1057,7 +1057,7 @@ classdef(Abstract) Options < handle
 				error('optimization:options:type', 'Undefined function of variable Solver for input arguments of type ''%s''.', class(solver));
 			end
 		end
-		
+
 		function [] = set.ProblemType(this, type)
 			%RETRIES set number of retries
 			%	Input:
@@ -1065,7 +1065,7 @@ classdef(Abstract) Options < handle
 			%		retries:	number of retries
 			this.ProblemType = this.checkProperty('ProblemType', type);
 		end
-		
+
 		function [] = set.Retries(this, retries)
 			%RETRIES set number of retries
 			%	Input:
@@ -1073,7 +1073,7 @@ classdef(Abstract) Options < handle
 			%		retries:	number of retries
 			this.Retries = this.checkProperty('Retries', retries);
 		end
-		
+
 		function [] = set.Algorithm(this, algorithm)
 			%ALGORITHM set Algorithm
 			%	Input:
@@ -1085,7 +1085,7 @@ classdef(Abstract) Options < handle
 			end
 			this.Algorithm = this.checkProperty('Algorithm', algorithm, possible);
 		end
-		
+
 		function [] = set.CheckGradients(this, checkgrad)
 			%CHECKGRADIENTS set CheckGradients
 			%	Input:
@@ -1093,7 +1093,7 @@ classdef(Abstract) Options < handle
 			%		checkgrad:	indicator, if gradient should be checked for proper values
 			this.CheckGradients = this.checkProperty('CheckGradients', checkgrad);
 		end
-		
+
 		function [] = set.ConstraintTolerance(this, tolcon)
 			%CONSTRAINTTOLERANCE set ConstraintTolerance
 			%	Input:
@@ -1101,7 +1101,7 @@ classdef(Abstract) Options < handle
 			%		tolcon:		tolerance value for constraint violation
 			this.ConstraintTolerance = this.checkProperty('ConstraintTolerance', tolcon);
 		end
-		
+
 		function [] = set.Diagnostics(this, diagnostics)
 			%DIAGNOSTICS set Diagnostics
 			%	Input:
@@ -1109,7 +1109,7 @@ classdef(Abstract) Options < handle
 			%		diagnostics:	set diagnostic indicator
 			this.Diagnostics = this.checkProperty('Diagnostics', diagnostics);
 		end
-		
+
 		function [] = set.DiffMaxChange(this, diffmaxchange)
 			%DIFFMAXCHANGE set DiffMaxChange
 			%	Input:
@@ -1117,7 +1117,7 @@ classdef(Abstract) Options < handle
 			%		diffmaxchange:	maximum change in finite difference gradient
 			this.DiffMaxChange = this.checkProperty('DiffMaxChange', diffmaxchange);
 		end
-		
+
 		function [] = set.DiffMinChange(this, diffminchange)
 			%DIFFMINCHANGE set DiffMinChange
 			%	Input:
@@ -1125,7 +1125,7 @@ classdef(Abstract) Options < handle
 			%		diffminchange:	minimum change in finite difference gradient
 			this.DiffMinChange = this.checkProperty('DiffMinChange', diffminchange);
 		end
-		
+
 		function [] = set.Display(this, display)
 			%DISPLAY set Display
 			%	Input:
@@ -1133,7 +1133,7 @@ classdef(Abstract) Options < handle
 			%		display:	display settings
 			this.Display = this.checkProperty('Display', display, this.displaymapping());
 		end
-		
+
 		function [] = set.FiniteDifferenceStepSize(this, findiffrelstep)
 			%FINITDIFFERENCESTEPSIZE set FiniteDifferenceStepSize
 			%	Input:
@@ -1141,7 +1141,7 @@ classdef(Abstract) Options < handle
 			%		findiffrelstep:	relative step size for finite difference
 			this.FiniteDifferenceStepSize = this.checkProperty('FiniteDifferenceStepSize', findiffrelstep);
 		end
-		
+
 		function [] = set.FiniteDifferenceType(this, findifftype)
 			%FINITEDIFFERENCETYPE set FiniteDifferenceType
 			%	Input:
@@ -1149,7 +1149,7 @@ classdef(Abstract) Options < handle
 			%		findiffreltype:	finite difference type
 			this.FiniteDifferenceType = this.checkProperty('FiniteDifferenceType', findifftype);
 		end
-		
+
 		function [] = set.FunctionTolerance(this, tolfun)
 			%FUNCTIONTOLERANCE set FunctionTolerance
 			%	Input:
@@ -1157,7 +1157,7 @@ classdef(Abstract) Options < handle
 			%		tolfun:		function tolerance
 			this.FunctionTolerance = this.checkProperty('FunctionTolerance', tolfun);
 		end
-		
+
 		function [] = set.FunValCheck(this, funvalcheck)
 			%FUNVALCHECK set FunValCheck
 			%	Input:
@@ -1165,7 +1165,7 @@ classdef(Abstract) Options < handle
 			%		funvalcheck:	set indicator for function value check
 			this.FunValCheck = this.checkProperty('FunValCheck', funvalcheck);
 		end
-		
+
 		function [] = set.HessianApproximation(this, hessapprox)
 			%HESSIANAPPROXIMATION set HessianApproximation
 			%	Input:
@@ -1173,7 +1173,7 @@ classdef(Abstract) Options < handle
 			%		hessapprox:	hessian approximation type
 			this.HessianApproximation = this.checkProperty('HessianApproximation', hessapprox);
 		end
-		
+
 		function [] = set.HessianFcn(this, hessfun)
 			%HESSIANFUNCTION set HessianFcn
 			%	Input:
@@ -1181,7 +1181,7 @@ classdef(Abstract) Options < handle
 			%		hessfun:	hessian function
 			this.HessianFcn = this.checkProperty('HessianFcn', hessfun);
 		end
-		
+
 		function [] = set.HessianMultiplyFcn(this, hessmult)
 			%HESSIANMULTIPLYFCN set HessianMultiplyFcn
 			%	Input:
@@ -1189,7 +1189,7 @@ classdef(Abstract) Options < handle
 			%		hessmult:	hessian multiplication function
 			this.HessianMultiplyFcn = this.checkProperty('HessianMultiplyFcn', hessmult);
 		end
-		
+
 		function [] = set.HessianPattern(this, hesspattern)
 			%HESSIANPATTERN set HessianPattern
 			%	Input:
@@ -1197,7 +1197,7 @@ classdef(Abstract) Options < handle
 			%		hesspattern:	hessian sparsity pattern
 			this.HessianPattern = this.checkProperty('HessianPattern', hesspattern);
 		end
-		
+
 		function [] = set.HessianUpdate(this, hessupdate)
 			%HESSIANUPDATE set HessianUpdate
 			%	Input:
@@ -1205,7 +1205,7 @@ classdef(Abstract) Options < handle
 			%		hessupdate:	hessian update function
 			this.HessianUpdate = this.checkProperty('HessianUpdate', hessupdate);
 		end
-		
+
 		function [] = set.HonorBounds(this, honorbounds)
 			%HONORBOUNDS set HonorBounds
 			%	Input:
@@ -1213,7 +1213,7 @@ classdef(Abstract) Options < handle
 			%		honorbounds:	indicator, if bound constraints are always honored
 			this.HonorBounds = this.checkProperty('HonorBounds', honorbounds);
 		end
-		
+
 		function [] = set.InitBarrierParam(this, initbarrierparam)
 			%INITBARRIERPARAM set InitBarrierParam
 			%	Input:
@@ -1221,7 +1221,7 @@ classdef(Abstract) Options < handle
 			%		initbarrierparam:	initial barriar parameter
 			this.InitBarrierParam = this.checkProperty('InitBarrierParam', initbarrierparam);
 		end
-		
+
 		function [] = set.InitDamping(this, initdamping)
 			%INITDAMPING set InitDamping
 			%	Input:
@@ -1229,7 +1229,7 @@ classdef(Abstract) Options < handle
 			%		initdamping:	initial damping
 			this.InitDamping = this.checkProperty('InitDamping', initdamping);
 		end
-		
+
 		function [] = set.InitTrustRegionRadius(this, inittrustradius)
 			%INITTRUSTREGIONRADIUS set InitTrustRegionRadius
 			%	Input:
@@ -1237,7 +1237,7 @@ classdef(Abstract) Options < handle
 			%		inittrustregionradius:	initial trust region radius
 			this.InitTrustRegionRadius = this.checkProperty('InitTrustRegionRadius', inittrustradius);
 		end
-		
+
 		function [] = set.JacobianMultiplyFcn(this, jacmult)
 			%JACOBIANMULTIPLYFCN set JacobianMultiplyFcn
 			%	Input:
@@ -1245,7 +1245,7 @@ classdef(Abstract) Options < handle
 			%		jacmult:	jacobian multiply function
 			this.JacobianMultiplyFcn = this.checkProperty('JacobianMultiplyFcn', jacmult);
 		end
-		
+
 		function [] = set.JacobianPattern(this, jacpattern)
 			%JACOBIANPATTERN set JacobianPattern
 			%	Input:
@@ -1253,7 +1253,7 @@ classdef(Abstract) Options < handle
 			%		jacpattern:	jacobian sparsity pattern
 			this.JacobianPattern = this.checkProperty('JacobianPattern', jacpattern);
 		end
-		
+
 		function [] = set.MaxFunctionEvaluations(this, maxfunevals)
 			%MAXFUNCTIONEVALUATIONS set MaxFunctionEvaluations
 			%	Input:
@@ -1261,7 +1261,7 @@ classdef(Abstract) Options < handle
 			%		maxfunevals:	maximum number of function evaulations
 			this.MaxFunctionEvaluations = this.checkProperty('MaxFunctionEvaluations', maxfunevals);
 		end
-		
+
 		function [] = set.MaxIterations(this, maxiter)
 			%MAXITERATIONS set MaxIterations
 			%	Input:
@@ -1269,7 +1269,7 @@ classdef(Abstract) Options < handle
 			%		maxiter:	maximum number of iterations
 			this.MaxIterations = this.checkProperty('MaxIterations', maxiter);
 		end
-		
+
 		function [] = set.MaxPCGIter(this, maxpcgiter)
 			%MAXPCGITER set MaxPCGIter
 			%	Input:
@@ -1277,7 +1277,7 @@ classdef(Abstract) Options < handle
 			%		maxpcgiter:	maximum numer of iterations for conjugate gradient
 			this.MaxPCGIter = this.checkProperty('MaxPCGIter', maxpcgiter);
 		end
-		
+
 		function [] = set.MaxProjCGIter(this, maxpcgiter)
 			%MAXPROJPCGITER set MaxProjCGIter
 			%	Input:
@@ -1285,7 +1285,7 @@ classdef(Abstract) Options < handle
 			%		maxpcgiter:	maximum number of iterations for projected conjugate gradient
 			this.MaxProjCGIter = this.checkProperty('MaxProjCGIter', maxpcgiter);
 		end
-		
+
 		function [] = set.MaxSQPIter(this, maxsqpiter)
 			%MAXSQPITER set MaxSQPIter
 			%	Input:
@@ -1293,7 +1293,7 @@ classdef(Abstract) Options < handle
 			%		maxsqpiter:	maximum number of iterations for sqp subproblems
 			this.MaxSQPIter = this.checkProperty('MaxSQPIter', maxsqpiter);
 		end
-		
+
 		function [] = set.MaxTime(this, maxtime)
 			%MAXTIME set MaxTime
 			%	Input:
@@ -1301,7 +1301,7 @@ classdef(Abstract) Options < handle
 			%		maxtime:	maximum runtime of optimization
 			this.MaxTime = this.checkProperty('MaxTime', maxtime);
 		end
-		
+
 		function [] = set.ObjectiveLimit(this, objlimit)
 			%OBJECTIVELIMIT set ObjectiveLimit
 			%	Input:
@@ -1309,7 +1309,7 @@ classdef(Abstract) Options < handle
 			%		objlimit:	maximum value of objective function
 			this.ObjectiveLimit = this.checkProperty('ObjectiveLimit', objlimit);
 		end
-		
+
 		function [] = set.OptimalityTolerance(this, tolfun)
 			%OPTIMALITYTOLERANCE set OptimalityTolerance
 			%	Input:
@@ -1317,7 +1317,7 @@ classdef(Abstract) Options < handle
 			%		tolfun:	maximum value for optimality tolerance
 			this.OptimalityTolerance = this.checkProperty('OptimalityTolerance', tolfun);
 		end
-		
+
 		function [] = set.OutputFcn(this, outputfcn)
 			%OUTPUTFCN set OutputFcn
 			%	Input:
@@ -1325,7 +1325,7 @@ classdef(Abstract) Options < handle
 			%		outputfcn:	output function
 			this.OutputFcn = this.checkProperty('OutputFcn', outputfcn);
 		end
-		
+
 		function [] = set.PlotFcn(this, plotfcn)
 			%PLOTFCN set PlotFcn
 			%	Input:
@@ -1333,7 +1333,7 @@ classdef(Abstract) Options < handle
 			%		plotfcn:	plot functions
 			this.PlotFcn = this.checkProperty('PlotFcn', plotfcn);
 		end
-		
+
 		function [] = set.PrecondBandWidth(this, bandwidth)
 			%PRECONDBANDWIDTH set PrecondBandWidth
 			%	Input:
@@ -1341,7 +1341,7 @@ classdef(Abstract) Options < handle
 			%		bandwidth:	???
 			this.PrecondBandWidth = this.checkProperty('PrecondBandWidth', bandwidth);
 		end
-		
+
 		function [] = set.RelLineSearchBound(this, bound)
 			%RELLINESEARCHBOUND set RelLineSearchBound
 			%	Input:
@@ -1349,7 +1349,7 @@ classdef(Abstract) Options < handle
 			%		bound:		bound for relative line search
 			this.RelLineSearchBound = this.checkProperty('RelLineSearchBound', bound);
 		end
-		
+
 		function [] = set.RelLineSearchBoundDuration(this, bound)
 			%RELLINESEARCHBOUNDDURATION set RelLineSearchBoundDuration
 			%	Input:
@@ -1357,7 +1357,7 @@ classdef(Abstract) Options < handle
 			%		bound:		bound for relative line search duration
 			this.RelLineSearchBoundDuration = this.checkProperty('RelLineSearchBoundDuration', bound);
 		end
-		
+
 		function [] = set.ScaleProblem(this, scale)
 			%SCALEPROBLEM set ScaleProblem
 			%	Input:
@@ -1365,7 +1365,7 @@ classdef(Abstract) Options < handle
 			%		scale:	indicator, if problem should be scaled
 			this.ScaleProblem = this.checkProperty('ScaleProblem', scale);
 		end
-		
+
 		function [] = set.SpecifyConstraintGradient(this, gradconstr)
 			%SPECIFYCONSTRAINTGRADIENT set SpecifyConstraintGradient
 			%	Input:
@@ -1373,7 +1373,7 @@ classdef(Abstract) Options < handle
 			%		gradconstr:	indicator, if constraint function gradient is specified
 			this.SpecifyConstraintGradient = this.checkProperty('SpecifyConstraintGradient', gradconstr);
 		end
-		
+
 		function [] = set.SpecifyConstraintHessian(this, hessconstr)
 			%SPECIFYCONSTRAINTHESSIAN set SpecifyConstraintHessian
 			%	Input:
@@ -1381,7 +1381,7 @@ classdef(Abstract) Options < handle
 			%		hessconstr:	indicator, if constraint function hessian is specified
 			this.SpecifyConstraintHessian = this.checkProperty('SpecifyConstraintHessian', hessconstr);
 		end
-		
+
 		function [] = set.SpecifyObjectiveGradient(this, gradobj)
 			%SPECIFYOBJECTIVEGRADIENT set SpecifyObjectiveGradient
 			%	Input:
@@ -1389,7 +1389,7 @@ classdef(Abstract) Options < handle
 			%		gradobj:	indicator, if objective function gradient is specified
 			this.SpecifyObjectiveGradient = this.checkProperty('SpecifyObjectiveGradient', gradobj);
 		end
-		
+
 		function [] = set.SpecifyObjectiveHessian(this, hessobj)
 			%SPECIFYOBJECTIVEHESSIAN set SpecifyObjectiveHessian
 			%	Input:
@@ -1397,7 +1397,7 @@ classdef(Abstract) Options < handle
 			%		hessobj:	indicator, if objective function hessian is specified
 			this.SpecifyObjectiveHessian = this.checkProperty('SpecifyObjectiveHessian', hessobj);
 		end
-		
+
 		function [] = set.StepTolerance(this, tolx)
 			%STEPTOLERANCE set StepTolerance
 			%	Input:
@@ -1405,7 +1405,7 @@ classdef(Abstract) Options < handle
 			%		tolx:	maximum step tolerance
 			this.StepTolerance = this.checkProperty('StepTolerance', tolx);
 		end
-		
+
 		function [] = set.SubproblemAlgorithm(this, algorithm)
 			%SUBPROBLEMALGORITHM set SubproblemAlgorithm
 			%	Input:
@@ -1417,7 +1417,7 @@ classdef(Abstract) Options < handle
 			end
 			this.SubproblemAlgorithm = this.checkProperty('SubproblemAlgorithm', algorithm, possible);
 		end
-		
+
 		function [] = set.TolConSQP(this, tolcon)
 			%TOLCONSQP set TolConSQP
 			%	Input:
@@ -1425,7 +1425,7 @@ classdef(Abstract) Options < handle
 			%		tolcon:	constraint tolerance for sqp subproblems
 			this.TolConSQP = this.checkProperty('TolConSQP', tolcon);
 		end
-		
+
 		function [] = set.TolPCG(this, tolcg)
 			%TOLPCG set TolPCG
 			%	Input:
@@ -1433,7 +1433,7 @@ classdef(Abstract) Options < handle
 			%		tolpcg:	tolerance for conjugate gradient
 			this.TolPCG = this.checkProperty('TolPCG', tolcg);
 		end
-		
+
 		function [] = set.TolProjCG(this, tolcg)
 			%TOLPROJPCG set TolProjCG
 			%	Input:
@@ -1441,7 +1441,7 @@ classdef(Abstract) Options < handle
 			%		tolpcg:	tolerance for projected conjugate gradient
 			this.TolProjCG = this.checkProperty('TolProjCG', tolcg);
 		end
-		
+
 		function [] = set.TolProjCGAbs(this, tolcgabs)
 			%TOLPROJCGABS set TolProjCGAbs
 			%	Input:
@@ -1449,7 +1449,7 @@ classdef(Abstract) Options < handle
 			%		tolcgabs:	tolerance for absolute conjugate gradient
 			this.TolProjCGAbs = this.checkProperty('TolProjCGAbs', tolcgabs);
 		end
-		
+
 		function [] = set.TypicalX(this, typicalx)
 			%TYPICALX set TypicalX
 			%	Input:
@@ -1457,7 +1457,7 @@ classdef(Abstract) Options < handle
 			%		typicalx:	typical x values
 			this.TypicalX = this.checkProperty('TypicalX', typicalx);
 		end
-		
+
 		function [] = set.UseParallel(this, useparallel)
 			%USEPARALLEL set UseParallel
 			%	Input:
@@ -1465,7 +1465,7 @@ classdef(Abstract) Options < handle
 			%		useparallel:	indicator, if parallel calulation of objective and constraints should be used
 			this.UseParallel = this.checkProperty('UseParallel', useparallel);
 		end
-		
+
 		function [] = set.NumberVariables(this, numvar)
 			%NUMBERVARIABLES set number of variables
 			%	Input:
@@ -1480,7 +1480,7 @@ classdef(Abstract) Options < handle
 			end
 			this.NumberVariables = numvar;
 		end
-		
+
 		function [] = set.NumberConstraintsInequality(this, numineq)
 			%NUMBERCONSTRAINTSINEQUALITY set number of inequality constraints
 			%	Input:
@@ -1495,7 +1495,7 @@ classdef(Abstract) Options < handle
 			end
 			this.NumberConstraintsInequality = numineq;
 		end
-		
+
 		function [] = set.NumberConstraintsEquality(this, numeq)
 			%NUMBERCONSTRAINTSEQUALITY set number of equality constraints
 			%	Input:
@@ -1510,7 +1510,7 @@ classdef(Abstract) Options < handle
 			end
 			this.NumberConstraintsEquality = numeq;
 		end
-		
+
 		function [] = set.NumberConstraintsBounds(this, numbounds)
 			%NUMBERCONSTRAINTSBOUNSD set number of bound constraints
 			%	Input:
@@ -1525,7 +1525,7 @@ classdef(Abstract) Options < handle
 			end
 			this.NumberConstraintsBounds = numbounds;
 		end
-		
+
 		function [subalgorithms] = possiblesubalgorithms(~)
 			%POSSIBLESUBALGORITHMS list with possible algorithms for subproblems for optimizer
 			%	Input:
@@ -1543,7 +1543,7 @@ classdef(Abstract) Options < handle
 				];
 			end
 		end
-		
+
 		function [s] = struct(this)
 			%STRUCT convert current option set to structure with public setable fields
 			%	Input:
@@ -1661,7 +1661,7 @@ classdef(Abstract) Options < handle
 			s = cell2struct(values, publicfields, 1);
 		end
 	end
-	
+
 	methods(Access=protected)
 		function [options] = setoptions(this, options)
 			%SETOPTIONS set options to input argument
@@ -1754,7 +1754,7 @@ classdef(Abstract) Options < handle
 			end
 		end
 	end
-	
+
 	methods(Access=protected)
 		function [names] = optimsetganames(~)
 			%OPTIMSETGANAMES mapping from properties to gaoptimset names
@@ -1811,7 +1811,7 @@ classdef(Abstract) Options < handle
 				'UseParallel',					'UseParallel'
 			};
 		end
-		
+
 		function [names] = optimsetpsnames(~)
 			%OPTIMSETPSNAMES mapping from properties to psoptimset names
 			%	Input:
@@ -1867,7 +1867,7 @@ classdef(Abstract) Options < handle
 				'UseParallel',					'UseParallel'
 			};
 		end
-		
+
 		function [names] = optimsetsanames(~)
 			%OPTIMSETSANAMES mapping from properties to saoptimset names
 			%	Input:
@@ -1924,7 +1924,7 @@ classdef(Abstract) Options < handle
 			};
 		end
 	end
-	
+
 	methods(Abstract=true)
 		%POSSIBLEALGORITHMS list with possible algorithms for optimizer
 		%	Input:
@@ -1932,14 +1932,14 @@ classdef(Abstract) Options < handle
 		%	Output:
 		%		algorithms:	possible algorithms
 		[algorithms] = possiblealgorithms(this);
-		
+
 		%DISPLAYMAPPING mapping from optimoptions display names to solver display names
 		%	Input:
 		%		this:		instance
 		%	Output:
 		%		display:	mapping of display names
 		[display] = displaymapping(this);
-		
+
 		%FORMATOUTPUT unify output of optimization
 		%	Input:
 		%		this:				instance
@@ -1956,7 +1956,7 @@ classdef(Abstract) Options < handle
 		%		information:	unified optimization output
 		[information] = formatOutput(this, errorcode, time, xmin, fmin, nvars, overalliterations, overallfunevals, retries, output);
 	end
-	
+
 	methods(Abstract=true, Access=protected)
 		%OPTIMOPTIONSNAMES mapping from properties to optimoptions names
 		%	Input:
@@ -1964,14 +1964,14 @@ classdef(Abstract) Options < handle
 		%	Output:
 		%		names:	mapping of names
 		[names] = optimoptionsnames(this);
-		
+
 		%OPTIMSETNAMES mapping from properties to optimset names
 		%	Input:
 		%		this:	instance
 		%	Output:
 		%		names:	mapping of names
 		[names] = optimsetnames(this);
-		
+
 		%SSTRUCTNAMES mapping from properties to struct names
 		%	Input:
 		%		this:	instance
@@ -1979,5 +1979,5 @@ classdef(Abstract) Options < handle
 		%		names:	mapping of names
 		[names] = structnames(this);
 	end
-	
+
 end

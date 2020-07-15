@@ -1,6 +1,6 @@
 classdef slpgs < optimization.options.slqpgs
 	%SLPGS solver options for slpgs
-	
+
 	methods(Static=true)
 		function [this] = fromDCM(value, ~)
 			%FROMDCM convert structure from DCM import to instance
@@ -17,7 +17,7 @@ classdef slpgs < optimization.options.slqpgs
 				this.useoptions(value);
 			end
 		end
-		
+
 		function [success] = registerDCMHandler()
 			%REGISTERDCMHANDLER register this class in the DCM handler class
 			%	Output:
@@ -25,7 +25,7 @@ classdef slpgs < optimization.options.slqpgs
 			success = export.parameter.DCMHandler.instance.registerHandler(?optimization.options.slpgs, ?optimization.options.slpgs);
 		end
 	end
-	
+
 	methods
 		function [this] = slpgs(varargin)
 			%SQPGS create new optimization option set
@@ -38,7 +38,7 @@ classdef slpgs < optimization.options.slqpgs
 				this.useoptions(varargin{:});
 			end
 		end
-		
+
 		function [algorithms] = possiblealgorithms(~)
 			%POSSIBLEALGORITHMS list with possible algorithms for optimizer
 			%	Input:
@@ -49,7 +49,7 @@ classdef slpgs < optimization.options.slqpgs
 				'slpgs'
 			};
 		end
-		
+
 		function [subalgorithms] = possiblesubalgorithms(~)
 			%POSSIBLESUBALGORITHMS list with possible algorithms for subproblems for optimizer
 			%	Input:
@@ -61,5 +61,5 @@ classdef slpgs < optimization.options.slqpgs
 			};
 		end
 	end
-	
+
 end

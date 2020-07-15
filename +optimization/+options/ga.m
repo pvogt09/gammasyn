@@ -1,6 +1,6 @@
 classdef ga < optimization.options.Options
 	%GA solver options for ga
-	
+
 	methods(Access=protected)
 		function [names] = optimoptionsnames(~)
 			%OPTIMOPTIONSNAMES mapping from properties to optimoptions names
@@ -57,7 +57,7 @@ classdef ga < optimization.options.Options
 				'UseParallel',					'UseParallel'
 			};
 		end
-		
+
 		function [names] = optimsetnames(~)
 			%OPTIMSETNAMES mapping from properties to optimset names
 			%	Input:
@@ -113,7 +113,7 @@ classdef ga < optimization.options.Options
 				'UseParallel',					'UseParallel'
 			};
 		end
-		
+
 		function [names] = structnames(~)
 			%SSTRUCTNAMES mapping from properties to struct names
 			%	Input:
@@ -169,7 +169,7 @@ classdef ga < optimization.options.Options
 				'UseParallel',					'UseParallel'
 			};
 		end
-		
+
 		function [names] = optimsetganames(~)
 			%OPTIMSETGANAMES mapping from properties to gaoptimset names
 			%	Input:
@@ -226,7 +226,7 @@ classdef ga < optimization.options.Options
 			};
 		end
 	end
-	
+
 	methods
 		function [this] = ga(varargin)
 			%GA create new optimization option set
@@ -247,7 +247,7 @@ classdef ga < optimization.options.Options
 				this.useoptions(varargin{:});
 			end
 		end
-		
+
 		function [algorithms] = possiblealgorithms(~)
 			%POSSIBLEALGORITHMS list with possible algorithms for optimizer
 			%	Input:
@@ -259,7 +259,7 @@ classdef ga < optimization.options.Options
 				'gamulti'
 			};
 		end
-		
+
 		function [display] = displaymapping(~)
 			%DISPLAYMAPPING mapping from optimoptions display names to solver display names
 			%	Input:
@@ -276,7 +276,7 @@ classdef ga < optimization.options.Options
 				'final-detailed',	'final'
 			};
 		end
-		
+
 		function [information] = formatOutput(this, errorcode, time, xmin, fmin, nvars, overalliterations, overallfunevals, retries, output, alloutputs)
 			%FORMATOUTPUT unify output of optimization
 			%	Input:
@@ -346,5 +346,5 @@ classdef ga < optimization.options.Options
 			end
 		end
 	end
-	
+
 end

@@ -1,6 +1,6 @@
 classdef OptionType < uint8
 	%OPTIONTYPE type of optimization options
-	
+
 	enumeration
 		% optiomoptions optimization options
 		OPTIMOPTIONS(1);

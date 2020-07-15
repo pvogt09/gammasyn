@@ -1,11 +1,11 @@
 classdef GammasynInitialValueElement < control.design.gamma.InitialValueElement
 	%GAMMASYNINITIALVALUEELEMENT class for representing an initial value to use with gammasyn
-	
+
 	properties
 		% initial value
 		x_init
 	end
-	
+
 	methods
 		function [this] = GammasynInitialValueElement(x_init)
 			%GAMMASYNINITIALVALUEELEMENT initial value for gammasyn
@@ -39,7 +39,7 @@ classdef GammasynInitialValueElement < control.design.gamma.InitialValueElement
 				F
 			};
 		end
-		
+
 		function [] = set.x_init(this, x_init)
 			%X_INIT setter for initial value
 			%	Input:
@@ -71,7 +71,7 @@ classdef GammasynInitialValueElement < control.design.gamma.InitialValueElement
 			};
 		end
 	end
-	
+
 	methods(Access=protected)
 		function [initialvalue, valid, errorid, errormessage] = get_initial(this, ~, ~, ~, ~, ~, ~, ~, varargin) %#ok<VANUS> varargin is used for compatibility with interface
 			%GET_INITIAL get a parameter dependent initial value from the element
@@ -94,5 +94,5 @@ classdef GammasynInitialValueElement < control.design.gamma.InitialValueElement
 			errormessage = '';
 		end
 	end
-	
+
 end

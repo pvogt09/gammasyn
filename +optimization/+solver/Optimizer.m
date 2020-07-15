@@ -1,6 +1,6 @@
 classdef(Enumeration) Optimizer < handle
 	%OPTIMIZER enumeration with information about different optimization algorithms
-	
+
 	enumeration
 		% fmincon standard settings
 		FMINCON('fmincon', 'fmincon', [
@@ -210,7 +210,7 @@ classdef(Enumeration) Optimizer < handle
 			optimization.options.ProblemType.CONSTRAINEDMULTI
 		], optimization.options.ProblemType.CONSTRAINED, false(2, 1), '', false, 'MaxIter', 'MaxFunEvals', 'TolFun', 'TolCon', 'TolX', [0, 0, 1, 2, 0, 0, 0, 0], 'Display', struct());
 	end
-	
+
 	properties(Access=private)
 		% fieldname in parameterstructure of YALMIP
 		fieldname,
@@ -247,14 +247,14 @@ classdef(Enumeration) Optimizer < handle
 		% indicator if the solver support hessian information
 		supportshessian
 	end
-	
+
 	properties(SetAccess=private)
 		% name of optimization algorithm
 		algorithmname,
 		% default algorithm
 		defaultalgorithm
 	end
-	
+
 	methods(Static=true)
 		function [default] = getDefaultValue()
 			%GETDEFAULTVALUE return default value for Optimizer
@@ -278,7 +278,7 @@ classdef(Enumeration) Optimizer < handle
 			end
 			default = def;
 		end
-		
+
 		function [id] = fromname(name)
 			%FROMNAME create OptimizerID from name
 			%	Input:
@@ -306,7 +306,7 @@ classdef(Enumeration) Optimizer < handle
 			end
 		end
 	end
-	
+
 	methods(Access=private)
 		function [this] = Optimizer(algorithmname, fieldname, optiontype, algorithm, algorithmchoices, defaultalgorithm, problemtypes, preferredproblemtype, needstoolbox, optimoptionsclassname, supportshessian, maxitername, maxfunevalsname, tolfunname, tolconname, tolxname, verbose, displayname, options)
 			%OPTIMIZER return new identifier for an optimization algorithm
@@ -363,7 +363,7 @@ classdef(Enumeration) Optimizer < handle
 			this.options = options;
 		end
 	end
-	
+
 	methods
 		function [algorithm] = getDefaultAlgorithm(this)
 			%GETDEFAULTALGORITHM return default algorithm for current optimizer
@@ -373,7 +373,7 @@ classdef(Enumeration) Optimizer < handle
 			%		algorithm:	default algorithm
 			algorithm = this.defaultalgorithm;
 		end
-		
+
 		function [algorithms] = getAlgorithmChoices(this)
 			%GETALGORITHMCHOICES return cell array of supported algorithm choices for current optimizer
 			%	Input:
@@ -382,7 +382,7 @@ classdef(Enumeration) Optimizer < handle
 			%		algorithms:	cell array with algorithms
 			algorithms = this.algorithmchoices;
 		end
-		
+
 		function [supported] = getSupportedProblemTypes(this)
 			%GETSUPPORTEDPROBLEMTYPES return list of ProblemTypes the current optimizer supports
 			%	Input:
@@ -391,7 +391,7 @@ classdef(Enumeration) Optimizer < handle
 			%		supported:	supported ProblemTypes
 			supported = this.problemtypes;
 		end
-		
+
 		function [preferred] = getPreferredProblemType(this)
 			%GETPREFERREDPROBLEMTYPE return the preferred ProblemType of the current optimizer
 			%	Input:
@@ -400,7 +400,7 @@ classdef(Enumeration) Optimizer < handle
 			%		preferred:	preferred ProblemType
 			preferred = this.preferredproblemtype;
 		end
-		
+
 		function [needsoptimization] = needsOptimizationToolbox(this)
 			%NEEDSOPTIMIZATIONTOOLBOX return if the solver needs the Optimization Toolbox
 			%	Input:
@@ -410,7 +410,7 @@ classdef(Enumeration) Optimizer < handle
 			needsoptimization = cat(2, this(:).needstoolbox);
 			needsoptimization = reshape(needsoptimization(1, :), size(this));
 		end
-		
+
 		function [needsglobaloptimization] = needsGlobalOptimizationToolbox(this)
 			%NEEDSGLOBALOPTIMIZATIONTOOLBOX return if the solver needs the Global Optimization Toolbox
 			%	Input:
@@ -420,7 +420,7 @@ classdef(Enumeration) Optimizer < handle
 			needsglobaloptimization = cat(2, this(:).needstoolbox);
 			needsglobaloptimization = reshape(needsglobaloptimization(2, :), size(this));
 		end
-		
+
 		function [classname] = getOptimoptionsClassname(this)
 			%GETOPTIMOPTIONSCLASSNAME return the corresponding optimoptions classname of the current optimizer
 			%	Input:
@@ -429,7 +429,7 @@ classdef(Enumeration) Optimizer < handle
 			%		classname:	corresponding optimoptions classname
 			classname = this.optimoptionsclassname;
 		end
-		
+
 		function [supportshessian] = getHessianSupport(this)
 			%GETHESSIANSUPPORT return if the solver supports hessian information
 			%	Input:
@@ -438,7 +438,7 @@ classdef(Enumeration) Optimizer < handle
 			%		supportshessian:	solver supports hessian
 			supportshessian = this.supportshessian;
 		end
-		
+
 		function [equal] = eq(this, that)
 			%EQ return if the object is equal to another object
 			%	Input:
@@ -469,7 +469,7 @@ classdef(Enumeration) Optimizer < handle
 				equal = builtin('eq', this, that);
 			end
 		end
-		
+
 		function [c] = char(this)
 			%CHAR convert Optimizer object to char
 			%	Input:
@@ -493,7 +493,7 @@ classdef(Enumeration) Optimizer < handle
 				end
 			end
 		end
-	
+
 		function [settings] = getoptions(this, as)
 			%GETOPTIONS return options
 			%	Input:
@@ -583,7 +583,7 @@ classdef(Enumeration) Optimizer < handle
 			end
 			settings = this.addoptions(settings);
 		end
-		
+
 		function [settings] = getconstantoptions(this)
 			%GETCONSTANTOPTIONS return constant options
 			%	Input:
@@ -602,7 +602,7 @@ classdef(Enumeration) Optimizer < handle
 				end
 			end
 		end
-		
+
 % 		function [information] = formatOutput(this, errorcode, output, time, nvars)
 % 			%FORMATOUTPUT unify output of optimization
 % 			%	Input:
@@ -677,7 +677,7 @@ classdef(Enumeration) Optimizer < handle
 				error('optimization:solver:Optimizer:setting', 'The supplied optimization settings are invalid.');
 			end
 		end
-		
+
 		function [settings] = setAlgorithm(this, settings, algorithm)
 			%SETALGORITHM set optimization algorith in optimization settings
 			%	Input:
@@ -707,7 +707,7 @@ classdef(Enumeration) Optimizer < handle
 				end
 			end
 		end
-		
+
 		function [settings] = setMaxIter(this, settings, maxiter)
 			%SETMAXITER set maximum number of iterations in optimization settings
 			%	Input:
@@ -735,7 +735,7 @@ classdef(Enumeration) Optimizer < handle
 				end
 			end
 		end
-		
+
 		function [settings] = setMaxFunEvals(this, settings, maxfunevals)
 			%SETMAXFUNEVALS set maximum number of function evaluations in optimization settings
 			%	Input:
@@ -763,7 +763,7 @@ classdef(Enumeration) Optimizer < handle
 				end
 			end
 		end
-		
+
 		function [settings] = setTolFun(this, settings, tolfun)
 			%SETTOLFUN set fuction tolerance in optimization settings
 			%	Input:
@@ -791,7 +791,7 @@ classdef(Enumeration) Optimizer < handle
 				end
 			end
 		end
-		
+
 		function [settings] = setTolCon(this, settings, tolcon)
 			%SETTOLCON set constraint tolerance in optimization settings
 			%	Input:
@@ -819,7 +819,7 @@ classdef(Enumeration) Optimizer < handle
 				end
 			end
 		end
-		
+
 		function [settings] = setTolX(this, settings, tolx)
 			%SETTOLX set tolerance for relative change in function in optimization settinge
 			%	Input:
@@ -847,7 +847,7 @@ classdef(Enumeration) Optimizer < handle
 				end
 			end
 		end
-		
+
 		function [settings] = addoptions(this, settings)
 			%ADDOPTIONS add constant options to optimization settinge
 			%	Input:
@@ -920,7 +920,7 @@ classdef(Enumeration) Optimizer < handle
 				error('optimization:solver:Optimizer:setting', 'The supplied optimization settings are invalid.');
 			end
 		end
-		
+
 		function [settings] = setoptions(this, settings, options)
 			%SETOPTIONS add arbitrary options to optimization settings, that can not be set by other setters of this class
 			%	Input:

@@ -1,6 +1,6 @@
 classdef ProblemType < uint8
 	%PROBLEMTYPE type of optimization problem
-	
+
 	enumeration
 		% unconstrained optimization problem
 		UNCONSTRAINED(1);
@@ -11,7 +11,7 @@ classdef ProblemType < uint8
 		% constrained multiobjective optimization problem
 		CONSTRAINEDMULTI(4)
 	end
-	
+
 	methods(Static=true)
 		function [default] = getDefaultValue()
 			%GETDEFAULTVALUE return default value for problem types
@@ -19,21 +19,21 @@ classdef ProblemType < uint8
 			%		default:	default problem type
 			default = optimization.options.ProblemType.UNCONSTRAINED;
 		end
-		
+
 		function [description] = getDescription()
 			%GETDESCRIPTION return description of the problem type class
 			%	Output:
 			%		description:	description of the class
 			description = 'type of optimization problem';
 		end
-		
+
 		function [addname] = addClassNameToEnumNames()
 			%ADDCLASSNAMETOENUMNAMES Control whether class name is added as a prefix to enumerated names in the generated code.
 			%	Output:
 			%		addname:	true, to add the class name to generated code to avoid naming conflicts
 			addname = true;
 		end
-		
+
 		function [problemtype] = frominteger(ord)
 			%FROMINTEGER create ProblemType identifier from integer
 			%	Input:
@@ -67,7 +67,7 @@ classdef ProblemType < uint8
 			end
 			problemtype = reshape(problemtype, size(ord));
 		end
-		
+
 		function [problemtype] = fromchar(name)
 			%FROMCHAR create ProblemType from char
 			%	Input:
@@ -115,7 +115,7 @@ classdef ProblemType < uint8
 			end
 		end
 	end
-	
+
 	methods
 		function [problemnname] = char(this)
 			%CHAR return ProblemType as char
@@ -134,7 +134,7 @@ classdef ProblemType < uint8
 			end
 			problemnname = strtrim(name(this, :));
 		end
-		
+
 		function [frictionname] = lower(this)
 			%LOWER return char representation of the friction type in lower case letters
 			%	Input:
@@ -143,7 +143,7 @@ classdef ProblemType < uint8
 			%		frictionname:	char representation of the friction type in lower case letters
 			frictionname = lower(char(this));
 		end
-		
+
 		function [frictionname] = upper(this)
 			%UPPER return char representation of the friction type in upper case letters
 			%	Input:

@@ -495,7 +495,7 @@ function [hessianJ] = calculate_objective_hesse_helper(number_models, number_sta
 					i = mod(tmpZ - 1, number_controls) + 1;
 					j = idivide(tmpZ - 1, number_controls) + 1;
 				end
-				
+
 				if q <= number_R_coefficients
 					s = mod(q - 1, number_controls) + 1;
 					t = idivide(q - 1, number_controls) + 1;
@@ -513,13 +513,13 @@ function [hessianJ] = calculate_objective_hesse_helper(number_models, number_sta
 							if q <= number_R_coefficients
 								eigDerivative_ij = eigenvalue_derivative(kk, i, j, ii);
 								eigDerivative_st = eigenvalue_derivative(kk, s, t, ii);
-								
+
 								eig2Derivative_re = real(eigenvalue_2derivative(kk, q, z, ii));
 								eig2Derivative_im = imag(eigenvalue_2derivative(kk, q, z, ii));
 							else
 								eigDerivative_ij = eigenvalue_derivative(kk, i, j, ii);
 								eigDerivative_st = eigenvalue_derivative_xdot(kk, s, t, ii);
-								
+
 								eig2Derivative_re = real(eigenvalue_2derivative_mixed(kk, q - number_R_coefficients, z, ii));
 								eig2Derivative_im = imag(eigenvalue_2derivative_mixed(kk, q - number_R_coefficients, z, ii));
 							end
@@ -527,13 +527,13 @@ function [hessianJ] = calculate_objective_hesse_helper(number_models, number_sta
 							if q <= number_R_coefficients
 								eigDerivative_ij = eigenvalue_derivative_xdot(kk, i, j, ii);
 								eigDerivative_st = eigenvalue_derivative(kk, s, t, ii);
-								
+
 								eig2Derivative_re = real(eigenvalue_2derivative_xdot_mixed(kk, q, z - number_R_coefficients, ii));
 								eig2Derivative_im = imag(eigenvalue_2derivative_xdot_mixed(kk, q, z - number_R_coefficients, ii));
 							else
 								eigDerivative_ij = eigenvalue_derivative_xdot(kk, i, j, ii);
 								eigDerivative_st = eigenvalue_derivative_xdot(kk, s, t, ii);
-								
+
 								eig2Derivative_re = real(eigenvalue_2derivative_xdot(kk, q - number_R_coefficients, z - number_R_coefficients, ii));
 								eig2Derivative_im = imag(eigenvalue_2derivative_xdot(kk, q - number_R_coefficients, z - number_R_coefficients, ii));
 							end

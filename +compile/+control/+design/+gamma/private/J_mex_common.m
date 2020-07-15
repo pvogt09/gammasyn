@@ -107,8 +107,8 @@ function [success, fileinfo] = J_mex_common(file, makePfad, buildfile, overwrite
 		)...
 	));
 
-    config = compile.constant();
-    
+	config = compile.constant();
+
 	Args = '{Tx Tsystem Tweight Tareafun Tdimensions Toptions}';
 	try
 		if overwrite

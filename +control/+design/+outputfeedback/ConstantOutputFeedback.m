@@ -5,7 +5,7 @@ classdef ConstantOutputFeedback < control.design.outputfeedback.OutputFeedback
 	%		y = Cx + Du
 	%	the control law u = -Rx + Fw results in the output feedback form
 	%		Ex' = Ax - B R Cx + B Fw
-	
+
 	methods(Static=true)
 		function [name] = SimulinkVariant()
 			%SIMULINKVARIANT return name of corresponding simulink variant for controller block in control_outputfeedback_lib
@@ -14,7 +14,7 @@ classdef ConstantOutputFeedback < control.design.outputfeedback.OutputFeedback
 			name = 'ConstantOutputFeedback';
 		end
 	end
-	
+
 	methods
 		function [this] = ConstantOutputFeedback(varargin) %#ok<VANUS> varargin is not used but allowes to call the constructor with arguments
 			%CONSTANTOUTPUTFEEDBACK create new constant output feedback class
@@ -54,7 +54,7 @@ classdef ConstantOutputFeedback < control.design.outputfeedback.OutputFeedback
 			D_ref = zeros(size(C_ref, 1), size(C, 1));
 			C_dot = zeros(0, size(A, 1));
 		end
-		
+
 		function [R_fixed, K_fixed, F_fixed, RKF_fixed, R_bounds, K_bounds, F_bounds, RKF_bounds, R_nonlin] = gainpattern_system(~, ~, ~, B, C, ~, ~, ~, ~, ~)
 			%GAINPATTERN_SYSTEM return gain pattern constraint system for constant output feedback gain matrix
 			%	Input:
@@ -104,7 +104,7 @@ classdef ConstantOutputFeedback < control.design.outputfeedback.OutputFeedback
 				end
 			end
 		end
-		
+
 		function [R_gain, K_gain, F_prefilter] = gainpattern_parametric_system(~, ~, ~, B, C, ~, ~, ~, ~, ~)
 			%GAINPATTERN_PARAMETRIC_SYSTEM return parametric gain matrix for a constant output feedback gain matrix R = R, gain matrix K = [] and prefilter matrix F = F in continuous and discrete time
 			%	Input:
@@ -136,7 +136,7 @@ classdef ConstantOutputFeedback < control.design.outputfeedback.OutputFeedback
 				end
 			end
 		end
-		
+
 		function [T_x, T_u, T_y, T_y_dot, T_w] = scalegain_system(~, T_x, T_u, T_y, T_y_dot, T_w, ~, ~, ~, ~, ~, ~, ~, ~, ~)
 			%SCALEGAIN_SYSTEM return scaling matrices for given system
 			%	Input:
@@ -169,7 +169,7 @@ classdef ConstantOutputFeedback < control.design.outputfeedback.OutputFeedback
 				T_w = T_y;
 			end
 		end
-		
+
 		function [F, F_fixed] = prefilterpattern_system(~, ~, ~, ~, ~, B, C, ~, ~, ~, ~, ~)
 			%PREFILTERPATTERN_SYSTEM return prefilter and prefilter pattern constraint system for constant output feedback with given gain matrices
 			%	Input:
@@ -193,7 +193,7 @@ classdef ConstantOutputFeedback < control.design.outputfeedback.OutputFeedback
 				F_fixed = false(size(B, 2), size(C, 1));
 			end
 		end
-		
+
 		function [partitionR, partitionF] = gainpartitioning_system(~, R, ~, F, ~, ~, ~, ~, ~, ~, ~, ~, ~)
 			%GAINPARTITIONING_SYSTEM return partitioning for gain matrix of extended system for output feedback with given gain matrix
 			%	Input:
@@ -218,7 +218,7 @@ classdef ConstantOutputFeedback < control.design.outputfeedback.OutputFeedback
 				partitionF = struct('F', F);
 			end
 		end
-		
+
 		function [E, A, B, C, C_dot, D, C_ref, D_ref, needsstate, usesCasCdot] = realization_system(this, R, K, F, E, A, B, C, C_dot, D, C_ref, D_ref, T)
 			%REALIZATION return controller without system for output feedback with given gain matrix
 			%	Input:
@@ -288,5 +288,5 @@ classdef ConstantOutputFeedback < control.design.outputfeedback.OutputFeedback
 			end
 		end
 	end
-	
+
 end

@@ -1,5 +1,5 @@
 function [system] = ltiblock_set_value(system, name, block)
-	%LTIBLOCK_SET_VALUE set value of system model to value of supplied ltiblock 
+	%LTIBLOCK_SET_VALUE set value of system model to value of supplied ltiblock
 	%	Input:
 	%		system:	system to replace block value in
 	%		name:	name of block to replace value in

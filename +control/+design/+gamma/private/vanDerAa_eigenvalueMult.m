@@ -4,7 +4,7 @@ function [M, lambda] = vanDerAa_eigenvalueMult(Lambda)
 	%		Lambda:	eigenvalue matrix (diagonal matrix where eigenvalue are sorted after multiplicity)
 	%	Output:
 	%		M:		highest multiplicity
-	%		lambda:	eigenvalue with highest multiplicity 
+	%		lambda:	eigenvalue with highest multiplicity
 	% TODO: allow for numerical inaccuracies
 	n = size(Lambda, 1);
 	% vector to stores multiplicity of eigenvalues

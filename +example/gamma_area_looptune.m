@@ -66,7 +66,7 @@ a = 0.65;
 b = 0.5;
 R = 50;
 
-%% 
+%%
 weight = {[1, 1, 100], 1};
 % polearea can either be a function handle with input arguments real and imaginary part of an eigenvalue, that outputs a row vector with as much elements as pole areas are defined
 %polearea = @(re, im) flexargout(...

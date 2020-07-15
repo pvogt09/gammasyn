@@ -36,7 +36,7 @@ classdef PDStateFeedback < control.design.outputfeedback.OutputFeedback
 	%			w_k;
 	%			w_{k-1}
 	%		]
-	
+
 	methods(Static=true)
 		function [name] = SimulinkVariant()
 			%SIMULINKVARIANT return name of corresponding simulink variant for controller block in control_outputfeedback_lib
@@ -45,7 +45,7 @@ classdef PDStateFeedback < control.design.outputfeedback.OutputFeedback
 			name = 'PDStateFeedback';
 		end
 	end
-	
+
 	methods
 		function [this] = PDStateFeedback(varargin) %#ok<VANUS> varargin is not used but allowes to call the constructor with arguments
 			%PDSTATEFEEDBACK create new PD state feedback class
@@ -120,7 +120,7 @@ classdef PDStateFeedback < control.design.outputfeedback.OutputFeedback
 				];
 			end
 		end
-		
+
 		function [R_fixed, K_fixed, F_fixed, RKF_fixed, R_bounds, K_bounds, F_bounds, RKF_bounds, R_nonlin] = gainpattern_system(~, ~, A, B, C, C_dot, ~, ~, ~, T)
 			%GAINPATTERN_SYSTEM return gain pattern constraint system for a PD state feedback gain matrix
 			%	Input:
@@ -217,7 +217,7 @@ classdef PDStateFeedback < control.design.outputfeedback.OutputFeedback
 				end
 			end
 		end
-		
+
 		function [R_gain, K_gain, F_prefilter] = gainpattern_parametric_system(~, ~, A, B, C, C_dot, ~, ~, ~, T)
 			%GAINPATTERN_PARAMETRIC_SYSTEM return parametric gain matrix for a real PD state feedback gain matrix R = R, gain matrix K = K and prefilter matrix F = [
 			%		F,	F_D
@@ -285,7 +285,7 @@ classdef PDStateFeedback < control.design.outputfeedback.OutputFeedback
 				end
 			end
 		end
-		
+
 		function [T_x, T_u, T_y, T_y_dot, T_w] = scalegain_system(~, T_x, T_u, T_y, T_y_dot, T_w, ~, A, ~, ~, C_dot, ~, ~, ~, T)
 			%SCALEGAIN_SYSTEM return scaling matrices for given system
 			%	Input:
@@ -338,7 +338,7 @@ classdef PDStateFeedback < control.design.outputfeedback.OutputFeedback
 				end
 			end
 		end
-		
+
 		function [F, F_fixed] = prefilterpattern_system(~, ~, ~, ~, A, B, C, C_dot, ~, ~, ~, T)
 			%PREFILTERPATTERN_SYSTEM return prefilter and prefilter pattern constraint system for a PD state feedback with given gain matrices
 			%	Input:
@@ -383,7 +383,7 @@ classdef PDStateFeedback < control.design.outputfeedback.OutputFeedback
 				end
 			end
 		end
-		
+
 		function [partitionR, partitionF] = gainpartitioning_system(~, R, K, F, ~, A, B, C, C_dot, ~, ~, ~, T)
 			%GAINPARTITIONING_SYSTEM return partitioning for gain matrix of extended system for a real PD state feedback with given gain matrix
 			%	Input:
@@ -434,7 +434,7 @@ classdef PDStateFeedback < control.design.outputfeedback.OutputFeedback
 				end
 			end
 		end
-		
+
 		function [E, A, B, C, C_dot, D, C_ref, D_ref, needsstate, useCasCdot] = realization_system(this, R, K, F, E, A, B, C, C_dot, D, C_ref, D_ref, T)
 			%REALIZATION return controller without system for output feedback with given gain matrix
 			%	Input:
@@ -511,5 +511,5 @@ classdef PDStateFeedback < control.design.outputfeedback.OutputFeedback
 			end
 		end
 	end
-	
+
 end

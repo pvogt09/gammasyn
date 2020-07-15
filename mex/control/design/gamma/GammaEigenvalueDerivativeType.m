@@ -1,7 +1,7 @@
 classdef(Enumeration) GammaEigenvalueDerivativeType < Simulink.IntEnumType
 	%GAMMAEIGENVALUEDERIVATIVETYPE enumeration for characterization of different methods to calculate the derivatives of eigenvalues and eigenvectors in gamma pole placement for use with codegen
 	%#codegen
-	
+
 	enumeration
 		% default calculation of eigenvalue derivatives like in [#FOELLINGER1994]
 		DEFAULT(0);
@@ -10,7 +10,7 @@ classdef(Enumeration) GammaEigenvalueDerivativeType < Simulink.IntEnumType
 		% method of [#RUDISILL1975] for calculation of eigenvalue and eigenvector derivatives
 		RUDISILLCHU(2);
 	end
-	
+
 % must not be private to allow for type cast to GammaEigenvalueDerivativeType, types are automatically restricted to the defined ones internally
 % 	methods(Access=private)
 % 		function [this] = GammaEigenvalueDerivativeType(type)
@@ -22,7 +22,7 @@ classdef(Enumeration) GammaEigenvalueDerivativeType < Simulink.IntEnumType
 % 			this@Simulink.IntEnumType(type);
 % 		end
 % 	end
-	
+
 	methods(Static=true)
 		function [default] = getDefaultValue()
 			%GETDEFAULTVALUE return default gamma eigenvalue derivative type
@@ -30,8 +30,8 @@ classdef(Enumeration) GammaEigenvalueDerivativeType < Simulink.IntEnumType
 			%		default:	default derivative method type
 			default = GammaEigenvalueDerivativeType.DEFAULT;
 		end
-		
-		function [description] = getDescription() 
+
+		function [description] = getDescription()
 			%GETDESCRIPTION	String to describe the class in Simulink Coder
 			%	Output:
 			%		description:	description of the class
@@ -44,7 +44,7 @@ classdef(Enumeration) GammaEigenvalueDerivativeType < Simulink.IntEnumType
 			%		addname:	true, to add the class name to generated code to avoid naming conflicts
 			addname = true;
 		end
-		
+
 		function [derivative] = fromname(name)
 			%FROMNAME create GammaEigenvalueDerivativeType from name
 			%	Input:
@@ -104,7 +104,7 @@ classdef(Enumeration) GammaEigenvalueDerivativeType < Simulink.IntEnumType
 				error('control:design:gamma:derivativetype:name', 'No GammaEigenvalueDerivativeType of specified name exists.');
 			end
 		end
-		
+
 		function [fromDCM] = fromDCM(DCMstring, ~)
 			%FROMDCM convert string from DCM file to object of GammaEigenvalueDerivativeType class
 			%	Input:
@@ -115,7 +115,7 @@ classdef(Enumeration) GammaEigenvalueDerivativeType < Simulink.IntEnumType
 			fromDCM = GammaEigenvalueDerivativeType.fromname(DCMstring);
 		end
 	end
-	
+
 	methods
 		function [asDCM] = toDCM(this)
 			%TODCM convert instance to string for use in an DCM file
@@ -125,7 +125,7 @@ classdef(Enumeration) GammaEigenvalueDerivativeType < Simulink.IntEnumType
 			%		asDCM:	string representation of the instance for use in an DCM file
 			asDCM = sprintf('%d', int32(this));
 		end
-		
+
 		function [hash] = hashCode(this)
 			%HASHCODE create hash code for object
 			%	Input:

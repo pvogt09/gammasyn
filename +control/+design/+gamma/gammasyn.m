@@ -164,7 +164,7 @@ function [Ropt, Jopt, information] = gammasyn(systems, areafun, weights, R_fixed
 		error('control:design:gamma', 'Undefined problem type ''%s''.', upper(solveroptions.ProblemType));
 	end
 	if solution_strategy == GammaSolutionStrategy.FEASIBILITYITERATION && any(solveroptions.ProblemType == [
-		optimization.options.ProblemType.CONSTRAINED;	
+		optimization.options.ProblemType.CONSTRAINED;
 		optimization.options.ProblemType.CONSTRAINEDMULTI
 	]) && ~isempty(c) && ~isempty(J_feasibility)
 		% solve feasibility problem before solving actual problem to get feasible initial points

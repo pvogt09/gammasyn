@@ -320,13 +320,13 @@ function [pass] = JTest(silent)
 																				test.TestSuite.assertNoException('[J] = Jfun(x);', 'control:gammasyn:test', 'objective function must not throw an exception for one input argument.');
 																				test.TestSuite.assertSameSize(J, 1, 'control:gamma:arguments:test', 'Objective function value must be scalar.');
 																				test.TestSuite.assert(~isnan(J), 'control:gamma:arguments:test', 'Objective function value must not be NaN.');
-																				
+
 																				test.TestSuite.assertNoException('[J, gradJ] = Jfun(x);', 'control:gammasyn:test', 'objective function must not throw an exception for one input argument.');
 																				test.TestSuite.assertSameSize(J, 1, 'control:gamma:arguments:test', 'Objective function value must be scalar.');
 																				test.TestSuite.assert(~isnan(J), 'control:gamma:arguments:test', 'Objective function value must not be NaN.');
 																				test.TestSuite.assertSameSize(gradJ, x, 'control:gamma:arguments:test', 'Objective function gradient value must have same dimension as x.');
 																				test.TestSuite.assert(~any(isnan(gradJ(:))), 'control:gamma:arguments:test', 'Objective function gradient value must not be NaN.');
-																				
+
 																				if hashessian
 																					hessJ = x*x';
 																					test.TestSuite.assertNoExceptionExcept('[J, gradJ, hessJ] = Jfun(x);', 'control:design:gamma:hessian', 'control:gammasyn:test', 'objective function must not throw an exception for one input argument.');

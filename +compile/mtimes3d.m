@@ -31,8 +31,8 @@ function [success, fileinfo] = mtimes3d(overwrite, nobuild)
 	TB = coder.typeof(1, [Inf, Inf, Inf], [1, 1, 1]);
 	Tnumthreads = coder.typeof(uint32(1));
 
-    config = compile.constant();
-    
+	config = compile.constant();
+
 	Args = '{TA TB Tnumthreads}';
 	try
 		if overwrite

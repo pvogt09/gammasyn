@@ -129,7 +129,7 @@ R_0 = [
 	100,	100,	100,	1
 ];
 R_fixed = false(size(R_0));
-%% 
+%%
 weight = {5, repmat([
 	1, 10
 ], size(systems, 1), 1)};
@@ -263,13 +263,13 @@ for ii = 1:length(testsystems)
 	A = testsystems(ii).A;
 	B = testsystems(ii).B;
 	C = testsystems(ii).C;
-	
+
 	Acl = A - B*R_opt*C;
 	Bcl = B*R_opt;
 
 	Gcl = ss(Acl, Bcl, C, [], T);
 	y = lsim(Gcl, w, t);
-	
+
 	subplot(2, 1, 1);
 	plot(t, y(:,1));
 	hold('all');
@@ -288,13 +288,13 @@ for ii = 1:length(system)
 	A = system(ii).A;
 	B = system(ii).B;
 	C = system(ii).C;
-	
+
 	Acl = A - B*R_opt*C;
 	Bcl = B*R_opt;
 
 	Gcl = ss(Acl, Bcl, C, [], T);
 	y = lsim(Gcl, w, t);
-	
+
 	subplot(2, 1, 1);
 	plot(t, y(:, 1));
 	hold('all');

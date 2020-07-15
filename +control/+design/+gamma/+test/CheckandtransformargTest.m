@@ -199,7 +199,7 @@ function [pass] = CheckandtransformargTest(~)
 												end
 											end
 											numareafun_strict = size(areafun, 2);
-											numareafun_loose = size(areafun, 2);											
+											numareafun_loose = size(areafun, 2);
 										else
 											if areafunflag(ll) == 0
 												areafun = {poleareafun, poleareafun};

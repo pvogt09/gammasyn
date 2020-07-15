@@ -1,11 +1,11 @@
 classdef SolutionSet < handle
 	%SOLUTIONSET set of solutions of gammasyn
-	
+
 	properties(Constant=true)
 		% location for saved files
 		SAVEPATH = realpath(fullfile(export.destpath(), 'ControllerGamma'));
 	end
-	
+
 	properties(SetAccess=protected)
 		% ids for solutions
 		ids;
@@ -54,7 +54,7 @@ classdef SolutionSet < handle
 		% comment on specific solution
 		solutioncomment = cell(0, 1)
 	end
-	
+
 	properties(Access=protected)
 		% initial gain matrix
 		R_0;
@@ -77,7 +77,7 @@ classdef SolutionSet < handle
 		% comment on solution set
 		comment = ''
 	end
-	
+
 	methods(Static=true)
 		function [this, isloaded] = load(controller, system, areafun, weight, R_fixed, R_bounds, loadfirst)
 			%LOAD load solutions from file
@@ -412,7 +412,7 @@ classdef SolutionSet < handle
 				[this, isloaded] = control.design.gamma.SolutionSet.loadcontroller(controller, loadp, loadq, loadq_dot, loadr, [], loadfirst);
 			end
 		end
-		
+
 		function [this, isloaded] = loadas(prefix, controller, system, areafun, weight, R_fixed, R_bounds, loadfirst)
 			%LOADAS load solutions from file with prefix
 			%	Input:
@@ -652,7 +652,7 @@ classdef SolutionSet < handle
 				[this, isloaded] = control.design.gamma.SolutionSet.loadcontroller(controller, loadp, loadq, loadq_dot, loadr, prefix, loadfirst);
 			end
 		end
-		
+
 		function [this, isloaded, file] = loadfilename(filename, loadfirst)
 			%LOADFILENAME load a SolutionSet from a filename in the savepath folder recursively
 			%	Input:
@@ -744,7 +744,7 @@ classdef SolutionSet < handle
 				end
 			end
 		end
-		
+
 		function [this, isloaded] = loadfile(file)
 			%LOADFILE load a SolutionSet from a file
 			%	Input:
@@ -776,7 +776,7 @@ classdef SolutionSet < handle
 			end
 			isloaded = ~isempty(this);
 		end
-		
+
 		function [files] = clearcache()
 			%CLEARCACHE delete all controllers in cache
 			%	Output:
@@ -799,7 +799,7 @@ classdef SolutionSet < handle
 				files = cell(0);
 			end
 		end
-		
+
 		function [is] = isvalidfilename(filename)
 			%ISVALIDFILENAME return if a filename is a valid name for a solution
 			%	Input:
@@ -822,7 +822,7 @@ classdef SolutionSet < handle
 			end
 		end
 	end
-	
+
 	methods(Static=true, Access=protected)
 		function [this, isloaded] = loadproblem(controller, system, areafun, weight, R_fixed, R_bounds, prefix, loadfirst)
 			%LOADPROBLEM load controller for problem from matching file
@@ -912,7 +912,7 @@ classdef SolutionSet < handle
 				end
 			end
 		end
-	
+
 		function [this, isloaded] = loadcontroller(controller, p, q, q_dot, r, prefix, loadfirst)
 			%LOADCONTROLLER load controller for problem from matching files
 			%	Input:
@@ -1052,7 +1052,7 @@ classdef SolutionSet < handle
 			end
 		end
 	end
-	
+
 	methods(Access=protected)
 		function [name] = filename(this, noproblemsettings)
 			%FILENAME filename for saving and loading solutions
@@ -1068,7 +1068,7 @@ classdef SolutionSet < handle
 			name = [name, '.mat'];
 		end
 	end
-	
+
 	methods
 		function [this] = SolutionSet(controller, system, areafun, weight, R_fixed, R_bounds, reload)
 			%SOLUTIONSET save optimal solution for specific controller and system order
@@ -1142,7 +1142,7 @@ classdef SolutionSet < handle
 				this.clear();
 			end
 		end
-		
+
 		function [] = add_solution(this, R_opt, J_opt, info, R_0, options, objectiveoptions, comment)
 			%ADD_SOLUTION add optimal solution to solution set
 			%	Input:
@@ -1239,7 +1239,7 @@ classdef SolutionSet < handle
 				this.solutioncomment{end + 1, 1} = '';
 			end
 		end
-		
+
 		function [idx] = id2idx(this, id)
 			%ID2IDX return index for given ID
 			%	Input:
@@ -1262,7 +1262,7 @@ classdef SolutionSet < handle
 			%end
 			idx = idxid;
 		end
-		
+
 		function [id] = idx2id(this, idx)
 			%IDX2ID return ID for given index
 			%	Input:
@@ -1290,7 +1290,7 @@ classdef SolutionSet < handle
 			end
 			id = this.ids(idx);
 		end
-		
+
 		function [optidx, R_opt, J_opt, info, R_0, options, objectiveoptions, comment] = getbest(this, feasible, tolerance)
 			%GETBEST return best solution for current SolutionSet
 			%	Input:
@@ -1350,7 +1350,7 @@ classdef SolutionSet < handle
 				end
 			end
 		end
-		
+
 		function [idx, R_opt, J_opt, info, R_0, options, objectiveoptions, comment, feasibilitymargin] = getfeasible(this, tolerance)
 			%GETFEASIBLE return feasible solutions for current SolutionSet
 			%	Input:
@@ -1402,7 +1402,7 @@ classdef SolutionSet < handle
 				end
 			end
 		end
-		
+
 		function [idx, R_opt, J_opt, info, R_0, options, objectiveoptions, comment, stabmargin] = getstable(this, T, tolerance)
 			%GETSTABLE return stable solutions for current SolutionSet
 			%	Input:
@@ -1477,7 +1477,7 @@ classdef SolutionSet < handle
 				end
 			end
 		end
-		
+
 		function [R_opt, J_opt, info, R_0, options, objectiveoptions, comment] = get(this, idx, byid)
 			%GET return solution for current SolutionSet
 			%	Input:
@@ -1573,7 +1573,7 @@ classdef SolutionSet < handle
 				end
 			end
 		end
-		
+
 		function [system, polearea, weight, R_fixed, R_0, options, objectiveoptions, R_bounds, R_opt] = getproblem(this, idx, byid)
 			%GETPROBLEM return arguments needed for solving the problem used to get the solution with gammasyn
 			%	Input:
@@ -1607,7 +1607,7 @@ classdef SolutionSet < handle
 				objectiveoptions = objectiveoptions{2};
 			end
 		end
-		
+
 		function [] = clear(this, idx, byid)
 			%CLEAR delete solutions
 			%	Input:
@@ -1688,7 +1688,7 @@ classdef SolutionSet < handle
 				this.solutioncomment(idx, :) = [];
 			end
 		end
-		
+
 		function [has, areamargin] = hasallpolesinarea(this, strict, tolerance, idx, byid)
 			%HASALLPOLESINAREA return if all poles of the solution are in the specified area
 			%	Input:
@@ -1756,7 +1756,7 @@ classdef SolutionSet < handle
 				has = control.design.gamma.hasallpolesinarea(system, R, areafun, false, tolerance);
 			end
 		end
-		
+
 		function [has, P, feasibility] = hasallpolesinareaLPV(this, strict, tolerance, idx, byid)
 			%HASALLPOLESINAREALPV return if all poles of the solution are in the specified area whe the area is treate as LMI region and the multiple models are the vertices of a convex polyhedron
 			%	Input:
@@ -1908,7 +1908,7 @@ classdef SolutionSet < handle
 			feasibility = lmifeasibility;
 			has = all(feasibility >= -eps, 2) & solved;
 		end
-		
+
 		function [info] = stepinfo(this, systemnom, T, idx, F)
 			%STEPINFO get information about solution and the step response
 			%	Input:
@@ -2027,7 +2027,7 @@ classdef SolutionSet < handle
 					Acl = A - B*R*C;
 					lambda = eig(Acl);
 					if isdiscrete
-						stable = ~any(abs(lambda) - 1 > 0); 
+						stable = ~any(abs(lambda) - 1 > 0);
 					else
 						stable = ~any(real(lambda) > 0);
 					end
@@ -2149,7 +2149,7 @@ classdef SolutionSet < handle
 				);
 			end
 		end
-		
+
 		function [z, p, k] = zpkdata(this, systemnom, T, idx)
 			%ZPKDATA get information about zeros, poles and gains of the solution
 			%	Input:
@@ -2243,7 +2243,7 @@ classdef SolutionSet < handle
 				end
 			end
 		end
-		
+
 		function [R_opt, J_opt, info] = rerun(this, idx, R_0, solver)
 			%RERUN rerun optimization for selected solution
 			%	Input:
@@ -2286,7 +2286,7 @@ classdef SolutionSet < handle
 			end
 			[R_opt, J_opt, info] = control.design.gamma.gammasyn(system, polearea, weight, Rfixed, R_0, solveroptions, objectiveoptions, Rbounds);
 		end
-		
+
 		function [figures] = plot(this, idx, systems, cursorfun)
 			%PLOT plot a solution for the systems used in the optimization and the additional supplied systems
 			%	Input:
@@ -2472,7 +2472,7 @@ classdef SolutionSet < handle
 				figures = [figurehandle{:}];
 			end
 		end
-		
+
 		function [figures] = plotexport(this, idx, plotareafun, plotgrid)
 			%PLOTEXPORT plot a solution for the systems used in the optimization for exporting to tikz
 			%	Input:
@@ -2553,7 +2553,7 @@ classdef SolutionSet < handle
 				figures = [figurehandle{:}];
 			end
 		end
-		
+
 		function [figurehandle] = step(this, systemnom, T, idx, systems, F, plotvalues, precision)
 			%STEP plot the step responses of a solution for the systems used in the optimization and the additional supplied systems
 			%	Input:
@@ -2874,7 +2874,7 @@ classdef SolutionSet < handle
 			end
 			linkaxes(subplothandles, 'x');
 		end
-		
+
 		function [len] = count(this)
 			%COUNT return number of solutions
 			%	Input:
@@ -2883,7 +2883,7 @@ classdef SolutionSet < handle
 			%		len:	number of solutions
 			len = size(this.J_opt, 1);
 		end
-		
+
 		function [name] = getfilename(this)
 			%GETFILENAME return filename for SolutionSet
 			%	Input:
@@ -2892,14 +2892,14 @@ classdef SolutionSet < handle
 			%		name:	filename for instance
 			name = this.filename();
 		end
-		
+
 		function [] = save(this)
 			%SAVE save solutions
 			%	Input:
 			%		this:	instance
 			save(fullfile(this.SAVEPATH, this.filename()), '-mat', 'this');
 		end
-		
+
 		function [] = saveas(this, prefix, noobject)
 			%SAVEAS save solution to file with prefix
 			%	Input:
@@ -2920,7 +2920,7 @@ classdef SolutionSet < handle
 			end
 			save(fullfile(this.SAVEPATH, [prefix, this.filename(noobject)]), '-mat', 'this');
 		end
-		
+
 		function [] = addComment(this, comment)
 			%ADDCOMMENT add a comment to the solution set
 			%	Input:
@@ -2935,14 +2935,14 @@ classdef SolutionSet < handle
 			end
 			this.comment = [this.comment, comment];
 		end
-		
+
 		function [] = clearComment(this)
 			%CLEARCOMMENT remove comment from solution set
 			%	Input:
 			%		this:	instance
 			this.comment = '';
 		end
-		
+
 		function [] = setComment(this, comment)
 			%SETCOMMENT set comment for solution set
 			%	Input:
@@ -2957,7 +2957,7 @@ classdef SolutionSet < handle
 			end
 			this.comment = comment;
 		end
-		
+
 		function [] = addSolutionComment(this, comment, idx, byid)
 			%ADDSOLUTIONCOMMENT add a comment to the solution
 			%	Input:
@@ -2995,7 +2995,7 @@ classdef SolutionSet < handle
 				this.solutioncomment{idx, 1} = repmat({comment}, length(idx), 1);
 			end
 		end
-		
+
 		function [] = clearSolutionComment(this, idx, byid)
 			%CLEARCOMMENT remove comment from solution
 			%	Input:

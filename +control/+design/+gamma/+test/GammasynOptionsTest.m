@@ -66,7 +66,7 @@ function [pass] = GammasynOptionsTest(~)
 			o = control.design.gamma.GammasynOptions();
 			test.TestSuite.assertException('o.(testcases{ii, 1}) = testcases{ii, 3}{jj};', 'any', 'control:gammasyn:options:test', sprintf('setter must throw an exception for ''%s''.', testcases{ii, 1}));
 		end
-		
+
 		o = control.design.gamma.GammasynOptions();
 		for oo = 1:number_objects - 1
 			o = [o, control.design.gamma.GammasynOptions()];

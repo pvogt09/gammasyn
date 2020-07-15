@@ -1,7 +1,7 @@
 classdef(Enumeration) GammaErrorHandler < Simulink.IntEnumType
 	%GAMMAERRORHANDLER enumeration for characterization of different error handling variants in gamma pole placement for use with codegen
 	%#codegen
-	
+
 	enumeration
 		% convert errors to warnings
 		WARNING(0);
@@ -10,7 +10,7 @@ classdef(Enumeration) GammaErrorHandler < Simulink.IntEnumType
 		% use user defined error handler
 		USER(2)
 	end
-	
+
 % must not be private to allow for type cast to GammaErrorHandler, types are automatically restricted to the defined ones internally
 % 	methods(Access=private)
 % 		function [this] = GammaErrorHandler(type)
@@ -22,7 +22,7 @@ classdef(Enumeration) GammaErrorHandler < Simulink.IntEnumType
 % 			this@Simulink.IntEnumType(type);
 % 		end
 % 	end
-	
+
 	methods(Static=true)
 		function [default] = getDefaultValue()
 			%GETDEFAULTVALUE return default gamma error handler type
@@ -30,8 +30,8 @@ classdef(Enumeration) GammaErrorHandler < Simulink.IntEnumType
 			%		default:	default error handler type
 			default = GammaErrorHandler.WARNING;
 		end
-		
-		function [description] = getDescription() 
+
+		function [description] = getDescription()
 			%GETDESCRIPTION	String to describe the class in Simulink Coder
 			%	Output:
 			%		description:	description of the class
@@ -44,7 +44,7 @@ classdef(Enumeration) GammaErrorHandler < Simulink.IntEnumType
 			%		addname:	true, to add the class name to generated code to avoid naming conflicts
 			addname = true;
 		end
-		
+
 		function [err] = fromname(name)
 			%FROMNAME create GammaErrorHandler from name
 			%	Input:
@@ -104,7 +104,7 @@ classdef(Enumeration) GammaErrorHandler < Simulink.IntEnumType
 				error('control:design:gamma:type:name', 'No GammaErrorHandler of specified name exists.');
 			end
 		end
-		
+
 		function [fromDCM] = fromDCM(DCMstring)
 			%FROMDCM convert string from DCM file to object of GammaErrorHandler class
 			%	Input:
@@ -114,7 +114,7 @@ classdef(Enumeration) GammaErrorHandler < Simulink.IntEnumType
 			fromDCM = GammaErrorHandler.fromname(DCMstring);
 		end
 	end
-	
+
 	methods
 		function [asDCM] = toDCM(this)
 			%TODCM convert instance to string for use in an DCM file
@@ -124,7 +124,7 @@ classdef(Enumeration) GammaErrorHandler < Simulink.IntEnumType
 			%		asDCM:	string representation of the instance for use in an DCM file
 			asDCM = sprintf('%d', int32(this));
 		end
-		
+
 		function [hash] = hashCode(this)
 			%HASHCODE create hash code for object
 			%	Input:

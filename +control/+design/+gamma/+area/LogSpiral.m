@@ -1,13 +1,13 @@
 classdef LogSpiral < control.design.gamma.area.GammaArea
 	%LOGSPIRAL class for representation of a logarithmic spiral pole area re^2 + im^2 - R^2exp(k*arctan(y/x)) = 0
-	
+
 	properties
 		% radius of logarithmic spiral
 		R;
 		% slope of logarithmic spiral
 		k
 	end
-	
+
 	methods(Static=true)
 		function [f, dfdre, dfdim, d2fdredre, d2fdimdre, d2fdredim, d2fdimdim] = border(re, im, parameter)
 			%BORDER return border of polearea with f < 0 for points left of the border, f = 0 for points on the border and f > 0 for points right of the border
@@ -39,7 +39,7 @@ classdef LogSpiral < control.design.gamma.area.GammaArea
 				f = control.design.gamma.area.LogSpiral_border(re, im, parameter);
 			end
 		end
-		
+
 		function [dfdre, dfdim] = gradborder(re, im, parameter)
 			%GRADBORDER return gradient of border of polearea with f < 0 for points left of the border, f = 0 for points on the border and f > 0 for points right of the border
 			%	Input:
@@ -51,7 +51,7 @@ classdef LogSpiral < control.design.gamma.area.GammaArea
 			%		dfdim:		gradient of border function value at point [re, im] for coordinate im
 			[~, dfdre, dfdim] = control.design.gamma.area.LogSpiral.border(re, im, parameter);
 		end
-		
+
 		function [d2fdredre, d2fdimdre, d2fdredim, d2fdimdim] = hessborder(re, im, parameter)
 			%HESSBORDER return hessian of border of polearea with f < 0 for points left of the border, f = 0 for points on the border and f > 0 for points right of the border
 			%	Input:
@@ -66,7 +66,7 @@ classdef LogSpiral < control.design.gamma.area.GammaArea
 			[~, ~, ~, d2fdredre, d2fdimdre, d2fdredim, d2fdimdim] = control.design.gamma.area.LogSpiral.border(re, im, parameter);
 		end
 	end
-	
+
 	methods(Access=protected)
 		function [parameters] = getparameters(this)
 			%GETPARAMETERS return structure with parameters of current object unknown to the superclass
@@ -80,7 +80,7 @@ classdef LogSpiral < control.design.gamma.area.GammaArea
 			);
 		end
 	end
-	
+
 	methods
 		function [this] = LogSpiral(R, k, varargin)
 			%LOGSPIRAL return new logarithmic spiral pole area with specified radius, slope and shift
@@ -95,7 +95,7 @@ classdef LogSpiral < control.design.gamma.area.GammaArea
 			this.R = R;
 			this.k = k;
 		end
-		
+
 		function [this] = set.R(this, R)
 			%R setter for radius
 			%	Input:
@@ -108,7 +108,7 @@ classdef LogSpiral < control.design.gamma.area.GammaArea
 			end
 			this.R = R;
 		end
-		
+
 		function [this] = set.k(this, k)
 			%K setter for slope
 			%	Input:
@@ -121,7 +121,7 @@ classdef LogSpiral < control.design.gamma.area.GammaArea
 			end
 			this.k = k;
 		end
-		
+
 		function [border] = plotinstanceborder(this, ~, numpoints)
 			%PLOTINSTANCEBORDER plot border of area function
 			%	Input:
@@ -143,7 +143,7 @@ classdef LogSpiral < control.design.gamma.area.GammaArea
 			end
 		end
 	end
-		
+
 	methods(Access=protected)
 		function [f] = getinstanceborder(this, re, im)
 			%GETINSTANCEBORDER return border of polearea with f < 0 for points left of the border, f = 0 for points on the border and f > 0 for points right of the border
@@ -160,7 +160,7 @@ classdef LogSpiral < control.design.gamma.area.GammaArea
 			parameter.logspiral_k = this.k;
 			f = this.border(re, im, parameter);
 		end
-		
+
 		function [dfdre, dfdim] = getinstancegradborder(this, re, im)
 			%GETINSTANCEGRADBORDER return gradient of border of polearea with f < 0 for points left of the border, f = 0 for points on the border and f > 0 for points right of the border
 			%	Input:
@@ -177,7 +177,7 @@ classdef LogSpiral < control.design.gamma.area.GammaArea
 			parameter.logspiral_k = this.k;
 			[dfdre, dfdim] = this.gradborder(re, im, parameter);
 		end
-		
+
 		function [d2fdredre, d2fdimdre, d2fdredim, d2fdimdim] = getinstancehessborder(this, re, im)
 			%GETINSTANCEHESSBORDER return hessian of border of polearea with f < 0 for points left of the border, f = 0 for points on the border and f > 0 for points right of the border
 			%	Input:
@@ -196,7 +196,7 @@ classdef LogSpiral < control.design.gamma.area.GammaArea
 			parameter.logspiral_k = this.k;
 			[d2fdredre, d2fdimdre, d2fdredim, d2fdimdim] = this.hessborder(re, im, parameter);
 		end
-		
+
 		function [str] = getinstancestring(this, format)
 			%GETINSTANCESTRING return string representation of object
 			%	Input:
@@ -209,7 +209,7 @@ classdef LogSpiral < control.design.gamma.area.GammaArea
 			end
 			str = ['Logspiral(', sprintf(format, this.R), ', ', sprintf(format, this.k), this.printshift(this.reshift, this.imshift, format, true), ')'];
 		end
-		
+
 		function [L, M, success] = toinstanceLMIregion(~)
 			%TOINSTANCELMIREGION convert area to LMI region that can be used by Matlab functions for object
 			%	Input:

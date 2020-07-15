@@ -1,6 +1,6 @@
 classdef GammasynOptions < handle
 	%GAMMASYNOPTIONS class for storing options for objective functions and other parameters for gammasyn optimization runs
-	
+
 	properties(Constant=true, Hidden=true)
 		% prototype for options used for code generation
 		PROTOTYPE_CODEGEN = struct(...
@@ -32,7 +32,7 @@ classdef GammasynOptions < handle
 			)...
 		);
 	end
-	
+
 	properties(Constant=true)
 		% prototype for options with default values
 		PROTOTYPE = struct(...
@@ -74,7 +74,7 @@ classdef GammasynOptions < handle
 			)...
 		);
 	end
-	
+
 	properties(Dependent=true)
 		% indicator if generated code should be used
 		usecompiled = [];
@@ -105,7 +105,7 @@ classdef GammasynOptions < handle
 		% options for multiple models
 		system = [];
 	end
-	
+
 	properties(Dependent=true)
 		% indicator if references should be used
 		usereferences = [];
@@ -136,7 +136,7 @@ classdef GammasynOptions < handle
 		% normgain objective parameter F_shift
 		F_shift = [];
 	end
-	
+
 	properties(Access=protected)
 		% indicator if generated code should be used (internal)
 		usecompiled_internal = [];
@@ -167,7 +167,7 @@ classdef GammasynOptions < handle
 		% options for multiple models (internal)
 		system_internal = [];
 	end
-	
+
 	properties(Access=protected)
 		% indicator if user set 'usecompiled' option
 		usecompiled_user = false;
@@ -220,13 +220,13 @@ classdef GammasynOptions < handle
 			'Blocks',				false...
 		);
 	end
-	
+
 	properties(Access=protected, Transient=true)% avoid saving "constant" properties containing property name mappings to files
 		% user setable options for optimization
  		options;
 		%structoptions;
 	end
-	
+
 	methods
 		function [this] = GammasynOptions(varargin)
 			%GAMMASYNOPTIONS class for representing options to be used with gammasyn
@@ -245,7 +245,7 @@ classdef GammasynOptions < handle
 				this.useoptions(varargin{1}, varargin{2:end});
 			end
 		end
-		
+
 		function [usecompiled] = get.usecompiled(this)
 			%USECOMPILED getter for usecompiled property
 			%	Input:
@@ -254,7 +254,7 @@ classdef GammasynOptions < handle
 			%		usecompiled:	indicator if compiled code should be used
 			usecompiled = this.usecompiled_internal;
 		end
-		
+
 		function [numthreads] = get.numthreads(this)
 			%NUMTHREADS getter for numthreads property
 			%	Input:
@@ -263,7 +263,7 @@ classdef GammasynOptions < handle
 			%		numthreads:	number of parallel threads to use
 			numthreads = this.numthreads_internal;
 		end
-		
+
 		function [type] = get.type(this)
 			%TYPE getter for objective type property
 			%	Input:
@@ -272,7 +272,7 @@ classdef GammasynOptions < handle
 			%		type:		objective type to use
 			type = this.type_internal;
 		end
-		
+
 		function [weight] = get.weight(this)
 			%WEIGHT getter for objective weight property
 			%	Input:
@@ -281,7 +281,7 @@ classdef GammasynOptions < handle
 			%		weight:		objective weight to use
 			weight = this.weight_internal;
 		end
-		
+
 		function [allowvarorder] = get.allowvarorder(this)
 			%ALLOWVARORDER getter for indicator for systems with different order
 			%	Input:
@@ -290,7 +290,7 @@ classdef GammasynOptions < handle
 			%		allowvarorder:		indicator if systems of different order are allowed
 			allowvarorder = this.allowvarorder_internal;
 		end
-		
+
 		function [eigenvaluederivative] = get.eigenvaluederivative(this)
 			%EIGENVALUEDERIVATIVE getter for type of eigenvalue derivative method to use
 			%	Input:
@@ -299,7 +299,7 @@ classdef GammasynOptions < handle
 			%		eigenvaluederivative:		type of eigenvalue derivative method to use
 			eigenvaluederivative = this.eigenvaluederivative_internal;
 		end
-		
+
 		function [eigenvaluefilter] = get.eigenvaluefilter(this)
 			%EIGENVALUEFILTER getter for type of filter method to use for eigenvalues
 			%	Input:
@@ -308,7 +308,7 @@ classdef GammasynOptions < handle
 			%		eigenvaluefilter:		type of filter method to use for eigenvalues
 			eigenvaluefilter = this.eigenvaluefilter_internal;
 		end
-		
+
 		function [eigenvalueignoreinf] = get.eigenvalueignoreinf(this)
 			%EIGENVALUEIGNOREINF getter for indicator wheter infinite eigenvalues are ignored
 			%	Input:
@@ -317,7 +317,7 @@ classdef GammasynOptions < handle
 			%		eigenvalueignoreinf:	indicator wheter infinite eigenvalues are ignored
 			eigenvalueignoreinf = this.eigenvalueignoreinf_internal;
 		end
-		
+
 		function [objective] = get.objective(this)
 			%OBJECTIVE getter for objectiveoptions
 			%	Input:
@@ -330,7 +330,7 @@ classdef GammasynOptions < handle
 				objective = struct();
 			end
 		end
-		
+
 		function [preventnan] = get.preventNaN(this)
 			%PREVENTNAN getter for indicator if objective function should not retun NaN
 			%	Input:
@@ -343,7 +343,7 @@ classdef GammasynOptions < handle
 				preventnan = [];
 			end
 		end
-		
+
 		function [rho] = get.rho(this)
 			%RHO getter for kreisselmeier objectiveoption rho
 			%	Input:
@@ -360,7 +360,7 @@ classdef GammasynOptions < handle
 				rho = [];
 			end
 		end
-		
+
 		function [max] = get.max(this)
 			%MAX getter for kreisselmeier objectiveoption max
 			%	Input:
@@ -377,7 +377,7 @@ classdef GammasynOptions < handle
 				max = [];
 			end
 		end
-		
+
 		function [Q] = get.Q(this)
 			%Q getter for lyapunov objectiveoption Q
 			%	Input:
@@ -394,7 +394,7 @@ classdef GammasynOptions < handle
 				Q = [];
 			end
 		end
-		
+
 		function [R] = get.R(this)
 			%R getter for normgain objectiveoption R
 			%	Input:
@@ -411,7 +411,7 @@ classdef GammasynOptions < handle
 				R = [];
 			end
 		end
-		
+
 		function [R_shift] = get.R_shift(this)
 			%R_SHIFT getter for normgain objectiveoption R_shift
 			%	Input:
@@ -428,7 +428,7 @@ classdef GammasynOptions < handle
 				R_shift = [];
 			end
 		end
-		
+
 		function [K] = get.K(this)
 			%K getter for normgain objectiveoption K
 			%	Input:
@@ -445,7 +445,7 @@ classdef GammasynOptions < handle
 				K = [];
 			end
 		end
-		
+
 		function [K_shift] = get.K_shift(this)
 			%K_SHIFT getter for normgain objectiveoption K_shift
 			%	Input:
@@ -462,7 +462,7 @@ classdef GammasynOptions < handle
 				K_shift = [];
 			end
 		end
-		
+
 		function [F] = get.F(this)
 			%F getter for normgain objectiveoption F
 			%	Input:
@@ -479,7 +479,7 @@ classdef GammasynOptions < handle
 				F = [];
 			end
 		end
-		
+
 		function [F_shift] = get.F_shift(this)
 			%F_SHIFT getter for normgain objectiveoption F_shift
 			%	Input:
@@ -496,7 +496,7 @@ classdef GammasynOptions < handle
 				F_shift = [];
 			end
 		end
-		
+
 		function [allownegativeweight] = get.allownegativeweight(this)
 			%ALLOWNEGATIVEWEIGHT getter for indicator if negative pole area weights are allowed
 			%	Input:
@@ -505,7 +505,7 @@ classdef GammasynOptions < handle
 			%		allownegativeweight:	indicator if negative pole area weights are allowed
 			allownegativeweight = this.allownegativeweight_internal;
 		end
-		
+
 		function [strategy] = get.strategy(this)
 			%STRATEGY getter for solver strategy
 			%	Input:
@@ -514,7 +514,7 @@ classdef GammasynOptions < handle
 			%		strategy:		strategy for solving problem
 			strategy = this.strategy_internal;
 		end
-		
+
 		function [errorhandler] = get.errorhandler(this)
 			%ERRORHANDLER getter for error handler
 			%	Input:
@@ -523,7 +523,7 @@ classdef GammasynOptions < handle
 			%		errorhandler:	type of error handler to use
 			errorhandler = this.errorhandler_internal;
 		end
-		
+
 		function [errorhandler_function] = get.errorhandler_function(this)
 			%ERRORHANDLER_FUNCTION getter for error handler function
 			%	Input:
@@ -532,7 +532,7 @@ classdef GammasynOptions < handle
 			%		errorhandler_function:	error handler function to use
 			errorhandler_function = this.errorhandler_function_internal;
 		end
-		
+
 		function [system] = get.system(this)
 			%SYSTEM getter for systemoptions
 			%	Input:
@@ -545,7 +545,7 @@ classdef GammasynOptions < handle
 				system = struct();
 			end
 		end
-		
+
 		function [usereferences] = get.usereferences(this)
 			%USEREFERENCES getter for systemoption usereferences
 			%	Input:
@@ -558,7 +558,7 @@ classdef GammasynOptions < handle
 				usereferences = [];
 			end
 		end
-		
+
 		function [usemeasurements_xdot] = get.usemeasurements_xdot(this)
 			%USEMEASUREMENTS_XDOT getter for systemoption usemeasurements_xdot
 			%	Input:
@@ -571,7 +571,7 @@ classdef GammasynOptions < handle
 				usemeasurements_xdot = [];
 			end
 		end
-		
+
 		function [samples] = get.samples(this)
 			%SAMPLES getter for systemoption samples
 			%	Input:
@@ -584,7 +584,7 @@ classdef GammasynOptions < handle
 				samples = [];
 			end
 		end
-		
+
 		function [Blocks] = get.Blocks(this)
 			%BLOCKS getter for systemoption Blocks
 			%	Input:
@@ -593,7 +593,7 @@ classdef GammasynOptions < handle
 			%		Blocks:		structure with number of samples
 			Blocks = this.samples;
 		end
-		
+
 		function [] = set.usecompiled(this, usecompiled)
 			%USECOMPILED setter for usecompiled property
 			%	Input:
@@ -602,7 +602,7 @@ classdef GammasynOptions < handle
 			this.usecompiled_internal = this.checkProperty('usecompiled', usecompiled);
 			this.usecompiled_user = true;
 		end
-		
+
 		function [] = set.numthreads(this, numthreads)
 			%NUMTHREADS setter for numthreads property
 			%	Input:
@@ -611,7 +611,7 @@ classdef GammasynOptions < handle
 			this.numthreads_internal = this.checkProperty('numthreads', numthreads);
 			this.numthreads_user = true;
 		end
-		
+
 		function [] = set.type(this, type)
 			%TYPE setter for objective type property
 			%	Input:
@@ -620,7 +620,7 @@ classdef GammasynOptions < handle
 			this.type_internal = this.checkProperty('type', type);
 			this.type_user = true;
 		end
-		
+
 		function [] = set.weight(this, weight)
 			%WEIGHT setter for objective weight property
 			%	Input:
@@ -629,7 +629,7 @@ classdef GammasynOptions < handle
 			this.weight_internal = this.checkProperty('weight', weight);
 			this.weight_user = true;
 		end
-		
+
 		function [] = set.allowvarorder(this, allowvarorder)
 			%ALLOWVARORDER setter for indicator for systems with different order
 			%	Input:
@@ -638,7 +638,7 @@ classdef GammasynOptions < handle
 			this.allowvarorder_internal = this.checkProperty('allowvarorder', allowvarorder);
 			this.allowvarorder_user = true;
 		end
-		
+
 		function [] = set.eigenvaluederivative(this, eigenvaluederivative)
 			%EIGENVALUEDERIVATIVE setter for type of eigenvalue derivative method to use
 			%	Input:
@@ -647,7 +647,7 @@ classdef GammasynOptions < handle
 			this.eigenvaluederivative_internal = this.checkProperty('eigenvaluederivative', eigenvaluederivative);
 			this.eigenvaluederivative_user = true;
 		end
-		
+
 		function [] = set.eigenvaluefilter(this, eigenvaluefilter)
 			%EIGENVALUEFILTER setter for type of filter method to use for eigenvalues
 			%	Input:
@@ -656,7 +656,7 @@ classdef GammasynOptions < handle
 			this.eigenvaluefilter_internal = this.checkProperty('eigenvaluefilter', eigenvaluefilter);
 			this.eigenvaluefilter_user = true;
 		end
-		
+
 		function [] = set.eigenvalueignoreinf(this, eigenvalueignoreinf)
 			%EIGENVALUEIGNOREINF setter for indicator to ignore inifite eigenvalues
 			%	Input:
@@ -665,7 +665,7 @@ classdef GammasynOptions < handle
 			this.eigenvalueignoreinf_internal = this.checkProperty('eigenvalueignoreinf', eigenvalueignoreinf);
 			this.eigenvalueignoreinf_user = true;
 		end
-		
+
 		function [] = set.objective(this, objective)
 			%OBJECTIVE setter for objectiveoptions
 			%	Input:
@@ -673,7 +673,7 @@ classdef GammasynOptions < handle
 			%		objective:	structure with objectiveoptions
 			this.useoptions(struct('objective', objective));
 		end
-		
+
 		function [] = set.preventNaN(this, preventNaN)
 			%PREVENTNAN setter for indicator to prevent NaN in objective function
 			%	Input:
@@ -682,7 +682,7 @@ classdef GammasynOptions < handle
 			this.objective_internal.preventNaN = this.checkProperty('preventNaN', preventNaN);
 			this.objective_user.preventNaN = true;
 		end
-		
+
 		function [] = set.rho(this, rho)
 			%RHO setter for kreisselmeiser objectiveoption rho
 			%	Input:
@@ -691,7 +691,7 @@ classdef GammasynOptions < handle
 			this.objective_internal.kreisselmeier.rho = this.checkProperty('rho', rho);
 			this.objective_user.kreisselmeier.rho = true;
 		end
-		
+
 		function [] = set.max(this, max)
 			%MAX setter for kreisselmeiser objectiveoption max
 			%	Input:
@@ -700,7 +700,7 @@ classdef GammasynOptions < handle
 			this.objective_internal.kreisselmeier.max = this.checkProperty('max', max);
 			this.objective_user.kreisselmeier.max = true;
 		end
-		
+
 		function [] = set.Q(this, Q)
 			%Q setter for lyapunov objectiveoption Q
 			%	Input:
@@ -709,7 +709,7 @@ classdef GammasynOptions < handle
 			this.objective_internal.lyapunov.Q = this.checkProperty('Q', Q);
 			this.objective_user.lyapunov.Q = true;
 		end
-		
+
 		function [] = set.R(this, R)
 			%R setter for normgain objectiveoption R
 			%	Input:
@@ -718,7 +718,7 @@ classdef GammasynOptions < handle
 			this.objective_internal.normgain.R = this.checkProperty('R', R);
 			this.objective_user.normgain.R = true;
 		end
-		
+
 		function [] = set.R_shift(this, R_shift)
 			%R_SHIFT setter for normgain objectiveoption R_shift
 			%	Input:
@@ -727,7 +727,7 @@ classdef GammasynOptions < handle
 			this.objective_internal.normgain.R_shift = this.checkProperty('R_shift', R_shift);
 			this.objective_user.normgain.R_shift = true;
 		end
-		
+
 		function [] = set.K(this, K)
 			%K setter for normgain objectiveoption K
 			%	Input:
@@ -736,7 +736,7 @@ classdef GammasynOptions < handle
 			this.objective_internal.normgain.K = this.checkProperty('K', K);
 			this.objective_user.normgain.K = true;
 		end
-		
+
 		function [] = set.K_shift(this, K_shift)
 			%K_SHIFT setter for normgain objectiveoption K_shift
 			%	Input:
@@ -745,7 +745,7 @@ classdef GammasynOptions < handle
 			this.objective_internal.normgain.K_shift = this.checkProperty('K_shift', K_shift);
 			this.objective_user.normgain.K_shift = true;
 		end
-		
+
 		function [] = set.F(this, F)
 			%F setter for normgain objectiveoption F
 			%	Input:
@@ -754,7 +754,7 @@ classdef GammasynOptions < handle
 			this.objective_internal.normgain.F = this.checkProperty('F', F);
 			this.objective_user.normgain.F = true;
 		end
-		
+
 		function [] = set.F_shift(this, F_shift)
 			%F_SHIFT setter for normgain objectiveoption F_shift
 			%	Input:
@@ -763,7 +763,7 @@ classdef GammasynOptions < handle
 			this.objective_internal.normgain.F_shift = this.checkProperty('F_shift', F_shift);
 			this.objective_user.normgain.F_shift = true;
 		end
-		
+
 		function [] = set.allownegativeweight(this, allownegativeweight)
 			%ALLOWNEGATIVEWEIGHT setter for indicator if negative pole area weights are allowed
 			%	Input:
@@ -772,7 +772,7 @@ classdef GammasynOptions < handle
 			this.allownegativeweight_internal = this.checkProperty('allownegativeweight', allownegativeweight);
 			this.allownegativeweight_user = true;
 		end
-		
+
 		function [] = set.strategy(this, strategy)
 			%STRATEGY setter for solver strategy
 			%	Input:
@@ -781,7 +781,7 @@ classdef GammasynOptions < handle
 			this.strategy_internal = this.checkProperty('strategy', strategy);
 			this.strategy_user = true;
 		end
-		
+
 		function [] = set.errorhandler(this, errorhandler)
 			%ERRORHANDLER setter for error handler
 			%	Input:
@@ -790,7 +790,7 @@ classdef GammasynOptions < handle
 			this.errorhandler_internal = this.checkProperty('errorhandler', errorhandler);
 			this.errorhandler_user = true;
 		end
-		
+
 		function [] = set.errorhandler_function(this, errorhandler_function)
 			%ERRORHANDLER_FUNCTION setter for error handler function
 			%	Input:
@@ -799,7 +799,7 @@ classdef GammasynOptions < handle
 			this.errorhandler_function_internal = this.checkProperty('errorhandler_function', errorhandler_function);
 			this.errorhandler_function_user = true;
 		end
-		
+
 % 		function [] = set.system_internal(this, system)
 % 			%SYSTEM setter for systemoptions
 % 			%	Input:
@@ -848,7 +848,7 @@ classdef GammasynOptions < handle
 % 				error();
 % 			end
 % 		end
-		
+
 		function [] = set.system(this, system)
 			%SYSTEM setter for systemoptions
 			%	Input:
@@ -856,7 +856,7 @@ classdef GammasynOptions < handle
 			%		system:		structure with systemoptions
 			this.useoptions(struct('system', system));
 		end
-		
+
 		function [] = set.usereferences(this, usereferences)
 			%USEREFERENCES setter for systemoption usereferences
 			%	Input:
@@ -865,7 +865,7 @@ classdef GammasynOptions < handle
 			this.system_internal.usereferences = this.checkProperty('usereferences', usereferences);
 			this.system_user.usereferences = true;
 		end
-		
+
 		function [] = set.usemeasurements_xdot(this, usemeasurements_xdot)
 			%USEMEASUREMENTS_XDOT setter for systemoption usemeasurements_xdot
 			%	Input:
@@ -874,7 +874,7 @@ classdef GammasynOptions < handle
 			this.system_internal.usemeasurements_xdot = this.checkProperty('usemeasurements_xdot', usemeasurements_xdot);
 			this.system_user.usemeasurements_xdot = true;
 		end
-		
+
 		function [] = set.samples(this, samples)
 			%SAMPLES setter for systemoption samples
 			%	Input:
@@ -883,7 +883,7 @@ classdef GammasynOptions < handle
 			this.system_internal.samples = this.checkProperty('samples', samples);
 			this.system_user.samples = true;
 		end
-		
+
 		function [] = set.Blocks(this, Blocks)
 			%BLOCKS setter for systemoption Blocks
 			%	Input:
@@ -892,7 +892,7 @@ classdef GammasynOptions < handle
 			this.samples = Blocks;
 		end
 	end
-	
+
 	methods(Access=protected)
 		function [options] = available_options(~)
 			%AVAILABLE_OPTIONS cell array with information about available options
@@ -932,7 +932,7 @@ classdef GammasynOptions < handle
 			rootpath = cellfun(@getfirst, options(:, 4), 'UniformOutput', false);
 			options(:, end + 1) = rootpath;
 		end
-		
+
 		function [] = alldefault(this)
 			%ALLDEFAULT set indicator for all options to 'not set by user'
 			%	Input:
@@ -974,7 +974,7 @@ classdef GammasynOptions < handle
 				'Blocks',				false...
 			);
 		end
-		
+
 		function [] = use_default(this)
 			%USE_DEFAULT use default option for all options
 			%	Input:
@@ -1018,7 +1018,7 @@ classdef GammasynOptions < handle
 			);
 			this.alldefault();
 		end
-		
+
 		function [] = use_options(this, options)
 			%USE_OPTIONS set options to values in supplied data structure with options, where non existent options are ignored
 			%	Input:
@@ -1119,7 +1119,7 @@ classdef GammasynOptions < handle
 				error('control:design:gamma:GammasynOptions:input', 'Options must be of type ''struct'' or ''ObjectiveOptions'', not ''%s''.', class(options));
 			end
 		end
-		
+
 		function [value, validvalue, errmsg, errid] = checkProperty(this, name, value)
 			%CHECKPROPERTY set a value for an objective option
 			%	Input:
@@ -1146,7 +1146,7 @@ classdef GammasynOptions < handle
 				throwAsCaller(ME);
 			end
 		end
-		
+
 % 		function [value] = convertProperty(this, name, value, optionstype, replacechar)
 % 			%CONVERTPROPERTY convert a property to the specified option type
 % 			%	Input:
@@ -1169,7 +1169,7 @@ classdef GammasynOptions < handle
 % 			end
 % 			value = convertfield(this, name, value, optionstype, replacechar && replaceallowed);
 % 		end
-		
+
 		function [options] = get_user(this)
 			%GET_USER get all options set by th user
 			%	Input:
@@ -1195,7 +1195,7 @@ classdef GammasynOptions < handle
 			end
 		end
 	end
-	
+
 	methods
 		function [options] = struct(this)
 			%STRUCT convert object to structure
@@ -1225,7 +1225,7 @@ classdef GammasynOptions < handle
 				end
 			end
 		end
-		
+
 		function [options] = codegenstruct(this)
 			%CODEGENSTRUCT convert object to structure used for code generation
 			%	Input:
@@ -1244,7 +1244,7 @@ classdef GammasynOptions < handle
 				end
 			end
 		end
-		
+
 		function [options] = userstruct(this)
 			%USERSTRUCT convert object to structure with only fields set by user
 			%	Input:
@@ -1254,7 +1254,7 @@ classdef GammasynOptions < handle
 			% TODO: move to temporary variable?
 			options = this.get_user();
 		end
-		
+
 		function [this] = subsasgn(this, sub, varargin)
 			%SUBSASGN overload subsasgn method to allow for indexing into nested options with argument checking
 			%	Input:
@@ -2048,7 +2048,7 @@ classdef GammasynOptions < handle
 				end
 			end
 		end
-		
+
 		function [] = useoptions(this, options, varargin)
 			%USEOPTIONS set supplied options to current option set
 			%	Input:
@@ -2197,7 +2197,7 @@ classdef GammasynOptions < handle
 			end
 		end
 	end
-	
+
 end
 
 function [y] = getfirst(x)

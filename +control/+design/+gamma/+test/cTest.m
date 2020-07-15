@@ -320,7 +320,7 @@ function [pass] = cTest(silent)
 																				test.TestSuite.assertEqual(size(c, 2), 1, 'control:gamma:arguments:test', 'Constraint function value must be a column vector.');
 																				test.TestSuite.assert(~any(isnan(c(:))), 'control:gamma:arguments:test', 'Constraint function value must not be NaN.');
 																				test.TestSuite.assert(isempty(ceq), 'control:gamma:arguments:test', 'Constraint function value for equalities must be empty.');
-																				
+
 																				test.TestSuite.assertNoException('[c, ceq, gradc, gradceq] = cfun(x);', 'control:gammasyn:test', 'Constraint function must not throw an exception for one input argument.');
 																				test.TestSuite.assertEqual(size(c, 2), 1, 'control:gamma:arguments:test', 'Constraint function value must be a column vector.');
 																				test.TestSuite.assert(isempty(ceq), 'control:gamma:arguments:test', 'Constraint function value for equalities must be empty.');
@@ -329,7 +329,7 @@ function [pass] = cTest(silent)
 																				test.TestSuite.assertEqual(size(gradc, 1), numel(x), 'control:gamma:arguments:test', 'Constraint function gradient value must have same dimension as x.');
 																				test.TestSuite.assert(~any(isnan(gradc(:))), 'control:gamma:arguments:test', 'Constraint function gradient value must not be NaN.');
 																				test.TestSuite.assert(isempty(gradceq), 'control:gamma:arguments:test', 'Constraint function gradient value for equalities must be empty.');
-																				
+
 																				test.TestSuite.assertNoExceptionExcept('[c, ceq, gradc, gradceq, hessc, hessceq] = cfun(x);', 'control:design:gamma:hessian', 'control:gammasyn:test', 'Constraint function must not throw an exception for one input argument.');
 																				test.TestSuite.assertEqual(size(c, 2), 1, 'control:gamma:arguments:test', 'Constraint function value must be a column vector.');
 																				test.TestSuite.assert(isempty(ceq), 'control:gamma:arguments:test', 'Constraint function value for equalities must be empty.');

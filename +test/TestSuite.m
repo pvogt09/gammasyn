@@ -1,6 +1,6 @@
 classdef TestSuite < handle
 	%TESTSUITE class for running test cases
-	
+
 	properties(Constant=true)
 		% ignore pattern for folders that should not be searched for test cases
 		EXCLUDE = {
@@ -21,7 +21,7 @@ classdef TestSuite < handle
 		% search pattern for test cases
 		PATTERN = '*Test.m'
 	end
-	
+
 	properties(Access=protected)
 		% found test cases
 		tests,
@@ -30,7 +30,7 @@ classdef TestSuite < handle
 		% test results
 		results
 	end
-	
+
 	methods(Static=true)
 		function [] = assert(a, identifier, message, varargin)
 			%ASSERT assert that condition a is fulfilled
@@ -41,7 +41,7 @@ classdef TestSuite < handle
 			%		varargin:	replacement arguments for message string
 			assert(a, identifier, message, varargin{:});
 		end
-		
+
 		function [] = assertSameSize(a, b, identifier, message, varargin)
 			%ASSERTSAMESIZE assert that a and b are same size variables
 			%	Input:
@@ -55,7 +55,7 @@ classdef TestSuite < handle
 			end
 			assert(ndims(a) == ndims(b) && all(size(a) == size(b)), identifier, message, varargin{:});
 		end
-		
+
 		function [] = assertEqual(a, b, identifier, message, varargin)
 			%ASSERTEQUAL assert that a and b are equal
 			%	Input:
@@ -90,7 +90,7 @@ classdef TestSuite < handle
 			end
 			assert(all(temp(:)), identifier, message, varargin{:});
 		end
-		
+
 		function [] = assertEqualNaN(a, b, identifier, message, varargin)
 			%ASSERTEQUALNAN assert that a and b are equal with equal NaN
 			%	Input:
@@ -127,7 +127,7 @@ classdef TestSuite < handle
 			end
 			assert(all(temp(:)), identifier, message, varargin{:});
 		end
-		
+
 		function [] = assertNotEqual(a, b, identifier, message, varargin)
 			%ASSERTNOTEQUAL assert that a and b are not equal
 			%	Input:
@@ -143,7 +143,7 @@ classdef TestSuite < handle
 			temp = a ~= b;
 			assert(all(temp(:)), identifier, message, varargin{:});
 		end
-		
+
 		function [] = assertEqualTolerance(a, b, tol, identifier, message, varargin)
 			%ASSERTEQUALTOLERANCE assert that a and b are equal according to specified tolerance
 			%	Input:
@@ -160,7 +160,7 @@ classdef TestSuite < handle
 			temp = abs(a - b);
 			assert(all(temp(:) < tol), identifier, message, varargin{:});
 		end
-		
+
 		function [] = assertLessThan(a, b, identifier, message, varargin)
 			%ASSERTLESSTHAN assert that a is less than b
 			%	Input:
@@ -176,7 +176,7 @@ classdef TestSuite < handle
 			temp = a < b;
 			assert(all(temp(:)), identifier, message, varargin{:});
 		end
-		
+
 		function [] = assertFieldnames(a, b, identifier, message, varargin)
 			%ASSERTFIELDNAMES assert that a and b have the same fieldnames if b is a struct or that a has the fieldnames specified in b
 			%	Input:
@@ -205,7 +205,7 @@ classdef TestSuite < handle
 			temp = fieldnames(a);
 			assert(all(ismember(names, temp)), identifier, message, varargin{:});
 		end
-		
+
 		function [] = assertWarning(code, warning, identifier, message, varargin)
 			%ASSERTWARNING assert that a warning is thrown
 			%	Input:
@@ -223,7 +223,7 @@ classdef TestSuite < handle
 			assert(strcmp(msgid, warning), identifier, message, varargin{:});
 			lastwarn(oldmsgstr, oldmsgid);
 		end
-		
+
 		function [] = assertException(code, exception, identifier, message, varargin)
 			%ASSERTEXCEPTION assert that an exception is thrown
 			%	Input:
@@ -248,7 +248,7 @@ classdef TestSuite < handle
 				assert(false, identifier, message, varargin{:});
 			end
 		end
-		
+
 		function [] = assertNoWarning(code, identifier, message, varargin)
 			%ASSERTNOWARNING assert that no warning is thrown
 			%	Input:
@@ -271,7 +271,7 @@ classdef TestSuite < handle
 				end
 			end
 		end
-		
+
 		function [] = assertNoException(code, identifier, message, varargin)
 			%ASSERTEXCEPTION assert that no exception is thrown
 			%	Input:
@@ -292,7 +292,7 @@ classdef TestSuite < handle
 				end
 			end
 		end
-		
+
 		function [hadallowedexception] = assertNoExceptionExcept(code, except, identifier, message, varargin)
 			%ASSERTEXCEPTIONEXCEPT assert that no exception except for exceptions of the specified type is thrown
 			%	Input:
@@ -320,7 +320,7 @@ classdef TestSuite < handle
 				hadallowedexception = true;
 			end
 		end
-		
+
 		function [hadallowedexception] = assertNoExceptionExceptStack(code, except, exceptstack, identifier, message, varargin)
 			%ASSERTEXCEPTIONEXCEPTSTACK assert that no exception except for exceptions of the specified type with matching stack is thrown
 			%	Input:
@@ -389,7 +389,7 @@ classdef TestSuite < handle
 			end
 		end
 	end
-	
+
 	methods
 		function [this] = TestSuite(path, exclude)
 			%TESTSUITE create new test suite
@@ -415,7 +415,7 @@ classdef TestSuite < handle
 			this.passed = repmat(identifier.TestResult.SKIPPED, size(this.tests, 1), 1);
 			this.results = cell(size(this.tests, 1), 2);
 		end
-		
+
 		function [tests] = gettests(this)
 			%GETTESTS return test case files
 			%	Input:
@@ -424,7 +424,7 @@ classdef TestSuite < handle
 			%		tests:	test case files
 			tests = this.tests;
 		end
-		
+
 		function [] = run(this, display)
 			%RUN run tests
 			%	Input:
@@ -508,7 +508,7 @@ classdef TestSuite < handle
 				this.passed(idx) = pass;
 			end
 		end
-		
+
 		function [summary] = summary(this, print)
 			%SUMMARY show summary of test results
 			%	Input:

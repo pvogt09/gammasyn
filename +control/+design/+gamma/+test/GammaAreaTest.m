@@ -35,7 +35,7 @@ function [pass] = GammaAreaTest(~)
 		f = area.border(real(testpoint), imag(testpoint), functionstruct);
 		test.TestSuite.assertSameSize(f, 1, 'control:gammasyn:area:test', 'Border must be scalar.');
 		test.TestSuite.assert(imag(f) == 0, 'control:gammasyn:area:test', 'Border must be real.');
-		
+
 		test.TestSuite.assertNoException('[dfdre] = area.gradborder(real(testpoint), imag(testpoint), functionstruct);', 'control:gammasyn:area:test', 'gradborder must not throw an exception.');
 		test.TestSuite.assertNoException('[dfdre, dfdim] = area.gradborder(real(testpoint), imag(testpoint), functionstruct);', 'control:gammasyn:area:test', 'gradborder must not throw an exception.');
 		[dfdre, dfdim] = area.gradborder(real(testpoint), imag(testpoint), functionstruct);
@@ -43,7 +43,7 @@ function [pass] = GammaAreaTest(~)
 		test.TestSuite.assertSameSize(dfdim, 1, 'control:gammasyn:area:test', 'gradborder must be scalar.');
 		test.TestSuite.assert(imag(dfdre) == 0, 'control:gammasyn:area:test', 'gradborder must be real.');
 		test.TestSuite.assert(imag(dfdim) == 0, 'control:gammasyn:area:test', 'gradborder must be real.');
-		
+
 		test.TestSuite.assertNoException('[d2fdredre] = area.hessborder(real(testpoint), imag(testpoint), functionstruct);', 'control:gammasyn:area:test', 'hessborder must not throw an exception.');
 		test.TestSuite.assertNoException('[d2fdredre, d2fdimdre] = area.hessborder(real(testpoint), imag(testpoint), functionstruct);', 'control:gammasyn:area:test', 'hessborder must not throw an exception.');
 		test.TestSuite.assertNoException('[d2fdredre, d2fdimdre, d2fdredim] = area.hessborder(real(testpoint), imag(testpoint), functionstruct);', 'control:gammasyn:area:test', 'hessborder must not throw an exception.');
@@ -57,13 +57,13 @@ function [pass] = GammaAreaTest(~)
 		test.TestSuite.assert(imag(d2fdimdre) == 0, 'control:gammasyn:area:test', 'hessborder must be real.');
 		test.TestSuite.assert(imag(d2fdredim) == 0, 'control:gammasyn:area:test', 'hessborder must be real.');
 		test.TestSuite.assert(imag(d2fdimdim) == 0, 'control:gammasyn:area:test', 'hessborder must be real.');
-		
-		
+
+
 		test.TestSuite.assertNoException('f = area.getborder(real(testpoint), imag(testpoint));', 'control:gammasyn:area:test', 'getborder must not throw an exception.');
 		f = area.getborder(real(testpoint), imag(testpoint));
 		test.TestSuite.assertSameSize(f, 1, 'control:gammasyn:area:test', 'Border must be scalar.');
 		test.TestSuite.assert(imag(f) == 0, 'control:gammasyn:area:test', 'Border must be real.');
-		
+
 		test.TestSuite.assertNoException('[dfdre] = area.getgradborder(real(testpoint), imag(testpoint));', 'control:gammasyn:area:test', 'getgradborder must not throw an exception.');
 		test.TestSuite.assertNoException('[dfdre, dfdim] = area.getgradborder(real(testpoint), imag(testpoint));', 'control:gammasyn:area:test', 'getgradborder must not throw an exception.');
 		[dfdre, dfdim] = area.getgradborder(real(testpoint), imag(testpoint));
@@ -71,7 +71,7 @@ function [pass] = GammaAreaTest(~)
 		test.TestSuite.assertSameSize(dfdim, 1, 'control:gammasyn:area:test', 'gradborder must be scalar.');
 		test.TestSuite.assert(imag(dfdre) == 0, 'control:gammasyn:area:test', 'gradborder must be real.');
 		test.TestSuite.assert(imag(dfdim) == 0, 'control:gammasyn:area:test', 'gradborder must be real.');
-		
+
 		test.TestSuite.assertNoException('[d2fdredre] = area.gethessborder(real(testpoint), imag(testpoint));', 'control:gammasyn:area:test', 'gethessborder must not throw an exception.');
 		test.TestSuite.assertNoException('[d2fdredre, d2fdimdre] = area.gethessborder(real(testpoint), imag(testpoint));', 'control:gammasyn:area:test', 'gethessborder must not throw an exception.');
 		test.TestSuite.assertNoException('[d2fdredre, d2fdimdre, d2fdredim] = area.gethessborder(real(testpoint), imag(testpoint));', 'control:gammasyn:area:test', 'gethessborder must not throw an exception.');
@@ -85,11 +85,11 @@ function [pass] = GammaAreaTest(~)
 		test.TestSuite.assert(imag(d2fdimdre) == 0, 'control:gammasyn:area:test', 'hessborder must be real.');
 		test.TestSuite.assert(imag(d2fdredim) == 0, 'control:gammasyn:area:test', 'hessborder must be real.');
 		test.TestSuite.assert(imag(d2fdimdim) == 0, 'control:gammasyn:area:test', 'hessborder must be real.');
-		
+
 		test.TestSuite.assertNoException('str = area.getstring();', 'control:gammasyn:area:test', 'getstring must not throw an exception.');
 		str = area.getstring();
 		test.TestSuite.assert(ischar(str), 1, 'control:gammasyn:area:test', 'getstring must be char.');
-		
+
 		test.TestSuite.assertNoException('[L, M, success] = area.toLMIregion();', 'control:gammasyn:area:test', 'toLMIregion must not throw an exception.');
 		[L, M, success] = area.toLMIregion();
 		test.TestSuite.assert(islogical(success), 'control:gammasyn:area:test', 'success must be of type logical.');

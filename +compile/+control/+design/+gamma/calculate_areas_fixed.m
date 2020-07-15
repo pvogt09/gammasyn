@@ -31,7 +31,7 @@ function [success, fileinfo] = calculate_areas_fixed(overwrite, nobuild)
 	max_system_measurements = settings.max_system_measurements;
 	max_number_of_systems = settings.max_number_of_systems;
 	max_number_of_area_functions = settings.max_number_of_area_functions;
-	
+
 	%#ok<*NASGU> unused variables are function arguments
 	areaparameters = control.design.gamma.area.GammaArea.PARAMETERPROTOTYPEEMPTY;
 	areaparametersizes = control.design.gamma.area.GammaArea.PARAMETERPROTOTYPESIZE;
@@ -69,8 +69,8 @@ function [success, fileinfo] = calculate_areas_fixed(overwrite, nobuild)
 	Tnumthreads = coder.typeof(uint32(1));
 	Teigenvalueignoreinf = coder.typeof(true);
 
-    config = compile.constant();
-    
+	config = compile.constant();
+
 	Args = '{Tareafun Tweight Teigenvalues Tdimensions Tnumthreads Teigenvalueignoreinf}';
 	try
 		if overwrite

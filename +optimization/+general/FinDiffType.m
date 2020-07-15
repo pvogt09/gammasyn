@@ -1,7 +1,7 @@
 classdef(Enumeration) FinDiffType < Simulink.IntEnumType
 	%FINDIFFTYPE class to represent a finite difference type
 	%#codegen
-	
+
 	enumeration
 		% forward difference
 		FORWARD(1);
@@ -10,7 +10,7 @@ classdef(Enumeration) FinDiffType < Simulink.IntEnumType
 		% central difference
 		CENTRAL(3);
 	end
-	
+
 	methods(Static=true)
 		function [default] = getDefaultValue()
 			%GETDEFAULTVALUE return default value for finite difference types
@@ -18,21 +18,21 @@ classdef(Enumeration) FinDiffType < Simulink.IntEnumType
 			%		default:	default finite difference type
 			default = optimization.general.FinDiffType.FORWARD;
 		end
-		
+
 		function [description] = getDescription()
 			%GETDESCRIPTION return description of the finite difference type class
 			%	Output:
 			%		description:	description of the class
 			description = 'class to represent a finite difference type';
 		end
-		
+
 		function [addname] = addClassNameToEnumNames()
 			%ADDCLASSNAMETOENUMNAMES Control whether class name is added as a prefix to enumerated names in the generated code.
 			%	Output:
 			%		addname:	true, to add the class name to generated code to avoid naming conflicts
 			addname = true;
 		end
-		
+
 		function [findifftype] = frominteger(ord)
 			%FROMINTEGER create FinDiffType identifier from integer
 			%	Input:
@@ -64,7 +64,7 @@ classdef(Enumeration) FinDiffType < Simulink.IntEnumType
 			end
 			findifftype = reshape(findifftype, size(ord));
 		end
-		
+
 		function [findifftype] = fromname(name)
 			%FROMNAME create FrictionType from char
 			%	Input:
@@ -109,7 +109,7 @@ classdef(Enumeration) FinDiffType < Simulink.IntEnumType
 					end
 			end
 		end
-		
+
 		function [fromDCM] = fromDCM(DCMstring, ~)
 			%FROMDCM convert string from DCM file to object of FinDiffType class
 			%	Input:
@@ -120,7 +120,7 @@ classdef(Enumeration) FinDiffType < Simulink.IntEnumType
 			fromDCM = optimization.general.FinDiffType.fromname(DCMstring);
 		end
 	end
-	
+
 % must not be private to allow for type cast to FinDiffType, types are automatically restricted to the defined ones internally
 % 	methods(Access=private)
 % 		function [this] = FinDiffType(ord)
@@ -132,7 +132,7 @@ classdef(Enumeration) FinDiffType < Simulink.IntEnumType
 % 			this = this@Simulink.IntEnumType(ord);
 % 		end
 % 	end
-	
+
 	methods
 		function [findiffname] = char(this)
 			%CHAR return FinDiffType as char
@@ -150,7 +150,7 @@ classdef(Enumeration) FinDiffType < Simulink.IntEnumType
 			end
 			findiffname = strtrim(name(this, :));
 		end
-		
+
 		function [findiffname] = lower(this)
 			%LOWER return char representation of the finite difference type in lower case letters
 			%	Input:
@@ -159,7 +159,7 @@ classdef(Enumeration) FinDiffType < Simulink.IntEnumType
 			%		findiffname:	char representation of the finite difference type in lower case letters
 			findiffname = lower(char(this));
 		end
-		
+
 		function [findiffname] = upper(this)
 			%UPPER return char representation of the finite difference type in upper case letters
 			%	Input:
@@ -168,7 +168,7 @@ classdef(Enumeration) FinDiffType < Simulink.IntEnumType
 			%		frictionname:	char representation of the finite difference type in upper case letters
 			findiffname = upper(char(this));
 		end
-		
+
 		function [asDCM] = toDCM(this)
 			%TODCM convert instance to string for use in an DCM file
 			%	Input:
@@ -178,5 +178,5 @@ classdef(Enumeration) FinDiffType < Simulink.IntEnumType
 			asDCM = sprintf('%d', int32(this));
 		end
 	end
-	
+
 end

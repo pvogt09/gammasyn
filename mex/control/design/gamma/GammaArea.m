@@ -1,7 +1,7 @@
 classdef(Enumeration) GammaArea < Simulink.IntEnumType
 	%GAMMAAREA enumeration for characterization of different areas for poles in gamma pole placement for use with codegen
 	%#codegen
-	
+
 	enumeration
 		% no pole area
 		NONE(1);
@@ -32,7 +32,7 @@ classdef(Enumeration) GammaArea < Simulink.IntEnumType
 		% custom polearea with user defined function handle (not supported in generated code)
 		CUSTOM(14)
 	end
-	
+
 % must not be private to allow for type cast to GammaArea, types are automatically restricted to the defined ones internally
 % 	methods(Access=private)
 % 		function [this] = GammaArea(type)
@@ -44,7 +44,7 @@ classdef(Enumeration) GammaArea < Simulink.IntEnumType
 % 			this@Simulink.IntEnumType(type);
 % 		end
 % 	end
-	
+
 	methods(Static=true)
 		function [default] = getDefaultValue()
 			%GETDEFAULTVALUE return default gamma ploe area
@@ -52,8 +52,8 @@ classdef(Enumeration) GammaArea < Simulink.IntEnumType
 			%		default:	default pole area
 			default = GammaArea.IMAG;
 		end
-		
-		function [description] = getDescription() 
+
+		function [description] = getDescription()
 			%GETDESCRIPTION	String to describe the class in Simulink Coder
 			%	Output:
 			%		description:	description of the class
@@ -66,7 +66,7 @@ classdef(Enumeration) GammaArea < Simulink.IntEnumType
 			%		addname:	true, to add the class name to generated code to avoid naming conflicts
 			addname = true;
 		end
-		
+
 		function [area] = fromname(name)
 			%FROMNAME create GammaArea from name
 			%	Input:
@@ -126,7 +126,7 @@ classdef(Enumeration) GammaArea < Simulink.IntEnumType
 				error('control:design:gamma:area:type:name', 'No GammaArea of specified name exists.');
 			end
 		end
-		
+
 		function [fromDCM] = fromDCM(DCMstring, ~)
 			%FROMDCM convert string from DCM file to object of GammaArea class
 			%	Input:
@@ -137,7 +137,7 @@ classdef(Enumeration) GammaArea < Simulink.IntEnumType
 			fromDCM = GammaArea.fromname(DCMstring);
 		end
 	end
-	
+
 	methods
 		function [asDCM] = toDCM(this)
 			%TODCM convert instance to string for use in an DCM file
@@ -147,7 +147,7 @@ classdef(Enumeration) GammaArea < Simulink.IntEnumType
 			%		asDCM:	string representation of the instance for use in an DCM file
 			asDCM = sprintf('%d', int32(this));
 		end
-		
+
 		function [hash] = hashCode(this)
 			%HASHCODE create hash code for object
 			%	Input:

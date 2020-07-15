@@ -33,7 +33,7 @@ function [success, fileinfo] = eig3d(overwrite, nobuild)
 	Tnumthreads = coder.typeof(uint32(1));
 
 	config = compile.constant();
-	
+
 	Args = '{TA TB TeigenvalueOption Tnumthreads}';
 	try
 		if overwrite

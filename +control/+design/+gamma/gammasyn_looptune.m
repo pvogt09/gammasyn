@@ -346,7 +346,7 @@ function [system_cl, Jopt, information] = gammasyn_looptune(systems, areafun, we
 	};
 	system_uncertain = lft(blkdiag(B_sorted_uncertain{:}) - blkdiag(S_sorted_uncertain{:}), H_augmented_sorted, size(idxuncertain, 1), size(idxuncertain, 1));
 	system_uncertain_gamma = system_uncertain(number_measurements + 1:end, number_controls + 1:end);
-	
+
 	% call gammasyn
 	if nargin >= 5
 		[Ropt, Jopt, information] = control.design.gamma.gammasyn(system_uncertain_gamma, areafun, weights, R_fixed, R_0, solveroptions, objectiveoptions, R_bounds);

@@ -1,6 +1,6 @@
 classdef OutputFeedback < handle
 	%OUTPUTFEEDBACK abstract class for casting a control system in output feedback form and specify the needed constraints on the resulting gain matrix
-	
+
 	methods(Static=true, Sealed=true)
 		function [isdiscrete] = isdiscreteT(T)
 			%ISDISCRETET return if sample time T corresponds to a discrete system
@@ -17,14 +17,14 @@ classdef OutputFeedback < handle
 			end
 		end
 	end
-	
+
 	methods(Static=true, Abstract=true)
 		%SIMULINKVARIANT return name of corresponding simulink variant for controller block in control_outputfeedback_lib
 		%Output:
 		%		name:	name of the corresponding simulink variant
 		[name] = SimulinkVariant();
 	end
-	
+
 	methods(Access=protected, Static=true)
 		function [valid, errid, errmsg] = check(E, A, B, C, C_dot, D, C_ref, D_ref, R_fixed)
 			%CHECK check a system for proper dimensions
@@ -192,7 +192,7 @@ classdef OutputFeedback < handle
 				end
 			end
 		end
-		
+
 		function [is] = isranksupported(var)
 			%ISRANKSUPPORTED return if th supplied variable supports the rank function
 			%	Input:
@@ -208,7 +208,7 @@ classdef OutputFeedback < handle
 			end
 		end
 	end
-	
+
 	methods(Access=protected)
 		function [this] = OutputFeedback()
 			%OUTPUTFEEDBACK create new OtuputFeedback object
@@ -216,7 +216,7 @@ classdef OutputFeedback < handle
 			%		this:	instance
 		end
 	end
-	
+
 	methods(Sealed=true)
 		function [R_fixed, K_fixed, F_fixed, RKF_fixed, R_bounds, K_bounds, F_bounds, RKF_bounds, R_nonlin] = gainpattern(this, system, A, B, C, C_dot, D, C_ref, D_ref, T)
 			%GAINPATTERN return constraint system for resulting gain matrix
@@ -363,7 +363,7 @@ classdef OutputFeedback < handle
 				R_fixed = this.gainpattern_system(E, A, B, C, C_dot, D, C_ref, D_ref, T);
 			end
 		end
-		
+
 		function [R_gain, K_gain, F_prefilter] = gainpattern_parametric(this, system, A, B, C, C_dot, D, C_ref, D_ref, T)
 			%GAINPATTERN_PARAMETRIC return parametric gain matrix
 			%	Input:
@@ -491,7 +491,7 @@ classdef OutputFeedback < handle
 				R_gain = this.gainpattern_parametric_system(E, A, B, C, C_dot, D, C_ref, D_ref, T);
 			end
 		end
-		
+
 		function [system, A, B, C, C_dot, D, C_ref, D_ref] = amend(this, system, A, B, C, C_dot, D, C_ref, D_ref, T, noreference)
 			%AMEND return extended system for output feedback
 			%	Input:
@@ -778,7 +778,7 @@ classdef OutputFeedback < handle
 				D = D_g;
 			end
 		end
-		
+
 		function [system, A, B, C, C_dot, D, C_ref, D_ref] = amend_parametric(this, system, A, B, C, C_dot, D, C_ref, D_ref, T, noreference)
 			%AMEND_PARAMETRIC return extended system for output feedback with parameteric gain matrices
 			%	Input:
@@ -1110,7 +1110,7 @@ classdef OutputFeedback < handle
 				D = D_g;
 			end
 		end
-		
+
 		function [E] = E(this, system, A, B, C, C_dot, D, C_ref, D_ref, T, noreference)
 			%E return descriptor matrix of extended system for output feedback
 			%	Input:
@@ -1255,7 +1255,7 @@ classdef OutputFeedback < handle
 			end
 			E = this.amend_system(E, A, B, C, C_dot, D, C_ref, D_ref, T);
 		end
-		
+
 		function [A] = A(this, system, A, B, C, C_dot, D, C_ref, D_ref, T, noreference)
 			%A return system matrix of extended system for output feedback
 			%	Input:
@@ -1400,7 +1400,7 @@ classdef OutputFeedback < handle
 			end
 			[~, A] = this.amend_system(E, A, B, C, C_dot, D, C_ref, D_ref, T);
 		end
-		
+
 		function [B] = B(this, system, A, B, C, C_dot, D, C_ref, D_ref, T, noreference)
 			%B return control matrix of extended system for output feedback
 			%	Input:
@@ -1545,7 +1545,7 @@ classdef OutputFeedback < handle
 			end
 			[~, ~, B] = this.amend_system(E, A, B, C, C_dot, D, C_ref, D_ref, T);
 		end
-		
+
 		function [C] = C(this, system, A, B, C, C_dot, D, C_ref, D_ref, T, noreference)
 			%C return output matrix of extended system for output feedback
 			%	Input:
@@ -1690,7 +1690,7 @@ classdef OutputFeedback < handle
 			end
 			[~, ~, ~, C] = this.amend_system(E, A, B, C, C_dot, D, C_ref, D_ref, T);
 		end
-		
+
 		function [C_dot] = C_dot(this, system, A, B, C, C_dot, D, C_ref, D_ref, T, noreference)
 			%C_dot return derivative output matrix of extended system for output feedback
 			%	Input:
@@ -1835,7 +1835,7 @@ classdef OutputFeedback < handle
 			end
 			[~, ~, ~, ~, C_dot] = this.amend_system(E, A, B, C, C_dot, D, C_ref, D_ref, T);
 		end
-		
+
 		function [D] = D(this, system, A, B, C, C_dot, D, C_ref, D_ref, T, noreference)
 			%D return throughput matrix of extended system for output feedback
 			%	Input:
@@ -1980,7 +1980,7 @@ classdef OutputFeedback < handle
 			end
 			[~, ~, ~, ~, ~, D] = this.amend_system(E, A, B, C, C_dot, D, C_ref, D_ref, T);
 		end
-		
+
 		function [C_ref] = C_ref(this, system, A, B, C, C_dot, D, C_ref, D_ref, T, noreference)
 			%C_REF return reference output matrix of extended system for output feedback
 			%	Input:
@@ -2159,7 +2159,7 @@ classdef OutputFeedback < handle
 				end
 			end
 		end
-		
+
 		function [D_ref] = D_ref(this, system, A, B, C, C_dot, D, C_ref, D_ref, T, noreference)
 			%D_REF return reference throughput matrix of extended system for output feedback
 			%	Input:
@@ -2338,7 +2338,7 @@ classdef OutputFeedback < handle
 				end
 			end
 		end
-		
+
 		function [R_scaled] = scalegain(this, R_unscaled, T_x, T_u, T_y, T_y_dot, T_w, system, A, B, C, C_dot, D, C_ref, D_ref, T)
 			%SCALEGAIN return scaled gain matrix for given unscaled gain matrix
 			%	Input:
@@ -2588,7 +2588,7 @@ classdef OutputFeedback < handle
 				end
 			end
 		end
-		
+
 		function [F_scaled] = scaleprefilter(this, F_unscaled, T_x, T_u, T_y, T_y_dot, T_w, system, A, B, C, C_dot, D, C_ref, D_ref, T)
 			%SCALEPREFILTER return scaled prefilter matrix for given unscaled prefilter matrix
 			%	Input:
@@ -2788,7 +2788,7 @@ classdef OutputFeedback < handle
 			end
 			F_scaled = T_u\F_unscaled*T_w;
 		end
-		
+
 		function [F, F_fixed] = prefilterpattern(this, R, system, A, B, C, C_dot, D, C_ref, D_ref, T)
 			%F return prefilter matrix of extended system for output feedback with given gain matrix
 			%	Input:
@@ -2939,7 +2939,7 @@ classdef OutputFeedback < handle
 			end
 			[F, F_fixed] = this.prefilterpattern_system(R, K, E, A, B, C, C_dot, D, C_ref, D_ref, T);
 		end
-		
+
 		function [partitionR, partitionF] = gainpartitioning(this, R, F, system, A, B, C, C_dot, D, C_ref, D_ref, T)
 			%GAINPARTITIONING return partitioning for gain matrix of extended system for output feedback with given gain matrix
 			%	Input:
@@ -3098,7 +3098,7 @@ classdef OutputFeedback < handle
 				partitionR = this.gainpartitioning_system(R, K, F, E, A, B, C, C_dot, D, C_ref, D_ref, T);
 			end
 		end
-			
+
 		function [system_c, A_c, B_c, C_c, C_dot_c, K_c, C_ref_c, D_ref_c, needsstate, usesCasCdot] = realization(this, R, F, system, A, B, C, C_dot, D, C_ref, D_ref, T)
 			%REALIZATION return controller without system for output feedback with given gain matrix and inputs w and y and output u
 			%	Input:
@@ -3349,7 +3349,7 @@ classdef OutputFeedback < handle
 			end
 		end
 	end
-	
+
 	methods(Abstract=true, Access=protected)
 		%AMEND_SYSTEM add additional dynamics and partition matrices according to the desired output feedback
 		%	Input:
@@ -3369,7 +3369,7 @@ classdef OutputFeedback < handle
 		%		C_dot:		derivative output matrix of extended system
 		%		D:			throughput matrix of extended system
 		[E, A, B, C, C_dot, D] = amend_system(this, E, A, B, C, C_dot, D, T);
-		
+
 		%GAINPATTERN_SYSTEM return gain pattern constraint system for desired output feedback gain matrix
 		%	Input:
 		%		this:		instance
@@ -3393,7 +3393,7 @@ classdef OutputFeedback < handle
 		%		RKF_bounds:	cell array with inequality constraint system for combined gain matrix
 		%		R_nonlin:	function pointer to nonlinear constraints on proportional and derivative gain matrix
 		[R_fixed, K_fixed, F_fixed, RKF_fixed, R_bounds, K_bounds, F_bounds, RKF_bounds, R_nonlin] = gainpattern_system(this, E, A, B, C, C_dot, D, C_ref, D_ref, T);
-		
+
 		%GAINPATTERN_PARAMETRIC_SYSTEM return parametric gain matrix for given system
 		%	Input:
 		%		this:			instance
@@ -3411,7 +3411,7 @@ classdef OutputFeedback < handle
 		%		K_gain:			parametric derivative gain matrix
 		%		F_prefilter:	parametric prefilter matrix
 		[R_gain, K_gain, F_prefilter] = gainpattern_parametric_system(this, system, A, B, C, C_dot, D, C_ref, D_ref, T);
-		
+
 		%SCALEGAIN_SYSTEM return scaling matrices for given system
 		%	Input:
 		%		this:		instance
@@ -3436,7 +3436,7 @@ classdef OutputFeedback < handle
 		%		T_y_dot:	derivative measurement transformation matrix for augmented system
 		%		T_w:		reference transformation matrix for augmented system
 		[T_x, T_u, T_y, T_y_dot, T_w] = scalegain_system(this, T_x, T_u, T_y, T_y_dot, T_w, E, A, B, C, C_dot, D, C_ref, D_ref, T);
-		
+
 		%PREFILTERPATTERN_SYSTEM return prefilter and prefilter pattern constraint system for desired output feedback with given gain matrices
 		%	Input:
 		%		this:		instance
@@ -3455,7 +3455,7 @@ classdef OutputFeedback < handle
 		%		F:			prefilter matrix for extended system and supplied gain matrices
 		%		F_fixed:	indicator matrix for fixed elements of prefilter matrix
 		[F, F_fixed] = prefilterpattern_system(this, R, K, E, A, B, C, C_dot, D, C_ref, D_ref, T);
-		
+
 		%GAINPARTITIONING_SYSTEM return partitioning for gain matrix of extended system for output feedback with given gain matrix
 		%	Input:
 		%		this:		instance
@@ -3475,7 +3475,7 @@ classdef OutputFeedback < handle
 		%		partitionR:	named partition matrices of gain matrix in structure fields
 		%		partitionF:	named partition matrices of prefilter matrix in structure fields
 		[partitionR, partitionF] = gainpartitioning_system(this, R, K, F, E, A, B, C, C_dot, D, C_ref, D_ref, T);
-		
+
 		%REALIZATION_SYSTEM return controller without system for output feedback with given gain matrix and inputs w and y and output u
 		%	Input:
 		%		this:			instance
@@ -3504,5 +3504,5 @@ classdef OutputFeedback < handle
 		%		usesCasCdot:	indicator if C is used as Cdot in case of derivative feedback
 		[E, A, B, C, C_dot, D, C_ref, D_ref, needsstate, usesCasCdot] = realization_system(this, R, K, F, E, A, B, C, C_dot, D, C_ref, D_ref, T);
 	end
-	
+
 end

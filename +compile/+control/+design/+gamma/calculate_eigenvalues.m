@@ -79,8 +79,8 @@ function [success, fileinfo] = calculate_eigenvalues(overwrite, nobuild)
 	Tnumthreads = coder.typeof(uint32(1));
 	Teigenvaluefiltertype = coder.newtype('GammaEigenvalueFilterType', [20, 1], [true, false]);% TODO: crashes matlab for size [Inf, 1]
 
-    config = compile.constant();
-    
+	config = compile.constant();
+
 	Args = '{Tsystem TR TK Tdimensions Teigenvaluederivativetype Tnumthreads Teigenvaluefiltertype}';
 	if matlab.Version.CURRENT < matlab.Version.R2016B
 		warning('compile:control:design:gamma:eigenvalues', 'Calculation of eigenvector derivatives relies on Van der Aa''s method which uses runtime recursion and is not supported for code generation in this version of matlab.');

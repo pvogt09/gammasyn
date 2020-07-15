@@ -1,7 +1,7 @@
 classdef(Enumeration) GammaJType < Simulink.IntEnumType
 	%GAMMAJTYPE enumeration for characterization of different objective variants in gamma pole placement for use with codegen
 	%#codegen
-	
+
 	enumeration
 		% no weighting of pole areas in objective function
 		ZERO(0);
@@ -28,7 +28,7 @@ classdef(Enumeration) GammaJType < Simulink.IntEnumType
 		% Lyapunov matrix objective function
 		LYAPUNOV(11);
 	end
-	
+
 % must not be private to allow for type cast to GammaJType, types are automatically restricted to the defined ones internally
 % 	methods(Access=private)
 % 		function [this] = GammaJType(type)
@@ -40,7 +40,7 @@ classdef(Enumeration) GammaJType < Simulink.IntEnumType
 % 			this@Simulink.IntEnumType(type);
 % 		end
 % 	end
-	
+
 	methods(Static=true)
 		function [default] = getDefaultValue()
 			%GETDEFAULTVALUE return default gamma objective function type
@@ -48,8 +48,8 @@ classdef(Enumeration) GammaJType < Simulink.IntEnumType
 			%		default:	default objective function type
 			default = GammaJType.EXP;
 		end
-		
-		function [description] = getDescription() 
+
+		function [description] = getDescription()
 			%GETDESCRIPTION	String to describe the class in Simulink Coder
 			%	Output:
 			%		description:	description of the class
@@ -62,7 +62,7 @@ classdef(Enumeration) GammaJType < Simulink.IntEnumType
 			%		addname:	true, to add the class name to generated code to avoid naming conflicts
 			addname = true;
 		end
-		
+
 		function [J] = fromname(name)
 			%FROMNAME create GammaJType from name
 			%	Input:
@@ -122,7 +122,7 @@ classdef(Enumeration) GammaJType < Simulink.IntEnumType
 				error('control:design:gamma:type:name', 'No GammaJType of specified name exists.');
 			end
 		end
-		
+
 		function [fromDCM] = fromDCM(DCMstring, ~)
 			%FROMDCM convert string from DCM file to object of GammaJType class
 			%	Input:
@@ -133,7 +133,7 @@ classdef(Enumeration) GammaJType < Simulink.IntEnumType
 			fromDCM = GammaJType.fromname(DCMstring);
 		end
 	end
-	
+
 	%methods(Static=true)
 	%	TODO: see GammaJType_isgainobjective because this method does not work in code generation
 	%	function [isgain] = isgainobjective(this)
@@ -155,7 +155,7 @@ classdef(Enumeration) GammaJType < Simulink.IntEnumType
 	%		end
 	%	end
 	%end
-	
+
 	methods(Static=true)
 		function [hashessian] = hashessian(this)
 			%HASHESSIAN return if GammaJType has hessian inforamtion implemented
@@ -184,7 +184,7 @@ classdef(Enumeration) GammaJType < Simulink.IntEnumType
 			end
 		end
 	end
-	
+
 	methods
 		function [asDCM] = toDCM(this)
 			%TODCM convert instance to string for use in an DCM file
@@ -194,7 +194,7 @@ classdef(Enumeration) GammaJType < Simulink.IntEnumType
 			%		asDCM:	string representation of the instance for use in an DCM file
 			asDCM = sprintf('%d', int32(this));
 		end
-		
+
 		function [hash] = hashCode(this)
 			%HASHCODE create hash code for object
 			%	Input:

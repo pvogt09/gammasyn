@@ -1,6 +1,6 @@
 classdef nloptuncglobal < optimization.options.nlopt
 	%NLOPTUNCGLOBAL solver options for nloptuncglobal
-	
+
 	methods
 		function [this] = nloptuncglobal(varargin)
 			%NLOPTUNCGLOBAL create new optimization option set
@@ -13,7 +13,7 @@ classdef nloptuncglobal < optimization.options.nlopt
 				this.SubproblemAlgorithm = 'neldermead';
 			end
 		end
-		
+
 		function [algorithms] = possiblealgorithms(~)
 			%POSSIBLEALGORITHMS list with possible algorithms for optimizer
 			%	Input:
@@ -25,7 +25,7 @@ classdef nloptuncglobal < optimization.options.nlopt
 				'mlsl_lds'
 			};
 		end
-		
+
 		function [subalgorithms] = possiblesubalgorithms(~)
 			%POSSIBLESUBALGORITHMS list with possible algorithms for subproblems for optimizer
 			%	Input:
@@ -63,5 +63,5 @@ classdef nloptuncglobal < optimization.options.nlopt
 			};
 		end
 	end
-	
+
 end

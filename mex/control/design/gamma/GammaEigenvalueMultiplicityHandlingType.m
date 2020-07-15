@@ -1,7 +1,7 @@
 classdef(Enumeration) GammaEigenvalueMultiplicityHandlingType < Simulink.IntEnumType
 	%GAMMAEIGENVALUEMULTIPLICITYHANDLINGTYPE enumeration for characterization of different methods to handle numerically equal eigenvalues in gamma pole placement for use with codegen
 	%#codegen
-	
+
 	enumeration
 		% dummy for getDefaultValue() method to use default value in generated code
 		DEFAULT(1);
@@ -16,7 +16,7 @@ classdef(Enumeration) GammaEigenvalueMultiplicityHandlingType < Simulink.IntEnum
 		% use maximum of numerically equal eigenvalues
 		MAX(4)
 	end
-	
+
 % must not be private to allow for type cast to GammaEigenvalueMultiplicityHandlingType, types are automatically restricted to the defined ones internally
 % 	methods(Access=private)
 % 		function [this] = GammaEigenvalueMultiplicityHandlingType(type)
@@ -28,7 +28,7 @@ classdef(Enumeration) GammaEigenvalueMultiplicityHandlingType < Simulink.IntEnum
 % 			this@Simulink.IntEnumType(type);
 % 		end
 % 	end
-	
+
 	methods(Static=true)
 		function [default] = getDefaultValue()
 			%GETDEFAULTVALUE return default gamma eigenvalue multiplicity handling type
@@ -36,8 +36,8 @@ classdef(Enumeration) GammaEigenvalueMultiplicityHandlingType < Simulink.IntEnum
 			%		default:	default multiplicity handling type
 			default = GammaEigenvalueMultiplicityHandlingType.ROUND;
 		end
-		
-		function [description] = getDescription() 
+
+		function [description] = getDescription()
 			%GETDESCRIPTION	String to describe the class in Simulink Coder
 			%	Output:
 			%		description:	description of the class
@@ -50,7 +50,7 @@ classdef(Enumeration) GammaEigenvalueMultiplicityHandlingType < Simulink.IntEnum
 			%		addname:	true, to add the class name to generated code to avoid naming conflicts
 			addname = true;
 		end
-		
+
 		function [multiplicityhandling] = fromname(name)
 			%FROMNAME create GammaEigenvalueMultiplicityHandlingType from name
 			%	Input:
@@ -110,7 +110,7 @@ classdef(Enumeration) GammaEigenvalueMultiplicityHandlingType < Simulink.IntEnum
 				error('control:design:gamma:multiplicitytype:name', 'No GammaEigenvalueMultiplicityHandlingType of specified name exists.');
 			end
 		end
-		
+
 		function [fromDCM] = fromDCM(DCMstring, ~)
 			%FROMDCM convert string from DCM file to object of GammaEigenvalueMultiplicityHandlingType class
 			%	Input:
@@ -121,7 +121,7 @@ classdef(Enumeration) GammaEigenvalueMultiplicityHandlingType < Simulink.IntEnum
 			fromDCM = GammaEigenvalueMultiplicityHandlingType.fromname(DCMstring);
 		end
 	end
-	
+
 	methods
 		function [asDCM] = toDCM(this)
 			%TODCM convert instance to string for use in an DCM file
@@ -131,7 +131,7 @@ classdef(Enumeration) GammaEigenvalueMultiplicityHandlingType < Simulink.IntEnum
 			%		asDCM:	string representation of the instance for use in an DCM file
 			asDCM = sprintf('%d', int32(this));
 		end
-		
+
 		function [hash] = hashCode(this)
 			%HASHCODE create hash code for object
 			%	Input:

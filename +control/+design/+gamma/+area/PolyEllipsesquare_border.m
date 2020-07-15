@@ -8,10 +8,10 @@ function [f, dfdre, dfdim, d2fdredre, d2fdimdre, d2fdredim, d2fdimdim] = PolyEll
 	%		f:			border function value at point [re, im]
 	%		dfdre:		gradient of border function value at point [re, im] for coordinate re
 	%		dfdim:		gradient of border function value at point [re, im] for coordinate im
-    %       d2fdredre:  partial derivative of the gradient dfdre of border function value at point [re, im] for coordinate re
-    %       d2fdimdre:  partial derivative of the gradient dfdre of border function value at point [re, im] for coordinate im
-    %       d2fdredim:  partial derivative of the gradient dfdim of border function value at point [re, im] for coordinate re
-    %       d2fdimdre:  partial derivative of the gradient dfdim of border function value at point [re, im] for coordinate im
+	%       d2fdredre:  partial derivative of the gradient dfdre of border function value at point [re, im] for coordinate re
+	%       d2fdimdre:  partial derivative of the gradient dfdre of border function value at point [re, im] for coordinate im
+	%       d2fdredim:  partial derivative of the gradient dfdim of border function value at point [re, im] for coordinate re
+	%       d2fdimdre:  partial derivative of the gradient dfdim of border function value at point [re, im] for coordinate im
 	if any(isnan(parameter.polyellipse_f)) || any(isnan(parameter.polyellipse_w)) || size(parameter.polyellipse_f, 2) ~= size(parameter.polyellipse_w, 2)
 		error('control:design:gamma:area:border', 'Invalid parameter structure supplied');
 	end

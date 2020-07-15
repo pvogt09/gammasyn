@@ -1,11 +1,11 @@
 classdef RandomInitialValue < control.design.gamma.InitialValueElement
 	%RANDOMINITIALVALUE random initial value for gammasyn
-	
+
 	properties
 		% number of initial values
 		n
 	end
-	
+
 	methods
 		function [this] = RandomInitialValue(n)
 			%RANDOMINITIALVALUE initial value for gammasyn
@@ -16,7 +16,7 @@ classdef RandomInitialValue < control.design.gamma.InitialValueElement
 			this@control.design.gamma.InitialValueElement(false);
 			this.n = n;
 		end
-		
+
 		function [] = set.n(this, n)
 			%N setter for number of initial values
 			%	Input:
@@ -30,7 +30,7 @@ classdef RandomInitialValue < control.design.gamma.InitialValueElement
 			end
 			this.n = n;
 		end
-		
+
 		function [n] = get.n(this)
 			%N getter for number of initial values
 			%	Input:
@@ -40,7 +40,7 @@ classdef RandomInitialValue < control.design.gamma.InitialValueElement
 			n = this.n;
 		end
 	end
-	
+
 	methods(Access=protected)
 		function [initialvalue, valid, errorid, errormessage] = get_initial(this, ~, systems, ~, ~, ~, ~, ~, varargin) %#ok<VANUS> varargin is used for compatibility with interface
 			%GET_INITIAL get a parameter dependent initial value from the element

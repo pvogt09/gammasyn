@@ -1,6 +1,6 @@
 classdef fminconglobal < optimization.options.fmincon
 	%FMINCONGLOBAL solver options for global search with fmincon
-	
+
 	methods
 		function [this] = fminconglobal(varargin)
 			%FMINCONGLOBAL create new optimization option set
@@ -14,7 +14,7 @@ classdef fminconglobal < optimization.options.fmincon
 				this.useoptions(varargin{:});
 			end
 		end
-		
+
 		function [information] = formatOutput(this, errorcode, time, xmin, fmin, nvars, overalliterations, overallfunevals, retries, output, alloutputs)
 			%FORMATOUTPUT unify output of optimization
 			%	Input:
@@ -76,5 +76,5 @@ classdef fminconglobal < optimization.options.fmincon
 			end
 		end
 	end
-	
+
 end

@@ -28,7 +28,7 @@ function [success, fileinfo] = findhashsorted(overwrite, nobuild)
 		return;
 	end
 
-    config = compile.constant();
+	config = compile.constant();
 
 	oldpwd = pwd;
 	try

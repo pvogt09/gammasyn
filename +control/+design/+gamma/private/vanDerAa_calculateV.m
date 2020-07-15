@@ -44,7 +44,7 @@ function [X_norm, Y_norm, lambda_R, diffLambdas_R, diffLambdas_size_R, part_R, p
 		% last M rows of Y
 		Y_neu = Y(S - M + 1:S, :);
 		% last M columns of X
-		X_neu = X(:, S - M + 1:S); 
+		X_neu = X(:, S - M + 1:S);
 		% matrix for new eigenvalue problem
 		A_neu = Y_neu*A_diff*X_neu + L;
 		% initialize

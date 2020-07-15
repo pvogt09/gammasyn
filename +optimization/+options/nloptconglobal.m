@@ -1,6 +1,6 @@
 classdef nloptconglobal < optimization.options.nlopt
 	%NLOPTCONGLOBAL solver options for nloptconglobal
-	
+
 	methods
 		function [this] = nloptconglobal(varargin)
 			%NLOPTCONGLOBAL create new optimization option set
@@ -16,7 +16,7 @@ classdef nloptconglobal < optimization.options.nlopt
 				this.SubproblemAlgorithm = 'cobyla';
 			end
 		end
-		
+
 		function [algorithms] = possiblealgorithms(~)
 			%POSSIBLEALGORITHMS list with possible algorithms for optimizer
 			%	Input:
@@ -28,7 +28,7 @@ classdef nloptconglobal < optimization.options.nlopt
 				'auglag_eq'
 			};
 		end
-		
+
 		function [subalgorithms] = possiblesubalgorithms(~)
 			%POSSIBLESUBALGORITHMS list with possible algorithms for subproblems for optimizer
 			%	Input:
@@ -45,5 +45,5 @@ classdef nloptconglobal < optimization.options.nlopt
 			};
 		end
 	end
-	
+
 end
