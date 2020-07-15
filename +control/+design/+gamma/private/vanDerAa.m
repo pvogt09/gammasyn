@@ -152,7 +152,7 @@ function [V, D, W, V_derv, D_derv, W_derv] = vanDerAa(A, B, options, V_tilde, la
 		end
 		% normalization of eigenvector matrices
 		[Gamma, invGamma, M_norm] = vanDerAa_normalizeEigenvectorMatrix(X, Y);
- 		X = X*Gamma;
+		X = X*Gamma;
 		Y = invGamma*Y;
 		% calculate C for the "lowest" depth
 		C = vanDerAa_calculateC(A, X, Y, lambda(:, :, :, 1), diffLambdas(:, :, :, 1), diffLambdas_size(:, :, 1), part(:, :, 1), M_norm, options);

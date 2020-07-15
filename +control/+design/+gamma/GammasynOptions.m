@@ -223,7 +223,7 @@ classdef GammasynOptions < handle
 
 	properties(Access=protected, Transient=true)% avoid saving "constant" properties containing property name mappings to files
 		% user setable options for optimization
- 		options;
+		options;
 		%structoptions;
 	end
 

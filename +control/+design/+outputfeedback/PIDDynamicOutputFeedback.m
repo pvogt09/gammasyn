@@ -348,8 +348,8 @@ classdef PIDDynamicOutputFeedback < control.design.outputfeedback.AbstractDynami
 				if nargout >= 6
 					K_bounds = [];
 					if nargout >= 7
-						 F_bounds = [];
-						 if nargout >= 8
+						F_bounds = [];
+						if nargout >= 8
 							RKF_bounds = [];
 							if nargout >= 9
 								if control.design.outputfeedback.OutputFeedback.isdiscreteT(T)
@@ -358,7 +358,7 @@ classdef PIDDynamicOutputFeedback < control.design.outputfeedback.AbstractDynami
 									R_nonlin = constraintfun(false, p + q + (1:nnom), 3*q + (1:nnom));
 								end
 							end
-						 end
+						end
 					end
 				end
 			end

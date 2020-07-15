@@ -651,7 +651,7 @@ function [valid, errmsg, errid] = stringPosRealCellType(field,value,strings)
 	% A cell array that is either {strings,positive real} or {strings}
 	valid = (numel(value) >= 1) && any(strcmpi(value{1},strings));
 	if (numel(value) == 2)
-	   valid = valid && isreal(value{2}) && (value{2} >= 0);
+		valid = valid && isreal(value{2}) && (value{2} >= 0);
 	end
 
 	if ~valid

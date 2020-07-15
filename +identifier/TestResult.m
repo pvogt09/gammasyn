@@ -1,6 +1,6 @@
 classdef TestResult < uint8
 	%TESTRESULT Aufzählung für Testergebnisse
-	
+
 	enumeration
 		% misslungener Test
 		FAILED(255);
