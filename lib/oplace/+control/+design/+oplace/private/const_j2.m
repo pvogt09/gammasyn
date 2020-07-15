@@ -1,12 +1,12 @@
 function [G_xi,p_xi] = const_j2(st_opt,ew,ews,A,B,C,npq)
-% [G_xi,p_xi] = CONST_J2(st_opt,ew,A,B,C,npq) berechnet 
+% [G_xi,p_xi] = CONST_J2(st_opt,ew,A,B,C,npq) berechnet
 % die konstanten Parameter, die für die Bestimmung der Güte-
 % funktion J2 erforderlich sind.
 %
 % OUTPUT:
 % G_xi   - 3-dim. Übertragungsmatrix der Regelstrecke
 % p_xi   - konst. Wert, erforderlich, weil Stützstelle kein EW
-% 
+%
 % INPUT:
 % st_opt - für die Optimierung zu nutzende Stützstellen
 % ew     - Vektor mit den vorgegebenen Eigenwerten

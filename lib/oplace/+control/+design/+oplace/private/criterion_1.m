@@ -9,7 +9,7 @@ function j1 = criterion_1(K,w1,G_lam,npq,ew)
 % K      - die zu optimierende Matrix
 % w1     - Gewichtungsfaktoren für J1
 % G_lam  - 3-dim. Übertragungsmatrix der Regelstrecke
-% npq    - Dimensionen der vorliegenden Matrizen bzw. Vektoren  
+% npq    - Dimensionen der vorliegenden Matrizen bzw. Vektoren
 
 Ip = eye(npq(2));
 j1 = 0;

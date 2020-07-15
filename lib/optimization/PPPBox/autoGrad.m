@@ -28,7 +28,6 @@ elseif type == 3 % Use Complex Differentials
 		e_j(j) = 1;
 		diff(j,1) = funObj(x + mu*i*e_j,varargin{:});
 	end
-	
 	f = mean(real(diff));
 	g = imag(diff)/mu;
 else % Use Central Differencing

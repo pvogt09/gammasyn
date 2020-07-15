@@ -5,7 +5,7 @@ function [Ks,npq_s,w1_s,ew_s,G_lam_s,G_xi_s,rho,w2_s] = transsys(A,B,C,K0,Ko,T1,
 % einem Parametervektor versehen worden sind, durch Ko festliegen.
 % Die anschließende Optimierung nähert die restlichen Vorgaben an.
 %
-% OUTPUT:  
+% OUTPUT:
 % Ks      - neue Startmatrix für die Optimierung
 % npq_s   - überarbeitetes npq für das neue System
 % w1_s    - Gewichtungsfaktoren der restlichen EW

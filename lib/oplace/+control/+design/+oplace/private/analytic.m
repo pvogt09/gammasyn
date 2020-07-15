@@ -1,6 +1,6 @@
 function K = analytic(A,B,C,ew,P,H,G_lam,G_xi,p_xi,w1,w2,anaok,npq)
-% K = ANALYTISCH(A,B,C,ew,ew_n,st_n,P,npq) bestimmt bei Erfüllung der 
-% nachfolgenden Bedingungen die gesuchte Ausgangsrückführungsmatrix K 
+% K = ANALYTISCH(A,B,C,ew,ew_n,st_n,P,npq) bestimmt bei Erfüllung der
+% nachfolgenden Bedingungen die gesuchte Ausgangsrückführungsmatrix K
 % analytisch.
 %
 % Bed.:

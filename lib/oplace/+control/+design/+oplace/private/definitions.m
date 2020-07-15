@@ -26,4 +26,3 @@
 % Ko   	- Matrix, durch die sämtliche Parametervektor und die dazugehörigen
 %          EW festlegt werden
 % T1   	- Matrix für die Berechnung des neuen Systems
- 

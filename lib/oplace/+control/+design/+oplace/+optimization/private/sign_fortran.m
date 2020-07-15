@@ -6,4 +6,3 @@ if(B>=0)
 else
 	X=-abs(A);
 end
-

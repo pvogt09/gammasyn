@@ -2,10 +2,10 @@ function [K] = oplace_interactive(sys, ew, options, K0, S, P, w3, W4)
 	% K = OPLACE(sys,ew,K0,S,P,w3,W4)
 	% Computes the constant feedback gain K of the output feedback u = -Ky = -KCx
 	% by pole or eigenvalue assignment.
-	% 
+	%
 	% Sie haben folgende Möglichkeiten:
 	%
-	% K = POLEASSIGN(sys,ew) 
+	% K = POLEASSIGN(sys,ew)
 	%   sys			 	- LTI system
 	%   ew(n,1)       - vector with n predefined closed loop eigenvalues
 	%

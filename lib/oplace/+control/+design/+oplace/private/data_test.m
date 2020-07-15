@@ -1,7 +1,7 @@
 function okay = data_test(wert,ew_opt,st_opt,ews,n)
 % okay = KONTROLLE_WERT(wert,ew_opt,st_opt,A,B,C,npq) überprüft,
 % ob der eingegebene Wert als Stützstelle akzeptabel ist.
-% 
+%
 % OUTPUT:
 % okay   - wenn okay == 1: Wert i.O.
 %          wenn okay == 0: Wert nicht akzeptabel

@@ -2,7 +2,7 @@ function [K, J_opt, eigenvalues_cl] = oplace(sys, ew, options, K0, S, P, w3, W4,
 	% K = OPLACE(sys,ew,K0,S,P,w3,W4)
 	% Computes the constant feedback gain K of the output feedback u = -Ky = -KCx
 	% by pole or eigenvalue assignment.
-	% 
+	%
 	% Sie haben folgende Möglichkeiten:
 	%
 	% K = POLEASSIGN(sys,ew)
@@ -23,7 +23,7 @@ function [K, J_opt, eigenvalues_cl] = oplace(sys, ew, options, K0, S, P, w3, W4,
 	%   The remaining elements of K0 are kept constant.
 	%
 	% K = POLEASSIGN(sys,ew,K0,S,P,w3)
-	%   P(p,x)        - matrix with predefined parameter vectors (the i-th column 
+	%   P(p,x)        - matrix with predefined parameter vectors (the i-th column
 	%                   corresponds to the i-th eigenvalue in ew).
 	%   w3(x,1)       - Gewichtungsfaktoren für die einzelnen Parameter-
 	%                   vektoren

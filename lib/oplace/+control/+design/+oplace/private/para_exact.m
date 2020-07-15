@@ -13,7 +13,7 @@ function [Ko,T1] = para_exact(P,H,npq)
 % Ko     - Matrix, durch die sämtliche Parametervektor und die dazugehörigen
 %          EW festlegt werden
 % T1     - Matrix für die Berechnung des neuen Systems
-% 
+%
 % INPUT:
 % P      - Matrix mit den Parametervektoren
 % H      - aus den Parametervektoren berechnete Vektoren

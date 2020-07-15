@@ -90,9 +90,9 @@ function [xout, DV, IV] = minsearch(FUN, x, options, varargin)
 	% ANFANGSWERTE UND FELDEINTEILUNG
 
 	if (IV(ISTART)==0)
-	   [IV,DV]=finished(N,x,IV(IDVA)+2*N,IV,DV,0);
-	   xout=x;
-	   return;
+		[IV,DV]=finished(N,x,IV(IDVA)+2*N,IV,DV,0);
+		xout=x;
+		return;
 	end
 	IOUT=IV(IOUTNR);
 	IG=IV(IDVA);
