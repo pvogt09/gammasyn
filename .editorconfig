@@ -25,22 +25,6 @@ tab_width = 4
 charset = unset
 trim_trailing_whitespace = true
 
-[lib/YALMIP/**/*.{m,c,cpp,h,hpp}]
-insert_final_newline = unset
-indent_style = unset
-indent_size = unset
-tab_width = unset
-charset = unset
-trim_trailing_whitespace = unset
-
-[lib/ROLMIP/**/*.{m,c,cpp,h,hpp}]
-insert_final_newline = unset
-indent_style = unset
-indent_size = unset
-tab_width = unset
-charset = unset
-trim_trailing_whitespace = unset
-
 # shell scripts unix
 [*.sh]
 end_of_line = lf
@@ -58,3 +42,27 @@ indent_style = space
 indent_size = 2
 tab_width = 2
 insert_final_newline = true
+
+[lib/YALMIP/**/*.{m,c,cpp,h,hpp}]
+insert_final_newline = unset
+indent_style = unset
+indent_size = unset
+tab_width = unset
+charset = unset
+trim_trailing_whitespace = unset
+
+[lib/ROLMIP/**/*.{m,c,cpp,h,hpp}]
+insert_final_newline = unset
+indent_style = unset
+indent_size = unset
+tab_width = unset
+charset = unset
+trim_trailing_whitespace = unset
+
+[codegen/**/*]
+insert_final_newline = unset
+indent_style = unset
+indent_size = unset
+tab_width = unset
+charset = unset
+trim_trailing_whitespace = unset
