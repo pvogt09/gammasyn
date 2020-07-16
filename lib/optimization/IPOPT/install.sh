@@ -6,8 +6,8 @@ ipoptversion='3.12.13'
 # architecture to build (32 or 64)
 arch=64
 # path to current file directory
-basedir=$(cd `dirname $0` && pwd)
-makeGNUMEX=true
+basedir=$(cd "$(dirname "$0")" && pwd)
+# makeGNUMEX=true
 repositoryurlsvn="https://projects.coin-or.org/svn/Ipopt/releases/$ipoptversion/"
 repositoryurlgit="https://github.com/coin-or/Ipopt"
 repositoryurlUtils="https://github.com/coin-or/CoinUtils"
@@ -94,7 +94,7 @@ if [ "$majorversion" -ge 3 ] && [ "$minorversion" -ge 13 ]; then
 	directoryMETIS="$rootdir/ThirdParty-Metis"
 	directoryUtils="$rootdir/CoinUtils"
 	directoryMEX="$rootdir/ThirdParty-Mex"
-	directoryMEXOld="$rootdir/build/contrib/MatlabInterface"
+	# directoryMEXOld="$rootdir/build/contrib/MatlabInterface"
 
 	# get and install HSL library
 	echo -e "${GREEN}HSL installation${NC}"
@@ -294,32 +294,34 @@ if [ "$majorversion" -ge 3 ] && [ "$minorversion" -ge 13 ]; then
 	
 	# get and install CoinUtils
 	echo -e "${GREEN}CoinUtils installation${NC}"
+	# shellcheck disable=SC2063
 	latesttag=$(git ls-remote --tags --sort="v:refname" --exit-code --refs "${repositoryurlUtils}" | grep -E -e "*releases*" | sed -E 's/^[[:xdigit:]]+[[:space:]]+refs\/tags\/(.+)/\1/g' | tail -1)
 	if [ "$latesttag" -eq "" ]; then
 		echo -e "${RED}No release tag found for CoinUtils${NC}"
 		exit 1
 	fi
 	echo -e "${GREEN}Cloning CoinUtils tag '${latesttag}'${NC}"
-	git clone --depth 1 --recurse-submodules --branch "$latesttag" "$repositoryurlUtils" "$directoryUtils" 2> /dev/null || (cd "$directoryUtils"; git pull && git checkout "$latesttag")
+	git clone --depth 1 --recurse-submodules --branch "$latesttag" "$repositoryurlUtils" "$directoryUtils" 2> /dev/null || (cd "$directoryUtils" || (echo "Could not change directory" && exit 10); git pull && git checkout "$latesttag")
 	if [ $? -gt 0 ]; then
 		echo "Could not clone CoinUtils from '$repositoryurlUtils'"
 		exit 1
 	fi
-	cd "$directoryUtils"
+	cd "$directoryUtils" || (echo "Could not change directory" && exit 10)
+	# shellcheck disable=SC2086
 	./configure -C $configureCOMMON
 	if [ $? -gt 0 ]; then
 		echo -e "${RED}Could not configure CoinUtils${NC}"
-		exit -2
+		exit 5
 	fi
 	make -j3
 	if [ $? -gt 0 ]; then
 		echo -e "${RED}Could not make CoinUtils${NC}"
-		exit -2
+		exit 5
 	fi
 	make install
 	if [ $? -gt 0 ]; then
 		echo -e "${RED}Could not install CoinUtils${NC}"
-		exit -2
+		exit 5
 	fi
 	
 	# build IPOPT
@@ -384,9 +386,9 @@ EOF
 		mkdir "$rootdir/build/install"
 	fi
 	cd "$rootdir/build" || (echo "Could not change directory" && exit 10)
-	# shellcheck disable=SC2086
 	prefix="--prefix=${rootdir}/build/install"
-	../configure $prefix --with-matlab-home=$MATLABhome ADD_CFLAGS="-fopenmp -fexceptions" ADD_CXXFLAGS="-fopenmp -fexceptions" ADD_FFLAGS="-fopenmp -fexceptions -static-libgcc" CDEFS="-DWITHOUT_PTHREAD=1" --enable-static --disable-shared --with-pic --disable-java --disable-sipopt $configureBLAS $configureLAPACK $targetarch
+	# shellcheck disable=SC2086
+	../configure $prefix --with-matlab-home="$MATLABhome" ADD_CFLAGS="-fopenmp -fexceptions" ADD_CXXFLAGS="-fopenmp -fexceptions" ADD_FFLAGS="-fopenmp -fexceptions -static-libgcc" CDEFS="-DWITHOUT_PTHREAD=1" --enable-static --disable-shared --with-pic --disable-java --disable-sipopt $configureBLAS $configureLAPACK $targetarch
 	if [ $? -gt 0 ]; then
 		echo -e "${RED}Could not configure IPOPT${NC}"
 		exit 5
