@@ -44,6 +44,7 @@ addpath(genpath(realpath(fullfile(path, 'lib', 'mex', 'lib'))));
 addpath(realpath(fullfile(path, 'lib', 'mex', 'MinGW')));
 addpath(genpath_exclude(realpath(fullfile(path, 'lib', 'YALMIP')), {'.git', 'demos'}));
 addpath(genpath_exclude(realpath(fullfile(path, 'lib', 'ROLMIP')), {'.git', 'manual_examples'}));
+addpath(realpath(fullfile(path, 'lib', 'GeometricApproachToolbox')));
 if exist(realpath(fullfile(path, 'lib', 'oplace')), 'dir')
 	addpath(realpath(fullfile(path, 'lib', 'oplace')));
 end

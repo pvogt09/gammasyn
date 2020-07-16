@@ -240,7 +240,8 @@ classdef OutputFeedback < handle
 			%		K_bounds:	cell array with inequality constraint system for derivative gain matrix
 			%		F_bounds:	cell array with inequality constraint system for prefilter gain matrix
 			%		RKF_bounds:	cell array with inequality constraint system for combined gain matrix
-			%		R_nonlin:	function pointer to nonlinear constraints on proportional and derivative gain matrix
+
+			%		R_nonlin:	function pointer to nonlinear constraints on proportional, derivative and prefilter gain matrix
 			if isstruct(system)
 				if nargin >= 3
 					T = A;
@@ -3391,7 +3392,7 @@ classdef OutputFeedback < handle
 		%		K_bounds:	cell array with inequality constraint system for derivative gain matrix
 		%		F_bounds:	cell array with inequality constraint system for prefilter gain matrix
 		%		RKF_bounds:	cell array with inequality constraint system for combined gain matrix
-		%		R_nonlin:	function pointer to nonlinear constraints on proportional and derivative gain matrix
+		%		R_nonlin:	function pointer to nonlinear constraints on proportional, derivative and prefilter gain matrix
 		[R_fixed, K_fixed, F_fixed, RKF_fixed, R_bounds, K_bounds, F_bounds, RKF_bounds, R_nonlin] = gainpattern_system(this, E, A, B, C, C_dot, D, C_ref, D_ref, T);
 
 		%GAINPATTERN_PARAMETRIC_SYSTEM return parametric gain matrix for given system

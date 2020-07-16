@@ -6,13 +6,11 @@ function tf = isenum(e)
 %   See also ISSTRUCT, ISNUMERIC, ISOBJECT, ISLOGICAL.
 
 %   Copyright 2014 The MathWorks, Inc.
- 
+	m = metaclass(e);
 
-    m = metaclass(e);
-
-    if(~isempty(m))    
-        tf = m.Enumeration;
-    else
-        tf = false; 
-    end
+	if(~isempty(m))
+		tf = m.Enumeration;
+	else
+		tf = false;
+	end
 end

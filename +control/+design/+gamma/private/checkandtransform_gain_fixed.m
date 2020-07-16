@@ -44,6 +44,9 @@ function [R_fixed, constraint_system, constraint_border, rg, T, T_inv, hasfixed_
 		R_fixed = {false(number_controls, number_measurements), zeros(number_controls, number_measurements)};
 	end
 	if iscell(R_fixed)
+		if isempty(R_fixed{1}) || (numel(R_fixed) >= 2 && isempty(R_fixed{2}))
+			R_fixed = {false(number_controls, number_measurements), zeros(number_controls, number_measurements)};
+		end
 		if numel(R_fixed) >= 2
 			if islogical(R_fixed{1}) && isnumeric(R_fixed{2})
 				onlyfixed_R = true;

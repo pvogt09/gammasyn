@@ -214,7 +214,7 @@ function [value, validvalue, errmsg, errid, validfield] = objectiveoptions_check
 			if ~validvalue
 				errid = 'control:design:gamma:input';
 			end
-		case {'usecompiled', 'allowvarorder', 'allownegativeweight', 'usereferences', 'usemeasurements_xdot', 'preventNaN', 'eigenvalueignoreinf'}
+		case {'usecompiled', 'allowvarorder', 'allownegativeweight', 'usereferences', 'usemeasurements_xdot', 'preventNaN', 'eigenvalueignoreinf', 'solvesymbolic'}
 			if ~isscalar(value)
 				validvalue = false;
 				errmsg = sprintf('Value for option ''%s'' must be scalar.', field);
@@ -238,6 +238,18 @@ function [value, validvalue, errmsg, errid, validfield] = objectiveoptions_check
 		case {'numthreads'}
 			% non-negative integer excluding inf or -1
 			[validvalue, errmsg, errid] = boundedInteger(field, value, [-1, Inf]);
+			if ~validvalue
+				errid = 'control:design:gamma:input';
+			end
+		case {'round_equations_to_digits'}
+			% integer excluding inf
+			if isscalar(value) && isnan(value)
+				validvalue = true;
+				errid = '';
+				errmsg = '';
+			else
+				[validvalue, errmsg, errid] = boundedInteger(field, value, [-Inf, Inf]);
+			end
 			if ~validvalue
 				errid = 'control:design:gamma:input';
 			end
@@ -291,6 +303,51 @@ function [value, validvalue, errmsg, errid, validfield] = objectiveoptions_check
 					errmsg = 'Number of samples must be supplied as scalar structure';
 					errid = '';
 				end
+			end
+			if ~validvalue
+				errid = 'control:design:gamma:input';
+			end
+		case {'couplingconditions'}
+			% non-negative integer excluding inf or -1
+			[validvalue, errmsg, errid] = nonNegInteger(field, value);
+			if ~validvalue
+				errid = 'control:design:gamma:input';
+			end
+		case {'couplingstrategy'}
+			if ~isa(value, 'GammaCouplingStrategy')
+				try
+					value = GammaCouplingStrategy.fromchar(value);
+					validvalue = true;
+					errid = '';
+					errmsg = '';
+				catch e
+					validvalue = false;
+					errid = 'control:design:gamma:input';
+					errmsg = e.message;
+				end
+			else
+				validvalue = true;
+				errid = '';
+				errmsg = '';
+			end
+			if ~isscalar(value)
+				validvalue = false;
+				errid = 'control:design:gamma:input';
+				errmsg = 'Coupling option ''couplingstrategy'' must be scalar.';
+			end
+		case {'tolerance_coupling', 'tolerance_prefilter'}
+			% non-negative real or empty or NaN
+			if isempty(value)
+				value = NaN;
+			end
+			wasnan = isnan(value);
+			oldvalue = value;
+			if wasnan
+				value = zeros(size(value));
+			end
+			[validvalue, errmsg, errid] = nonNegReal(field, value);
+			if wasnan
+				value = oldvalue;
 			end
 			if ~validvalue
 				errid = 'control:design:gamma:input';

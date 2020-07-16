@@ -81,7 +81,7 @@ classdef StateFeedback < control.design.outputfeedback.OutputFeedback
 			%		K_bounds:	cell array with inequality constraint system for derivative gain matrix
 			%		F_bounds:	cell array with inequality constraint system for prefilter gain matrix
 			%		RKF_bounds:	cell array with inequality constraint system for combined gain matrix
-			%		R_nonlin:	function pointer to nonlinear constraints on proportional and derivative gain matrix
+			%		R_nonlin:	function pointer to nonlinear constraints on proportional, derivative and prefilter gain matrix
 			R_fixed = {false(size(B, 2), size(A, 1)), NaN(size(B, 2), size(A, 1))};
 			if nargout >= 2
 				K_fixed = {true(size(B, 2), 0), zeros(size(B, 2), 0)};
