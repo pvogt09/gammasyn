@@ -1165,6 +1165,7 @@ function [pass] = OutputFeedbackTest(~)
 			test.TestSuite.assertEqual(size(system.D, 2), size(system.B, 2), 'control:outputfeedback:test', 'Throughput matrix of parametric augmented system must have same number of columns as control matrix.');
 			test.TestSuite.assertEqual(size(system.C_ref, 2), size(system.A, 1), 'control:outputfeedback:test', 'Output matrix of references of parametric augmented system must have same number of columns as system matrix.');
 			test.TestSuite.assertEqual(size(system.C_ref, 1), size(system.D_ref, 1), 'control:outputfeedback:test', 'Throughput matrix of references of parametric augmented system must have same number of rows as output matrix of references.');
+			test.TestSuite.assertEqual(size(system.C_ref, 1), size(system.D_ref, 1), 'control:outputfeedback:test', 'Throughput matrix of references of parametric augmented system must have same number of rows as output matrix of references.');
 		end
 	end
 end
