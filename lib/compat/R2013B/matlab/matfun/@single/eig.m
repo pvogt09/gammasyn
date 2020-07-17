@@ -1,12 +1,12 @@
 function [V, D, W] = eig(A, B, algorithm, eigvalOption)
 	%EIG    Eigenvalues and eigenvectors.
-	%   E = EIG(A) produces a column vector E containing the eigenvalues of 
+	%   E = EIG(A) produces a column vector E containing the eigenvalues of
 	%   a square matrix A.
 	%
-	%   [V,D] = EIG(A) produces a diagonal matrix D of eigenvalues and 
-	%   a full matrix V whose columns are the corresponding eigenvectors  
+	%   [V,D] = EIG(A) produces a diagonal matrix D of eigenvalues and
+	%   a full matrix V whose columns are the corresponding eigenvectors
 	%   so that A*V = V*D.
-	% 
+	%
 	%   [V,D,W] = EIG(A) also produces a full matrix W whose columns are the
 	%   corresponding left eigenvectors so that W'*A = D*W'.
 	%
@@ -17,7 +17,7 @@ function [V, D, W] = eig(A, B, algorithm, eigvalOption)
 	%
 	%   [...] = EIG(A,'balance') is the same as EIG(A).
 	%
-	%   E = EIG(A,B) produces a column vector E containing the generalized 
+	%   E = EIG(A,B) produces a column vector E containing the generalized
 	%   eigenvalues of square matrices A and B.
 	%
 	%   [V,D] = EIG(A,B) produces a diagonal matrix D of generalized
@@ -36,7 +36,7 @@ function [V, D, W] = eig(A, B, algorithm, eigvalOption)
 	%   however using the QZ algorithm may be more stable for certain problems.
 	%   The flag is ignored when A or B are not symmetric.
 	%
-	%   [...] = EIG(...,'vector') returns eigenvalues in a column vector 
+	%   [...] = EIG(...,'vector') returns eigenvalues in a column vector
 	%   instead of a diagonal matrix.
 	%
 	%   [...] = EIG(...,'matrix') returns eigenvalues in a diagonal matrix

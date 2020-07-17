@@ -7,6 +7,8 @@ classdef(Enumeration) GammaSolutionStrategy < Simulink.IntEnumType
 		SINGLESHOT(0);
 		% solve feasibility problem first (if supported) and then solve optimization problem with found solution
 		FEASIBILITYITERATION(1)
+		% solve feasibility problem with coupling conditions first, then solve feasibility problem (if supported) and then solve optimization problem with found solution
+		FEASIBILITYITERATION_COUPLING(2)
 	end
 
 % must not be private to allow for type cast to GammaSolutionStrategy, types are automatically restricted to the defined ones internally

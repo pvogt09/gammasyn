@@ -120,7 +120,7 @@ classdef PIOutputFeedback < control.design.outputfeedback.OutputFeedback
 			%		K_fixed:	derivative gain constraint system as a cell array of a 3D constraint matrix and a constraint border vector
 			%		R_bounds:	cell array with inequality constraint system for proportional gain matrix
 			%		K_bounds:	cell array with inequality constraint system for derivative gain matrix
-			%		R_nonlin:	function pointer to nonlinear constraints on proportional and derivative gain matrix
+			%		R_nonlin:	function pointer to nonlinear constraints on proportional, derivative and prefilter gain matrix
 			%n = size(A, 1);
 			p = size(B, 2);
 			q = size(C, 1);

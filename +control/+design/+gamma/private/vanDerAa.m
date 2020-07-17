@@ -235,6 +235,7 @@ function [V, D, W, V_derv, D_derv, W_derv] = vanDerAa(A, B, options, V_tilde, la
 	%	D_derv = D_derv*permutation_matrix;
 	%end
 	if nargout >= 6
+		% W'*V = eye(n)
 		W_derv = -W*V_derv'*W;
 	end
 end

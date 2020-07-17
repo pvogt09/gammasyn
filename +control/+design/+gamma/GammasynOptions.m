@@ -12,6 +12,14 @@ classdef GammasynOptions < handle
 			'eigenvaluederivative',	GammaEigenvalueDerivativeType.getDefaultValue(),...
 			'eigenvaluefilter',		GammaEigenvalueFilterType.getDefaultValue(),...
 			'eigenvalueignoreinf',	false,...
+			'couplingcontrol',		struct(...
+				'couplingconditions',			uint32(0),...
+				'couplingstrategy',				GammaCouplingStrategy.getDefaultValue(),...
+				'tolerance_coupling',			0,...
+				'tolerance_prefilter',			0,...
+				'solvesymbolic',				true,...
+				'round_equations_to_digits',	NaN...
+			),...
 			'objective',			struct(...
 				'preventNaN',		false,...
 				'kreisselmeier',	struct(...
@@ -44,6 +52,14 @@ classdef GammasynOptions < handle
 			'eigenvaluederivative',	GammaEigenvalueDerivativeType.getDefaultValue(),...
 			'eigenvaluefilter',		GammaEigenvalueFilterType.getDefaultValue(),...
 			'eigenvalueignoreinf',	false,...
+			'couplingcontrol',		struct(...
+				'couplingconditions',			uint32(0),...
+				'couplingstrategy',				GammaCouplingStrategy.getDefaultValue(),...
+				'tolerance_coupling',			NaN,...
+				'tolerance_prefilter',			NaN,...
+				'solvesymbolic',				false,...
+				'round_equations_to_digits',	NaN...
+			),...
 			'objective',			struct(...
 				'preventNaN',		false,...
 				'kreisselmeier',	struct(...
@@ -92,6 +108,8 @@ classdef GammasynOptions < handle
 		eigenvaluefilter = [];
 		% indicator for ignoring infinte eigenvalues to use
 		eigenvalueignoreinf = [];
+		% options for coupling controller design
+		couplingcontrol = [];
 		% options for objective functions
 		objective = [];
 		% indicator if negative weights are allowed
@@ -115,6 +133,18 @@ classdef GammasynOptions < handle
 		samples = [];
 		% structure with number of samples for genmat system blocks
 		Blocks = [];
+		% number of coupling conditions
+		couplingconditions = [];
+		% strategy for coupling controller design
+		couplingstrategy = [];
+		% tolerance for coupling controller design constraints
+		tolerance_coupling = [];
+		% tolerance for regularization of prefilter in coupling controller design
+		tolerance_prefilter = [];
+		% setting to perform calculations for coupling constraints symbolically
+		solvesymbolic = [];
+		% setting to how many decimal places systems of equations that have to be solved are rounded in case of numerical difficulties
+		round_equations_to_digits = [];
 		% indicator if NaN should be prevented in objective functions
 		preventNaN = [];
 		% kreisselmeier objective parameter rho
@@ -154,6 +184,8 @@ classdef GammasynOptions < handle
 		eigenvaluefilter_internal = [];
 		% indicator for ignoring infinite eigenvalues to use (internal)
 		eigenvalueignoreinf_internal = [];
+		% options for coupling controller design (internal)
+		couplingcontrol_internal = [];
 		% options for objective functions (internal)
 		objective_internal = [];
 		% indicator if negative weights are allowed (internal)
@@ -185,6 +217,15 @@ classdef GammasynOptions < handle
 		eigenvaluefilter_user = false;
 		% indicator if user set 'eigenvalueignoreinf' option
 		eigenvalueignoreinf_user = false;
+		% indicator if user set 'couplingcontrol' option
+		couplingcontrol_user = struct(...
+			'couplingconditions',			false,...
+			'couplingstrategy',				false,...
+			'tolerance_coupling',			false,...
+			'tolerance_prefilter',			false,...
+			'solvesymbolic',				false,...
+			'round_equations_to_digits',	false...
+		);
 		% indicator if user set 'objective' option
 		objective_user = struct(...
 			'preventNaN',		false,...
@@ -316,6 +357,98 @@ classdef GammasynOptions < handle
 			%	Output:
 			%		eigenvalueignoreinf:	indicator wheter infinite eigenvalues are ignored
 			eigenvalueignoreinf = this.eigenvalueignoreinf_internal;
+		end
+
+		function [couplingcontrol] = get.couplingcontrol(this)
+			%COUPLINGCONTROL getter for coupling controller design settings
+			%	Input:
+			%		this:				instance
+			%	Output:
+			%		couplingcontrol:	structure with coupling controller design settings
+			if isstruct(this.couplingcontrol_internal)
+				couplingcontrol = this.couplingcontrol_internal;
+			else
+				couplingcontrol = struct();
+			end
+		end
+
+		function [couplingconditions] = get.couplingconditions(this)
+			%COUPLINGCONDITIONS getter for number of coupling conditions
+			%	Input:
+			%		this:				instance
+			%	Output:
+			%		couplingconditions:	number of couplingconditions
+			if isstruct(this.couplingcontrol_internal) && isfield(this.couplingcontrol_internal, 'couplingconditions')
+				couplingconditions = this.couplingcontrol_internal.couplingconditions;
+			else
+				couplingconditions = [];
+			end
+		end
+
+		function [couplingstrategy] = get.couplingstrategy(this)
+			%COUPLINGSTRATEGY getter for coupling controller design strategy
+			%	Input:
+			%		this:				instance
+			%	Output:
+			%		couplingstrategy:	coupling controller design strategy
+			if isstruct(this.couplingcontrol_internal) && isfield(this.couplingcontrol_internal, 'couplingstrategy')
+				couplingstrategy = this.couplingcontrol_internal.couplingstrategy;
+			else
+				couplingstrategy = [];
+			end
+		end
+
+		function [tolerance_coupling] = get.tolerance_coupling(this)
+			%TOLERANCE_COUPLING getter for tolerance of coupling controller design constraints
+			%	Input:
+			%		this:				instance
+			%	Output:
+			%		tolerance_coupling:	tolerance for coupling controller design constraints
+			if isstruct(this.couplingcontrol_internal) && isfield(this.couplingcontrol_internal, 'tolerance_coupling')
+				tolerance_coupling = this.couplingcontrol_internal.tolerance_coupling;
+			else
+				tolerance_coupling = [];
+			end
+		end
+
+		function [tolerance_prefilter] = get.tolerance_prefilter(this)
+			%TOLERANCE_PREFILTER getter for tolerance of prefilter regularization constraint
+			%	Input:
+			%		this:				instance
+			%	Output:
+			%		tolerance_prefilter:	tolerance for coupling controller design constraints
+			if isstruct(this.couplingcontrol_internal) && isfield(this.couplingcontrol_internal, 'tolerance_prefilter')
+				tolerance_prefilter = this.couplingcontrol_internal.tolerance_prefilter;
+			else
+				tolerance_prefilter = [];
+			end
+		end
+
+		function [solvesymbolic] = get.solvesymbolic(this)
+			%SOLVESYMBOLIC getter for setting to perform calculations for coupling constraints symbolically
+			%	Input:
+			%		this:			instance
+			%	Output:
+			%		solvesymbolic:	setting to perform calculations for coupling constraints symbolically
+			if isstruct(this.couplingcontrol_internal) && isfield(this.couplingcontrol_internal, 'solvesymbolic')
+				solvesymbolic = this.couplingcontrol_internal.solvesymbolic;
+			else
+				solvesymbolic = [];
+			end
+		end
+
+
+		function [round_equations_to_digits] = get.round_equations_to_digits(this)
+			%ROUND_EQUATIONS_TO_DIGITS getter for setting to how many decimal places systems of equations that have to be solved are rounded in case of numerical difficulties
+			%	Input:
+			%		this:						instance
+			%	Output:
+			%		round_equations_to_digits:	setting for rounding to number of decimal places
+			if isstruct(this.couplingcontrol_internal) && isfield(this.couplingcontrol_internal, 'round_equations_to_digits')
+				round_equations_to_digits = this.couplingcontrol_internal.round_equations_to_digits;
+			else
+				round_equations_to_digits = [];
+			end
 		end
 
 		function [objective] = get.objective(this)
@@ -666,6 +799,68 @@ classdef GammasynOptions < handle
 			this.eigenvalueignoreinf_user = true;
 		end
 
+		function [] = set.couplingcontrol(this, couplingcontrol)
+			%OBJECTIVE setter for coupling controller design options
+			%	Input:
+			%		this:				instance
+			%		couplingcontrol:	structure with coupling controller design options
+			this.useoptions(struct('couplingcontrol', couplingcontrol));
+		end
+
+		function [] = set.couplingconditions(this, couplingconditions)
+			%COUPLINGCONDITIONS setter for number of couplingconditions
+			%	Input:
+			%		this:				instance
+			%		couplingconditions:	number of couplingconditions
+			this.couplingcontrol_internal.couplingconditions = this.checkProperty('couplingconditions', couplingconditions);
+			this.couplingcontrol_user.couplingconditions = true;
+		end
+
+		function [] = set.couplingstrategy(this, strategy)
+			%COUPLINGSTRATEGY setter for coupling controller design strategy
+			%	Input:
+			%		this:		instance
+			%		strategy:	coupling controller design strategy
+			this.couplingcontrol_internal.couplingstrategy = this.checkProperty('couplingstrategy', strategy);
+			this.couplingcontrol_user.couplingstrategy = true;
+		end
+
+		function [] = set.tolerance_coupling(this, tolerance_coupling)
+			%TOLERNACE_COUPLING setter for tolerance of coupling condition constraints
+			%	Input:
+			%		this:				instance
+			%		tolerance_coupling:	tolerance of coupling condition constraints
+			this.couplingcontrol_internal.tolerance_coupling = this.checkProperty('tolerance_coupling', tolerance_coupling);
+			this.couplingcontrol_user.tolerance_coupling = true;
+		end
+
+		function [] = set.tolerance_prefilter(this, tolerance_prefilter)
+			%TOLERNACE_PREFILTER setter for tolerance of prefilter regularization constraint
+			%	Input:
+			%		this:				instance
+			%		tolerance_prefilter:	tolerance of prefilter regularization constraint
+			this.couplingcontrol_internal.tolerance_prefilter = this.checkProperty('tolerance_prefilter', tolerance_prefilter);
+			this.couplingcontrol_user.tolerance_prefilter = true;
+		end
+
+		function [] = set.solvesymbolic(this, solvesymbolic)
+			%SOLVESYMBOLIC setter for tolerance of prefilter regularization constraint
+			%	Input:
+			%		this:			instance
+			%		solvesymbolic:	indicator if symbolic calculations should be used
+			this.couplingcontrol_internal.solvesymbolic = this.checkProperty('solvesymbolic', solvesymbolic);
+			this.couplingcontrol_user.solvesymbolic = true;
+		end
+
+		function [] = set.round_equations_to_digits(this, round_equations_to_digits)
+			%ROUND_EQUATIONS_TO_DIGITS setter for tolerance of prefilter regularization constraint
+			%	Input:
+			%		this:						instance
+			%		round_equations_to_digits:	indicator to how many decimal places systems of equations should be rounded in case of numerical difficulties
+			this.couplingcontrol_internal.round_equations_to_digits = this.checkProperty('round_equations_to_digits', round_equations_to_digits);
+			this.couplingcontrol_user.round_equations_to_digits = true;
+		end
+
 		function [] = set.objective(this, objective)
 			%OBJECTIVE setter for objectiveoptions
 			%	Input:
@@ -901,33 +1096,39 @@ classdef GammasynOptions < handle
 			%	Output:
 			%		option:	cell array with information about options
 			options = {
-				% name,						isroot,	codegen,	path,								catchall
-				'usecompiled',				true,	true,		{},									false;
-				'numthreads',				true,	true,		{},									false;
-				'type',						true,	true,		{},									false;
-				'weight',					true,	true,		{},									false;
-				'allowvarorder',			true,	true,		{},									false;
-				'eigenvaluederivative',		true,	true,		{},									false;
-				'eigenvaluefilter',			true,	true,		{},									false;
+				% name,							isroot,	codegen,	path,								catchall
+				'usecompiled',					true,	true,		{},									false;
+				'numthreads',					true,	true,		{},									false;
+				'type',							true,	true,		{},									false;
+				'weight',						true,	true,		{},									false;
+				'allowvarorder',				true,	true,		{},									false;
+				'eigenvaluederivative',			true,	true,		{},									false;
+				'eigenvaluefilter',				true,	true,		{},									false;
 				'eigenvalueignoreinf',		true,	true,		{},									false;
-				'preventNaN',				false,	true,		{'objective'},						false;
-				'rho',						false,	true,		{'objective', 'kreisselmeier'},		false;
-				'max',						false,	true,		{'objective', 'kreisselmeier'},		false;
-				'Q',						false,	true,		{'objective', 'lyapunov'},			false;
-				'R',						false,	true,		{'objective', 'normgain'},			false;
-				'R_shift',					false,	true,		{'objective', 'normgain'},			false;
-				'K',						false,	true,		{'objective', 'normgain'},			false;
-				'K_shift',					false,	true,		{'objective', 'normgain'},			false;
-				'F',						false,	true,		{'objective', 'normgain'},			false;
-				'F_shift',					false,	true,		{'objective', 'normgain'},			false;
-				'allownegativeweight',		true,	false,		{},									false;
-				'strategy',					true,	false,		{},									false;
-				'errorhandler',				true,	false,		{},									false;
-				'errorhandler_function',	true,	false,		{},									false;
-				'usereferences',			false,	false,		{'system'},							false;
-				'usemeasurements_xdot',		false,	false,		{'system'},							false;
-				'samples',					false,	false,		{'system'},							true;
-				'Blocks',					false,	false,		{'system'},							true;
+				'couplingconditions',			false,	true,		{'couplingcontrol'},				false;
+				'couplingstrategy',				false,	true,		{'couplingcontrol'},				false;
+				'tolerance_coupling',			false,	true,		{'couplingcontrol'},				false;
+				'tolerance_prefilter',			false,	true,		{'couplingcontrol'},				false;
+				'solvesymbolic',				false,	true,		{'couplingcontrol'},				false;
+				'round_equations_to_digits',	false,	true,		{'couplingcontrol'},				false;
+				'preventNaN',					false,	true,		{'objective'},						false;
+				'rho',							false,	true,		{'objective', 'kreisselmeier'},		false;
+				'max',							false,	true,		{'objective', 'kreisselmeier'},		false;
+				'Q',							false,	true,		{'objective', 'lyapunov'},			false;
+				'R',							false,	true,		{'objective', 'normgain'},			false;
+				'R_shift',						false,	true,		{'objective', 'normgain'},			false;
+				'K',							false,	true,		{'objective', 'normgain'},			false;
+				'K_shift',						false,	true,		{'objective', 'normgain'},			false;
+				'F',							false,	true,		{'objective', 'normgain'},			false;
+				'F_shift',						false,	true,		{'objective', 'normgain'},			false;
+				'allownegativeweight',			true,	false,		{},									false;
+				'strategy',						true,	false,		{},									false;
+				'errorhandler',					true,	false,		{},									false;
+				'errorhandler_function',		true,	false,		{},									false;
+				'usereferences',				false,	false,		{'system'},							false;
+				'usemeasurements_xdot',			false,	false,		{'system'},							false;
+				'samples',						false,	false,		{'system'},							true;
+				'Blocks',						false,	false,		{'system'},							true;
 			};
 			rootpath = cellfun(@getfirst, options(:, 4), 'UniformOutput', false);
 			options(:, end + 1) = rootpath;
@@ -945,6 +1146,14 @@ classdef GammasynOptions < handle
 			this.eigenvaluederivative_user = false;
 			this.eigenvaluefilter_user = false;
 			this.eigenvalueignoreinf_user = false;
+			this.couplingcontrol_user = struct(...
+				'couplingconditions',			false,...
+				'couplingstrategy',				false,...
+				'tolerance_coupling',			false,...
+				'tolerance_prefilter',			false,...
+				'solvesymbolic',				false,...
+				'round_equations_to_digits',	false...
+			);
 			this.objective_user = struct(...
 				'preventNaN',		false,...
 				'kreisselmeier',	struct(...
@@ -988,6 +1197,14 @@ classdef GammasynOptions < handle
 			this.eigenvaluederivative_internal = proto.eigenvaluederivative;
 			this.eigenvaluefilter_internal = proto.eigenvaluefilter;
 			this.eigenvalueignoreinf_internal = proto.eigenvalueignoreinf;
+			this.couplingcontrol_internal = struct(...
+				'couplingconditions',			proto.couplingcontrol.couplingconditions,...
+				'couplingstrategy',				proto.couplingcontrol.couplingstrategy,...
+				'tolerance_coupling',			proto.couplingcontrol.tolerance_coupling,...
+				'tolerance_prefilter',			proto.couplingcontrol.tolerance_prefilter,...
+				'solvesymbolic',				proto.couplingcontrol.solvesymbolic,...
+				'round_equations_to_digits',	proto.couplingcontrol.round_equations_to_digits...
+			);
 			this.objective_internal = struct(...
 				'preventNaN',		proto.objective.preventNaN,...
 				'kreisselmeier',	struct(...
@@ -1460,6 +1677,237 @@ classdef GammasynOptions < handle
 							end
 							if ~isempty(names)
 								error('control:design:gamma:GammasynOptions:input', 'Option ''system'' does not have field%s ''%s''.', iftern(length(names) > 1, 's', ''), strjoin(names, ''', '''));
+							end
+						end
+					elseif strcmpi(sub(1).subs, 'couplingcontrol')
+						% 'system' property requested
+						couplingcontrolnames = {
+							'couplingconditions';
+							'couplingstrategy';
+							'tolerance_coupling';
+							'tolerance_prefilter';
+							'solvesymbolic';
+							'round_equations_to_digits'
+						};
+						if length(sub) > 1
+							% deeper indexing requested
+							if strcmp(sub(2).type, '()')
+								% this.system(...) indexing type
+								if length(sub(2).subs) == 1
+									% this.system(:) and this.system(1) are ok, others are converted to error by call to subsref
+									if ischar(sub(2).subs{1}) && strcmpi(sub(2).subs{1}, ':')
+										sub(2) = [];
+									elseif isnumeric(sub(2).subs{1}) && isscalar(sub(2).subs{1}) && sub(2).subs{1} == 1
+										sub(2) = [];
+									else
+										try
+											subsref(instance(ii).couplingcontrol_internal, sub(2:end));
+										catch e
+											error(e.identifier, e.message);
+										end
+										error('control:design:gamma:GammasynOptions:input', 'Undefined indexing type for Option ''couplingcontrol''.');
+									end
+								else
+									% this.system(:, :, ...) and this.system(1, 1, ....) are ok, others are converted to error by call to subsref
+									iscolon = cellfun(@(x) ischar(x) && strcmpi(x, ':'), sub(2).subs, 'UniformOutput', true);
+									isone = cellfun(@(x) isscalar(x) && x == 1, sub(2).subs, 'UniformOutput', true);
+									if all(iscolon(:))
+										sub(2) = [];
+									elseif all(isone(:))
+										sub(2) = [];
+									else
+										try
+											subsref(instance(ii).couplingcontrol_internal, sub(2:end));
+										catch e
+											error(e.identifier, e.message);
+										end
+										error('control:design:gamma:GammasynOptions:input', 'Undefined indexing type for Option ''couplingcontrol''.');
+									end
+								end
+							end
+						end
+						if length(sub) > 1
+							% setting options under this.system requested
+							if strcmp(sub(2).type, '.') && any(strcmpi(sub(2).subs, couplingcontrolnames))
+								% setting this.system.option
+								names = {sub(2).subs};
+								if strcmp(sub(2).subs, 'couplingconditions')
+									if length(sub) > 2
+										% further indexing into option
+										tmp = instance(ii).couplingcontrol_internal.couplingconditions;
+										if ~iscell(tmp) && strcmpi(sub(3).type, '{}')
+											% matlab R2015B crashes if cell index assignment is used for numerical values
+											error('control:design:gamma:GammasynOptions:input', 'Cell contents assignment to a non-cell array object. ');
+										else
+											prop = subsasgn(tmp, sub(3:end), varargin{ii});
+										end
+									else
+										% setting option directly
+										prop = varargin{ii};
+									end
+									instance(ii).couplingcontrol_internal.couplingconditions = instance(ii).checkProperty('couplingconditions', prop);
+									instance(ii).couplingcontrol_user.couplingconditions = true;
+									names(strcmp('couplingconditions', names)) = [];
+								end
+								if strcmp(sub(2).subs, 'couplingstrategy')
+									if length(sub) > 2
+										% further indexing into option
+										tmp = instance(ii).couplingcontrol_internal.couplingstrategy;
+										if ~iscell(tmp) && strcmpi(sub(3).type, '{}')
+											% matlab R2015B crashes if cell index assignment is used for numerical values
+											error('control:design:gamma:GammasynOptions:input', 'Cell contents assignment to a non-cell array object. ');
+										else
+											prop = subsasgn(tmp, sub(3:end), varargin{ii});
+										end
+									else
+										% setting option directly
+										prop = varargin{ii};
+									end
+									instance(ii).couplingcontrol_internal.couplingstrategy = instance(ii).checkProperty('couplingstrategy', prop);
+									instance(ii).couplingcontrol_user.couplingstrategy = true;
+									names(strcmp('couplingstrategy', names)) = [];
+								end
+								if strcmp(sub(2).subs, 'tolerance_coupling')
+									if length(sub) > 2
+										% further indexing into option
+										tmp = instance(ii).couplingcontrol_internal.tolerance_coupling;
+										if ~iscell(tmp) && strcmpi(sub(3).type, '{}')
+											% matlab R2015B crashes if cell index assignment is used for numerical values
+											error('control:design:gamma:GammasynOptions:input', 'Cell contents assignment to a non-cell array object. ');
+										else
+											prop = subsasgn(tmp, sub(3:end), varargin{ii});
+										end
+									else
+										% setting option directly
+										prop = varargin{ii};
+									end
+									instance(ii).couplingcontrol_internal.tolerance_coupling = instance(ii).checkProperty('tolerance_coupling', prop);
+									instance(ii).couplingcontrol_user.tolerance_coupling = true;
+									names(strcmp('tolerance_coupling', names)) = [];
+								end
+								if strcmp(sub(2).subs, 'tolerance_prefilter')
+									if length(sub) > 2
+										% further indexing into option
+										tmp = instance(ii).couplingcontrol_internal.tolerance_prefilter;
+										if ~iscell(tmp) && strcmpi(sub(3).type, '{}')
+											% matlab R2015B crashes if cell index assignment is used for numerical values
+											error('control:design:gamma:GammasynOptions:input', 'Cell contents assignment to a non-cell array object. ');
+										else
+											prop = subsasgn(tmp, sub(3:end), varargin{ii});
+										end
+									else
+										% setting option directly
+										prop = varargin{ii};
+									end
+									instance(ii).couplingcontrol_internal.tolerance_prefilter = instance(ii).checkProperty('tolerance_prefilter', prop);
+									instance(ii).couplingcontrol_user.tolerance_prefilter = true;
+									names(strcmp('tolerance_prefilter', names)) = [];
+								end
+								if strcmp(sub(2).subs, 'solvesymbolic')
+									if length(sub) > 2
+										% further indexing into option
+										tmp = instance(ii).couplingcontrol_internal.solvesymbolic;
+										if ~iscell(tmp) && strcmpi(sub(3).type, '{}')
+											% matlab R2015B crashes if cell index assignment is used for numerical values
+											error('control:design:gamma:GammasynOptions:input', 'Cell contents assignment to a non-cell array object. ');
+										else
+											prop = subsasgn(tmp, sub(3:end), varargin{ii});
+										end
+									else
+										% setting option directly
+										prop = varargin{ii};
+									end
+									instance(ii).couplingcontrol_internal.solvesymbolic = instance(ii).checkProperty('solvesymbolic', prop);
+									instance(ii).couplingcontrol_user.solvesymbolic = true;
+									names(strcmp('solvesymbolic', names)) = [];
+								end
+								if strcmp(sub(2).subs, 'round_equations_to_digits')
+									if length(sub) > 2
+										% further indexing into option
+										tmp = instance(ii).couplingcontrol_internal.round_equations_to_digits;
+										if ~iscell(tmp) && strcmpi(sub(3).type, '{}')
+											% matlab R2015B crashes if cell index assignment is used for numerical values
+											error('control:design:gamma:GammasynOptions:input', 'Cell contents assignment to a non-cell array object. ');
+										else
+											prop = subsasgn(tmp, sub(3:end), varargin{ii});
+										end
+									else
+										% setting option directly
+										prop = varargin{ii};
+									end
+									instance(ii).couplingcontrol_internal.round_equations_to_digits = instance(ii).checkProperty('round_equations_to_digits', prop);
+									instance(ii).couplingcontrol_user.round_equations_to_digits = true;
+									names(strcmp('round_equations_to_digits', names)) = [];
+								end
+								if ~isempty(names)
+									error('control:design:gamma:GammasynOptions:input', 'Option ''couplingcontrol'' does not have field%s ''%s''.', iftern(length(names) > 1, 's', ''), strjoin(names, ''', '''));
+								end
+							else
+								% indexing into this.couplingcontrol with {} or ()
+								try
+									subsref(instance(ii).couplingcontrol_internal, sub(2:end));
+								catch e
+									error(e.identifier, e.message);
+								end
+								error('control:design:gamma:GammasynOptions:input', 'Undefined indexing type for Option ''couplingcontrol''.');
+							end
+						else
+							% assigning to whole this.system structure (partially)
+							if isempty(varargin{ii})
+								instance(ii).couplingcontrol_internal = struct(...
+									'couplingconditions',			proto.couplingcontrol.couplingconditions,...
+									'couplingstrategy',				proto.couplingcontrol.couplingstrategy,...
+									'tolerance_coupling',			proto.couplingcontrol.tolerance_coupling,...
+									'tolerance_prefilter',			proto.couplingcontrol.tolerance_prefilter,...
+									'solvesymbolic',				proto.couplingcontrol.solvesymbolic,...
+									'round_equations_to_digits',	proto.couplingcontrol.round_equations_to_digits...
+								);
+								instance(ii).couplingcontrol_user = struct(...
+									'couplingconditions',			false,...
+									'couplingstrategy',				false,...
+									'tolerance_coupling',			false,...
+									'tolerance_prefilter',			false,...
+									'solvesymbolic',				false,...
+									'round_equations_to_digits',	false...
+								);
+								return;
+							end
+							if ~isstruct(varargin{ii}) || ~isscalar(varargin{ii})
+								error('control:design:gamma:GammasynOptions:input', 'Option ''couplingcontrol'' must be a scalar structure.');
+							end
+							names = fieldnames(varargin{ii});
+							if isfield(varargin{ii}, 'couplingconditions')
+								instance(ii).couplingcontrol_internal.couplingconditions = instance(ii).checkProperty('couplingconditions', varargin{ii}.couplingconditions);
+								instance(ii).couplingcontrol_user.couplingconditions = true;
+								names(strcmp('couplingconditions', names)) = [];
+							end
+							if isfield(varargin{ii}, 'couplingstrategy')
+								instance(ii).scouplingcontrol_internal.couplingstrategy = instance(ii).checkProperty('couplingstrategy', varargin{ii}.couplingstrategy);
+								instance(ii).couplingcontrol_user.couplingstrategy = true;
+								names(strcmp('couplingstrategy', names)) = [];
+							end
+							if isfield(varargin{ii}, 'tolerance_coupling')
+								instance(ii).couplingcontrol_internal.tolerance_coupling = instance(ii).checkProperty('tolerance_coupling', varargin{ii}.tolerance_coupling);
+								instance(ii).couplingcontrol_user.tolerance_coupling = true;
+								names(strcmp('tolerance_coupling', names)) = [];
+							end
+							if isfield(varargin{ii}, 'tolerance_prefilter')
+								instance(ii).couplingcontrol_internal.tolerance_prefilter = instance(ii).checkProperty('tolerance_prefilter', varargin{ii}.tolerance_prefilter);
+								instance(ii).couplingcontrol_user.tolerance_prefilter = true;
+								names(strcmp('tolerance_prefilter', names)) = [];
+							end
+							if isfield(varargin{ii}, 'solvesymbolic')
+								instance(ii).couplingcontrol_internal.solvesymbolic = instance(ii).checkProperty('solvesymbolic', varargin{ii}.solvesymbolic);
+								instance(ii).couplingcontrol_user.solvesymbolic = true;
+								names(strcmp('solvesymbolic', names)) = [];
+							end
+							if isfield(varargin{ii}, 'round_equations_to_digits')
+								instance(ii).couplingcontrol_internal.round_equations_to_digits = instance(ii).checkProperty('round_equations_to_digits', varargin{ii}.round_equations_to_digits);
+								instance(ii).couplingcontrol_user.round_equations_to_digits = true;
+								names(strcmp('round_equations_to_digits', names)) = [];
+							end
+							if ~isempty(names)
+								error('control:design:gamma:GammasynOptions:input', 'Option ''couplingcontrol'' does not have field%s ''%s''.', iftern(length(names) > 1, 's', ''), strjoin(names, ''', '''));
 							end
 						end
 					elseif strcmpi(sub(1).subs, 'objective')

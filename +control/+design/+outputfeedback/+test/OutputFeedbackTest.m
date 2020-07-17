@@ -211,8 +211,23 @@ function [pass] = OutputFeedbackTest(~)
 					'D',		Dtemp...
 				);
 			end
-			test.TestSuite.assertNoException('cls(systems{jj});', 'control:outputfeedback:test', 'Construction of an outputfeedback class must not throw an exception.');
-			controller = cls(systems{jj});
+			if issubclassof(meta.class.fromName(char(cls)), ?control.design.outputfeedback.AbstractCouplingFeedback)
+				if size(basesystem.C, 1) <= 1
+					% coupling control does not work with only 1 output
+					continue;
+				end
+				if issubclassof(meta.class.fromName(char(cls)), ?control.design.outputfeedback.OutputCouplingStateFeedback)
+					transformation = eye(size(basesystem.C, 1));
+					test.TestSuite.assertNoException('cls(1, transformation, systems{jj});', 'control:outputfeedback:test', 'Construction of an outputfeedback class must not throw an exception.');
+					controller = cls(1, transformation, systems{jj});
+				else
+					test.TestSuite.assertNoException('cls(1, systems{jj});', 'control:outputfeedback:test', 'Construction of an outputfeedback class must not throw an exception.');
+					controller = cls(1, systems{jj});
+				end
+			else
+				test.TestSuite.assertNoException('cls(systems{jj});', 'control:outputfeedback:test', 'Construction of an outputfeedback class must not throw an exception.');
+				controller = cls(systems{jj});
+			end
 			test.TestSuite.assertEqual(controller.SimulinkVariant(), baseclassname(controller), 'control:outputfeedback:test', 'Variant name must be equal to class name.');
 			test.TestSuite.assertNoException('controller.amend(systems{jj});', 'control:outputfeedback:test', 'Amending system with outputfeedback class must not throw an exception.');
 			test.TestSuite.assertNoException('controller.E(systems{jj});', 'control:outputfeedback:test', 'Amending system with outputfeedback class and returning E must not throw an exception.');
@@ -708,8 +723,23 @@ function [pass] = OutputFeedbackTest(~)
 			else
 				s = systems{jj};
 			end
-			test.TestSuite.assertNoException('cls(s, T);', 'control:outputfeedback:test', 'Construction of a discrete outputfeedback class must not throw an exception.');
-			controllerT = cls(s, T);
+			if issubclassof(meta.class.fromName(char(cls)), ?control.design.outputfeedback.AbstractCouplingFeedback)
+				if size(basesystem.C, 1) <= 1
+					% coupling control does not work with only 1 output
+					continue;
+				end
+				if issubclassof(meta.class.fromName(char(cls)), ?control.design.outputfeedback.OutputCouplingStateFeedback)
+					transformation = eye(size(basesystem.C, 1));
+					test.TestSuite.assertNoException('cls(1, transformation, s, T);', 'control:outputfeedback:test', 'Construction of a discrete outputfeedback class must not throw an exception.');
+					controllerT = cls(1, transformation, s, T);
+				else
+					test.TestSuite.assertNoException('cls(1, s, T);', 'control:outputfeedback:test', 'Construction of a discrete outputfeedback class must not throw an exception.');
+					controllerT = cls(1, s, T);
+				end
+			else
+				test.TestSuite.assertNoException('cls(s, T);', 'control:outputfeedback:test', 'Construction of a discrete outputfeedback class must not throw an exception.');
+				controllerT = cls(s, T);
+			end
 			test.TestSuite.assertNoException('controllerT.amend(systems{jj}, T);', 'control:outputfeedback:test', 'Amending discrete system with outputfeedback class must not throw an exception.');
 			test.TestSuite.assertNoException('controllerT.E(systems{jj}, T);', 'control:outputfeedback:test', 'Amending discrete system with outputfeedback class and returning E must not throw an exception.');
 			test.TestSuite.assertNoException('controllerT.A(systems{jj}, T);', 'control:outputfeedback:test', 'Amending discrete system with outputfeedback class and returning A must not throw an exception.');

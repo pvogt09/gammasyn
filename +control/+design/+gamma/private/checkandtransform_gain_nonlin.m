@@ -1,4 +1,4 @@
-function [R_nonlin, number_c_R, number_ceq_R, number_c_K, number_ceq_K, number_c_F, number_ceq_F, hasnonlinfun, hasnonlingrad, hasnonlinhessian] = checkandtransform_gain_nonlin(R_nonlin, number_controls, number_measurements, number_measurements_xdot, number_references)
+function [R_nonlin, number_c_R, number_ceq_R, number_c_K, number_ceq_K, number_c_F, number_ceq_F, hasnonlinfun, hasnonlingrad, hasnonlinhessian] = checkandtransform_gain_nonlin(R_nonlin, number_controls, number_measurements, number_measurements_xdot, number_references, T_nonlin)
 	%CHECKANDTRANSFORM_GAIN_NONLIN check and convert nonlinear gain arguments for gammasyn with different datatypes and meanings to an uniform constraint description for further use
 	%	Input:
 	%		R_nonlin:					function pointer with signature [c_R, ceq_R, c_K, ceq_K, c_F, ceq_F, gradc_R, gradceq_R, gradc_K, gradceq_K, gradc_F, gradceq_F] = constraint(R, K, F)
@@ -6,6 +6,7 @@ function [R_nonlin, number_c_R, number_ceq_R, number_c_K, number_ceq_K, number_c
 	%		number_measurements:		number of measurements
 	%		number_measurements_xdot:	number of derivative measurements
 	%		number_references:			number of reference inputs
+	%		T_nonlin:					structure with data for performing transformations of K, D, F for calculating nonlinear constraints
 	%	Output:
 	%		R_nonlin:					function pointer with signature [c_R, ceq_R, c_K, ceq_K, c_F, ceq_F, gradc_R, gradceq_R, gradc_K, gradceq_K, gradc_F, gradceq_F] = constraint(R, K, F)
 	%		number_c_R:					number of nonlinear inequality constraints of proportional gain matrix
@@ -17,6 +18,56 @@ function [R_nonlin, number_c_R, number_ceq_R, number_c_K, number_ceq_K, number_c
 	%		hasnonlinfun:				indicator, if nonlinear constraints are present
 	%		hasnonlingrad:				indicator, if gradient information is supplied
 	%		hasnonlinhessian:			indicator, if hessian information is supplied
+
+	%% check T_nonlin
+	if nargin <= 5 || isempty(T_nonlin)
+		T_nonlin = struct(...
+			'number_states_original',	number_measurements,...
+			'number_controls_original',	number_controls ...
+		);
+	end
+	%% check general
+	if ~isstruct(T_nonlin)
+		error('control:design:gamma:input', 'T_nonlin must be of type ''struct''.');
+	end
+	if ~isfield(T_nonlin, 'number_states_original') || ~isfield(T_nonlin, 'number_controls_original')
+		error('control:design:gamma:input', 'T_nonlin must have the fields ''number_states_original'' and ''number_controls_original''.');
+	else
+		number_states_original	= T_nonlin.number_states_original;
+		number_controls_original = T_nonlin.number_controls_original;
+	end
+	if isfield(T_nonlin, 'transform')
+		if ~islogical(T_nonlin.transform)
+			error('control:design:gamma:input', 'T_nonlin.transform must be of type ''logical''.');
+		end
+	else
+		T_nonlin.transform = false;
+	end
+
+	%% check K_A and K_b
+	default_K_A = zeros(number_states_original*number_controls_original, number_measurements*number_controls);
+	min_dim_K	=   min([number_states_original*number_controls_original, number_measurements*number_controls]);
+	default_K_A(1:min_dim_K, 1:min_dim_K) = eye(min_dim_K);
+	default_K_b = zeros(number_states_original*number_controls_original, 1);
+
+	T_nonlin = check_T_nonlin_Ab(T_nonlin, 'K_A', 'K_b', number_states_original*number_controls_original, number_measurements*number_controls, default_K_A, default_K_b);
+	%% check D_A and D_b
+
+	default_D_A =   eye(number_controls_original*number_measurements_xdot);
+	default_D_b = zeros(number_controls_original*number_measurements_xdot, 1);
+
+	T_nonlin = check_T_nonlin_Ab(T_nonlin, 'D_A', 'D_b', number_controls_original*number_measurements_xdot, number_controls*number_measurements_xdot, default_D_A, default_D_b);
+
+	%% check F_A and F_b
+
+	default_F_A = zeros(number_controls_original^2, number_controls^2);
+	min_dim_F	=  min([number_controls_original^2, number_controls^2]);
+	default_F_A(1:min_dim_F, 1:min_dim_F) = eye(min_dim_F);
+	default_F_b = zeros(number_controls_original^2, 1);
+
+	T_nonlin = check_T_nonlin_Ab(T_nonlin, 'F_A', 'F_b', number_controls_original^2, number_controls^2, default_F_A, default_F_b);
+
+	%% check the rest
 	if ~isnumeric(number_controls) || ~isscalar(number_controls)
 		error('control:design:gamma:dimension', 'Number of controls must be a numeric scalar.');
 	end
@@ -1375,6 +1426,103 @@ function [R_nonlin, number_c_R, number_ceq_R, number_c_K, number_ceq_K, number_c
 				error('control:design:gamma:nonlin', 'Nonlinear gain constraint function must return a %dX%dX%d gradient of prefilter equality constraints with %d elements in the second dimension.', number_controls, number_references, number_ceq_F, number_references, size(ceq_F, 2));
 			end
 		end
+		if T_nonlin.transform
+			R_nonlin = transform_R_nonlin(R_nonlin, T_nonlin, number_controls, number_measurements, number_measurements_xdot);
+		end
+	end
+end
+
+function [R_nonlin_transformed] = transform_R_nonlin(R_nonlin, T_nonlin, number_controls, number_measurements, number_measurements_xdot)
+	function [c_R, ceq_R, c_K, ceq_K, c_F, ceq_F, gradc_R, gradceq_R, gradc_K, gradceq_K, gradc_F, gradceq_F] = transformed_R_nonlin(R, K, F)
+		r_hat = reshape(R, number_controls*number_measurements, 1);
+		k_hat = reshape(K, number_controls*number_measurements_xdot, 1);
+		f_hat = reshape(F, number_controls*T_nonlin.number_controls_original, 1);
+
+		r = T_nonlin.K_A*r_hat + T_nonlin.K_b;
+		k = T_nonlin.D_A*k_hat + T_nonlin.D_b;
+		f = T_nonlin.F_A*f_hat + T_nonlin.F_b;
+
+		% R, K, F in original dimensions
+		R_original = reshape(r, T_nonlin.number_controls_original, T_nonlin.number_states_original);
+		K_original = reshape(k, T_nonlin.number_controls_original, number_measurements_xdot);
+		F_original = reshape(f, T_nonlin.number_controls_original, T_nonlin.number_controls_original);
+
+		if nargout >= 7
+			[c_R, ceq_R, c_K, ceq_K, c_F, ceq_F, gradc_R, gradceq_R, gradc_K, gradceq_K, gradc_F, gradceq_F] = R_nonlin(R_original, K_original, F_original); % TODO: hier gibt es eine Schleife, sodass zweimal verschachtelt transformed_K_nonlin aufgerufen wird.
+			if ~isempty(gradc_R)
+				[sz1, sz2, sz3] = size(grad_K);
+				gradc_R = reshape(gradc_R, sz1*sz2, sz3);
+				gradc_R = (gradc_R.'*T_nonlin.K_A).';
+				gradc_R = reshape(gradc_R, number_controls, number_measurements, sz3); % grad_K_hat
+			end
+			if ~isempty(gradc_K)
+				[sz1, sz2, sz3] = size(grad_D);
+				gradc_K = reshape(gradc_K, sz1*sz2, sz3);
+				gradc_K = (gradc_K.'*T_nonlin.D_A).';
+				gradc_K = reshape(gradc_K, number_controls, number_measurements_xdot, sz3); % grad_D_hat
+			end
+			if ~isempty(gradc_F)
+				[sz1, sz2, sz3] = size(grad_F);
+				gradc_F = reshape(gradc_F, sz1*sz2, sz3);
+				gradc_F = (gradc_F.'*T_nonlin.F_A).';
+				gradc_F = reshape(gradc_F, number_controls, T_nonlin.number_controls_original, sz3); % grad_F_hat
+			end
+			if ~isempty(gradceq_R)
+				[sz1, sz2, sz3] = size(gradceq_R);
+				gradceq_R = reshape(gradceq_R, sz1*sz2, sz3);
+				gradceq_R = (gradceq_R.'*T_nonlin.K_A).';
+				gradceq_R = reshape(gradceq_R, number_controls, number_measurements, sz3); % gradceq_K_hat
+			end
+			if ~isempty(gradceq_K)
+				[sz1, sz2, sz3] = size(gradceq_K);
+				gradceq_K = reshape(gradceq_K, sz1*sz2, sz3);
+				gradceq_K = (gradceq_K.'*T_nonlin.D_A).';
+				gradceq_K = reshape(gradceq_K, number_controls, number_measurements_xdot, sz3); % gradceq_D_hat
+			end
+			if ~isempty(gradceq_F)
+				[sz1, sz2, sz3] = size(gradceq_F);
+				gradceq_F = reshape(gradceq_F, sz1*sz2, sz3);
+				gradceq_F = (gradceq_F.'*T_nonlin.F_A).';
+				gradceq_F = reshape(gradceq_F, number_controls, T_nonlin.number_controls_original, sz3); % gradceq_F_hat
+			end
+		else
+			[c_R, ceq_R, c_K, ceq_K, c_F, ceq_F] = R_nonlin(R, K, F);
+		end
+	end
+	R_nonlin_transformed = @transformed_R_nonlin;
+end
+
+function [T_nonlin] = check_T_nonlin_Ab(T_nonlin, field_A, field_b, dim_A1, dim_A2, default_A, default_b)
+	% check A
+	if isfield(T_nonlin, field_A)
+		if ~isempty(T_nonlin.(field_A))
+			if size(T_nonlin.(field_A), 1) ~= dim_A1 || size(T_nonlin.(field_A), 2) ~= dim_A2
+				error('control:design:gamma:dimensions', 'T_nonlin.%s must be a %dX%d matrix.', field_A, dim_A1, dim_A2);
+			end
+			if size(T_nonlin.(field_A), 3) > 1
+				error('control:design:gamma:dimensions', 'T_nonlin.%s must have size 1 in third dimension.', field_A);
+			end
+		else
+			T_nonlin.(field_A) = default_A;
+		end
+	else
+		T_nonlin.(field_A) = default_A;
+	end
+
+	% check b
+	if isfield(T_nonlin, field_b)
+		if ~isempty(T_nonlin.(field_b))
+			if size(T_nonlin.(field_b), 1) ~= dim_A1 || size(T_nonlin.K_b, 2) ~= 1
+				error('control:design:gamma:dimensions', 'T_nonlin.%s must be a %dX1 matrix.', field_b, number_states*number_controls);
+			end
+			if size(T_nonlin.(field_b), 3) > 1
+				error('control:design:gamma:dimensions', 'T_nonlin.%s must have size 1 in third dimension.', field_b);
+			end
+		else
+			T_nonlin.(field_b) = default_b;
+		end
+	else
+		T_nonlin.(field_b) = default_b;
 	end
 end
 

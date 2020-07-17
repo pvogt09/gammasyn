@@ -35,6 +35,7 @@ function [c, ceq, gradc, gradceq, hessc, hessceq] = c(x, system, weight, areafun
 	number_measurements = dimensions.measurements;
 	number_measurements_xdot = dimensions.measurements_xdot;
 	number_references = dimensions.references;
+	number_coefficients = number_controls*(number_measurements + number_measurements_xdot + number_references);
 	derivative_feedback = number_measurements_xdot > 0;
 	R_fixed_has = dimensions.R_fixed_has;
 	K_fixed_has = dimensions.K_fixed_has;
@@ -43,8 +44,12 @@ function [c, ceq, gradc, gradceq, hessc, hessceq] = c(x, system, weight, areafun
 	numthreads = options.numthreads;
 	eigenvaluederivativetype = options.eigenvaluederivative;
 	eigenvalueignoreinf = options.eigenvalueignoreinf;
-	[R, K, ~] = x2R(x, dimensions);
+	[R, K, F] = x2R(x, dimensions);
+	needscouplingconditions = GammaCouplingStrategy_needscouplingconditions(options.couplingcontrol.couplingstrategy);
 	if nargout >= 5
+		if needscouplingconditions
+			error('control:design:gamma:hessian', 'No Hessians of coupling conditions available.');
+		end
 		if ~isempty(areafun)
 			if derivative_feedback
 				[eigenvalues, ~, ~, eigenvalue_derivative, eigenvalue_derivative_xdot, ~, ~, ~, ~, eigenvalue_2derivative, eigenvalue_2derivative_xdot, eigenvalue_2derivative_mixed, eigenvalue_2derivative_xdot_mixed] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads, options.eigenvaluefilter);
@@ -66,14 +71,14 @@ function [c, ceq, gradc, gradceq, hessc, hessceq] = c(x, system, weight, areafun
 			c = reshape(areaval, number_models*number_areas_max*number_states, 1);
 			removec = isnan(c);
 			c(removec) = [];
-			gradc = reshape(gradtemp, number_models*number_areas_max*number_states, number_controls*(number_measurements + number_measurements_xdot + number_references)).';
+			gradc = reshape(gradtemp, number_models*number_areas_max*number_states, number_coefficients).';
 			gradc(:, removec) = [];
-			hessc = reshape(hesstemp, number_models*number_areas_max*number_states, number_controls*(number_measurements + number_measurements_xdot + number_references), number_controls*(number_measurements + number_measurements_xdot + number_references));
+			hessc = reshape(hesstemp, number_models*number_areas_max*number_states, number_coefficients, number_coefficients);
 			hessc(removec, :, :) = [];
 		else
 			c = zeros(0, 1);
-			gradc = zeros(number_controls*(number_measurements + number_measurements_xdot + number_references), 0);
-			hessc = zeros(0, number_controls*(number_measurements + number_measurements_xdot + number_references), number_controls*(number_measurements + number_measurements_xdot + number_references));
+			gradc = zeros(number_coefficients, 0);
+			hessc = zeros(0, number_coefficients, number_coefficients);
 		end
 		if RKF_fixed_has
 			gradc = dimensions.RKF_fixed_T_inv'*gradc;% transformed here to avoid another loop in calculate_constraint_gradient
@@ -85,48 +90,112 @@ function [c, ceq, gradc, gradceq, hessc, hessceq] = c(x, system, weight, areafun
 		end
 		hessc = permute(hessc, [2, 3, 1]);% TODO: can this be combined with reshape?
 	elseif nargout >= 3
-		if ~isempty(areafun)
+		if ~isempty(areafun) || needscouplingconditions
 			if derivative_feedback
 				[eigenvalues, ~, ~, eigenvalue_derivative, eigenvalue_derivative_xdot] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads, options.eigenvaluefilter);
 				[eigenvalues, ~, ~, eigenvalue_derivative, eigenvalue_derivative_xdot] = calculate_eigenvalue_filter(options.eigenvaluefilter, eigenvalues, [], [], eigenvalue_derivative, eigenvalue_derivative_xdot);
-				[areaval, areaval_derivative] = calculate_areas(areafun, weight, eigenvalues, dimensions, options);
-				gradtemp = calculate_constraint_gradient(weight, eigenvalue_derivative, eigenvalue_derivative_xdot, areaval_derivative, dimensions, numthreads);
+				if ~isempty(areafun)
+					[areaval, areaval_derivative] = calculate_areas(areafun, weight, eigenvalues, dimensions, options);
+					gradtemp = calculate_constraint_gradient(weight, eigenvalue_derivative, eigenvalue_derivative_xdot, areaval_derivative, dimensions, numthreads);
+					if eigenvalueignoreinf
+						areaval(isinf(areaval)) = -1E30;
+					end
+					c = reshape(areaval, number_models*number_areas_max*number_states, 1);
+					removec = isnan(c);
+					c(removec) = [];
+					gradc = reshape(gradtemp, number_models*number_areas_max*number_states, number_coefficients).';
+					gradc(:, removec) = [];
+				else
+					c = zeros(0, 1);
+					gradc = zeros(number_coefficients, 0);
+				end
+				if needscouplingconditions
+					error('control:design:gamma:derivative_feedback', 'Coupling controller design not implemented for derivative feedback.');
+				else
+					c_coupling = zeros(0, 1);
+					ceq_coupling = zeros(0, 1);
+					gradc_coupling = zeros(number_coefficients, 0);
+					gradceq_coupling = zeros(number_coefficients, 0);
+				end
 			else
-				[eigenvalues, ~, ~, eigenvalue_derivative] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads, options.eigenvaluefilter);
-				[eigenvalues, ~, ~, eigenvalue_derivative] = calculate_eigenvalue_filter(options.eigenvaluefilter, eigenvalues, [], [], eigenvalue_derivative);
-				[areaval, areaval_derivative] = calculate_areas(areafun, weight, eigenvalues, dimensions, options);
-				gradtemp = calculate_constraint_gradient(weight, eigenvalue_derivative, [], areaval_derivative, dimensions, numthreads);
+				[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, ~, eigenvector_right_derivative, ~, eigenvector_left_derivative] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads, options.eigenvaluefilter);
+				[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, ~, eigenvector_right_derivative, ~, eigenvector_left_derivative] = calculate_eigenvalue_filter(options.eigenvaluefilter, eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, [], eigenvector_right_derivative, [], eigenvector_left_derivative);
+				if ~isempty(areafun)
+					[areaval, areaval_derivative] = calculate_areas(areafun, weight, eigenvalues, dimensions, options);
+					gradtemp = calculate_constraint_gradient(weight, eigenvalue_derivative, [], areaval_derivative, dimensions, numthreads);
+					if eigenvalueignoreinf
+						areaval(isinf(areaval)) = -1E30;
+					end
+					c = reshape(areaval, number_models*number_areas_max*number_states, 1);
+					removec = isnan(c);
+					c(removec) = [];
+					gradc = reshape(gradtemp, number_models*number_areas_max*number_states, number_coefficients).';
+					gradc(:, removec) = [];
+				else
+					c = zeros(0, 1);
+					gradc = zeros(number_coefficients, 0);
+				end
+				if needscouplingconditions
+					[c_coupling, ceq_coupling, gradc_coupling, gradceq_coupling] = calculate_coupling_conditions(system, R, K, F, dimensions, options, eigenvector_right, eigenvector_left, eigenvector_right_derivative, eigenvector_left_derivative);
+				else
+					c_coupling = zeros(0, 1);
+					ceq_coupling = zeros(0, 1);
+					gradc_coupling = zeros(number_coefficients, 0);
+					gradceq_coupling = zeros(number_coefficients, 0);
+				end
 			end
-			if eigenvalueignoreinf
-				areaval(isinf(areaval)) = -1E30;
-			end
-			c = reshape(areaval, number_models*number_areas_max*number_states, 1);
-			removec = isnan(c);
-			c(removec) = [];
-			gradc = reshape(gradtemp, number_models*number_areas_max*number_states, number_controls*(number_measurements + number_measurements_xdot + number_references)).';
-			gradc(:, removec) = [];
 		else
 			c = zeros(0, 1);
-			gradc = zeros(number_controls*(number_measurements + number_measurements_xdot + number_references), 0);
+			gradc = zeros(number_coefficients, 0);
+			c_coupling = zeros(0, 1);
+			ceq_coupling = zeros(0, 1);
+			gradc_coupling = zeros(number_coefficients, 0);
+			gradceq_coupling = zeros(number_coefficients, 0);
 		end
+		c = [
+			c;
+			c_coupling
+		];
+		ceq = ceq_coupling;
+		gradc = [
+			gradc,	gradc_coupling
+		];
+		gradceq = gradceq_coupling;
 		if RKF_fixed_has
 			gradc = dimensions.RKF_fixed_T_inv'*gradc;% transformed here to avoid another loop in calculate_constraint_gradient
 			gradc = gradc(dimensions.index_RKF_free, :);
 		elseif R_fixed_has || K_fixed_has || F_fixed_has
 			gradc = gradc(dimensions.index_all_free, :);
+			gradceq = gradceq(dimensions.index_all_free, :);
 		end
 	else
-		if ~isempty(areafun)
-			eigenvalues = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads, options.eigenvaluefilter);
-			eigenvalues = calculate_eigenvalue_filter(options.eigenvaluefilter, eigenvalues);
-			areaval = calculate_areas(areafun, weight, eigenvalues, dimensions, options);
-			if eigenvalueignoreinf
-				areaval(isinf(areaval)) = -1E30;
+		if ~isempty(areafun) || needscouplingconditions
+			[eigenvalues, eigenvector_right, eigenvector_left] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads, options.eigenvaluefilter);
+			[eigenvalues, eigenvector_right, eigenvector_left] = calculate_eigenvalue_filter(options.eigenvaluefilter, eigenvalues, eigenvector_right, eigenvector_left);
+			if ~isempty(areafun)
+				areaval = calculate_areas(areafun, weight, eigenvalues, dimensions, options);
+				if eigenvalueignoreinf
+					areaval(isinf(areaval)) = -1E30;
+				end
+				c = reshape(areaval, number_models*number_areas_max*number_states, 1);
+				c(isnan(c)) = [];
+			else
+				c = zeros(0, 1);
 			end
-			c = reshape(areaval, number_models*number_areas_max*number_states, 1);
-			c(isnan(c)) = [];
+			if needscouplingconditions
+				[c_coupling, ceq_coupling] = calculate_coupling_conditions(system, R, K, F, dimensions, options, eigenvector_right, eigenvector_left);
+			else
+				c_coupling = zeros(0, 1);
+				ceq_coupling = zeros(0, 1);
+			end
+			c = [
+				c;
+				c_coupling
+			];
+			ceq = ceq_coupling;
 		else
 			c = zeros(0, 1);
+			ceq = zeros(0, 1);
 		end
 	end
 end

@@ -96,6 +96,6 @@ function [s] = stripchars(str, side, pad_character)
 			end
 			s = snew;
 		otherwise
-			error('string:strip:side', 'Side must be one of ''both'', ''right'' or ''left''.');
+			error('RBSABS:string:strip:side', 'Side must be one of ''both'', ''right'' or ''left''.');
 	end
 end

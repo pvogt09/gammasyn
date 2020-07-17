@@ -15,25 +15,25 @@ function [value,valid] = validateopts_UseParallel(value,throwerr,updateValue)
 
 % Quickly check the valid cases and then dive into error checking
 valid = isscalar(value) && ...
-    (islogical(value) || (isnumeric(value) && (value == 0 || value == 1)));
+	(islogical(value) || (isnumeric(value) && (value == 0 || value == 1)));
 if valid
-  value = logical(value);
-  return;
+	value = logical(value);
+	return;
 end
 % This option also accepts specific strings
 deprecated_values = {'always','never'};
 valid = ischar(value) && any(strcmpi(value,deprecated_values));
 if valid && updateValue
-  if strcmpi(value,'never')
-    value = false;
-  elseif strcmpi(value,'always')
-    value = true;
-  end
+	if strcmpi(value,'never')
+		value = false;
+	elseif strcmpi(value,'always')
+		value = true;
+	end
 end
-  
+
 % Throw error or return now
 if valid || ~throwerr
-   return;
+	return;
 end
 msgid = 'MATLAB:optimoptioncheckfield:NotLogicalScalar';
 errid = 'MATLAB:validateopts_UseParallel:NotLogicalScalar';
