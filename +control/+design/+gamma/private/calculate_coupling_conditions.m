@@ -39,33 +39,28 @@ function [c, ceq, gradc, gradceq] = calculate_coupling_conditions(system, R, ~, 
 
 	number_outputconditions_per_sys = 2*dim_invariant*number_couplingconditions;
 	if hasfeedthrough
-		number_inputconditions_per_sys  = (number_controls - number_couplingconditions)*(2*(number_states - dim_invariant) + number_couplingconditions);
+		number_inputconditions_per_sys = (number_controls - number_couplingconditions)*(2*(number_states - dim_invariant) + number_couplingconditions);
 	else
-		number_inputconditions_per_sys  = (number_controls - number_couplingconditions)*2*(number_states - dim_invariant);
+		number_inputconditions_per_sys = (number_controls - number_couplingconditions)*2*(number_states - dim_invariant);
 	end
 
-	% prepare determination of VR1 and WR2
-	permutations_VR1 = nchoosek(1:number_states, dim_invariant);% outside of loop because m is constant for every model
-	number_permutations = size(permutations_VR1, 1);
-	permutations_WR2_tmp = NaN(number_permutations, number_states - dim_invariant);
-	parfor (cnt = 1:number_permutations, numthreads)
-		permutations_WR2_tmp(cnt, :) = setdiff(1:number_states, permutations_VR1(cnt, :));
-	end
-	permutations_WR2 = permutations_WR2_tmp;
-	% prepare determination of VR1 and WR2 end
+	[permutations_VR1, permutations_WR2, number_permutations] = set_permutations(number_states, dim_invariant, numthreads);
 
 	dF1dxi = zeros(number_controls, number_controls - number_couplingconditions, number_controls*(number_controls - number_couplingconditions));
 	if needsgradient
-		parfor (ii = 1:number_controls*(number_controls - number_couplingconditions), numthreads)
-			dF1dxi_tmp = zeros(number_controls, number_controls - number_couplingconditions);
-			dF1dxi_tmp(ii) = 1;
-			dF1dxi(:, :, ii) = dF1dxi_tmp;
-		end
+		% loop code in combination with set_permutations as literal code in this function crashes R2015B at runtime in compiled code, therefore linear indexing is used
+		%parfor (ii = 1:number_controls*(number_controls - number_couplingconditions), numthreads)
+		%	dF1dxi_tmp = zeros(number_controls, number_controls - number_couplingconditions);
+		%	dF1dxi_tmp(ii) = 1;
+		%	dF1dxi(:, :, ii) = dF1dxi_tmp;
+		%end
+		indices = (1:number_controls*(number_controls - number_couplingconditions)) + number_controls*(number_controls - number_couplingconditions)*(-1 + (1:number_controls*(number_controls - number_couplingconditions)));
+		dF1dxi(indices) = 1;
 	end
-	F1  = F(:, 1:end - number_couplingconditions);
+	F1 = F(:, 1:end - number_couplingconditions);
 
 	ceq_out = zeros(number_outputconditions_per_sys, 1, number_models);% output coupling conditions
-	ceq_in  = zeros(number_inputconditions_per_sys, 1, number_models);% input coupling conditions
+	ceq_in = zeros(number_inputconditions_per_sys, 1, number_models);% input coupling conditions
 	if needsgradient
 		ceq_out_grad = zeros(n_xi, number_outputconditions_per_sys, number_models);% gradients of output coupling conditions
 		ceq_in_grad  = zeros(n_xi, number_inputconditions_per_sys, number_models);% gradients of input coupling conditions
@@ -117,14 +112,14 @@ function [c, ceq, gradc, gradceq] = calculate_coupling_conditions(system, R, ~, 
 		];
 		if hasfeedthrough
 			ceq_in(:, :, ii) = [
-				reshape(real(WBF.'), (number_states - dim_invariant)*(number_controls - number_couplingconditions), 1);
-				reshape(imag(WBF.'), (number_states - dim_invariant)*(number_controls - number_couplingconditions), 1);
-				reshape(D2*F1,		 (number_couplingconditions)*(number_controls - number_couplingconditions), 1)
+				reshape(real(WBF.'),	(number_states - dim_invariant)*(number_controls - number_couplingconditions), 1);
+				reshape(imag(WBF.'),	(number_states - dim_invariant)*(number_controls - number_couplingconditions), 1);
+				reshape(D2*F1,			(number_couplingconditions)*(number_controls - number_couplingconditions), 1)
 			];
 		else
 			ceq_in(:, :, ii) = [
-				reshape(real(WBF.'), (number_states - dim_invariant)*(number_controls - number_couplingconditions), 1);
-				reshape(imag(WBF.'), (number_states - dim_invariant)*(number_controls - number_couplingconditions), 1);
+				reshape(real(WBF.'),	(number_states - dim_invariant)*(number_controls - number_couplingconditions), 1);
+				reshape(imag(WBF.'),	(number_states - dim_invariant)*(number_controls - number_couplingconditions), 1);
 			];
 		end
 		% input and output coupling conditions of the system end
@@ -263,4 +258,25 @@ function [c, ceq, gradc, gradceq] = calculate_coupling_conditions(system, R, ~, 
 			gradceq = gradceq_raw;
 		end
 	end
+end
+
+function [permutations_VR1, permutations_WR2, number_permutations] = set_permutations(number_states, dim_invariant, numthreads)
+	%SET_PERMUTATIONS calculate permutations for eigenvector matrices
+	%	Input:
+	%		number_states:			number of states
+	%		dim_invriant:			size of invariant subspace
+	%		numthreads:				number of threads to use
+	%	Output:
+	%		permutations:VR1:		permutations matrix for right eigenvectors
+	%		permutations_WR2:		permutation matrix for left eigenvectors
+	%		number_permutations:	number of permutations
+	%	HINT: this functionality is only moved to a separate function to prevent a runtime crash in freeing variables used in parfor in generated code for R2015B
+	% prepare determination of VR1 and WR2
+	permutations_VR1 = nchoosek(1:number_states, dim_invariant);% outside of loop because m is constant for every model
+	number_permutations = size(permutations_VR1, 1);
+	permutations_WR2_tmp = NaN(number_permutations, number_states - dim_invariant);
+	parfor (ii = 1:number_permutations, numthreads)
+		permutations_WR2_tmp(ii, :) = setdiff(1:number_states, permutations_VR1(ii, :));
+	end
+	permutations_WR2 = permutations_WR2_tmp;
 end
