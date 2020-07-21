@@ -530,15 +530,10 @@ function [Ropt, Jopt, information] = gammasyn(systems, areafun, weights, R_fixed
 		end
 	end
 	[R_opt, K_opt, F_opt] = x2R(x_opt, dimensions_strict);
-	if dimensions_strict.measurements_xdot > 0
+	if dimensions_strict.measurements_xdot > 0 || dimensions_strict.references > 0
 		Ropt = {
 			R_opt;
 			K_opt;
-			F_opt
-		};
-	elseif dimensions_strict.references > 0
-		Ropt = {
-			R_opt;
 			F_opt
 		};
 	else
