@@ -1166,7 +1166,7 @@ classdef SolutionSet < handle
 				K_opt_val = zeros(this.p, this.q_dot);
 				F_opt_val = zeros(this.p, this.r);
 			else
-				[R_opt, K_opt_val, F_opt_val] = checkinitialRKF(R_opt, this.dimensions_strict);
+				[R_opt, K_opt_val, F_opt_val] = checkinitialRKF(R_opt, this.dimensions_strict, true);
 			end
 			if size(R_opt, 1) ~= size(this.R_opt, 1)
 				error('control:design:gamma:solution:input', 'Optimal proportional gain must have %d rows.', size(this.R_opt, 1));
@@ -1332,7 +1332,11 @@ classdef SolutionSet < handle
 				[J_opt, optidx] = min(this.J_opt);
 			end
 			if nargout >= 2
-				R_opt = this.R_opt(:, :, optidx);
+				R_opt = {
+					this.R_opt(:, :, optidx);
+					this.K_opt(:, :, optidx);
+					this.F_opt(:, :, optidx)
+				};
 				if nargout >= 4
 					info = this.info(optidx, 1);
 					if nargout >= 5
@@ -1381,7 +1385,11 @@ classdef SolutionSet < handle
 			idx = (1:size(has, 1))';
 			idx = idx(has);
 			if nargout >= 2
-				R_opt = this.R_opt(:, :, has);
+				R_opt = {
+					this.R_opt(:, :, has);
+					this.K_opt(:, :, has);
+					this.F_opt(:, :, has)
+				};
 				if nargout >= 3
 					J_opt = this.J_opt(has, 1);
 					if nargout >= 4
@@ -1456,7 +1464,11 @@ classdef SolutionSet < handle
 			idx = (1:size(has, 1))';
 			idx = idx(has);
 			if nargout >= 2
-				R_opt = this.R_opt(:, :, has);
+				R_opt = {
+					this.R_opt(:, :, has);
+					this.K_opt(:, :, has);
+					this.F_opt(:, :, has)
+				};
 				if nargout >= 3
 					J_opt = this.J_opt(has, 1);
 					if nargout >= 4
@@ -1537,7 +1549,11 @@ classdef SolutionSet < handle
 			optidx = idx;
 			if isscalar(idx)
 				J_opt = this.J_opt(optidx, 1);
-				R_opt = this.R_opt(:, :, optidx);
+				R_opt = {
+					this.R_opt(:, :, optidx);
+					this.K_opt(:, :, optidx);
+					this.F_opt(:, :, optidx)
+				};
 				if nargout >= 3
 					info = this.info(optidx, 1);
 					if nargout >= 4
@@ -1555,7 +1571,11 @@ classdef SolutionSet < handle
 				end
 			else
 				J_opt = this.J_opt(optidx, 1);
-				R_opt = this.R_opt(:, :, optidx);
+				R_opt = {
+					this.R_opt(:, :, optidx);
+					this.K_opt(:, :, optidx);
+					this.F_opt(:, :, optidx)
+				};
 				if nargout >= 3
 					info = this.info(optidx, 1);
 					if nargout >= 4
@@ -1937,24 +1957,29 @@ classdef SolutionSet < handle
 				T = -1;
 			end
 			[Ropt, Jopt, optiminfo, R0, solveroptions, ~, solcomment] = this.get(idx, false);
-			if any(isnan(Ropt(:)))
+			if (~isempty(Ropt{1}) && any(isnan(Ropt{1}(:)))) || (~isempty(Ropt{2}) && any(isnan(Ropt{2}(:)))) || (~isempty(Ropt{3}) && any(isnan(Ropt{3}(:))))
 				warning('control:design:gamma:solution:plot', 'No valid solution could be found.');
 				return;
 			end
 			hasstrict = this.hasallpolesinarea(true, solveroptions.ConstraintTolerance, idx, false);
 			hasloose = this.hasallpolesinarea(false, solveroptions.ConstraintTolerance, idx, false);
 			if nargin <= 4
-				F = this.controller.prefilterpattern(Ropt, systemnom, T);
-				if isa(this.controller, 'control.design.outputfeedback.PIDDirectOutputFeedback') || isa(this.controller, 'control.design.outputfeedback.PIDRealDirectOutputFeedback')
-					F(1) = F(1) + Ropt(1, 2);
-				elseif isa(this.controller, 'control.design.outputfeedback.PDDirectOutputFeedback') || isa(this.controller, 'control.design.outputfeedback.PDRealDirectOutputFeedback')
-					F(1) = F(1) + Ropt(1, 1);
+				if ~isempty(Ropt{3}) && ~all(Ropt{3}(:) == 0)
+					F = Ropt{3};
+				else
+					F = this.controller.prefilterpattern(Ropt, systemnom, T);
+					if isa(this.controller, 'control.design.outputfeedback.PIDDirectOutputFeedback') || isa(this.controller, 'control.design.outputfeedback.PIDRealDirectOutputFeedback')
+						F(1) = F(1) + Ropt{1}(1, 2);
+					elseif isa(this.controller, 'control.design.outputfeedback.PDDirectOutputFeedback') || isa(this.controller, 'control.design.outputfeedback.PDRealDirectOutputFeedback')
+						F(1) = F(1) + Ropt{1}(1, 1);
+					end
 				end
 			else
-				if size(F, 1) ~= size(Ropt, 1)
-					error('control:design:gamma:solution:plot', 'Prefilter matrix must have %d rows.', size(Ropt, 1));
+				if size(F, 1) ~= size(Ropt{1}, 1)
+					error('control:design:gamma:solution:plot', 'Prefilter matrix must have %d rows.', size(Ropt{1}, 1));
 				end
 			end
+			Ropt = Ropt{1};
 			isdiscrete = control.design.outputfeedback.OutputFeedback.isdiscreteT(T);
 			if isdiscrete
 				t = (0:T:5).';
@@ -2179,16 +2204,21 @@ classdef SolutionSet < handle
 				T = -1;
 			end
 			Ropt = this.get(idx, false);
-			if any(isnan(Ropt(:)))
+			if (~isempty(Ropt{1}) && any(isnan(Ropt{1}(:)))) || (~isempty(Ropt{2}) && any(isnan(Ropt{2}(:)))) || (~isempty(Ropt{3}) && any(isnan(Ropt{3}(:))))
 				warning('control:design:gamma:solution:plot', 'No valid solution could be found.');
 				return;
 			end
-			F = this.controller.prefilterpattern(Ropt, systemnom, T);
-			if isa(this.controller, 'control.design.outputfeedback.PIDDirectOutputFeedback') || isa(this.controller, 'control.design.outputfeedback.PIDRealDirectOutputFeedback')
-				F(1) = F(1) + Ropt(1, 2);
-			elseif isa(this.controller, 'control.design.outputfeedback.PDDirectOutputFeedback') || isa(this.controller, 'control.design.outputfeedback.PDRealDirectOutputFeedback')
-				F(1) = F(1) + Ropt(1, 1);
+			if ~isempty(Ropt{3}) && ~all(Ropt{3}(:) == 0)
+				F = Ropt{3};
+			else
+				F = this.controller.prefilterpattern(Ropt, systemnom, T);
+				if isa(this.controller, 'control.design.outputfeedback.PIDDirectOutputFeedback') || isa(this.controller, 'control.design.outputfeedback.PIDRealDirectOutputFeedback')
+					F(1) = F(1) + Ropt{1}(1, 2);
+				elseif isa(this.controller, 'control.design.outputfeedback.PDDirectOutputFeedback') || isa(this.controller, 'control.design.outputfeedback.PDRealDirectOutputFeedback')
+					F(1) = F(1) + Ropt{1}(1, 1);
+				end
 			end
+			Ropt = Ropt{1};
 			system = this.systems;
 			dimn = zeros(length(system), 1);
 			dimp = size(Ropt, 1);
@@ -2356,15 +2386,15 @@ classdef SolutionSet < handle
 			%	error('control:design:gamma:solution:plot', 'Index to plot must be scalar.');
 			%end
 			[Ropt, ~, ~, ~, ~, ~, solcomment] = this.get(idx, false);
-			if all(isnan(Ropt(:)))
+			if (~isempty(Ropt{1}) && all(isnan(Ropt{1}(:)))) || (~isempty(Ropt{2}) && all(isnan(Ropt{2}(:)))) || (~isempty(Ropt{3}) && all(isnan(Ropt{3}(:))))
 				warning('control:design:gamma:solution:plot', 'No valid solution could be found.');
 				return;
 			end
 			areafuns_strict = control.design.gamma.area.GammaArea.unique(this.dimensions_strict.area_parameters);
 			areafuns_loose = control.design.gamma.area.GammaArea.unique(this.dimensions_loose.area_parameters);
-			figurehandle = cell(size(Ropt, 3), 1);
-			for hh = 1:size(Ropt, 3) %#ok<FORPF> no parfor for figure operations
-				if any(any(isnan(Ropt(:, :, hh))))
+			figurehandle = cell(size(Ropt{1}, 3), 1);
+			for hh = 1:size(Ropt{1}, 3) %#ok<FORPF> no parfor for figure operations
+				if any(any(isnan(Ropt{1}(:, :, hh))))
 					warning('control:design:gamma:solution:plot', 'No valid solution could be found.');
 					continue;
 				end
@@ -2379,7 +2409,7 @@ classdef SolutionSet < handle
 					A = cat(3, systems.A);
 					B = cat(3, systems.B);
 					C = cat(3, systems.C);
-					eigstest = eig3d(A - mtimes3d(mtimes3d(B, Ropt(:, :, hh)), C), 'vector');
+					eigstest = eig3d(A - mtimes3d(mtimes3d(B, Ropt{1}(:, :, hh)), C), 'vector');
 					systemcolor = gray(size(eigstest, 2));
 					for ii = 1:size(eigstest, 1)
 						handle = scatter(real(eigstest(ii, :)), imag(eigstest(ii, :)), [], systemcolor(:, 1:3), '*');
@@ -2426,7 +2456,7 @@ classdef SolutionSet < handle
 					C = systems(ii).C;
 					szA = size(A, 1);
 					eigssys(:, ii) = [
-						eig(A - B*Ropt(:, :, hh)*C);
+						eig(A - B*Ropt{1}(:, :, hh)*C);
 						(1 + 1i)*NaN(size(eigssys, 1) - szA)
 					];
 				end
@@ -2501,13 +2531,14 @@ classdef SolutionSet < handle
 			%	error('control:design:gamma:solution:plot', 'Index to plot must be scalar.');
 			%end
 			Ropt = this.get(idx, false);
-			if all(isnan(Ropt(:)))
+			if (~isempty(Ropt{1}) && all(isnan(Ropt{1}(:)))) || (~isempty(Ropt{2}) && all(isnan(Ropt{2}(:)))) || (~isempty(Ropt{3}) && all(isnan(Ropt{3}(:))))
 				warning('control:design:gamma:solution:plot', 'No valid solution could be found.');
 				return;
 			end
 			areafuns_strict = control.design.gamma.area.GammaArea.unique(this.dimensions_strict.area_parameters);
 			areafuns_loose = control.design.gamma.area.GammaArea.unique(this.dimensions_loose.area_parameters);
 			system = this.systems;
+			Ropt = Ropt{1};
 			figurehandle = cell(size(Ropt, 3), 1);
 			for hh = 1:size(Ropt, 3) %#ok<FORPF> no parfor for figure operations
 				if any(any(isnan(Ropt(:, :, hh))))
@@ -2588,24 +2619,25 @@ classdef SolutionSet < handle
 				T = -1;
 			end
 			[Ropt, ~, ~, ~, ~, ~, solcomment] = this.get(idx, false);
-			if any(isnan(Ropt(:)))
+			if (~isempty(Ropt{1}) && any(isnan(Ropt{1}(:)))) || (~isempty(Ropt{2}) && any(isnan(Ropt{2}(:)))) || (~isempty(Ropt{3}) && any(isnan(Ropt{3}(:))))
 				warning('control:design:gamma:solution:plot', 'No valid solution could be found.');
 				return;
 			end
-			number_controls = size(Ropt, 1);
-			number_measurements = size(Ropt, 2);
+			number_controls = size(Ropt{1}, 1);
+			number_measurements = size(Ropt{1}, 2);
+			number_references = size(Ropt{3}, 2);
 			isdiscrete = control.design.outputfeedback.OutputFeedback.isdiscreteT(T);
 			if nargin <= 4
 				plotadditional = false;
 				calculateprefilter = true;
-				plotvalues = {true(number_measurements, 1), true(number_controls, 1)};
+				plotvalues = {true(number_measurements, 1), true(number_controls, 1), true(number_references, 1)};
 			else
 				if nargin <= 5
 					if isnumeric(systems)
 						plotadditional = false;
 						F = systems;
 						calculateprefilter = false;
-						plotvalues = {true(number_measurements, 1), true(number_controls, 1)};
+						plotvalues = {true(number_measurements, 1), true(number_controls, 1), true(number_references, 1)};
 					elseif iscell(systems)
 						plotadditional = false;
 						plotvalues = systems;
@@ -2613,15 +2645,15 @@ classdef SolutionSet < handle
 					elseif islogical(systems)
 						plotadditional = false;
 						if size(systems, 1) == number_measurements
-							plotvalues = {systems, true(number_controls, 1)};
+							plotvalues = {systems, true(number_controls, 1), true(number_references, 1)};
 						else
-							plotvalues = {true(number_measurements, 1), systems};
+							plotvalues = {true(number_measurements, 1), systems, true(number_references, 1)};
 						end
 						calculateprefilter = true;
 					else
 						plotadditional = true;
 						calculateprefilter = true;
-						plotvalues = {true(number_measurements, 1), true(number_controls, 1)};
+						plotvalues = {true(number_measurements, 1), true(number_controls, 1), true(number_references, 1)};
 					end
 				elseif nargin <= 6
 					if iscell(F)
@@ -2636,9 +2668,9 @@ classdef SolutionSet < handle
 						end
 					elseif islogical(F)
 						if size(systems, 1) == number_measurements
-							plotvalues = {F, true(number_controls, 1)};
+							plotvalues = {F, true(number_controls, 1), true(number_references, 1)};
 						else
-							plotvalues = {true(number_measurements, 1), F};
+							plotvalues = {true(number_measurements, 1), F, true(number_references, 1)};
 						end
 						if isnumeric(systems)
 							plotadditional = false;
@@ -2651,7 +2683,7 @@ classdef SolutionSet < handle
 					else
 						plotadditional = true;
 						calculateprefilter = true;
-						plotvalues = {true(number_measurements, 1), true(number_controls, 1)};
+						plotvalues = {true(number_measurements, 1), true(number_controls, 1), true(number_references, 1)};
 					end
 				else
 					plotadditional = ~isempty(systems);
@@ -2675,6 +2707,9 @@ classdef SolutionSet < handle
 			if length(plotvalues) < 2
 				error('control:design:gamma:solution:plot', '2 Measurement and control plot indicators must be supplied.');
 			end
+			if length(plotvalues) < 3
+				plotvalues = [plotvalues, {true(number_references, 1)}];
+			end
 			if ~isnumeric(precision) || ~isscalar(precision)
 				error('control:design:gamma:solution:plot', 'Precision must be a numerical scalar.');
 			end
@@ -2682,7 +2717,7 @@ classdef SolutionSet < handle
 			plot_controls1 = size(plotvalues{1}, 1) == number_controls;
 			plot_measurements2 = size(plotvalues{2}, 1) == number_measurements;
 			plot_controls2 = size(plotvalues{2}, 1) == number_controls;
-			if size(plotvalues{1}, 2) ~= 1 || size(plotvalues{2}, 2) ~= 1
+			if size(plotvalues{1}, 2) ~= 1 || size(plotvalues{2}, 2) ~= 1 || size(plotvalues{3}, 2) ~= 1
 				error('control:design:gamma:solution:plot', 'Measurement and control plot indicators must be column vectors.');
 			end
 			if ~plot_measurements1 && ~plot_controls1
@@ -2697,25 +2732,35 @@ classdef SolutionSet < handle
 			if number_measurements ~= number_controls && plot_controls1 && plot_controls2
 				error('control:design:gamma:solution:plot', 'Measurement and control plot indicator size must match number of measurements and controls.');
 			end
+			if size(plotvalues{3}, 1) ~= number_references
+				error('control:design:gamma:solution:plot', 'Measurement and control plot indicator size must match number of measurements and controls.');
+			end
 			if plot_measurements1
 				use_measurements = plotvalues{1};
 				use_controls = plotvalues{2};
+				use_references = plotvalues{3};
 			else
 				use_measurements = plotvalues{2};
 				use_controls = plotvalues{1};
+				use_references = plotvalues{3};
 			end
 			if ~any([
 				use_measurements;
+				use_references;
 				use_controls
 			])
 				error('control:design:gamma:solution:plot', 'At least one value must be plotted.');
 			end
 			if calculateprefilter
-				F = this.controller.prefilterpattern(Ropt, systemnom, T);
-				if isa(this.controller, 'control.design.outputfeedback.PIDDirectOutputFeedback') || isa(this.controller, 'control.design.outputfeedback.PIDRealDirectOutputFeedback')
-					F(1) = F(1) + Ropt(1, 2);
-				elseif isa(this.controller, 'control.design.outputfeedback.PDDirectOutputFeedback') || isa(this.controller, 'control.design.outputfeedback.PDRealDirectOutputFeedback')
-					F(1) = F(1) + Ropt(1, 1);
+				if ~isempty(Ropt{3}) && ~all(Ropt{3}(:) == 0)
+					F = Ropt{3};
+				else
+					F = this.controller.prefilterpattern(Ropt, systemnom, T);
+					if isa(this.controller, 'control.design.outputfeedback.PIDDirectOutputFeedback') || isa(this.controller, 'control.design.outputfeedback.PIDRealDirectOutputFeedback')
+						F(1) = F(1) + Ropt{1}(1, 2);
+					elseif isa(this.controller, 'control.design.outputfeedback.PDDirectOutputFeedback') || isa(this.controller, 'control.design.outputfeedback.PDRealDirectOutputFeedback')
+						F(1) = F(1) + Ropt{1}(1, 1);
+					end
 				end
 			else
 				if ~isnumeric(F)
@@ -2725,6 +2770,7 @@ classdef SolutionSet < handle
 					error('control:design:gamma:solution:plot', 'Prefilter matrix must have %d rows.', number_controls);
 				end
 			end
+			Ropt = Ropt{1};
 			if plotadditional
 				if ~isstruct(systems)
 					error('control:design:gamma:solution:plot', 'Systems must be of type ''struct''.');
@@ -2735,37 +2781,49 @@ classdef SolutionSet < handle
 			end
 			if control.design.outputfeedback.OutputFeedback.isdiscreteT(T)
 				t = (0:T:5).';
-				if size(F, 2) == 2
+				if isa(this.controller, 'control.design.outputfeedback.AbstractCouplingFeedback')
 					w = [
-						ones(length(t), 1),	[
-							zeros(1, size(F, 2) > 1);
-							ones(length(t) - 1, size(F, 2) > 1)
-						]
+						ones(length(t), size(F, 2) - this.controller.number_couplingconditions),	zeros(length(t), this.controller.number_couplingconditions)
 					];
 				else
-					w = [
-						ones(length(t), 1),	[
-							zeros(1, size(F, 2) - 1);
-							ones(length(t) - 1, size(F, 2) - 1)
-						]
-					];
+					if size(F, 2) == 2
+						w = [
+							ones(length(t), 1),	[
+								zeros(1, size(F, 2) > 1);
+								ones(length(t) - 1, size(F, 2) > 1)
+							]
+						];
+					else
+						w = [
+							ones(length(t), 1),	[
+								zeros(1, size(F, 2) - 1);
+								ones(length(t) - 1, size(F, 2) - 1)
+							]
+						];
+					end
 				end
 			else
 				t = linspace(0, 5, 200);
-				if size(F, 2) == 2
+				if isa(this.controller, 'control.design.outputfeedback.AbstractCouplingFeedback')
 					w = [
-						ones(length(t), 1),	[
-							ones(1, size(F, 2) > 1);
-							zeros(length(t) - 1, size(F, 2) > 1)
-						]
+						ones(length(t), size(F, 2) - this.controller.number_couplingconditions),	zeros(length(t), this.controller.number_couplingconditions)
 					];
 				else
-					w = [
-						ones(length(t), 1),	[
-							ones(1, size(F, 2) - 1);
-							zeros(length(t) - 1, size(F, 2) - 1)
-						]
-					];
+					if size(F, 2) == 2
+						w = [
+							ones(length(t), 1),	[
+								ones(1, size(F, 2) > 1);
+								zeros(length(t) - 1, size(F, 2) > 1)
+							]
+						];
+					else
+						w = [
+							ones(length(t), 1),	[
+								ones(1, size(F, 2) - 1);
+								zeros(length(t) - 1, size(F, 2) - 1)
+							]
+						];
+					end
 				end
 			end
 			if nargout >= 1
@@ -2773,9 +2831,10 @@ classdef SolutionSet < handle
 			else
 				figure('Name', ['ID:', num2str(this.ids(idx, 1))]);
 			end
-			nplot = number_controls + number_measurements;
+			nplot = number_controls + number_references + number_measurements;
 			plotdisplay = [
 				use_measurements;
+				use_references;
 				use_controls
 			];
 			plotdisplayidx = cumsum(plotdisplay);
@@ -2788,15 +2847,27 @@ classdef SolutionSet < handle
 					B = systems(ii).B;
 					C = systems(ii).C;
 					D = systems(ii).D;
+				if isfield(systems(ii), 'C_ref')
+					C_ref = systems(ii).C_ref;
+				else
+					C_ref = zeros(0, size(A, 1));
+				end
+				if isfield(systems(ii), 'D_ref')
+					D_ref = systems(ii).D_ref;
+				else
+					D_ref = zeros(0, size(B, 2));
+				end
 
 					Acl = A - B*Ropt*C;
 					Bcl = B*F;
 
 					Gcl = ss(Acl, Bcl, [
 						C - D*Ropt*C;
+					C_ref - D_ref*Ropt*C;
 						-Ropt*C
 					], [
 						D*F;
+					D_ref*F;
 						F
 					], T);
 					%y(:, (1:nplot) + nplot*(ii - 1)) = lsim(Gcl, w, t);
@@ -2817,8 +2888,10 @@ classdef SolutionSet < handle
 						grid('on');
 						if jj <= number_measurements
 							ylabel(['$y_{', num2str(jj), '}$']);
+					elseif jj <= number_measurements + number_references
+						ylabel(['$y_{ref, ', num2str(jj - number_measurements), '}$']);
 						else
-							ylabel(['$u_{', num2str(jj - number_measurements), '}$']);
+						ylabel(['$u_{', num2str(jj - number_measurements - number_references), '}$']);
 						end
 						axis('tight');
 					end
@@ -2832,15 +2905,27 @@ classdef SolutionSet < handle
 				B = systems(ii).B;
 				C = systems(ii).C;
 				D = systems(ii).D;
+					if isfield(systems(ii), 'C_ref')
+						C_ref = systems(ii).C_ref;
+					else
+						C_ref = zeros(0, size(A, 1));
+					end
+					if isfield(systems(ii), 'D_ref')
+						D_ref = systems(ii).D_ref;
+					else
+						D_ref = zeros(0, size(B, 2));
+					end
 
 				Acl = A - B*Ropt*C;
 				Bcl = B*F;
 
 				Gcl = ss(Acl, Bcl, [
 					C - D*Ropt*C;
+						C_ref - D_ref*Ropt*C;
 					-Ropt*C
 				], [
 					D*F;
+						D_ref*F;
 					F
 				], T);
 				%y(:, (1:nplot) + nplot*(ii - 1)) = lsim(Gcl, w, t);
@@ -2863,8 +2948,10 @@ classdef SolutionSet < handle
 					grid('on');
 					if jj <= number_measurements
 						ylabel(['$y_{', num2str(jj), '}$']);
+						elseif jj <= number_measurements + number_references
+							ylabel(['$y_{ref, ', num2str(jj - number_measurements), '}$']);
 					else
-						ylabel(['$u_{', num2str(jj - number_measurements), '}$']);
+							ylabel(['$u_{', num2str(jj - number_measurements - number_references), '}$']);
 					end
 					axis('tight');
 				end
