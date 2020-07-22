@@ -413,6 +413,9 @@ function [Ropt, Jopt, information] = gammasyn_couplingcontrol(systems, areafun, 
 			% TODO: allow unconstrained by transforming to objective function?
 			error('control:design:gamma:input', 'For numeric coupling controller design, ''ProblemType'' must be CONSTRAINED or CONSTRAINEDMULTI.');
 		end
+		R_fixed_tilde = {
+			R_fixed_tilde, K_fixed_tilde, F_fixed_tilde, RKF_fixed_tilde
+		};
 	else
 		% calculate structural constraints
 		[RF_fixed_tilde, valid, message] = coupling_RF_fixed(systems_tilde, objectiveoptions, solveroptions, descriptor);
