@@ -1,7 +1,7 @@
-clear; %close all;
+clear; close all;
 
 %% Settings
-[systems, system_properties] = example.load_system_coupling('descriptor_system');
+[systems, system_properties] = example.load_system_coupling('threetank');
 % EXACT								structurally constrained controller only EXAKT solution
 % APPROXIMATE						structurally constrained controller also approximate solution
 % NUMERIC_NONLINEAR_EQUALITY		fully numeric design with non-linear equality constraints
