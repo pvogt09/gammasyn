@@ -36,6 +36,9 @@ function [couplingoptions] = checkobjectiveoptions_coupling(couplingoptions)
 			if ~isfield(couplingoptions, 'weight_coupling')
 				couplingoptions.weight_coupling = coupling_prototype.weight_coupling;
 			end
+			if ~isfield(couplingoptions, 'weight_prefilter')
+				couplingoptions.weight_prefilter = coupling_prototype.weight_prefilter;
+			end
 			if ~isfield(couplingoptions, 'solvesymbolic')
 				couplingoptions.solvesymbolic = coupling_prototype.solvesymbolic;
 			end
@@ -89,6 +92,18 @@ function [couplingoptions] = checkobjectiveoptions_coupling(couplingoptions)
 	end
 	if couplingoptions.weight_coupling < 0
 		error('control:design:gamma', 'Weight for coupling constraints must be nonnegative.');
+	end
+	if isempty(couplingoptions.weight_prefilter)
+		couplingoptions.weight_prefilter = 1;
+	end
+	if ~isscalar(couplingoptions.weight_prefilter) || ~isnumeric(couplingoptions.weight_prefilter)
+		error('control:design:gamma', 'Weight for prefilter coupling condition constraints must be a numeric scalar.');
+	end
+	if isnan(couplingoptions.weight_prefilter) || isinf(couplingoptions.weight_prefilter)
+		error('control:design:gamma', 'Weight for prefilter coupling condition constraints must be finite.');
+	end
+	if couplingoptions.weight_prefilter < 0
+		error('control:design:gamma', 'Weight for prefilter coupling constraints must be nonnegative.');
 	end
 	if isempty(couplingoptions.tolerance_coupling)
 		couplingoptions.tolerance_coupling = NaN;

@@ -352,7 +352,7 @@ function [value, validvalue, errmsg, errid, validfield] = objectiveoptions_check
 			if ~validvalue
 				errid = 'control:design:gamma:input';
 			end
-		case {'weight_coupling'}
+		case {'weight_coupling', 'weight_prefilter'}
 			% non-negative real or empty
 			oldvalue = value;
 			if isempty(value)

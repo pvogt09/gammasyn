@@ -199,10 +199,10 @@ function [c, ceq, gradc, gradceq] = calculate_coupling_conditions(system, R, ~, 
 		ceq = options.couplingcontrol.weight_coupling*ceq_raw;
 	elseif options.couplingcontrol.couplingstrategy == GammaCouplingStrategy.NUMERIC_NONLINEAR_INEQUALITY
 		tolerance_vec = options.couplingcontrol.tolerance_coupling*ones(size(ceq_raw, 1), 1);
-		c = options.couplingcontrol.weight_coupling*[
-			ceq_raw - tolerance_vec;
-			-ceq_raw - tolerance_vec;
-			c_F1
+		c = [
+			options.couplingcontrol.weight_coupling*(ceq_raw - tolerance_vec);
+			options.couplingcontrol.weight_coupling*(-ceq_raw - tolerance_vec);
+			options.couplingcontrol.weight_prefilter*c_F1
 		];
 		ceq = zeros(0, 1);
 	else
@@ -246,11 +246,11 @@ function [c, ceq, gradc, gradceq] = calculate_coupling_conditions(system, R, ~, 
 			grad_F_T
 		];
 		if options.couplingcontrol.couplingstrategy == GammaCouplingStrategy.NUMERIC_NONLINEAR_EQUALITY
-			gradc = options.couplingcontrol.weight_coupling*grad_F1;
+			gradc = options.couplingcontrol.weight_prefilter*grad_F1;
 			gradceq = options.couplingcontrol.weight_coupling*gradceq_raw;
 		elseif options.couplingcontrol.couplingstrategy == GammaCouplingStrategy.NUMERIC_NONLINEAR_INEQUALITY
 			gradc = options.couplingcontrol.weight_coupling*[
-				gradceq_raw, -gradceq_raw, grad_F1
+				options.couplingcontrol.weight_coupling*gradceq_raw, options.couplingcontrol.weight_coupling*-gradceq_raw, options.couplingcontrol.weight_prefilter*grad_F1
 			];
 			gradceq = zeros(number_coefficients, 0);
 		else
