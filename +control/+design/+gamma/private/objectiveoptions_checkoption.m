@@ -352,6 +352,17 @@ function [value, validvalue, errmsg, errid, validfield] = objectiveoptions_check
 			if ~validvalue
 				errid = 'control:design:gamma:input';
 			end
+		case {'weight_coupling'}
+			% non-negative real or empty
+			oldvalue = value;
+			if isempty(value)
+				value = 1;
+			end
+			[validvalue, errmsg, errid] = nonNegReal(field, value);
+			value = oldvalue;
+			if ~validvalue
+				errid = 'control:design:gamma:input';
+			end
 		otherwise
 			% External users should not get here. We throw an error to remind
 			% internal callers that they need to add new options to this

@@ -195,11 +195,11 @@ function [c, ceq, gradc, gradceq] = calculate_coupling_conditions(system, R, ~, 
 	normF1 = options.couplingcontrol.tolerance_prefilter;% parameter to avoid trivial solution for prefilter
 	c_F1 = -trace(F1.'*F1) + normF1;% has no complex values and no complex gradient
 	if options.couplingcontrol.couplingstrategy == GammaCouplingStrategy.NUMERIC_NONLINEAR_EQUALITY
-		c = c_F1;
-		ceq = ceq_raw;
+		c = options.couplingcontrol.weight_coupling*c_F1;
+		ceq = options.couplingcontrol.weight_coupling*ceq_raw;
 	elseif options.couplingcontrol.couplingstrategy == GammaCouplingStrategy.NUMERIC_NONLINEAR_INEQUALITY
 		tolerance_vec = options.couplingcontrol.tolerance_coupling*ones(size(ceq_raw, 1), 1);
-		c = [
+		c = options.couplingcontrol.weight_coupling*[
 			ceq_raw - tolerance_vec;
 			-ceq_raw - tolerance_vec;
 			c_F1
@@ -207,7 +207,7 @@ function [c, ceq, gradc, gradceq] = calculate_coupling_conditions(system, R, ~, 
 		ceq = zeros(0, 1);
 	else
 		c = zeros(0, 1);
-		ceq = ceq_raw;
+		ceq = options.couplingcontrol.weight_coupling*ceq_raw;
 	end
 	if needsgradient
 		ceq_grad_pre = [
@@ -246,16 +246,16 @@ function [c, ceq, gradc, gradceq] = calculate_coupling_conditions(system, R, ~, 
 			grad_F_T
 		];
 		if options.couplingcontrol.couplingstrategy == GammaCouplingStrategy.NUMERIC_NONLINEAR_EQUALITY
-			gradc = grad_F1;
-			gradceq = gradceq_raw;
+			gradc = options.couplingcontrol.weight_coupling*grad_F1;
+			gradceq = options.couplingcontrol.weight_coupling*gradceq_raw;
 		elseif options.couplingcontrol.couplingstrategy == GammaCouplingStrategy.NUMERIC_NONLINEAR_INEQUALITY
-			gradc = [
+			gradc = options.couplingcontrol.weight_coupling*[
 				gradceq_raw, -gradceq_raw, grad_F1
 			];
 			gradceq = zeros(number_coefficients, 0);
 		else
 			gradc = zeros(number_coefficients, 0);
-			gradceq = gradceq_raw;
+			gradceq = options.couplingcontrol.weight_coupling*gradceq_raw;
 		end
 	end
 end
