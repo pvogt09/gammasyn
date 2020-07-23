@@ -106,6 +106,12 @@ function [objective_options_strict, objective_options_loose, solution_strategy, 
 				% use default strategy in case coupling controller design is requested
 				objectiveoptions.couplingcontrol.couplingstrategy = [];
 			end
+			if ~isfield(objectiveoptions.couplingcontrol, 'weight_coupling')
+				objectiveoptions.couplingcontrol.weight_coupling = coupling_prototype.weight_coupling;
+			end
+			if ~isfield(objectiveoptions.couplingcontrol, 'weight_prefilter')
+				objectiveoptions.couplingcontrol.weight_prefilter = coupling_prototype.weight_prefilter;
+			end
 			if ~isfield(objectiveoptions.couplingcontrol, 'tolerance_coupling')
 				objectiveoptions.couplingcontrol.tolerance_coupling = coupling_prototype.tolerance_coupling;
 			end
