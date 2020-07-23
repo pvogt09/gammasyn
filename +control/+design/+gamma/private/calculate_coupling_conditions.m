@@ -215,8 +215,8 @@ function [c, ceq, gradc, gradceq] = calculate_coupling_conditions(system, R, ~, 
 		];
 		ceq_grad_r = ceq_grad_pre(1:number_states*number_controls, :);
 		ceq_grad_f = ceq_grad_pre(number_states*number_controls + 1:end, :);
-		if dimensions.K_fixed_has
-			ceq_grad_r_T = ((ceq_grad_r.')*dimensions.K_fixed_T_inv).';
+		if dimensions.R_fixed_has
+			ceq_grad_r_T = ((ceq_grad_r.')*dimensions.R_fixed_T_inv).';
 		else
 			ceq_grad_r_T = ceq_grad_r;
 		end
