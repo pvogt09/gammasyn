@@ -18,10 +18,10 @@ function [system, system_properties] = load_system(sys_string)
 	%% system database
 	switch sys_string
 		case {'threetank', 'threetank_exact', 'threetank_feedthrough'}
-			A_handle = @(q1,q2,q3,x10,x20,x30,A1,A2,A3)sqrt(981/2)*[
-				-q1/A1/(x10-x20), q1/A1/(x10-x20), 0;
-				q1/A2/(x10-x20), -1/A2*(q1/(x10-x20) + q2/(x20-x30)), q2/A2/(x20-x30);
-				0, q2/A3/(x20-x30), -1/A3*(q2/(x20-x30)+q3/x30)
+			A_handle = @(q1,q2,q3,x10,x20,x30,A1,A2,A3) sqrt(981/2)*[
+				-q1/A1/(x10-x20),	q1/A1/(x10-x20),						0;
+				q1/A2/(x10-x20),	-1/A2*(q1/(x10-x20) + q2/(x20-x30)),	q2/A2/(x20-x30);
+				0,					q2/A3/(x20-x30),						-1/A3*(q2/(x20-x30)+q3/x30)
 			];
 			B_handle = @(A1,A3)[1/A1 0; 0 0; 0 1/A3];
 			C_ref = [1 0 0; 1 -1 0];
@@ -47,6 +47,22 @@ function [system, system_properties] = load_system(sys_string)
 					4	4	8	19   18  17  150 150 140;
 					% exact design
 				];
+% 				params =   [% exact design more realistic parameters
+% 						0.8	0.8	0.8	13   10  9   140 140 140;
+% 						5	4	4	13   10  9   100 100 100;
+% 						6	4	4	13   10  9   100 100 100;
+% 						7	4	4	13   11  10  100 100 100;
+% 						8	4	5	13   12  11  100 100 100;
+% 						9	4	6	14   13  12  100 100 100;
+% 						10	4	7	15   14  13  100 100 100;
+% 						4	4	8	16   15  14  150 150 110;
+% 						4	4	8	17   16  15  150 150 120;
+% 						4	4	8	18   17  16  150 150 130;
+% 						4	4	8	19   18  17  150 150 140;
+% 						% exact design
+% 				];
+% 				params(:, 1:3) = params(:, 1:3)./5;
+% 				params(:, 7:9) = params(:, 7:9)./2;
 			else
 				params = [
 					% approximate design
@@ -316,6 +332,7 @@ function [system, system_properties] = load_system(sys_string)
 		'number_references',			number_references,...
 		'number_couplingconditions',	number_couplingconditions,...
 		'number_models',				number_models,...
-		'RKF_0',						{RKF_0}...
+		'RKF_0',						{RKF_0},...
+		'name',							sys_string...
 	);
 end
