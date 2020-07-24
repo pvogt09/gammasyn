@@ -943,14 +943,14 @@ function [eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivativ
 								if needsgradienteigenvectorsleft
 									for ll = 1:number_controls
 										for hh = 1:number_measurements
-											eigenvectors_left_derivative_temp(:, :, ll, hh) = -eigenvectors_left*eigenvectors_right_derivative_temp(:, :, ll, hh)*eigenvectors_left;
+											eigenvectors_left_derivative_temp(:, :, ll, hh) = -eigenvectors_left*eigenvectors_right_derivative_temp(:, :, ll, hh)'*eigenvectors_left;
 										end
 									end
 								end
 								if needsgradienteigenvectorsleft_xdot && number_measurements_xdot > 0
 									for ll = 1:number_controls
 										for hh = 1:number_measurements_xdot
-											eigenvectors_left_derivative_xdot_temp(:, :, ll, hh) = -eigenvectors_left*eigenvectors_right_derivative_xdot_temp(:, :, ll, hh)*eigenvectors_left;
+											eigenvectors_left_derivative_xdot_temp(:, :, ll, hh) = -eigenvectors_left*eigenvectors_right_derivative_xdot_temp(:, :, ll, hh)'*eigenvectors_left;
 										end
 									end
 								end
