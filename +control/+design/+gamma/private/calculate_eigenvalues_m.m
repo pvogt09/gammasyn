@@ -880,6 +880,10 @@ function [eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivativ
 														-b_ll*system(ii).C(hh, :)*eigenvectors_right(:, kk)
 													];
 													temp = mat_right\vec_right;
+													if sign(temp(end, 1)) ~= sign(eigenvalue_derivative_temp(kk, ll, hh))
+														% change sign to match already calculated eigenvalue derivative in last element of temp
+														temp = -temp;
+													end
 													eigenvectors_right_derivative_temp(kk, :, ll, hh) = temp(1:system_order);
 													%if needsgradienteigenvectorsleft
 														% TODO: does not work, is instead calculated later in dependence of right eigenvector derivative like in [#STRUBEL2014]
@@ -899,6 +903,10 @@ function [eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivativ
 															ev(kk)*b_ll*system(ii).C_dot(jj, :)*eigenvectors_right(:, kk)
 														];
 														temp = mat_right\vec_right;
+														if sign(temp(end, 1)) ~= sign(eigenvalue_derivative_xdot_temp(kk, ll, jj))
+															% change sign to match already calculated eigenvalue derivative in last element of temp
+															temp = -temp;
+														end
 														eigenvectors_right_derivative_xdot_temp(kk, :, ll, jj) = temp(1:system_order);
 														%if needsgradienteigenvectorsleft_xdot
 															% TODO: does not work, is instead calculated later in dependence of right eigenvector derivative like in [#STRUBEL2014]
