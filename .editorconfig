@@ -16,6 +16,14 @@ trim_trailing_whitespace = unset
 insert_final_newline = true
 trim_trailing_whitespace = true
 
+[*.md]
+insert_final_newline = false
+indent_style = tab
+indent_size = tab
+tab_width = 4
+charset = unset
+trim_trailing_whitespace = true
+
 # Matlab files
 [*.{m,c,cpp,h,hpp}]
 insert_final_newline = false

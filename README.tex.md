@@ -43,10 +43,10 @@ This allows to define a good control performance for plants near the rated plant
 
 * Matlab R2015B (might also work with older versions but is not tested) (Octave is not supported because it does not support packages)
 * Toolboxes:
-  * Matlab Coder (optional, if objective and constraint functions should be compiled. If the eigenvalue derivative calculation method of van der Aa is to be used, at least Matlab R2016A is needed to support runtime recursion in generated code)
-  * Control Systems Toolbox (optional, if `tf` and `ss` system descriptions should be used)
-  * Robust Control Toolbox (optional, if uncertain or parametric system descriptions should be used)
-  * Symbolic Toolbox (optional, if symbolic constraints should be used)
+	* Matlab Coder (optional, if objective and constraint functions should be compiled. If the eigenvalue derivative calculation method of van der Aa is to be used, at least Matlab R2016A is needed to support runtime recursion in generated code)
+	* Control Systems Toolbox (optional, if `tf` and `ss` system descriptions should be used)
+	* Robust Control Toolbox (optional, if uncertain or parametric system descriptions should be used)
+	* Symbolic Toolbox (optional, if symbolic constraints should be used)
 
 If optimizers of the Optimization Toolbox or Global Optimization Toolbox of Matlab are used, the corresponding toolbox is necessary.
 
@@ -72,37 +72,37 @@ Therefore, it is recommended to execute this script with a cleared base workspac
 For the minimal examples the test system is a simple one-mass-oscillator described by
 
 $$
-    \begin{aligned}
-        \frac{\mathrm{d}}{\mathrm{dt}}\begin{bmatrix} x \\ \dot x \end{bmatrix}
-          & =
-            \begin{bmatrix} 0 & 1 \\ - \frac{c}{m} & - \frac{d}{m} \end{bmatrix}
-            \cdot
-            \begin{bmatrix} x \\ \dot x \end{bmatrix}
-            +
-            \begin{bmatrix} 0 \\ \frac{1}{m} \end{bmatrix} \cdot u \\[2mm]
-        y & = \begin{bmatrix} 1 & 0 \end{bmatrix} \cdot \begin{bmatrix} x \\ \dot x \end{bmatrix}
-    \end{aligned}
+	\begin{aligned}
+		\frac{\mathrm{d}}{\mathrm{dt}}\begin{bmatrix} x \\ \dot x \end{bmatrix}
+		& =
+			\begin{bmatrix} 0 & 1 \\ - \frac{c}{m} & - \frac{d}{m} \end{bmatrix}
+			\cdot
+			\begin{bmatrix} x \\ \dot x \end{bmatrix}
+			+
+			\begin{bmatrix} 0 \\ \frac{1}{m} \end{bmatrix} \cdot u \\[2mm]
+		y & = \begin{bmatrix} 1 & 0 \end{bmatrix} \cdot \begin{bmatrix} x \\ \dot x \end{bmatrix}
+	\end{aligned}
 $$
 
 The nominal parameters are $m = 1$, $d = 10$ and $c = 1000$.
 For the robust design the parameters $m$ and $d$ are assumed to be uncertain, given by
 
 $$
-    \begin{aligned}
-        m & \in [0.9,\ 1.1] \\
-        d & \in [8,\ 12]
-    \end{aligned}
+	\begin{aligned}
+		m & \in [0.9,\ 1.1] \\
+		d & \in [8,\ 12]
+	\end{aligned}
 $$
 
 The following function is used in the examples to construct the system for given parameter values $m$, $d$ and $c$:
 ```matlab
 function sys = omo_sys(m, d, c)
 
-    A = [0, 1; -c/m, -d/m];
-    B = [0; 1/m];
-    C = [1, 0];
+	A = [0, 1; -c/m, -d/m];
+	B = [0; 1/m];
+	C = [1, 0];
 
-    sys = struct('A', A, 'B', B, 'C', C);
+	sys = struct('A', A, 'B', B, 'C', C);
 
 end
 ```
@@ -127,15 +127,15 @@ The target region is the sector shown in the following image.
 It can be defined by
 ```matlab
 polearea = [
-    control.design.gamma.area.Line(1, 0),...
-    control.design.gamma.area.Imag(1, 1)
+	control.design.gamma.area.Line(1, 0),...
+	control.design.gamma.area.Imag(1, 1)
 ];
 ```
 
 For this example the solution can be determined analytically:
 
 $$
-    R \in [-991,\ -950]
+	R \in [-991,\ -950]
 $$
 
 ($R$ is negative, which means that it is actually positive feedback.
@@ -263,29 +263,29 @@ As will be discussed later, this is actually not a restriction, as any dynamic f
 In the simplest form for this framework a system is given by the three matrices $A$, $B$ and $C$ of the state space representation
 
 $$
-    \begin{aligned}
-        \dot x & = A x + B u \\
-        y & = C x
-    \end{aligned}
+	\begin{aligned}
+		\dot x & = A x + B u \\
+		y & = C x
+	\end{aligned}
 $$
 
 and the control loop is to be closed with the controller
 
 $$
-    u = -R y + F r
+	u = -R y + F r
 $$
 
 where $r$ is the reference value.
 This leads to a closed loop
 
 $$
-    \dot x = (A - B R C) \cdot x + B F r
+	\dot x = (A - B R C) \cdot x + B F r
 $$
 
 whose poles $\lambda_\nu$ are the solutions of the eigenvalue problem
 
 $$
-    \det(I \lambda_\nu - (A - B R C)) = 0
+	\det(I \lambda_\nu - (A - B R C)) = 0
 $$
 
 
@@ -294,10 +294,10 @@ $$
 As a small notational convenience in some cases, the model can be described as
 
 $$
-    \begin{aligned}
-        E \dot x & = A x + B u \\
-        y & = C x
-    \end{aligned}
+	\begin{aligned}
+		E \dot x & = A x + B u \\
+		y & = C x
+	\end{aligned}
 $$
 
 with the *invertible* mass matrix $E$.
@@ -305,7 +305,7 @@ with the *invertible* mass matrix $E$.
 The feedback has the same form as above which leads to the associated eigenvalue problem
 
 $$
-    \det(E \lambda_\nu - (A - B R C)) = 0
+	\det(E \lambda_\nu - (A - B R C)) = 0
 $$
 
 to determine the eigenvalues or poles of the closed loop system.
@@ -316,24 +316,24 @@ to determine the eigenvalues or poles of the closed loop system.
 To allow modeling true differential feedback, the model can be extended to
 
 $$
-    \begin{aligned}
-        \dot x & = A x + B u \\
-        y & = C x \\
-        y' & = C' \dot x
-    \end{aligned}
+	\begin{aligned}
+		\dot x & = A x + B u \\
+		y & = C x \\
+		y' & = C' \dot x
+	\end{aligned}
 $$
 
 for which the controller has the structure
 
 $$
-    u = - R y + K y' + F r
+	u = - R y + K y' + F r
 $$
 
 * The prime-notation $y'$ is not the same as $\dot y$ but allows that not all or others outputs are used for the differential feedback than for the "normal" feedback. If all outputs should be used for the differential feedback, i.e. $y' = \dot y$, then $C' = C$ can be chosen.
 * The differential feedback is defined as positive feedback whereas the normal feedback is defined as negative feedback. This is a deliberate choice which leads to a more symmetric generalized eigenvalue problem
 
 $$
-    \det((I - B K C') \cdot \lambda_\nu - (A - B R C)) = 0
+	\det((I - B K C') \cdot \lambda_\nu - (A - B R C)) = 0
 $$
 
 
@@ -344,11 +344,11 @@ As the model used here is an augmented system, as discussed below, the output $y
 Therefore, the process variables for which sensible reference values (or set points) exist are described by an additional output equation:
 
 $$
-    \begin{aligned}
-        \dot x & = A x + B u \\
-        y & = C x \\
-        y_\mathrm{ref} & = C_\mathrm{ref} x + D_\mathrm{ref} u
-    \end{aligned}
+	\begin{aligned}
+		\dot x & = A x + B u \\
+		y & = C x \\
+		y_\mathrm{ref} & = C_\mathrm{ref} x + D_\mathrm{ref} u
+	\end{aligned}
 $$
 
 
@@ -358,24 +358,24 @@ $$
 Combining all extensions, the most general system description used by this toolbox is
 
 $$
-    \begin{aligned}
-        E \dot x & = A x + B u \\
-        y & = C x \\
-        y' & = C' \dot x \\
-        y_\mathrm{ref} & = C_\mathrm{ref} x + D_\mathrm{ref} u
-    \end{aligned}
+	\begin{aligned}
+		E \dot x & = A x + B u \\
+		y & = C x \\
+		y' & = C' \dot x \\
+		y_\mathrm{ref} & = C_\mathrm{ref} x + D_\mathrm{ref} u
+	\end{aligned}
 $$
 
 where $E$ must be an invertible matrix and the controller is given by
 
 $$
-    u = - R y + K y' + F r
+	u = - R y + K y' + F r
 $$
 
 The eigenvalues or poles of the closed loop are the solution of the generalized eigenvalue problem
 
 $$
-    \det((E - B K C') \cdot \lambda_\nu - (A - B R C)) = 0
+	\det((E - B K C') \cdot \lambda_\nu - (A - B R C)) = 0
 $$
 
 The structure is depicted here:
@@ -389,18 +389,18 @@ The structure is depicted here:
 The discrete time model is defined analogously to the continuous time case as
 
 $$
-    \begin{aligned}
-        E x_{k + 1} & = A x_k + B u_k \\
-        y_k & = C x_k \\
-        y'_k & = C' x_{k+1} \\
-        y_{\mathrm{ref}, k} & = C_\mathrm{ref} x_k + D_\mathrm{ref} u_k
-    \end{aligned}
+	\begin{aligned}
+		E x_{k + 1} & = A x_k + B u_k \\
+		y_k & = C x_k \\
+		y'_k & = C' x_{k+1} \\
+		y_{\mathrm{ref}, k} & = C_\mathrm{ref} x_k + D_\mathrm{ref} u_k
+	\end{aligned}
 $$
 
 where $E$ must be an invertible matrix and the controller is given by
 
 $$
-    u_k = - R y_k + K y'_k + F r_k
+	u_k = - R y_k + K y'_k + F r_k
 $$
 
 The discrete time analogous "derivative" output $y'_k$ is only defined for accordance with the continuous time system matrices and serves no engineering purpose because it results in a non causal system.
@@ -421,52 +421,52 @@ However, this is a very general approach, as all the controller dynamics can be 
 If for example the system
 
 $$
-    \begin{aligned}
-        \dot x & = A x + B u \\
-        y & = C x
-    \end{aligned}
+	\begin{aligned}
+		\dot x & = A x + B u \\
+		y & = C x
+	\end{aligned}
 $$
 
 is to be controlled by a PI-controller
 
 $$
-    u = K_\mathrm{P} e + K_\mathrm{I} \int e \mathrm{d} \tau
+	u = K_\mathrm{P} e + K_\mathrm{I} \int e \mathrm{d} \tau
 $$
 
 with $e = r - y$, $r$ being the reference value, which can be written in the state space representation
 
 $$
-    \begin{aligned}
-        \dot x_\mathrm{I} & = 0 x_\mathrm{I} - I y + I r \\
-        u & = K_\mathrm{I} x_\mathrm{I} - K_\mathrm{P} y + K_\mathrm{P} r
-    \end{aligned}
+	\begin{aligned}
+		\dot x_\mathrm{I} & = 0 x_\mathrm{I} - I y + I r \\
+		u & = K_\mathrm{I} x_\mathrm{I} - K_\mathrm{P} y + K_\mathrm{P} r
+	\end{aligned}
 $$
 
 the resulting augmented system is
 
 $$
-    \begin{aligned}
-        \begin{bmatrix} \dot x \\ \dot x_\mathrm{I} \end{bmatrix}
-            & =
-                \begin{bmatrix} A & 0 \\ 0 & 0 \end{bmatrix}
-                \begin{bmatrix} x \\ x_\mathrm{I} \end{bmatrix}
-                +
-                \begin{bmatrix} B & 0 \\ 0 & I \end{bmatrix}
-                u_\mathrm{a} \\
-        y_\mathrm{a}
-            & =
-                \begin{bmatrix} C & 0 \\ 0 & I \end{bmatrix}
-                \begin{bmatrix} x \\ x_\mathrm{I} \end{bmatrix}
-    \end{aligned}
+	\begin{aligned}
+		\begin{bmatrix} \dot x \\ \dot x_\mathrm{I} \end{bmatrix}
+			& =
+				\begin{bmatrix} A & 0 \\ 0 & 0 \end{bmatrix}
+				\begin{bmatrix} x \\ x_\mathrm{I} \end{bmatrix}
+				+
+				\begin{bmatrix} B & 0 \\ 0 & I \end{bmatrix}
+				u_\mathrm{a} \\
+		y_\mathrm{a}
+			& =
+				\begin{bmatrix} C & 0 \\ 0 & I \end{bmatrix}
+				\begin{bmatrix} x \\ x_\mathrm{I} \end{bmatrix}
+	\end{aligned}
 $$
 
 to which the static output feedback
 
 $$
-    u_\mathrm{a}
-        =
-            - \underbrace{\begin{bmatrix} K_\mathrm{P} & -K_\mathrm{I} \\ I & 0 \end{bmatrix}}_{K} y_\mathrm{a}
-            + \begin{bmatrix} K_\mathrm{P} \\ I \end{bmatrix} r
+	u_\mathrm{a}
+		=
+			- \underbrace{\begin{bmatrix} K_\mathrm{P} & -K_\mathrm{I} \\ I & 0 \end{bmatrix}}_{K} y_\mathrm{a}
+			+ \begin{bmatrix} K_\mathrm{P} \\ I \end{bmatrix} r
 $$
 
 is applied.
@@ -475,34 +475,34 @@ This is a *structured* feedback, as the second row of the feedback matrix $R$ do
 More generally, if the given system is controlled with a general dynamic controller
 
 $$
-    \begin{aligned}
-        \dot x_\mathrm{D} & = A_\mathrm{D} x_\mathrm{D} + B_\mathrm{D} y + F_1 r \\
-        u & = C_\mathrm{D} x_\mathrm{D} + D_\mathrm{D} y + F_2 r
-    \end{aligned}
+	\begin{aligned}
+		\dot x_\mathrm{D} & = A_\mathrm{D} x_\mathrm{D} + B_\mathrm{D} y + F_1 r \\
+		u & = C_\mathrm{D} x_\mathrm{D} + D_\mathrm{D} y + F_2 r
+	\end{aligned}
 $$
 
 (where $A_\mathrm{D}$ to $D_\mathrm{D}$ may be structured) the augmented system is
 
 $$
-    \begin{aligned}
-        \begin{bmatrix} \dot x \\ \dot x_\mathrm{D} \end{bmatrix}
-            & =
-                \begin{bmatrix} A & 0 \\ 0 & 0 \end{bmatrix}
-                \begin{bmatrix} x \\ x_\mathrm{D} \end{bmatrix}
-                +
-                \begin{bmatrix} B & 0 \\ 0 & I \end{bmatrix}
-                u_\mathrm{a} \\
-        y_\mathrm{a}
-            & =
-                \begin{bmatrix} C & 0 \\ 0 & I\end{bmatrix}
-                \begin{bmatrix} x \\ x_\mathrm{D} \end{bmatrix}
-    \end{aligned}
+	\begin{aligned}
+		\begin{bmatrix} \dot x \\ \dot x_\mathrm{D} \end{bmatrix}
+			& =
+				\begin{bmatrix} A & 0 \\ 0 & 0 \end{bmatrix}
+				\begin{bmatrix} x \\ x_\mathrm{D} \end{bmatrix}
+				+
+				\begin{bmatrix} B & 0 \\ 0 & I \end{bmatrix}
+				u_\mathrm{a} \\
+		y_\mathrm{a}
+			& =
+				\begin{bmatrix} C & 0 \\ 0 & I \end{bmatrix}
+				\begin{bmatrix} x \\ x_\mathrm{D} \end{bmatrix}
+	\end{aligned}
 $$
 
 which is closed by
 
 $$
-    u_\mathrm{a} = - \underbrace{\begin{bmatrix} -D_\mathrm{D} & -C_\mathrm{D} \\ -B_\mathrm{D} & -A_\mathrm{D} \end{bmatrix}}_{K} y_\mathrm{a} + \underbrace{\begin{bmatrix} F_2 \\ F_1 \end{bmatrix}}_{F} r
+	u_\mathrm{a} = - \underbrace{\begin{bmatrix} -D_\mathrm{D} & -C_\mathrm{D} \\ -B_\mathrm{D} & -A_\mathrm{D} \end{bmatrix}}_{K} y_\mathrm{a} + \underbrace{\begin{bmatrix} F_2 \\ F_1 \end{bmatrix}}_{F} r
 $$
 
 where $R$ (and $F$) are generally structured corresponding to the structure of $A_\mathrm{D}$ to $D_\mathrm{D}$ (and $F_1$ and $F_2$).
@@ -525,7 +525,7 @@ This toolbox distinguishes between two regions:
 For a compact notation, the real part of a complex value is written as $\sigma$ and the imaginary part as $\omega$, i.e. for example
 
 $$
-    \lambda_\nu = \sigma_\nu + \mathrm{j} \omega_\nu
+	\lambda_\nu = \sigma_\nu + \mathrm{j} \omega_\nu
 $$
 
 
@@ -535,12 +535,12 @@ A region is defined by one or the intersection of more areas.
 Here, "area" refers to the "left side" of a curve in the complex plane.
 
 $$
-    z_\rho(\sigma,\ \omega)
-        \begin{cases}
-            < 0 & \sigma + \mathrm{j} \omega \textnormal{ lies left of the curve} \\
-            = 0 & \sigma + \mathrm{j} \omega \textnormal{ lies on the curve} \\
-            > 0 & \sigma + \mathrm{j} \omega \textnormal{ lies right of the curve}
-        \end{cases}
+	z_\rho(\sigma,\ \omega)
+		\begin{cases}
+			< 0 & \sigma + \mathrm{j} \omega \textnormal{ lies left of the curve} \\
+			= 0 & \sigma + \mathrm{j} \omega \textnormal{ lies on the curve} \\
+			> 0 & \sigma + \mathrm{j} \omega \textnormal{ lies right of the curve}
+		\end{cases}
 $$
 
 Depending on the optimizer, a function $z_\rho(\sigma,\ \omega)$ should be differentiable twice after each argument.
@@ -549,13 +549,13 @@ A region is defined as a set of areas, $\Gamma = \{z_1,\ \ldots,\ z_r\}$.
 The condition that all poles lie within this area translates to
 
 $$
-    z_\rho(\sigma_\nu,\ \omega_\nu) \leq 0 \forall \rho = 1,\ \ldots,\ r, \ \forall \nu = 1,\ \ldots, n
+	z_\rho(\sigma_\nu,\ \omega_\nu) \leq 0 \forall \rho = 1,\ \ldots,\ r, \ \forall \nu = 1,\ \ldots, n
 $$
 
 For the robust case, where $m$ models are to be considered, the condition is
 
 $$
-    z_{\mu \rho}(\sigma_{\mu \nu},\ \omega_{\mu \nu}) \leq 0 \forall \rho = 1,\ \ldots,\ r_\mu, \ \forall \nu = 1,\ \ldots, n_\mu, \ \forall \mu = 1,\ \ldots,\ m
+	z_{\mu \rho}(\sigma_{\mu \nu},\ \omega_{\mu \nu}) \leq 0 \forall \rho = 1,\ \ldots,\ r_\mu, \ \forall \nu = 1,\ \ldots, n_\mu, \ \forall \mu = 1,\ \ldots,\ m
 $$
 
 * The region may depend on the model $\mu$. This can be important from a practical point of view. If the uncertainty is rather large one may have to loosen the performance goals, described by the region, for corner case models.
@@ -571,7 +571,7 @@ As there are two pole regions, $\Gamma_\mathrm{hard}$ and $\Gamma_\mathrm{soft}$
 The aim is to determine the matrices of the controller
 
 $$
-    u = - R y + K y' + F r
+	u = - R y + K y' + F r
 $$
 
 
@@ -581,19 +581,19 @@ Generally it is structured feedback, that is, the matrices cannot be chosen free
 Mathematically fixed entries and linear dependencies between different entries can be expressed in the form
 
 $$
-    \begin{aligned}
-        Z_\mathrm{R,{\scriptscriptstyle=}} \cdot \mathrm{vec}(R) & = z_\mathrm{R,{\scriptscriptstyle=}} \\
-        Z_\mathrm{K,{\scriptscriptstyle=}} \cdot \mathrm{vec}(K) & = z_\mathrm{K,{\scriptscriptstyle=}} \\
-        Z_\mathrm{F,{\scriptscriptstyle=}} \cdot \mathrm{vec}(F) & = z_\mathrm{F,{\scriptscriptstyle=}}
-    \end{aligned}
+	\begin{aligned}
+		Z_\mathrm{R,{\scriptscriptstyle=}} \cdot \mathrm{vec}(R) & = z_\mathrm{R,{\scriptscriptstyle=}} \\
+		Z_\mathrm{K,{\scriptscriptstyle=}} \cdot \mathrm{vec}(K) & = z_\mathrm{K,{\scriptscriptstyle=}} \\
+		Z_\mathrm{F,{\scriptscriptstyle=}} \cdot \mathrm{vec}(F) & = z_\mathrm{F,{\scriptscriptstyle=}}
+	\end{aligned}
 $$
 
 which allows dependecies of entries of the same matrix only or the more general form
 
 $$
-    \begin{aligned}
-        Z_\mathrm{RKF,{\scriptscriptstyle=}} \cdot \begin{bmatrix}\mathrm{vec}(R)\\\mathrm{vec}(K)\\\mathrm{vec}(F)\end{bmatrix} & = z_\mathrm{RKF,{\scriptscriptstyle=}}
-    \end{aligned}
+	\begin{aligned}
+		Z_\mathrm{RKF,{\scriptscriptstyle=}} \cdot \begin{bmatrix}\mathrm{vec}(R)\\\mathrm{vec}(K)\\\mathrm{vec}(F)\end{bmatrix} & = z_\mathrm{RKF,{\scriptscriptstyle=}}
+	\end{aligned}
 $$
 
 where $\mathrm{vec}$ is the vectorization operator.
@@ -608,44 +608,44 @@ The possibility to formulate linear equality conditions is necessary for the des
 Not necessary but possible are linear inequality conditions (aside from the ones resulting from the pole region constraints which are introduced below), which can be specified in the form
 
 $$
-    \begin{aligned}
-        Z_\mathrm{R,{\scriptscriptstyle\leq}} \cdot \mathrm{vec}(R) & \leq z_\mathrm{R,{\scriptscriptstyle\leq}} \\
-        Z_\mathrm{K,{\scriptscriptstyle\leq}} \cdot \mathrm{vec}(K) & \leq z_\mathrm{K,{\scriptscriptstyle\leq}} \\
-        Z_\mathrm{F,{\scriptscriptstyle\leq}} \cdot \mathrm{vec}(F) & \leq z_\mathrm{F,{\scriptscriptstyle\leq}}
-    \end{aligned}
+	\begin{aligned}
+		Z_\mathrm{R,{\scriptscriptstyle\leq}} \cdot \mathrm{vec}(R) & \leq z_\mathrm{R,{\scriptscriptstyle\leq}} \\
+		Z_\mathrm{K,{\scriptscriptstyle\leq}} \cdot \mathrm{vec}(K) & \leq z_\mathrm{K,{\scriptscriptstyle\leq}} \\
+		Z_\mathrm{F,{\scriptscriptstyle\leq}} \cdot \mathrm{vec}(F) & \leq z_\mathrm{F,{\scriptscriptstyle\leq}}
+	\end{aligned}
 $$
 
 and
 
 $$
-    \begin{aligned}
-        Z_\mathrm{RKF,{\scriptscriptstyle\leq}} \cdot \begin{bmatrix}\mathrm{vec}(R)\\\mathrm{vec}(K)\\\mathrm{vec}(F)\end{bmatrix} & \leq z_\mathrm{RKF,{\scriptscriptstyle\leq}}
-    \end{aligned}
+	\begin{aligned}
+		Z_\mathrm{RKF,{\scriptscriptstyle\leq}} \cdot \begin{bmatrix}\mathrm{vec}(R)\\\mathrm{vec}(K)\\\mathrm{vec}(F)\end{bmatrix} & \leq z_\mathrm{RKF,{\scriptscriptstyle\leq}}
+	\end{aligned}
 $$
 
 To provide more flexibility, this toolbox allows also for nonlinear equality and inequality conditions,
 
 $$
-    \begin{aligned}
-        c_\mathrm{R,{\scriptscriptstyle=}}(R) & = 0 \\
-        c_\mathrm{K,{\scriptscriptstyle=}}(K) & = 0 \\
-        c_\mathrm{F,{\scriptscriptstyle=}}(F) & = 0 \\
-        c_\mathrm{R,{\scriptscriptstyle\leq}}(R) & \leq 0 \\
-        c_\mathrm{K,{\scriptscriptstyle\leq}}(K) & \leq 0 \\
-        c_\mathrm{F,{\scriptscriptstyle\leq}}(F) & \leq 0
-    \end{aligned}
+	\begin{aligned}
+		c_\mathrm{R,{\scriptscriptstyle=}}(R) & = 0 \\
+		c_\mathrm{K,{\scriptscriptstyle=}}(K) & = 0 \\
+		c_\mathrm{F,{\scriptscriptstyle=}}(F) & = 0 \\
+		c_\mathrm{R,{\scriptscriptstyle\leq}}(R) & \leq 0 \\
+		c_\mathrm{K,{\scriptscriptstyle\leq}}(K) & \leq 0 \\
+		c_\mathrm{F,{\scriptscriptstyle\leq}}(F) & \leq 0
+	\end{aligned}
 $$
 
 Instead of referring to these seven equations and seven inequalities in the feasibility and optimization problems that follow, it is used the shorter notation
 
 $$
-    (R,\ K,\ F) \in \mathcal{S}
+	(R,\ K,\ F) \in \mathcal{S}
 $$
 
 For example
 
 $$
-    \min_{(R,\ K,\ F) \in \mathcal{S}} J
+	\min_{(R,\ K,\ F) \in \mathcal{S}} J
 $$
 
 
@@ -663,10 +663,10 @@ These are translated into constraints or into an objective function, depending o
 If the optimizer supports inequality constraints directly,
 
 $$
-    \begin{aligned}
-        & (R^\star,\ K^\star,\ F^\star) = \underset{(R,\ K,\ F) \in \mathcal{S}}{\arg \min} J \\
-        & \textnormal{subject to } w_{\mu \rho} z_{\mu \rho}(\sigma_{\mu \nu},\ \omega_{\mu \nu}) \leq 0 \ \forall \rho = 1,\ \ldots,\ r_\mu, \ \forall \nu = 1,\ \ldots, n_\mu, \ \forall \mu = 1,\ \ldots,\ m
-    \end{aligned}
+	\begin{aligned}
+		& (R^\star,\ K^\star,\ F^\star) = \underset{(R,\ K,\ F) \in \mathcal{S}}{\arg \min} J \\
+		& \textnormal{subject to } w_{\mu \rho} z_{\mu \rho}(\sigma_{\mu \nu},\ \omega_{\mu \nu}) \leq 0 \ \forall \rho = 1,\ \ldots,\ r_\mu, \ \forall \nu = 1,\ \ldots, n_\mu, \ \forall \mu = 1,\ \ldots,\ m
+	\end{aligned}
 $$
 
 If no additional objective function is given, i.e. $J = 0$, this is a feasibility problem.
@@ -685,7 +685,7 @@ If the optimizer doesn't support inequality constraints (or for the soft pole re
 In most cases the resulting objective function has the form
 
 $$
-    J_\Gamma = \sum_{\mu=1}^m \sum_{\nu=1}^{n_\mu} \sum_{\rho=1}^{r_\mu} j(z_{\mu \rho}(\sigma_{\mu \nu},\ \omega_{\mu \nu}))
+	J_\Gamma = \sum_{\mu=1}^m \sum_{\nu=1}^{n_\mu} \sum_{\rho=1}^{r_\mu} j(z_{\mu \rho}(\sigma_{\mu \nu},\ \omega_{\mu \nu}))
 $$
 
 i.e. for each combination of model, pole and area the value of $z_{\mu \rho}(\sigma_{\mu \nu},\ \omega_{\mu \nu})$ is assessed by some loss function $j$ and the sum is used as objective function.
@@ -705,7 +705,7 @@ The following table lists the most common choices for $j$:
 An alternative objective function is based on the Kreisselmeier-Steinhauser function,
 
 $$
-    J = f_\mathrm{max,KM} + \frac{1}{\rho_\mathrm{KM}} \cdot \ln\left( \sum_{\mu=1}^m \sum_{\nu=1}^{n_\mu} \sum_{\rho=1}^{r_\mu} \exp(\rho_\mathrm{KM} w_{\mu \rho} z_{\mu \rho}(\cdot,\cdot) - f_\mathrm{max,KM}) \right)
+	J = f_\mathrm{max,KM} + \frac{1}{\rho_\mathrm{KM}} \cdot \ln\left( \sum_{\mu=1}^m \sum_{\nu=1}^{n_\mu} \sum_{\rho=1}^{r_\mu} \exp(\rho_\mathrm{KM} w_{\mu \rho} z_{\mu \rho}(\cdot,\cdot) - f_\mathrm{max,KM}) \right)
 $$
 
 which is an (rough) approximation of $\max (w_{\mu \rho} z_{\mu \rho}(\cdot,\cdot))$.
@@ -713,7 +713,7 @@ which is an (rough) approximation of $\max (w_{\mu \rho} z_{\mu \rho}(\cdot,\cdo
 The resulting optimization problem is
 
 $$
-    (R^\star,\ K^\star,\ F^\star) = \underset{(R,\ K,\ F) \in \mathcal{S}}{\arg \min} J_{\Gamma, \mathrm{hard}}
+	(R^\star,\ K^\star,\ F^\star) = \underset{(R,\ K,\ F) \in \mathcal{S}}{\arg \min} J_{\Gamma, \mathrm{hard}}
 $$
 
 #### Soft pole region
@@ -725,10 +725,10 @@ This soft region is treated in the same way as unconstrained optimizers treat th
 
 
 $$
-    \begin{aligned}
-        & (R^\star,\ K^\star,\ F^\star) = \underset{(R,\ K,\ F) \in \mathcal{S}}{\arg \min} J_{\Gamma, \mathrm{soft}} \\
-        & \textnormal{subject to } z_{\mu \rho}(\sigma_{\mu \nu},\ \omega_{\mu \nu}) \leq 0 \forall \rho = 1,\ \ldots,\ r_\mu, \ \forall \nu = 1,\ \ldots, n_\mu, \ \forall \mu = 1,\ \ldots,\ m
-    \end{aligned}
+	\begin{aligned}
+		& (R^\star,\ K^\star,\ F^\star) = \underset{(R,\ K,\ F) \in \mathcal{S}}{\arg \min} J_{\Gamma, \mathrm{soft}} \\
+		& \textnormal{subject to } z_{\mu \rho}(\sigma_{\mu \nu},\ \omega_{\mu \nu}) \leq 0 \forall \rho = 1,\ \ldots,\ r_\mu, \ \forall \nu = 1,\ \ldots, n_\mu, \ \forall \mu = 1,\ \ldots,\ m
+	\end{aligned}
 $$
 
 
@@ -741,7 +741,7 @@ Additional objective functions can be selected.
 In order to get a small control action, the controller matrices can be minimized by the choice of `GammaJType.NORMGAIN` as objective type with the objective function
 
 $$
-    J_\mathrm{Ctrl} = \| W_\mathrm{R} \odot (R - S_\mathrm{R}) \|_\mathrm{F}^2 + \| W_\mathrm{K} \odot (K - S_\mathrm{K}) \|_\mathrm{F}^2 + \| W_\mathrm{F} \odot (F - S_\mathrm{F}) \|_\mathrm{F}^2
+	J_\mathrm{Ctrl} = \| W_\mathrm{R} \odot (R - S_\mathrm{R}) \|_\mathrm{F}^2 + \| W_\mathrm{K} \odot (K - S_\mathrm{K}) \|_\mathrm{F}^2 + \| W_\mathrm{F} \odot (F - S_\mathrm{F}) \|_\mathrm{F}^2
 $$
 
 where the matrices $W$ of appropriate dimension are chosen for weighting.
@@ -751,7 +751,7 @@ where the matrices $W$ of appropriate dimension are chosen for weighting.
 For greater robustness of the closed loop, the condition number of the eigenvector matrix can be minimized by the choice of `GammaJType.EIGENVALUECONDITION` with the objective function
 
 $$
-    J_\mathrm{EV} = \mathrm{cond}(V)
+	J_\mathrm{EV} = \mathrm{cond}(V)
 $$
 
 ##### Norm of the Lyapunov matrix
@@ -759,7 +759,7 @@ Another possibility for achieving greater robustness against time varying unstru
 The objective function in this case has the form
 
 $$
-    J_\mathrm{Lyap} = -\frac{1}{\|\tilde{P}_{11}\|_{F}^2} + \frac{1}{\|\tilde{P}_{22}\|_{F}^2}
+	J_\mathrm{Lyap} = -\frac{1}{\|\tilde{P}_{11}\|_{F}^2} + \frac{1}{\|\tilde{P}_{22}\|_{F}^2}
 $$
 
 where the matrices $Q$ in the Lyapunov equation can be chosen independently for every multiple model.
@@ -773,16 +773,16 @@ The matrices $\tilde{P}_{11}$ and $\tilde{P}_{22}$ which correspond to the unsta
 For constrained optimizers the "full" optimization problem is
 
 $$
-    \begin{aligned}
-        & (R^\star,\ K^\star,\ F^\star) = \underset{(R,\ K,\ F) \in \mathcal{S}}{\arg \min} w_\Gamma J_\mathrm{\Gamma,soft} + w_\mathrm{Ctrl} J_\mathrm{Ctrl} + w_\mathrm{EV} J_\mathrm{EV} \\
-        & \textnormal{subject to } w_{\mathrm{hard},\mu \rho} z_{\mu \rho}(\sigma_{\mu \nu},\ \omega_{\mu \nu}) \leq 0 \forall \rho = 1,\ \ldots,\ r_\mu, \ \forall \nu = 1,\ \ldots, n_\mu, \ \forall \mu = 1,\ \ldots,\ m
-    \end{aligned}
+	\begin{aligned}
+		& (R^\star,\ K^\star,\ F^\star) = \underset{(R,\ K,\ F) \in \mathcal{S}}{\arg \min} w_\Gamma J_\mathrm{\Gamma,soft} + w_\mathrm{Ctrl} J_\mathrm{Ctrl} + w_\mathrm{EV} J_\mathrm{EV} \\
+		& \textnormal{subject to } w_{\mathrm{hard},\mu \rho} z_{\mu \rho}(\sigma_{\mu \nu},\ \omega_{\mu \nu}) \leq 0 \forall \rho = 1,\ \ldots,\ r_\mu, \ \forall \nu = 1,\ \ldots, n_\mu, \ \forall \mu = 1,\ \ldots,\ m
+	\end{aligned}
 $$
 
 For unconstrained optimizers the "full" optimization problem is
 
 $$
-    (R^\star,\ K^\star,\ F^\star) = \underset{(R,\ K,\ F) \in \mathcal{S}}{\arg \min} w_\Gamma J_\mathrm{\Gamma,hard} + w_\mathrm{Ctrl} J_\mathrm{Ctrl} + w_\mathrm{EV} J_\mathrm{EV}
+	(R^\star,\ K^\star,\ F^\star) = \underset{(R,\ K,\ F) \in \mathcal{S}}{\arg \min} w_\Gamma J_\mathrm{\Gamma,hard} + w_\mathrm{Ctrl} J_\mathrm{Ctrl} + w_\mathrm{EV} J_\mathrm{EV}
 $$
 
 In this case only "simple" linear equality conditions can be imposed for the entries of $R$, $K$ and $F'$ which can be incorporated directly by reducing the number of optimization variables.
@@ -803,8 +803,8 @@ In this case only "simple" linear equality conditions can be imposed for the ent
 ### Return values
 
 * `R_opt`: Found solution, the format depends on relevant
-  * If `sys` defines neither $C'$ nor $C_\mathrm{ref}$ and $D_\mathrm{ref}$, then `R_opt`  is simply a numerical matrix corresponding to $R^\star$
-  * If `sys` defines all matrixes, then `R_opt` is a cell array with three numerical entries corresponding to the solution $(R^\star,\ K^\star,\ F^\star)$
+	* If `sys` defines neither $C'$ nor $C_\mathrm{ref}$ and $D_\mathrm{ref}$, then `R_opt`  is simply a numerical matrix corresponding to $R^\star$
+	* If `sys` defines all matrixes, then `R_opt` is a cell array with three numerical entries corresponding to the solution $(R^\star,\ K^\star,\ F^\star)$
 * `J_opt`: value of the objective function at `R_opt`
 * `info`: structure with additional information about the result
 
@@ -827,22 +827,22 @@ These systems are always the augmented systems which may include (parts of) the 
 In the simplest form a system is given by the three matrices $A$, $B$ and $C$ of the state space representation
 
 $$
-    \begin{aligned}
-        \dot x & = A x + B u \\
-        y & = C x
-    \end{aligned}
+	\begin{aligned}
+		\dot x & = A x + B u \\
+		y & = C x
+	\end{aligned}
 $$
 
 Optionally, this toolbox allows to specify a mass matrix and to design ideal differential feedback as well as it can design a prefilter.
 The "full" system form is given by
 
 $$
-    \begin{aligned}
-        E \dot x & = A x + B u \\
-        y & = C x \\
-        y' & = C' \dot x \\
-        y_\mathrm{ref} & = C_\mathrm{ref} x + D_\mathrm{ref} u
-    \end{aligned}
+	\begin{aligned}
+		E \dot x & = A x + B u \\
+		y & = C x \\
+		y' & = C' \dot x \\
+		y_\mathrm{ref} & = C_\mathrm{ref} x + D_\mathrm{ref} u
+	\end{aligned}
 $$
 
 where $E$ must be an invertible matrix.
@@ -885,55 +885,53 @@ Rfixed = {Ra_fixed}
 
 * Fixed values
 
-  `Ra_fixed = {Rfix, Rval}`
+	`Ra_fixed = {Rfix, Rval}`
 
-  `Rfix` is a logical matrix with `true`-entries marking the fixed entries.
-  `Rval` is a numerical matrix where the fixed values are given.
-  The non-fixed values are marked as `NaN` in this matrix.
+	`Rfix` is a logical matrix with `true`-entries marking the fixed entries.
+	`Rval` is a numerical matrix where the fixed values are given.
+	The non-fixed values are marked as `NaN` in this matrix.
 
-  (This is redundant, as `Rfix = ~isnan(Rval)` but is needed to distinguish the format.)
+	(This is redundant, as `Rfix = ~isnan(Rval)` but is needed to distinguish the format.)
 
-  For example, if $R = \begin{bmatrix} r_\mathrm{P} & - r_\mathrm{I} \\ 1 & 0 \end{bmatrix}$ with the parameters $r_\mathrm{P}$ and $r_\mathrm{I}$ being free, the definition of the structure would be
-  ```matlab
-    {[false, false; true, true], [NaN, NaN; 1, 0]}
-  ```
+	For example, if $R = \begin{bmatrix} r_\mathrm{P} & - r_\mathrm{I} \\ 1 & 0 \end{bmatrix}$ with the parameters $r_\mathrm{P}$ and $r_\mathrm{I}$ being free, the definition of the structure would be
+	```matlab
+		{[false, false; true, true], [NaN, NaN; 1, 0]}
+	```
 
 * Linear dependencies between controller parameters
 
-  `Ra_fixed = {Zlhs, Zrhs}`
+	`Ra_fixed = {Zlhs, Zrhs}`
 
-  Linear dependencies are given by linear equations of the form
+	Linear dependencies are given by linear equations of the form
 
-  $$
-    \sum_{i,j} (Z_k \odot R) = z_k
-  $$
+	$$
+	\sum_{i,j} (Z_k \odot R) = z_k
+	$$
+	where $\odot$ means element-wise multiplication (Hadamard product).
+	If there is more than one equation $k$, the matrices $Z_k$ are stacked along the third dimension in `Zlhs`.
+	I.e, if `Nz` linear dependencies are specified, the dimensions of `Zlhs` and `zrhs` are `size(Zlhs): [size(R, 1), size(R, 2), Nz]` (for the combined constraints `size(Zlhs): [size(R, 1), size(R, 2) + size(K, 2) + size(F, 2), Nz]`) and `size(Zrhs): [Nz, 1]`, resp.
 
-  where $\odot$ means element-wise multiplication (Hadamard product).
-  If there is more than one equation $k$, the matrices $Z_k$ are stacked along the third dimension in `Zlhs`.
-  I.e, if `Nz` linear dependencies are specified, the dimensions of `Zlhs` and `zrhs` are `size(Zlhs): [size(R, 1), size(R, 2), Nz]` (for the combined constraints `size(Zlhs): [size(R, 1), size(R, 2) + size(K, 2) + size(F, 2), Nz]`) and `size(Zrhs): [Nz, 1]`, resp.
+	For example, if $R = \begin{bmatrix} r_1 & r_2 & r_3 \\ r_4 & r_5 & 1 \end{bmatrix}$ with $r_i$ being free but subject to the constraints $r_1 = r_2 = r_3$ and $r_4 = r_5$, the definition of the structure would be
+	$$
+		{cat(3,...
+			[1, -1, 0; 0, 0, 0],... % lhs of r_1 - r_2 = 0
+			[1, 0, -1; 0, 0, 0],... % lhs of r_1 - r_3 = 0
+			[0, 0, 0; 1, -1, 0],... % lhs of r_4 - r_5 = 0
+			[0, 0, 0; 0, 0, 1]...   % lhs of r_6 = 1
+			),...
+		[
+			0;    % rhs of r_1 - r_2 = 0
+			0;    % rhs of r_1 - r_3 = 0
+			0;    % rhs of r_4 - r_5 = 0
+			1     % rhs of r_6 = 1
+		]
+		}
+	$$
+	* As said above, linear dependencies for `K` and `F` can be specified in the same way in `Ka_fixed` and `Fa_fixed`. For dependecies involving all matrices `RKFa_fixed` can be used, specifying `{Zlhs, Zrhs}` corresponding to
 
-  For example, if $R = \begin{bmatrix} r_1 & r_2 & r_3 \\ r_4 & r_5 & 1 \end{bmatrix}$ with $r_i$ being free but subject to the constraints $r_1 = r_2 = r_3$ and $r_4 = r_5$, the definition of the structure would be
-  ```matlab
-    {cat(3,...
-         [1, -1, 0; 0, 0, 0],... % lhs of r_1 - r_2 = 0
-         [1, 0, -1; 0, 0, 0],... % lhs of r_1 - r_3 = 0
-         [0, 0, 0; 1, -1, 0],... % lhs of r_4 - r_5 = 0
-         [0, 0, 0; 0, 0, 1]...   % lhs of r_6 = 1
-        ),...
-     [
-      0;    % rhs of r_1 - r_2 = 0
-      0;    % rhs of r_1 - r_3 = 0
-      0;    % rhs of r_4 - r_5 = 0
-      1     % rhs of r_6 = 1
-     ]
-    }
-  ```
-  * As said above, linear dependencies for `K` and `F` can be specified in the same way in `Ka_fixed` and `Fa_fixed`. For dependecies involving all matrices `RKFa_fixed` can be used, specifying `{Zlhs, Zrhs}` corresponding to
-
-  $$
-      \sum_{i,j} (Z_k \odot \begin{bmatrix} R & K & F \end{bmatrix}) = z_k
-  $$
-
+$$
+	\sum_{i,j} (Z_k \odot \begin{bmatrix} R & K & F \end{bmatrix}) = z_k
+$$
 * Symbolic dependencies between controller parameters
 If the Symbolic Math Toolbox is available, it is also possible, to formulate the controller coefficient constraints as symbolic expressions.
 This can be achieved by specifying the symbolic gain matrix in the first element of a cell array and the symbolic equation system in the second element of the cell array for every gain matrix like in
@@ -1183,15 +1181,15 @@ In this simple example, the _exterior_ of a circle with radius $R$ is chosen as 
 In square form, the area is defined by
 
 $$
-    z(\sigma,\ \omega) = R^2 - \underbrace{(\sigma^2 + \omega^2)}_{\textnormal{distance}^2}
+	z(\sigma,\ \omega) = R^2 - \underbrace{(\sigma^2 + \omega^2)}_{\textnormal{distance}^2}
 $$
 
 which gives the derivatives
 
 $$
-    \frac{\mathrm{d}z}{\mathrm{d}\sigma} = -2 \sigma
-    \qquad
-    \frac{\mathrm{d}z}{\mathrm{d}\omega} = - 2 \omega
+	\frac{\mathrm{d}z}{\mathrm{d}\sigma} = -2 \sigma
+	\qquad
+	\frac{\mathrm{d}z}{\mathrm{d}\omega} = - 2 \omega
 $$
 
 Accordingly, the function could be implemented as
@@ -1227,10 +1225,10 @@ weight = hardweight
 
 `hardweight` and `softweight` can be defined in one of the following forms:
 
- * Scalar value: All weights (for all areas and all models) are set to this value. This is the standard choice for the hard region, where all weights are normally set to one.
- * Row vector: Each entry is the weight of the corresponding area. If more than one model is used, the weights may differ for the different areas, but they are the same for all models.
- * Column vector: Each entry is the weight for all areas for the corresponding model.
- * Matrix: Each entry is the weight for the corresponding model (row) and area (column).
+* Scalar value: All weights (for all areas and all models) are set to this value. This is the standard choice for the hard region, where all weights are normally set to one.
+* Row vector: Each entry is the weight of the corresponding area. If more than one model is used, the weights may differ for the different areas, but they are the same for all models.
+* Column vector: Each entry is the weight for all areas for the corresponding model.
+* Matrix: Each entry is the weight for the corresponding model (row) and area (column).
 
 
 **Remarks:**
@@ -1303,20 +1301,20 @@ They are provided mainly for experimental and academic reasons.
 
 For example, if `type` is set to
 ```matlab
-    GammaJType.SQUAREPENALTY
+	GammaJType.SQUAREPENALTY
 ```
 the quadratic loss function is used and none of the additional objective functions $J_\mathrm{Ctrl}$ and $J_\mathrm{EV}$ is added.
 
 If `type` is set to
 ```matlab
-    [GammaJType.SQUAREPENALTY; GammaJType.NORMGAIN]
+	[GammaJType.SQUAREPENALTY; GammaJType.NORMGAIN]
 ```
 the quadratic loss function is used and the controller norm is added.
 To weight these two terms, the option `weight`can be set appropriately.
 
 If `type` is set to
 ```matlab
-    [GammaJType.ZERO; GammaJType.NORMGAIN]
+	[GammaJType.ZERO; GammaJType.NORMGAIN]
 ```
 only the norm of the controller is used in the objective function.
 This can be a sensible choice when constrained optimizers are used, as the hard region is still respected.
@@ -1326,7 +1324,7 @@ When an unconstrained optimizer is used, this is not a sensible choice, as the p
 The function accepts multiple types of loss functions, but there should be no use for.
 However, it is important to notice that
 ```matlab
-    [GammaJType.SQUAREPENALTY; GammaJType.SQUAREPENALTY]
+	[GammaJType.SQUAREPENALTY; GammaJType.SQUAREPENALTY]
 ```
 does *not* mean that the hard and the soft region are both translated to an objective function term using the quadratic loss function but the following!
 
@@ -1380,13 +1378,13 @@ If more than one objective function term is selected by `type`, their weighting 
 If for example the objective function
 
 $$
-    J = 1 \cdot J_\mathrm{\Gamma,soft} + 10^{-5} \cdot J_\mathrm{Ctrl}
+	J = 1 \cdot J_\mathrm{\Gamma,soft} + 10^{-5} \cdot J_\mathrm{Ctrl}
 $$
 
 is to be used, the following options are to be set:
 ```matlab
-    'type'   : [GammaJType.SQUAREPENALTY; GammaJType.NORMGAIN]
-    'weight' : [1; 1e-5]
+	'type'   : [GammaJType.SQUAREPENALTY; GammaJType.NORMGAIN]
+	'weight' : [1; 1e-5]
 ```
 
 
@@ -1478,7 +1476,7 @@ To change the options of the optimizer, the following syntax can be used.
 This is an example for IPOPT, other optimizers may provide different options:
 ```matlab
 options = optimization.options.OptionFactory.instance.options(...
-    optimization.solver.Optimizer.IPOPT, ...
+	optimization.solver.Optimizer.IPOPT, ...
 	'ProblemType',                  optimization.options.ProblemType.CONSTRAINED,...
 	'Retries',                      1,...
 	'Algorithm',                    solver.defaultalgorithm,...
@@ -1566,14 +1564,14 @@ It is possible to impose nonlinear equality and inequality constraints on the pa
 In contrast to the linear constraints, a single constraint can only be imposed on one or more parameter of the same matrix, i.e.
 
 $$
-    \begin{aligned}
-        c_\mathrm{R,{\scriptscriptstyle=}}(R) & = 0 \\
-        c_\mathrm{K,{\scriptscriptstyle=}}(K) & = 0 \\
-        c_\mathrm{F,{\scriptscriptstyle=}}(F) & = 0 \\
-        c_\mathrm{R,{\scriptscriptstyle\leq}}(R) & \leq 0 \\
-        c_\mathrm{K,{\scriptscriptstyle\leq}}(K) & \leq 0 \\
-        c_\mathrm{F,{\scriptscriptstyle\leq}}(F) & \leq 0
-    \end{aligned}
+	\begin{aligned}
+		c_\mathrm{R,{\scriptscriptstyle=}}(R) & = 0 \\
+		c_\mathrm{K,{\scriptscriptstyle=}}(K) & = 0 \\
+		c_\mathrm{F,{\scriptscriptstyle=}}(F) & = 0 \\
+		c_\mathrm{R,{\scriptscriptstyle\leq}}(R) & \leq 0 \\
+		c_\mathrm{K,{\scriptscriptstyle\leq}}(K) & \leq 0 \\
+		c_\mathrm{F,{\scriptscriptstyle\leq}}(F) & \leq 0
+	\end{aligned}
 $$
 
 These functions are provided by a single function `Rnonlin_wrapper` which is to be passed as the argument `Rnonlin` and has the signature
@@ -1597,18 +1595,18 @@ If the controller matrix is
 
 $$
 R =
-    \begin{bmatrix}
-        r_1 & r_2 & r_3 \\ r_4 & r_5 & r_6
-    \end{bmatrix}
+	\begin{bmatrix}
+		r_1 & r_2 & r_3 \\ r_4 & r_5 & r_6
+	\end{bmatrix}
 $$
 
 and the constraints
 
 $$
-    \begin{aligned}
-        r_2^2 & \leq 9 \\
-        r_2 + r_6^2 & \leq 4
-    \end{aligned}
+	\begin{aligned}
+		r_2^2 & \leq 9 \\
+		r_2 + r_6^2 & \leq 4
+	\end{aligned}
 $$
 
 are given (and ignoring that the first constraint can be expressed as two simpler linear constraints), the `Rnonlin_wrapper` would be
@@ -1825,4 +1823,3 @@ For the exponential loss function the weights might be increased over multiple s
 GNU Lesser General Public License Version 3.0
 
 Patrick Vogt
-
