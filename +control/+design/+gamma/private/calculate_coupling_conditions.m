@@ -29,6 +29,7 @@ function [c, ceq, gradc, gradceq] = calculate_coupling_conditions(system, R, ~, 
 	dim_invariant = dimensions.m_invariant;
 	hasfeedthrough = dimensions.hasfeedthrough_coupling;
 	n_xi = number_states*number_controls + number_controls*number_references;% number of controller and prefilter coefficients
+	minimumnormsorting = options.couplingcontrol.sortingstrategy_coupling == GammaCouplingconditionSortingStrategy.MINIMUMNORM;
 
 	if nargin <= 8
 		eigenvector_right_derivative = zeros(number_states, number_states, number_controls, number_states, number_models);
@@ -77,24 +78,29 @@ function [c, ceq, gradc, gradceq] = calculate_coupling_conditions(system, R, ~, 
 		% system variables end
 
 		% determine VR1 and WR2
-		if hasfeedthrough
-			C2VR = coupling_vectorTwoNorm((C2 - D2*R)*eigenvector_r, 1).';
+		if minimumnormsorting
+			if hasfeedthrough
+				C2VR = coupling_vectorTwoNorm((C2 - D2*R)*eigenvector_r, 1).';
+			else
+				C2VR = coupling_vectorTwoNorm(C2*eigenvector_r, 1).';
+			end
+			WLBF = coupling_vectorTwoNorm(eigenvector_l*B*F1, 2);
+			J = zeros(number_permutations, number_states);
+			for jj = 1:number_permutations
+				for kk = 1:dim_invariant
+					J(jj, kk) =	C2VR(permutations_VR1(jj, kk)); %#ok<PFBNS>
+				end
+				for kk = 1:number_states - dim_invariant
+					J(jj, dim_invariant + kk) =	WLBF(permutations_WR2(jj, kk)); %#ok<PFBNS>
+				end
+			end
+			[~, min_idx] = min(sum(J, 2));
+			idx_VR1 = sort(permutations_VR1(min_idx, :));
+			idx_WR2 = sort(permutations_WR2(min_idx, :));
 		else
-			C2VR = coupling_vectorTwoNorm(C2*eigenvector_r, 1).';
+			idx_VR1 = 1:dim_invariant;
+			idx_WR2 = dim_invariant + 1:number_states;
 		end
-		WLBF = coupling_vectorTwoNorm(eigenvector_l*B*F1, 2);
-		J = zeros(number_permutations, number_states);
-		for jj = 1:number_permutations
-			for kk = 1:dim_invariant
-				J(jj, kk) =	C2VR(permutations_VR1(jj, kk)); %#ok<PFBNS>
-			end
-			for kk = 1:number_states - dim_invariant
-				J(jj, dim_invariant + kk) =	WLBF(permutations_WR2(jj, kk)); %#ok<PFBNS>
-			end
-		end
-		[~, min_idx] = min(sum(J, 2));
-		idx_VR1 = sort(permutations_VR1(min_idx, :));
-		idx_WR2 = sort(permutations_WR2(min_idx, :));
 		VR1 = eigenvector_r(:, idx_VR1);
 		WR2 = eigenvector_l(idx_WR2, :);
 		% determine VR1 and WR2 end
@@ -274,7 +280,7 @@ function [permutations_VR1, permutations_WR2, number_permutations] = set_permuta
 	% prepare determination of VR1 and WR2
 	permutations_VR1 = nchoosek(1:number_states, dim_invariant);% outside of loop because m is constant for every model
 	number_permutations = size(permutations_VR1, 1);
-	permutations_WR2_tmp = NaN(number_permutations, number_states - dim_invariant);
+	permutations_WR2_tmp = zeros(number_permutations, number_states - dim_invariant, 'like', permutations_VR1);
 	parfor (ii = 1:number_permutations, numthreads)
 		permutations_WR2_tmp(ii, :) = setdiff(1:number_states, permutations_VR1(ii, :));
 	end

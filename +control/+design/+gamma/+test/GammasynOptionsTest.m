@@ -18,6 +18,7 @@ function [pass] = GammasynOptionsTest(~)
 		'eigenvalueignoreinf',			{true, false},														{true(2, 1), 'd', 1, struct()},																								{},									false;
 		'couplingconditions',			{1, 0, 2},															{-1, NaN, ones(2, 1), true(2, 1), struct(), {}},																			{'couplingcontrol'},				false;
 		'couplingstrategy',				{GammaCouplingStrategy.getDefaultValue()},							{[GammaCouplingStrategy.getDefaultValue();GammaCouplingStrategy.getDefaultValue()], -1, ones(2, 1), true, struct(), {}},	{'couplingcontrol'},				false;
+		'sortingstrategy_coupling',		{GammaCouplingconditionSortingStrategy.getDefaultValue()},			{repmat(GammaCouplingconditionSortingStrategy.getDefaultValue(), 2, 1), -1, ones(2, 1), true, struct(), {}},				{'couplingcontrol'},				false;
 		'weight_coupling',				{1, 0, 2, 1.1, [], true},											{-1, NaN, ones(2, 1), true(2, 1), struct()},																				{'couplingcontrol'},				false;
 		'weight_prefilter',				{1, 0, 2, 1.1, [], true},											{-1, NaN, ones(2, 1), true(2, 1), struct()},																				{'couplingcontrol'},				false;
 		'tolerance_coupling',			{1, 0, 2, 1.1, NaN, [], true},										{-1, ones(2, 1), true(2, 1), struct()},																						{'couplingcontrol'},				false;

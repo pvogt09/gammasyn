@@ -27,6 +27,10 @@ function [couplingoptions] = checkobjectiveoptions_coupling(couplingoptions)
 				% use default strategy in case coupling controller design is requested
 				couplingoptions.couplingstrategy = [];
 			end
+			if ~isfield(couplingoptions, 'sortingstrategy_coupling')
+				% use default sorting strategy for coupling conditions
+				couplingoptions.couplingstrategy = [];
+			end
 			if ~isfield(couplingoptions, 'tolerance_coupling')
 				couplingoptions.tolerance_coupling = coupling_prototype.tolerance_coupling;
 			end
@@ -77,6 +81,19 @@ function [couplingoptions] = checkobjectiveoptions_coupling(couplingoptions)
 	if ~isa(couplingoptions.couplingstrategy, 'GammaCouplingStrategy')
 		try
 			couplingoptions.couplingstrategy = GammaCouplingStrategy.fromname(couplingoptions.couplingstrategy);
+		catch e
+			rethrow(e);
+		end
+	end
+	if isempty(couplingoptions.sortingstrategy_coupling)
+		couplingoptions.sortingstrategy_coupling = GammaCouplingconditionSortingStrategy.getDefaultValue();
+	end
+	if ~isscalar(couplingoptions.sortingstrategy_coupling)
+		error('control:design:gamma', 'Sorting strategy for coupling conditions must be scalar.');
+	end
+	if ~isa(couplingoptions.sortingstrategy_coupling, 'GammaCouplingconditionSortingStrategy')
+		try
+			couplingoptions.sortingstrategy_coupling = GammaCouplingconditionSortingStrategy.fromname(couplingoptions.sortingstrategy_coupling);
 		catch e
 			rethrow(e);
 		end
@@ -160,6 +177,7 @@ function [couplingoptions] = checkobjectiveoptions_coupling(couplingoptions)
 	couplingoptions = struct(...
 		'couplingconditions',			uint32(couplingoptions.couplingconditions),...
 		'couplingstrategy',				couplingoptions.couplingstrategy,...
+		'sortingstrategy_coupling',		couplingoptions.sortingstrategy_coupling,...
 		'weight_coupling',				double(couplingoptions.weight_coupling),...
 		'weight_prefilter',				double(couplingoptions.weight_prefilter),...
 		'tolerance_coupling',			double(couplingoptions.tolerance_coupling),...

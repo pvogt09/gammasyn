@@ -335,6 +335,28 @@ function [value, validvalue, errmsg, errid, validfield] = objectiveoptions_check
 				errid = 'control:design:gamma:input';
 				errmsg = 'Coupling option ''couplingstrategy'' must be scalar.';
 			end
+		case {'sortingstrategy_coupling'}
+			if ~isa(value, 'GammaCouplingconditionSortingStrategy')
+				try
+					value = GammaCouplingconditionSortingStrategy.fromchar(value);
+					validvalue = true;
+					errid = '';
+					errmsg = '';
+				catch e
+					validvalue = false;
+					errid = 'control:design:gamma:input';
+					errmsg = e.message;
+				end
+			else
+				validvalue = true;
+				errid = '';
+				errmsg = '';
+			end
+			if ~isscalar(value)
+				validvalue = false;
+				errid = 'control:design:gamma:input';
+				errmsg = 'Coupling option ''sortingstrategy_coupling'' must be scalar.';
+			end
 		case {'tolerance_coupling', 'tolerance_prefilter'}
 			% non-negative real or empty or NaN
 			if isempty(value)
