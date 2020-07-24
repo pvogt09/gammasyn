@@ -243,7 +243,7 @@ This task proves to be feasible, i.e. there exists a controller gain for which t
 
 
 
-The following image shows the poles of all five closed loop systems 
+The following image shows the poles of all five closed loop systems
 
 <img src="docs/images/tex/tikz_ext/ex-omo-area-probust-sol.png" width=25%/>
 
@@ -276,7 +276,7 @@ $$
 $$
 
 where $r$ is the reference value.
-This leads to a closed loop 
+This leads to a closed loop
 
 $$
     \dot x = (A - B R C) \cdot x + B F r
@@ -535,7 +535,7 @@ A region is defined by one or the intersection of more areas.
 Here, "area" refers to the "left side" of a curve in the complex plane.
 
 $$
-    z_\rho(\sigma,\ \omega)  
+    z_\rho(\sigma,\ \omega)
         \begin{cases}
             < 0 & \sigma + \mathrm{j} \omega \textnormal{ lies left of the curve} \\
             = 0 & \sigma + \mathrm{j} \omega \textnormal{ lies on the curve} \\
@@ -645,7 +645,7 @@ $$
 For example
 
 $$
-    \min_{(R,\ K,\ F) \in \mathcal{S}} J 
+    \min_{(R,\ K,\ F) \in \mathcal{S}} J
 $$
 
 
@@ -719,7 +719,7 @@ $$
 #### Soft pole region
 
 If a constrained optimizer is used, a second pole region can be defined.
-This soft region is treated in the same way as unconstrained optimizers treat the hard pole region, i.e. 
+This soft region is treated in the same way as unconstrained optimizers treat the hard pole region, i.e.
 * The soft pole region $\Gamma_\mathrm{soft}$
 * It makes only sense if the optimizer supports inequality constraints
 
@@ -727,7 +727,7 @@ This soft region is treated in the same way as unconstrained optimizers treat th
 $$
     \begin{aligned}
         & (R^\star,\ K^\star,\ F^\star) = \underset{(R,\ K,\ F) \in \mathcal{S}}{\arg \min} J_{\Gamma, \mathrm{soft}} \\
-        & \textnormal{subject to } z_{\mu \rho}(\sigma_{\mu \nu},\ \omega_{\mu \nu}) \leq 0 \forall \rho = 1,\ \ldots,\ r_\mu, \ \forall \nu = 1,\ \ldots, n_\mu, \ \forall \mu = 1,\ \ldots,\ m    
+        & \textnormal{subject to } z_{\mu \rho}(\sigma_{\mu \nu},\ \omega_{\mu \nu}) \leq 0 \forall \rho = 1,\ \ldots,\ r_\mu, \ \forall \nu = 1,\ \ldots, n_\mu, \ \forall \mu = 1,\ \ldots,\ m
     \end{aligned}
 $$
 
@@ -802,7 +802,7 @@ In this case only "simple" linear equality conditions can be imposed for the ent
 
 ### Return values
 
-* `R_opt`: Found solution, the format depends on relevant 
+* `R_opt`: Found solution, the format depends on relevant
   * If `sys` defines neither $C'$ nor $C_\mathrm{ref}$ and $D_\mathrm{ref}$, then `R_opt`  is simply a numerical matrix corresponding to $R^\star$
   * If `sys` defines the matrix $C'$ but not $C_\mathrm{ref}$ and $D_\mathrm{ref}$, then `R_opt` is a cell array with two numerical entries corresponding to the solution $(R^\star,\ K^\star)$
   * If `sys` defines $C_\mathrm{ref}$ and $D_\mathrm{ref}$, but not $C'$, then `R_opt` is a cell array with two numerical entries corresponding to the solution $(R^\star,\ F^\star)$
@@ -854,7 +854,7 @@ where $E$ must be an invertible matrix.
 | A, B, C | Minimum form |
 | C_dot | Optional |
 | E  | Optional |
-| C_ref, D_ref | Optional | 
+| C_ref, D_ref | Optional |
 
 
 PLEASE NOTE: A field D may be given (and is also returned by functions of this toolbox), but it must be a zero matrix of compatible size! (Future versions may allow systems with feed through but in the current version a non-zero D results in undefined behavior.)
@@ -876,11 +876,11 @@ If no dependencies between different gain matrices are needed, this can be reduc
 ```matlab
 Rfixed = {Ra_fixed, Ka_fixed, Fa_fixed}
 ```
-If only $R$ and $K$ is used, 
+If only $R$ and $K$ is used,
 ```matlab
 Rfixed = {Ra_fixed, Ka_fixed}
 ```
-and if only $R$ is used, 
+and if only $R$ is used,
 ```matlab
 Rfixed = {Ra_fixed}
 ```
@@ -892,7 +892,7 @@ Rfixed = {Ra_fixed}
   `Rfix` is a logical matrix with `true`-entries marking the fixed entries.
   `Rval` is a numerical matrix where the fixed values are given.
   The non-fixed values are marked as `NaN` in this matrix.
-  
+
   (This is redundant, as `Rfix = ~isnan(Rval)` but is needed to distinguish the format.)
 
   For example, if $R = \begin{bmatrix} r_\mathrm{P} & - r_\mathrm{I} \\ 1 & 0 \end{bmatrix}$ with the parameters $r_\mathrm{P}$ and $r_\mathrm{I}$ being free, the definition of the structure would be
@@ -1222,7 +1222,7 @@ If both a hard and a soft region is defined, `weight` is a cell array with two n
 ```matlab
 weight = {hardweight, softweight}
 ```
-If only a hard region is given, `weight` might be set directly to corresponding numeric element 
+If only a hard region is given, `weight` might be set directly to corresponding numeric element
 ```matlab
 weight = hardweight
 ```
@@ -1233,7 +1233,7 @@ weight = hardweight
  * Row vector: Each entry is the weight of the corresponding area. If more than one model is used, the weights may differ for the different areas, but they are the same for all models.
  * Column vector: Each entry is the weight for all areas for the corresponding model.
  * Matrix: Each entry is the weight for the corresponding model (row) and area (column).
- 
+
 
 **Remarks:**
 
@@ -1254,10 +1254,10 @@ The parameter name may contain dots, for example `'objective.normgain.K`.
 | Option | Remark |
 | --- | --- |
 | `type` | objective functions, element of `GammaJType` |
-| `objective.normgain.{R, K, F}`| Weights for minimization of controller norm | 
-| `objective.normgain.{R_shift, K_shift, F_shift}`| Shift for minimization of controller norm | 
-| `objective.kreisselmeier.{rho, max}`| Parameters for Kreisselmeier objective function | 
-| `objective.lyapunov.Q`| right hand side matrix for Lyapunov equation | 
+| `objective.normgain.{R, K, F}`| Weights for minimization of controller norm |
+| `objective.normgain.{R_shift, K_shift, F_shift}`| Shift for minimization of controller norm |
+| `objective.kreisselmeier.{rho, max}`| Parameters for Kreisselmeier objective function |
+| `objective.lyapunov.Q`| right hand side matrix for Lyapunov equation |
 | `weight` | weight for the used objective functions
 | `allowvarorder` | true, {false}: indicator if systems with different numbers of states are allowed |
 | `allownegativeweight` | true, {false}: indicator if negative area weights are allowed |
@@ -1291,7 +1291,7 @@ The elements are listed in the following table and some examples are given below
 | SQUARE | (*) *signed* quadratic weighting of pole areas | $j = \mathrm{sign}(w_{\mu \rho} z_{\mu \rho}(\cdot,\cdot)) \cdot (w_{\mu \rho} z_{\mu \rho}(\cdot,\cdot))^2$ |
 | CUBIC | (*) cubic weighting of pole areas | $j = (w_{\mu \rho} z_{\mu \rho}(\cdot,\cdot))^3$ |
 | LOG | (*) Logarithmic loss function | $j = -\log(-w_{\mu \rho} z_{\mu \rho}(\cdot,\cdot))$
-| KREISSELMEIER | vector performance index weighting according to Kreisselmeier | $J = f_\mathrm{max,KM} + \rho_\mathrm{KM}^{-1}\ln\left( \sum_{\mu, \rho, \nu} \exp(\rho _\mathrm{KM} w_{\mu \rho} z_{\mu \rho}(\cdot,\cdot) - f_\mathrm{max,KM}) \right)$ 
+| KREISSELMEIER | vector performance index weighting according to Kreisselmeier | $J = f_\mathrm{max,KM} + \rho_\mathrm{KM}^{-1}\ln\left( \sum_{\mu, \rho, \nu} \exp(\rho _\mathrm{KM} w_{\mu \rho} z_{\mu \rho}(\cdot,\cdot) - f_\mathrm{max,KM}) \right)$
 | EIGENVALUECONDITION | (**) eigenvector matrix condition objective function |
 | NORMGAIN | (**) norm of gain matrices | $J = \| W_\mathrm{R} \odot R \|_\mathrm{F}^2 + \| W_\mathrm{K} \odot K \|_\mathrm{F}^2 + \| W_\mathrm{F} \odot F \|_\mathrm{F}^2$
 | LYAPUNOV | (**) norm of Lyapunov matrix of closed loop |
@@ -1309,7 +1309,7 @@ For example, if `type` is set to
 ```
 the quadratic loss function is used and none of the additional objective functions $J_\mathrm{Ctrl}$ and $J_\mathrm{EV}$ is added.
 
-If `type` is set to 
+If `type` is set to
 ```matlab
     [GammaJType.SQUAREPENALTY; GammaJType.NORMGAIN]
 ```
@@ -1382,7 +1382,7 @@ If more than one objective function term is selected by `type`, their weighting 
 If for example the objective function
 
 $$
-    J = 1 \cdot J_\mathrm{\Gamma,soft} + 10^{-5} \cdot J_\mathrm{Ctrl} 
+    J = 1 \cdot J_\mathrm{\Gamma,soft} + 10^{-5} \cdot J_\mathrm{Ctrl}
 $$
 
 is to be used, the following options are to be set:
@@ -1439,7 +1439,7 @@ The optimizers marked with (*) are included in this repository.
 
 
 | Optimizer | Constr.  | Obj. | Origin           | Licence | Remark  |
-| ----------- | --- | --- |-------------| ----- | ----| 
+| ----------- | --- | --- |-------------| ----- | ----|
 | FMINCON        | * |   | Matlab, Optimization Toolbox                        | prop.      |  |
 | FMINCONGLOBAL  | * |   | Matlab, Global Optimization Toolbox                 | prop.      |  |
 | IPOPT          | * |   | https://github.com/coin-or/Ipopt                    | Eclipse Public License 1.0 |  |
@@ -1535,11 +1535,11 @@ The definitions of the bounds for the single matrices (which are explained below
 ```matlab
 Rbounds = {Ra_bounds, Ka_bounds, Fa_bounds}
 ```
-If only $R$ and $K$ is used, 
+If only $R$ and $K$ is used,
 ```matlab
 Rbounds = {Ra_bounds, Ka_bounds}
 ```
-and if only $R$ is used, 
+and if only $R$ is used,
 ```matlab
 Rbounds = {Ra_bounds}
 ```
@@ -1589,7 +1589,7 @@ or
 The second variation returns the gradients as well.
 
 * The return values `c...` are vectors of possibly different length corresponding to the functions above.
-* If the gradients `g...` are returned, they are returned in three-dimensional matrices. For each entry in the corresponding `c...`vector `g...`contains a matrix with the derivations after each entry of the concerned controller matrix. These are stacked in the third dimension. I.e. 
+* If the gradients `g...` are returned, they are returned in three-dimensional matrices. For each entry in the corresponding `c...`vector `g...`contains a matrix with the derivations after each entry of the concerned controller matrix. These are stacked in the third dimension. I.e.
 ```matlab
 size(gineq_R) : [size(R, 1), size(R, 2), length(cineq_R) ]
 ```
