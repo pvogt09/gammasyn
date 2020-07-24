@@ -804,8 +804,6 @@ In this case only "simple" linear equality conditions can be imposed for the ent
 
 * `R_opt`: Found solution, the format depends on relevant
   * If `sys` defines neither $C'$ nor $C_\mathrm{ref}$ and $D_\mathrm{ref}$, then `R_opt`  is simply a numerical matrix corresponding to $R^\star$
-  * If `sys` defines the matrix $C'$ but not $C_\mathrm{ref}$ and $D_\mathrm{ref}$, then `R_opt` is a cell array with two numerical entries corresponding to the solution $(R^\star,\ K^\star)$
-  * If `sys` defines $C_\mathrm{ref}$ and $D_\mathrm{ref}$, but not $C'$, then `R_opt` is a cell array with two numerical entries corresponding to the solution $(R^\star,\ F^\star)$
   * If `sys` defines all matrixes, then `R_opt` is a cell array with three numerical entries corresponding to the solution $(R^\star,\ K^\star,\ F^\star)$
 * `J_opt`: value of the objective function at `R_opt`
 * `info`: structure with additional information about the result
