@@ -1918,6 +1918,7 @@ For the exponential loss function the weights might be increased over multiple s
 * [ROLMIP](https://github.com/agulhari/ROLMIP)
 * oplace
 * [DataHash](https://de.mathworks.com/matlabcentral/fileexchange/31272-datahash)
+* [Geometric Approach Toolbox](http://www3.deis.unibo.it/Staff/FullProf/GiovanniMarro/geometric.htm)
 
 
 ## Licence
