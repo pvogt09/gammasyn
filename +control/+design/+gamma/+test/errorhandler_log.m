@@ -8,14 +8,14 @@ function [k_opt, J_opt, output] = errorhandler_log(err, n)
 	%		J_opt:	optimal function value
 	%		output:	information structure
 	SAVEPATH = realpath(fullfile(mfilename('fullpath'), '..'));
-	
+
 	k_opt = ones(n, 1);
 	J_opt = 1;
 	output = optimization.options.Options.OUTPUTPROTOTYPEMULTIPLE;
 	output.message = err.message;
 	output.information.output = err.getReport('extended', 'hyperlinks', 'off');
 	warning(err.identifier, err.message);
-	
+
 	nl = sprintf('\n');
 	tab = sprintf('\t');
 	htmlpattern = '<[^>]*>';

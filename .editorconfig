@@ -3,17 +3,27 @@
 # top-most EditorConfig file
 root = true
 
-[*]
+# patch files
+[*.patch]
+insert_final_newline = unset
+indent_style = unset
+indent_size = unset
+tab_width = unset
+trim_trailing_whitespace = unset
+
+# git files
+[*.{gitignore,gitattributes,gitmodules}]
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Matlab files
+[*.{m,c,cpp,h,hpp}]
 insert_final_newline = false
 indent_style = tab
 indent_size = tab
 tab_width = 4
-charset = utf-8
+charset = unset
 trim_trailing_whitespace = true
-
-# Matlab files
-[*.m]
-charset = latin1
 
 # shell scripts unix
 [*.sh]
@@ -32,3 +42,27 @@ indent_style = space
 indent_size = 2
 tab_width = 2
 insert_final_newline = true
+
+[lib/YALMIP/**/*.{m,c,cpp,h,hpp}]
+insert_final_newline = unset
+indent_style = unset
+indent_size = unset
+tab_width = unset
+charset = unset
+trim_trailing_whitespace = unset
+
+[lib/ROLMIP/**/*.{m,c,cpp,h,hpp}]
+insert_final_newline = unset
+indent_style = unset
+indent_size = unset
+tab_width = unset
+charset = unset
+trim_trailing_whitespace = unset
+
+[codegen/**/*]
+insert_final_newline = unset
+indent_style = unset
+indent_size = unset
+tab_width = unset
+charset = unset
+trim_trailing_whitespace = unset

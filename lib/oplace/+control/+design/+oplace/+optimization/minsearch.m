@@ -7,25 +7,25 @@ function [xout, DV, IV] = minsearch(FUN, x, options, varargin)
 	%   partial derivatives of the function, df/dX, at the point X.
 	%
 	%   X=FMINU('FUN',X0,OPTIONS) allows a vector of optional parameters to
-	%   be defined. OPTIONS(1) controls how much display output is given; set 
-	%   to 1 for a tabular display of results, (default is no display: 0). 
-	%   OPTIONS(2) is a measure of the precision required for the values of 
+	%   be defined. OPTIONS(1) controls how much display output is given; set
+	%   to 1 for a tabular display of results, (default is no display: 0).
+	%   OPTIONS(2) is a measure of the precision required for the values of
 	%   X at the solution. OPTIONS(3) is a measure of the precision
 	%   required of the objective function at the solution.
-	%   For more information type HELP FOPTIONS. 
+	%   For more information type HELP FOPTIONS.
 	%
 	%   X=FMINU('FUN',X0,OPTIONS,'GRADFUN',P1,P2,...) passes the problem-
-	%   dependent parameters P1,P2,... directly to the functions FUN 
+	%   dependent parameters P1,P2,... directly to the functions FUN
 	%   and GRADFUN: FUN(X,P1,P2,...) and GRADFUN(X,P1,P2,...).  Pass
-	%   empty matrices for OPTIONS, and 'GRADFUN' to use the default 
+	%   empty matrices for OPTIONS, and 'GRADFUN' to use the default
 	%   values.
 	%
-	%   [X,OPTIONS]=FMINU('FUN',X0,...) returns the parameters used in the 
-	%   optimization method.  For example, options(10) contains the number 
+	%   [X,OPTIONS]=FMINU('FUN',X0,...) returns the parameters used in the
+	%   optimization method.  For example, options(10) contains the number
 	%   of function evaluations used.
 	%
-	%   The default algorithm is the BFGS Quasi-Newton method with a 
-	%   mixed quadratic and cubic line search procedure. 
+	%   The default algorithm is the BFGS Quasi-Newton method with a
+	%   mixed quadratic and cubic line search procedure.
 
 	%   Copyright (c) 1990-98 by The MathWorks, Inc.
 	%   $Revision: 1.28 $  $Date: 1998/08/31 22:29:16 $
@@ -90,9 +90,9 @@ function [xout, DV, IV] = minsearch(FUN, x, options, varargin)
 	% ANFANGSWERTE UND FELDEINTEILUNG
 
 	if (IV(ISTART)==0)
-	   [IV,DV]=finished(N,x,IV(IDVA)+2*N,IV,DV,0);
-	   xout=x;
-	   return;
+		[IV,DV]=finished(N,x,IV(IDVA)+2*N,IV,DV,0);
+		xout=x;
+		return;
 	end
 	IOUT=IV(IOUTNR);
 	IG=IV(IDVA);
@@ -183,7 +183,7 @@ function [xout, DV, IV] = minsearch(FUN, x, options, varargin)
 				end
 				IV(IFN)=IV(IFN)+1;
 				IV(IGN)=IV(IFN);
-				[f,grad,IUP] = feval(optfkt,x,varargin{:}); 
+				[f,grad,IUP] = feval(optfkt,x,varargin{:});
 				DV(IF)=f;
 				DV(IG:IGN1)=grad(:);
 				if (IUP==0)

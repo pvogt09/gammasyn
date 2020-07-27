@@ -1,8 +1,8 @@
 function [availableFeatures] = available_toolboxes()
-	%AVAILABLE_TOOLBOXES zurückgeben, welche Toolboxen verwendet werden können
+	%AVAILABLE_TOOLBOXES zurÃ¼ckgeben, welche Toolboxen verwendet werden kÃ¶nnen
 	%	Output:
 	%		availableFeatures:	verwendbare Toolboxen
-	
+
 	% https://stackoverflow.com/questions/2060382/how-would-one-check-for-installed-matlab-toolboxes-in-a-script-function
 	featureStr = {
 		'Aerospace_Blockset'; ...

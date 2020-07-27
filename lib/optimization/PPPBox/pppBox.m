@@ -122,7 +122,7 @@ function [x, fval, exitflag, output] = pppBox(fun, x0, options, Aiq, biq, vararg
 		end
 	end
 
-	%% Main Optimization Loop 
+	%% Main Optimization Loop
 	% fixed optimizazion matrices
 	model.lb = [
 		model.lb;
@@ -170,7 +170,7 @@ function [x, fval, exitflag, output] = pppBox(fun, x0, options, Aiq, biq, vararg
 
 	solvertime = tic;
 	for count = 1:size(x0, 2)
-		% initial data; initial value is not necessarily a feasible point 
+		% initial data; initial value is not necessarily a feasible point
 		x = x0(:, count);
 		x_old = x;
 		fval_old = 0;
@@ -204,7 +204,7 @@ function [x, fval, exitflag, output] = pppBox(fun, x0, options, Aiq, biq, vararg
 			end
 
 			% solve QP to obtain the value (theta) of the optimality function and the
-			% corresponding search direction (h) 
+			% corresponding search direction (h)
 			if count1 == 1
 				H           = delta*speye(numOptVars);
 				model.Q     = [
@@ -282,7 +282,7 @@ function [x, fval, exitflag, output] = pppBox(fun, x0, options, Aiq, biq, vararg
 			h = xnew(1:end-1) - x;
 			theta = theta +.5*delta*(x'*x);
 
-			% Step Size 
+			% Step Size
 			if armijoSimple
 			% Armijo type step size rule
 				k = 0;
@@ -315,9 +315,9 @@ function [x, fval, exitflag, output] = pppBox(fun, x0, options, Aiq, biq, vararg
 					t = min(1, t*2);
 				end
 				if isfunvararg
-					fval = max(fun(x, varargin{:})); 
+					fval = max(fun(x, varargin{:}));
 				else
-					fval = max(fun(x)); 
+					fval = max(fun(x));
 				end
 				[t, x, fval, ~, k] = ArmijoBacktrackMinMax(x, t, h, fval, psi, g, theta, alpha, LS_interp, LS_multi, progTol, debug, doPlot, 1, fun, varargin{:});
 			end
@@ -344,9 +344,9 @@ function [x, fval, exitflag, output] = pppBox(fun, x0, options, Aiq, biq, vararg
 
 			% ******************* Check for lack of progress *******************
 
-			if abs(fval_old - fval) < optTol 
+			if abs(fval_old - fval) < optTol
 				exitflag = 2;
-				msg = 'Function Value changing by less than optTol'; 
+				msg = 'Function Value changing by less than optTol';
 				break;
 			end
 			if norm(x - x_old) < progTol
@@ -368,7 +368,7 @@ function [x, fval, exitflag, output] = pppBox(fun, x0, options, Aiq, biq, vararg
 				msg = 'Reached Maximum Number of Iterations';
 				break;
 			end
-			
+
 			if toc(solvertime) > maxTime
 				exitflag = 0;
 				msg = 'Reached Maximum Time';
@@ -377,7 +377,7 @@ function [x, fval, exitflag, output] = pppBox(fun, x0, options, Aiq, biq, vararg
 
 			% Save values for next iteration
 			x_old = x;
-			fval_old = fval; 
+			fval_old = fval;
 			g_old = g;
 
 		end % end iteration

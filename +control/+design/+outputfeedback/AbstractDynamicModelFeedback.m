@@ -1,6 +1,6 @@
 classdef(Abstract) AbstractDynamicModelFeedback < control.design.outputfeedback.AbstractDynamicFeedback
 	%ABSTRACTDYNAMICMODELFEEDBACK abstract class for casting a control system in output feedback form and specify the needed constraints on the resulting gain matrix, when a not fully specified dynamic model of specified order is needed
-	
+
 	properties(SetAccess=protected)
 		% reference descriptor matrix
 		E_model_ref;
@@ -21,7 +21,7 @@ classdef(Abstract) AbstractDynamicModelFeedback < control.design.outputfeedback.
 		% reference model sampling time
 		T_model_ref
 	end
-	
+
 	methods
 		function [this] = AbstractDynamicModelFeedback(system, A, B, C, C_dot, D, C_ref, D_ref, T)
 			%ABSTRACTDYNAMICMODELFEEDBACK create new feedback with not fully specified dynamic model of specified order

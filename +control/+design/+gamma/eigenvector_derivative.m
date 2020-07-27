@@ -72,7 +72,25 @@ function [V, D, W, V_derv, D_derv, W_derv] = eigenvector_derivative(A, B, option
 					if isempty(B)
 						temp = orth([V_tilde_k(:, 1:k - 1, jj), null((lambda_tilde(multiplicityidx(1, idxmap(jj, 1)))*eye(system_order) - A(:, :, 1))^k)]) + 0i;
 					else
-						temp = orth([V_tilde_k(:, 1:k - 1, jj), null((lambda_tilde(multiplicityidx(1, idxmap(jj, 1)))*B(:, :, 1) - A(:, :, 1))^k)]) + 0i;
+						if isinf(lambda_tilde(multiplicityidx(1, idxmap(jj, 1)))) || isnan(isinf(lambda_tilde(multiplicityidx(1, idxmap(jj, 1)))))
+							evsysA = B(:, :, 1);
+							evsysb = A(:, :, 1)*V_tilde_k(:, gg - 1, jj);
+						else
+							evsysA = (lambda_tilde(multiplicityidx(1, idxmap(jj, 1)))*B(:, :, 1) - A(:, :, 1));
+							evsysb = -B(:, :, 1)*V_tilde_k(:, gg - 1, jj);
+						end
+						if rank(evsysA) < size(evsysA, 1)
+							sol_particular = pinv(evsysA)*evsysb;
+						else
+							sol_particular = evsysA\evsysb;
+						end
+						sol = null(evsysA);
+						sol_particular(any(sol, 2), :) = 0;
+						sol = sol + repmat(sol_particular, 1, size(sol, 2));
+						temp = orth([V_tilde_k(:, 1:k - 1, jj), sol]) + 0i;
+						if size(temp, 2) > k
+							temp = temp(:, 1:k);
+						end
 					end
 					if size(temp, 1) ~= system_order || size(temp, 2) ~= k
 						error('control:design:gamma:eigenvalues', 'No regular basis of right eigenvectors could be found.');

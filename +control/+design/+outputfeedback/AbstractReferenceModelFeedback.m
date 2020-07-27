@@ -1,6 +1,6 @@
 classdef(Abstract) AbstractReferenceModelFeedback < control.design.outputfeedback.AbstractDynamicModelFeedback
 	%ABSTRACTREFERENCEMODELFEEDBACK abstract class for casting a control system in output feedback form and specify the needed constraints on the resulting gain matrix, when a reference model is needed
-	
+
 	methods
 		function [this] = AbstractReferenceModelFeedback(system, varargin)
 			%ABSTRACTREFERENCEMODELFEEDBACK create new feedback with reference model

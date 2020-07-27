@@ -17,7 +17,7 @@ function [S, R_0] = convert_constraints_to_oplace(R_fixed, R_bounds, R_nonlin, R
 		'R_fixed_A';
 		'R_fixed_b';
 		'R_fixed_T';
-		'R_fixed_T_inv'	
+		'R_fixed_T_inv'
 	}))
 		if R_fixed.R_fixed_has && R_fixed.R_fixed_only
 			S = R_fixed.R_fixed;

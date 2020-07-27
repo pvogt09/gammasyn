@@ -37,6 +37,9 @@ function [J, gradJ, hessianJ] = calculate_objective(areaval, weight, eigenvalue_
 	needsgradient = nargout >= 2;
 	needshessian = nargout >= 3;
 	areaval_zero = zeros(size(areaval));% prevent NaN in 0*areaval if areaval is Inf
+	if options.eigenvalueignoreinf
+		areaval(isinf(areaval)) = 0;
+	end
 	parfor (ii = 1:int32(size(objective_type, 1)), numthreads)
 		Jtemp = areaval; %#ok<NASGU> prevent "The temporary variable Jtemp will be cleared at the beginning of each iteration of the parfor loop."
 		switch objective_type(ii, 1)
@@ -492,7 +495,7 @@ function [hessianJ] = calculate_objective_hesse_helper(number_models, number_sta
 					i = mod(tmpZ - 1, number_controls) + 1;
 					j = idivide(tmpZ - 1, number_controls) + 1;
 				end
-				
+
 				if q <= number_R_coefficients
 					s = mod(q - 1, number_controls) + 1;
 					t = idivide(q - 1, number_controls) + 1;
@@ -510,13 +513,13 @@ function [hessianJ] = calculate_objective_hesse_helper(number_models, number_sta
 							if q <= number_R_coefficients
 								eigDerivative_ij = eigenvalue_derivative(kk, i, j, ii);
 								eigDerivative_st = eigenvalue_derivative(kk, s, t, ii);
-								
+
 								eig2Derivative_re = real(eigenvalue_2derivative(kk, q, z, ii));
 								eig2Derivative_im = imag(eigenvalue_2derivative(kk, q, z, ii));
 							else
 								eigDerivative_ij = eigenvalue_derivative(kk, i, j, ii);
 								eigDerivative_st = eigenvalue_derivative_xdot(kk, s, t, ii);
-								
+
 								eig2Derivative_re = real(eigenvalue_2derivative_mixed(kk, q - number_R_coefficients, z, ii));
 								eig2Derivative_im = imag(eigenvalue_2derivative_mixed(kk, q - number_R_coefficients, z, ii));
 							end
@@ -524,13 +527,13 @@ function [hessianJ] = calculate_objective_hesse_helper(number_models, number_sta
 							if q <= number_R_coefficients
 								eigDerivative_ij = eigenvalue_derivative_xdot(kk, i, j, ii);
 								eigDerivative_st = eigenvalue_derivative(kk, s, t, ii);
-								
+
 								eig2Derivative_re = real(eigenvalue_2derivative_xdot_mixed(kk, q, z - number_R_coefficients, ii));
 								eig2Derivative_im = imag(eigenvalue_2derivative_xdot_mixed(kk, q, z - number_R_coefficients, ii));
 							else
 								eigDerivative_ij = eigenvalue_derivative_xdot(kk, i, j, ii);
 								eigDerivative_st = eigenvalue_derivative_xdot(kk, s, t, ii);
-								
+
 								eig2Derivative_re = real(eigenvalue_2derivative_xdot(kk, q - number_R_coefficients, z - number_R_coefficients, ii));
 								eig2Derivative_im = imag(eigenvalue_2derivative_xdot(kk, q - number_R_coefficients, z - number_R_coefficients, ii));
 							end

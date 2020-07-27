@@ -171,7 +171,7 @@ function [F_opt, info] = prefilter(R_opt, C_stat, systems, T, F_fixed, options, 
 			if numel(F_bounds) >= 2
 				if ~isnumeric(F_bounds{1}) || ~isnumeric(F_bounds{2})
 					error('control:design:gamma:dimension', 'Bounded proportional gain must contain a logical and a numeric matrix or a numerical constraint system, not a ''%s''.', class(F_bounds{1}));
-				end	
+				end
 			else
 				error('control:design:gamma:dimension', 'Bounded proportional gain constraint system must not contain more than 2 matrices.');
 			end

@@ -23,7 +23,7 @@ function [success, filelist] = all(overwrite, nobuild)
 		return;
 	end
 	success = false(size(buildfiles, 1), 1);
-	wait = Progress(size(buildfiles, 1), 'Compiling RROLMIP functions');
+	wait = Progress(size(buildfiles, 1), 'Compiling ROLMIP functions');
 	for ii = 1:size(buildfiles, 1)
 		if wait.iscancelled()
 			break;

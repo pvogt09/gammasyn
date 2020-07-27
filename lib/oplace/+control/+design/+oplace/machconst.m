@@ -48,18 +48,18 @@ EPS=2.220446D-16;
 BIG=1.67D308;
 
 switch K
-   case 1
-      DPMDC=ETA;
-   case 2
-      DPMDC=sqrt(1.001*ETA);
-   case 3
-      DPMDC=EPS;
-   case 4
-      DPMDC=sqrt(0.999*EPS);
-   case 5
-      DPMDC=BIG;
-   case 6
-      DPMDC=sqrt(0.999*BIG);
-   otherwise
-      error('Index greater 6 in MACHCONST');
+	case 1
+		DPMDC=ETA;
+	case 2
+		DPMDC=sqrt(1.001*ETA);
+	case 3
+		DPMDC=EPS;
+	case 4
+		DPMDC=sqrt(0.999*EPS);
+	case 5
+		DPMDC=BIG;
+	case 6
+		DPMDC=sqrt(0.999*BIG);
+	otherwise
+		error('Index greater 6 in MACHCONST');
 end

@@ -20,3 +20,15 @@ Feature:oplace:
 Feature:CodeGeneration:
   - +compile/*
   - +compile/**/*
+Feature:Couplingcontrol:
+  - +control/+design/+gamma/gammsyn_coupling.m
+  - +control/+design/+gamma/objectiveoptions_prototype_coupling.m
+  - +control/+design/+gamma/private/calculate_coupling_conditions.m
+  - +control/+design/+gamma/private/checkobjectiveoptions_coupling
+  - +control/+design/+gamma/private/coupling_RF_fixed.m
+  - +control/+design/+gamma/private/coupling_vectorTwoNorm.m
+  - +control/+design/+gamma/private/GammaCouplingStrategy_needscouplingconditions.m
+  - +control/+design/+outputfeedback/AbstractCouplingFeedback.m
+  - +control/+design/+outputfeedback/OutputCouplingStateFeedback.m
+  - +control/+design/+outputfeedback/StateCouplingStateFeedback.m
+  - mex/control/design/gamma/GammaCouplingStrategy.m

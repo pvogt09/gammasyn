@@ -17,7 +17,7 @@ function [is] = isoptimset(set)
 			'PlotFcns';
 			'ActiveConstrTol';
 			'Algorithm';
-   			'AlwaysHonorConstraints';
+			'AlwaysHonorConstraints';
 			'DerivativeCheck';
 			'Diagnostics';
 			'DiffMaxChange';

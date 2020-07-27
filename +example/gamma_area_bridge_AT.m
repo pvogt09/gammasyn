@@ -76,12 +76,12 @@ system = [
 	bridge2;
 	bridge3
 ];
-% K_opt für sys1 und sys2 mit beschränkter Optimierung
+% K_opt fÃ¼r sys1 und sys2 mit beschrÃ¤nkter Optimierung
 % K_opt = [
 % 	15636.739362,	-144.594574,	24065.322365,	-940.953105;
 % 	-23371.789658,	15431.005867,	49.309405,		0.807167
 % ];
-% K_opt für sys1 bis sys7 mit beschränkter Optimierung
+% K_opt fÃ¼r sys1 bis sys7 mit beschrÃ¤nkter Optimierung
 % K_opt = [
 % 	1158324.76058061,	52649.8476715839,	19035120.5389798,	1004.71430743182;
 % 	910.491000702407,	-1788.58136236280,	53028.5103450414,	1.52056181323372
@@ -108,7 +108,7 @@ testsystems = reshape(testsystems, [], 1);
 a = 0.6;
 b = 0.5;
 R = 50;
-%% 
+%%
 R_0 = [
 	100,	10000,	-10000,	1;
 	100,	100,	100,	1
@@ -213,7 +213,7 @@ if plotoptions.plot
 		wp = unique([linspace(-sin(phi)*R, sin(phi)*R, 400), linspace(-sin(phi/50)*R, sin(phi/50)*R, 50), 0]);
 		legendentries{1, 1} = plot(-a/b*sqrt(wp.^2 + b^2), wp, 'k');
 		plot([0, 0], [-R, R], 'r');
-		
+
 		if plotoptions.plotsolution_obj
 			theta = linspace(0, 2*pi, 200);
 			legendentries{2, 1} = plot(30*a*cos(theta) - 20, 20*b*sin(theta), 'b');
@@ -449,11 +449,11 @@ if plotoptions.plot
 	legends = {
 		'Polgebiet';
 		'Polgebiet optional';
-		'Lösung \cite{FOELLINGER1994}';
+		'LÃ¶sung \cite{FOELLINGER1994}';
 		'Entwurf \cite{FOELLINGER1994}';
-		'Lösung $\mat{R}_1$';
+		'LÃ¶sung $\mat{R}_1$';
 		'Entwurf $\mat{R}_1$';
-		'Lösung $\mat{R}_2$';
+		'LÃ¶sung $\mat{R}_2$';
 		'Entwurf $\mat{R}_2$'
 	};
 	legends(isemptylegend, :) = [];
@@ -550,7 +550,7 @@ if plotoptions.step
 		subplot(3, 1, 3);
 		plot(t, y(:, 3));
 		hold('all');
-		
+
 		if plotoptions.step_obj
 			Acl = A - B*R_opt_obj*C;
 			Bcl = B*R_opt_obj;
@@ -565,7 +565,7 @@ if plotoptions.step
 
 			Gcl = ss(Acl, Bcl, Ccl, Dcl);
 			y = lsim(Gcl, w, t);
-			
+
 			figure(plot_obj);
 			subplot(3, 1, 1);
 			plot(t, y(:, 1));
@@ -591,7 +591,7 @@ if plotoptions.step
 
 			Gcl = ss(Acl, Bcl, Ccl, Dcl);
 			y = lsim(Gcl, w, t);
-			
+
 			figure(plot_koni);
 			subplot(3, 1, 1);
 			plot(t, y(:, 1));
@@ -610,7 +610,7 @@ if plotoptions.step
 	ylabel('u');
 	grid('on');
 	hold('off');
-	title('Lösung');
+	title('LÃ¶sung');
 	subplot(3, 1, 1);
 	xlabel('t');
 	ylabel('s');
@@ -628,7 +628,7 @@ if plotoptions.step
 		ylabel('u');
 		grid('on');
 		hold('off');
-		title('Lösung Zielfunktion');
+		title('LÃ¶sung Zielfunktion');
 		subplot(3, 1, 1);
 		xlabel('t');
 		ylabel('s');
@@ -647,7 +647,7 @@ if plotoptions.step
 		ylabel('u');
 		grid('on');
 		hold('off');
-		title('Lösung \cite{FOELLINGER1994}');
+		title('LÃ¶sung \cite{FOELLINGER1994}');
 		subplot(3, 1, 1);
 		xlabel('t');
 		ylabel('s');

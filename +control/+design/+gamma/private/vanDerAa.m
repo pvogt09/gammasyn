@@ -97,7 +97,7 @@ function [V, D, W, V_derv, D_derv, W_derv] = vanDerAa(A, B, options, V_tilde, la
 		% van der Aa method internally uses different notation for left eigenvectors (i.e. W = inv(V_tilde))
 		W_tilde = inv(V_tilde)';
 	end
-	% initialize 
+	% initialize
 	lambda = NaN(1, 1, sysDepth, sysDepth) + 1i*NaN(1, 1, sysDepth, sysDepth);
 	X = NaN(N, N) + 1i*NaN(N, N);
 	Y = NaN(N, N) + 1i*NaN(N, N);
@@ -152,7 +152,7 @@ function [V, D, W, V_derv, D_derv, W_derv] = vanDerAa(A, B, options, V_tilde, la
 		end
 		% normalization of eigenvector matrices
 		[Gamma, invGamma, M_norm] = vanDerAa_normalizeEigenvectorMatrix(X, Y);
- 		X = X*Gamma;
+		X = X*Gamma;
 		Y = invGamma*Y;
 		% calculate C for the "lowest" depth
 		C = vanDerAa_calculateC(A, X, Y, lambda(:, :, :, 1), diffLambdas(:, :, :, 1), diffLambdas_size(:, :, 1), part(:, :, 1), M_norm, options);
@@ -169,9 +169,9 @@ function [V, D, W, V_derv, D_derv, W_derv] = vanDerAa(A, B, options, V_tilde, la
 			% current eigenvector matrices
 			X_curr = X(:, 1:cSize);
 			Y_curr = Y(1:cSize, :);
-			% calculate C_11 
+			% calculate C_11
 			C_11 = vanDerAa_calculateC(A, X_curr, Y_curr, lambda1, diffLambdas1, diffLambdas_size1, part1, M_norm, options);
-			% assign C_11 
+			% assign C_11
 			C(1:cSize, 1:cSize) = C_11;
 		end
 		V = X;
@@ -193,7 +193,7 @@ function [V, D, W, V_derv, D_derv, W_derv] = vanDerAa(A, B, options, V_tilde, la
 		C = zeros(N, N) + 0i;
 		D_derv = zeros(N, 1) + 0i;
 		for kk = 1:N
-			% derivative of k-th eigenvalue 
+			% derivative of k-th eigenvalue
 			D_derv(kk, 1) = Y(kk, :)*A(:, :, 2)*X(:, kk);
 			for jj = 1:N
 				if kk ~= jj
@@ -235,6 +235,7 @@ function [V, D, W, V_derv, D_derv, W_derv] = vanDerAa(A, B, options, V_tilde, la
 	%	D_derv = D_derv*permutation_matrix;
 	%end
 	if nargout >= 6
+		% W'*V = eye(n)
 		W_derv = -W*V_derv'*W;
 	end
 end

@@ -430,7 +430,7 @@ function [x, fval, exitflag, output, lambda, grad, hessian] = optimize(fun, x_0,
 	solveroptions = options.getpreferred();
 	snscreen(solveroptions.Display);
 	solveroptions = rmfield(solveroptions, 'Display');
-	snseti('Minimize', 1);  
+	snseti('Minimize', 1);
 	printfile = tempname();
 	snoptnames = fieldnames(solveroptions);
 	snoptnames = snoptnames(~strcmpi(snoptnames, 'derivative_option'), :);

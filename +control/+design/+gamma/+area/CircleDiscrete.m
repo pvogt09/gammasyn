@@ -1,11 +1,11 @@
 classdef CircleDiscrete < control.design.gamma.area.GammaArea
 	%CIRCLEDISCRETE class for representation of a circular pole area re^2 + im^2 - R^2 = 0
-	
+
 	properties
 		% radius of circle
 		R
 	end
-	
+
 	methods(Static=true)
 		function [f, dfdre, dfdim, d2fdredre, d2fdimdre, d2fdredim, d2fdimdim] = border(re, im, parameter)
 			%BORDER return border of polearea with f < 0 for points left of the border, f = 0 for points on the border and f > 0 for points right of the border
@@ -37,7 +37,7 @@ classdef CircleDiscrete < control.design.gamma.area.GammaArea
 				f = control.design.gamma.area.CircleDiscrete_border(re, im, parameter);
 			end
 		end
-		
+
 		function [dfdre, dfdim] = gradborder(re, im, parameter)
 			%GRADBORDER return gradient of border of polearea with f < 0 for points left of the border, f = 0 for points on the border and f > 0 for points right of the border
 			%	Input:
@@ -49,7 +49,7 @@ classdef CircleDiscrete < control.design.gamma.area.GammaArea
 			%		dfdim:		gradient of border function value at point [re, im] for coordinate im
 			[~, dfdre, dfdim] = control.design.gamma.area.CircleDiscrete.border(re, im, parameter);
 		end
-		
+
 		function [d2fdredre, d2fdimdre, d2fdredim, d2fdimdim] = hessborder(re, im, parameter)
 			%HESSBORDER return hessian of border of polearea with f < 0 for points left of the border, f = 0 for points on the border and f > 0 for points right of the border
 			%	Input:
@@ -64,7 +64,7 @@ classdef CircleDiscrete < control.design.gamma.area.GammaArea
 			[~, ~, ~, d2fdredre, d2fdimdre, d2fdredim, d2fdimdim] = control.design.gamma.area.CircleDiscrete.border(re, im, parameter);
 		end
 	end
-	
+
 	methods(Access=protected)
 		function [parameters] = getparameters(this)
 			%GETPARAMETERS return structure with parameters of current object unknown to the superclass
@@ -77,7 +77,7 @@ classdef CircleDiscrete < control.design.gamma.area.GammaArea
 			);
 		end
 	end
-	
+
 	methods
 		function [this] = CircleDiscrete(R, varargin)
 			%CIRCLEDISCRETE return new circular pole area with specified radius
@@ -94,7 +94,7 @@ classdef CircleDiscrete < control.design.gamma.area.GammaArea
 			this@control.design.gamma.area.GammaArea(GammaArea.CIRCLEDISCRETE, shift);
 			this.R = R;
 		end
-		
+
 		function [this] = set.R(this, R)
 			%R setter for radius
 			%	Input:
@@ -107,7 +107,7 @@ classdef CircleDiscrete < control.design.gamma.area.GammaArea
 			end
 			this.R = R;
 		end
-		
+
 		function [border] = plotinstanceborder(this, ~, numpoints)
 			%PLOTINSTANCEBORDER plot border of area function
 			%	Input:
@@ -126,7 +126,7 @@ classdef CircleDiscrete < control.design.gamma.area.GammaArea
 			end
 		end
 	end
-		
+
 	methods(Access=protected)
 		function [f] = getinstanceborder(this, re, im)
 			%GETINSTANCEBORDER return border of polearea with f < 0 for points left of the border, f = 0 for points on the border and f > 0 for points right of the border
@@ -142,7 +142,7 @@ classdef CircleDiscrete < control.design.gamma.area.GammaArea
 			parameter.circlediscrete_R = this.R;
 			f = this.border(re, im, parameter);
 		end
-		
+
 		function [dfdre, dfdim] = getinstancegradborder(this, re, im)
 			%GETINSTANCEGRADBORDER return gradient of border of polearea with f < 0 for points left of the border, f = 0 for points on the border and f > 0 for points right of the border
 			%	Input:
@@ -158,7 +158,7 @@ classdef CircleDiscrete < control.design.gamma.area.GammaArea
 			parameter.circlediscrete_R = this.R;
 			[dfdre, dfdim] = this.gradborder(re, im, parameter);
 		end
-		
+
 		function [d2fdredre, d2fdimdre, d2fdredim, d2fdimdim] = getinstancehessborder(this, re, im)
 			%GETINSTANCEHESSBORDER return hessian of border of polearea with f < 0 for points left of the border, f = 0 for points on the border and f > 0 for points right of the border
 			%	Input:
@@ -176,7 +176,7 @@ classdef CircleDiscrete < control.design.gamma.area.GammaArea
 			parameter.circlediscrete_R = this.R;
 			[d2fdredre, d2fdimdre, d2fdredim, d2fdimdim] = this.hessborder(re, im, parameter);
 		end
-		
+
 		function [str] = getinstancestring(this, format)
 			%GETINSTANCESTRING return string representation of object
 			%	Input:
@@ -189,7 +189,7 @@ classdef CircleDiscrete < control.design.gamma.area.GammaArea
 			end
 			str = ['Circlediscrete(', sprintf(format, this.R), this.printshift(this.reshift, this.imshift, format, true), ')'];
 		end
-		
+
 		function [L, M, success] = toinstanceLMIregion(this)
 			%TOINSTANCELMIREGION convert area to LMI region that can be used by Matlab functions for object
 			%	Input:

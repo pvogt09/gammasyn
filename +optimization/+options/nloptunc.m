@@ -1,6 +1,6 @@
 classdef nloptunc < optimization.options.nlopt
 	%NLOPTUNC solver options for nloptunc
-	
+
 	methods
 		function [this] = nloptunc(varargin)
 			%NLOPTUNC create new optimization option set
@@ -10,7 +10,7 @@ classdef nloptunc < optimization.options.nlopt
 			%		this:		instance
 			this@optimization.options.nlopt(optimization.solver.Optimizer.NLOPTUNC, optimization.options.ProblemType.UNCONSTRAINED, optimization.options.ProblemType.UNCONSTRAINED, varargin{:});
 		end
-		
+
 		function [algorithms] = possiblealgorithms(~)
 			%POSSIBLEALGORITHMS list with possible algorithms for optimizer
 			%	Input:
@@ -48,5 +48,5 @@ classdef nloptunc < optimization.options.nlopt
 			};
 		end
 	end
-	
+
 end

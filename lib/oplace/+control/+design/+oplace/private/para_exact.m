@@ -1,23 +1,23 @@
 function [Ko,T1] = para_exact(P,H,npq)
-% [Ko,T1] = PARA_FEST(P,h,npq) bestimmt bei Erfüllung der 
-% nachfolgenden Bedingung ein Teil der gesuchte Ausgangsrück-
-% führungsmatrix K analytisch. Hierdurch wird gewährleistet, daß
-% die vorgegebenen Parameter exakt berücksichtigt werden.
+% [Ko,T1] = PARA_FEST(P,h,npq) bestimmt bei ErfÃ¼llung der
+% nachfolgenden Bedingung ein Teil der gesuchte AusgangsrÃ¼ck-
+% fÃ¼hrungsmatrix K analytisch. Hierdurch wird gewÃ¤hrleistet, daÃŸ
+% die vorgegebenen Parameter exakt berÃ¼cksichtigt werden.
 % Bed.:
 %    r <= (p*q-n) / (p-1)  mit  r - Anz. der Parametervektoren [npq(5)],
-%                               p - Anz. der Eingangsgrößen [npq(2)],    
-%                               q - Anz. der Ausgangsgrößen [npq(3)],
+%                               p - Anz. der EingangsgrÃ¶ÃŸen [npq(2)],
+%                               q - Anz. der AusgangsgrÃ¶ÃŸen [npq(3)],
 %                               n - Systemordnung [npq(1)].
 %
 % OUTPUT:
-% Ko     - Matrix, durch die sämtliche Parametervektor und die dazugehörigen 
+% Ko     - Matrix, durch die sÃ¤mtliche Parametervektor und die dazugehÃ¶rigen
 %          EW festlegt werden
-% T1     - Matrix für die Berechnung des neuen Systems
-% 
+% T1     - Matrix fÃ¼r die Berechnung des neuen Systems
+%
 % INPUT:
-% P      - Matrix mit den Parametervektoren 
+% P      - Matrix mit den Parametervektoren
 % H      - aus den Parametervektoren berechnete Vektoren
-% npq    - Dimensionen der vorliegenden Matrizen bzw. Vektoren  
+% npq    - Dimensionen der vorliegenden Matrizen bzw. Vektoren
 
 r = npq(6);
 d = npq(3) - r;

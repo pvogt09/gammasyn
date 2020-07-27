@@ -3,7 +3,7 @@ function [tests] = findTests(pfad, exclude, pattern)
 	%	Input:
 	%		pfad:		Pfad, in dem die Tesdateien gesucht werden sollen
 	%		exclude:	Suchmuster, die ignoriert werden sollen
-	%		pattern:	Suchmuster für Testdateien
+	%		pattern:	Suchmuster fÃ¼r Testdateien
 	%	Output:
 	%		tests:		cell-Array mit Testdateien
 	if nargin <= 1
@@ -40,7 +40,7 @@ function [tests] = findTests(pfad, exclude, pattern)
 				findTests(fullfile(pfad, dirs(i).name), exclude, pattern);
 			];
 		end
-	end    
+	end
 end
 
 
@@ -48,7 +48,7 @@ function [tests] = findTest(path, pattern)
 	%FINDTEST Testdateien in einem Ordner finden
 	%	Input:
 	%		path:		Pfad, in dem nach Testdateien gesucht wird
-	%		pattern:	Suchmuster für Testdateien
+	%		pattern:	Suchmuster fÃ¼r Testdateien
 	%	Output:
 	%		tests:		Testdateien
 	l = dir(fullfile(path, pattern));
@@ -61,7 +61,7 @@ function [tests] = findTest(path, pattern)
 	end
 	l = l(~[l.isdir]);
 	if ~isempty(l)
-		% dir(path, pattern) ignoriert Klein- und Großschreibung (unter Windows) und findet deshalb mehr, als gefunden werden soll
+		% dir(path, pattern) ignoriert Klein- und GroÃŸschreibung (unter Windows) und findet deshalb mehr, als gefunden werden soll
 		pattern = strrep(pattern, '.', '\.');
 		if pattern(1) == '*'
 			pattern = ['.', pattern];

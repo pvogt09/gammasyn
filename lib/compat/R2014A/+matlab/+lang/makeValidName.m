@@ -2,43 +2,43 @@ function [N, modified] = makeValidName(S, varargin)
 	%MATLAB.LANG.MAKEVALIDNAME constructs valid MATLAB identifiers from input S
 	%   N = MATLAB.LANG.MAKEVALIDNAME(S) returns valid identifiers, N,
 	%   constructed from the input S. S is specified as a string or a cell
-	%   array of strings. The strings in N are NOT guaranteed to be unique. 
+	%   array of strings. The strings in N are NOT guaranteed to be unique.
 	%
 	%   A valid MATLAB identifier is a character string of alphanumerics and
 	%   underscores, such that the first character is a letter and the length
-	%   of the string is <= NAMELENGTHMAX. 
-	%   
+	%   of the string is <= NAMELENGTHMAX.
+	%
 	%   MATLAB.LANG.MAKEVALIDNAME deletes whitespace characters prior to replacing
-	%   any characters that are not alphnumerics or underscores. If a whitespace 
-	%   character is followed by a lowercase letter, MATLAB.LANG.MAKEVALIDNAME 
+	%   any characters that are not alphnumerics or underscores. If a whitespace
+	%   character is followed by a lowercase letter, MATLAB.LANG.MAKEVALIDNAME
 	%   converts the letter to the corresponding uppercase character.
 	%
-	%   N = MATLAB.LANG.MAKEVALIDNAME(___, PARAM1, VAL1, PARAM2, VAL2, ...) 
-	%   constructs valid identifiers using additional options specified by one 
+	%   N = MATLAB.LANG.MAKEVALIDNAME(___, PARAM1, VAL1, PARAM2, VAL2, ...)
+	%   constructs valid identifiers using additional options specified by one
 	%   or more Name, Value pair arguments.
 	%
 	%   Parameters include:
 	%
-	%   'ReplacementStyle'         Controls how non-alphanumeric characters 
-	%                              are replaced. Valid values are 'underscore', 
+	%   'ReplacementStyle'         Controls how non-alphanumeric characters
+	%                              are replaced. Valid values are 'underscore',
 	%                              'hex' and 'delete'.
 	%
 	%                              'underscore' indicates non-alphanumeric
 	%                              characters are replaced with underscores.
 	%
-	%                              'hex' indicates each non-alphanumeric 
-	%                              character is replaced with a corresponding 
+	%                              'hex' indicates each non-alphanumeric
+	%                              character is replaced with a corresponding
 	%                              hexadecimal representation.
 	%
 	%                              'delete' indicates all non-alphanumeric
 	%                              characters are deleted.
 	%
-	%                              The default 'ReplacementStyle' is 
+	%                              The default 'ReplacementStyle' is
 	%                              'underscore'.
 	%
-	%   'Prefix'                   Prepends the name when the first character 
+	%   'Prefix'                   Prepends the name when the first character
 	%                              is not alphabetical. A valid prefix must
-	%                              start with a letter and only contain 
+	%                              start with a letter and only contain
 	%                              alphanumeric characters and underscores.
 	%
 	%                              The default 'Prefix' is 'x'.
@@ -63,7 +63,7 @@ function [N, modified] = makeValidName(S, varargin)
 	%
 	%   returns the cell array {'Item_' 'PriceUnit' 'x1stOrder' 'Contact'}
 	%
-	%   See also MATLAB.LANG.MAKEUNIQUESTRINGS, ISVARNAME, ISKEYWORD, 
+	%   See also MATLAB.LANG.MAKEUNIQUESTRINGS, ISVARNAME, ISKEYWORD,
 	%            ISLETTER, NAMELENGTHMAX, WHO, STRREP, REGEXP, REGEXPREP
 	persistent parser;
 	notAlphanumericRegex = '[^a-zA-Z_0-9]';

@@ -2,30 +2,30 @@ function [K, J_opt, eigenvalues_cl] = oplace(sys, ew, options, K0, S, P, w3, W4,
 	% K = OPLACE(sys,ew,K0,S,P,w3,W4)
 	% Computes the constant feedback gain K of the output feedback u = -Ky = -KCx
 	% by pole or eigenvalue assignment.
-	% 
-	% Sie haben folgende Möglichkeiten:
 	%
-	% K = POLEASSIGN(sys,ew) 
+	% Sie haben folgende MÃ¶glichkeiten:
+	%
+	% K = POLEASSIGN(sys,ew)
 	%   sys			 	- LTI system
 	%   ew(n,1)       - vector with n predefined closed loop eigenvalues
 	%
-	% K = POLEASSIGN(sys,ew,K0) 
+	% K = POLEASSIGN(sys,ew,K0)
 	%   sys			 	- LTI system
 	%   ew(n,1)       - vector with n predefined closed loop eigenvalues
 	%   K0(p,q)       - initial feedback matrix for optimization
 	%   All elements of K are considered unconstrained and used for solving
 	%   the underlying poleassignment problem.
 	%
-	% K = POLEASSIGN(sys,ew,K0,S) 
+	% K = POLEASSIGN(sys,ew,K0,S)
 	%   S(p,q)        - matrix of structural constraints
 	%   Only the elements of K0 with S(i,j)=0 are considered unconstrained
 	%   and used for solving the underlying poleassignment problem.
 	%   The remaining elements of K0 are kept constant.
-	% 
+	%
 	% K = POLEASSIGN(sys,ew,K0,S,P,w3)
-	%   P(p,x)        - matrix with predefined parameter vectors (the i-th column 
-	%                   corresponds to the i-th eigenvalue in ew). 
-	%   w3(x,1)       - Gewichtungsfaktoren für die einzelnen Parameter-
+	%   P(p,x)        - matrix with predefined parameter vectors (the i-th column
+	%                   corresponds to the i-th eigenvalue in ew).
+	%   w3(x,1)       - Gewichtungsfaktoren fÃ¼r die einzelnen Parameter-
 	%                   vektoren
 	%
 	% K = POLEASSIGN(sys,ew,K0,S,P,w3,W4)
@@ -85,7 +85,7 @@ function [K, J_opt, eigenvalues_cl] = oplace(sys, ew, options, K0, S, P, w3, W4,
 		S = ~S;
 	end
 
-	%--- Dimensionen kontrollieren und in npq abspeichern 
+	%--- Dimensionen kontrollieren und in npq abspeichern
 	[npq, ew, w3, K0] = dimensions(sys, ew, K0, S, P, w3, W4);
 	% Nicht definierte Parametervektoren zufaellig erzeugen
 	if npq(6) < npq(1)
@@ -100,7 +100,7 @@ function [K, J_opt, eigenvalues_cl] = oplace(sys, ew, options, K0, S, P, w3, W4,
 	A = sys.a;
 	B = sys.b;
 	C = sys.c;
-	%--- Abfrage zu den EW und ggf. Abfragen zu erforderlichen Stützstellen 
+	%--- Abfrage zu den EW und ggf. Abfragen zu erforderlichen StÃ¼tzstellen
 	[P, ew, st, ews, w1temp, w2, npq, index] = eigenvals(ew, A, P, npq, options.interactive);
 	if isempty(w1)
 		w1 = w1temp;
@@ -111,7 +111,7 @@ function [K, J_opt, eigenvalues_cl] = oplace(sys, ew, options, K0, S, P, w3, W4,
 		w1 = w1(index(1:size(w1temp, 1)), :);
 	end
 	%--- Berechnungskonstanten ermitteln
-	if npq(4) > 0			% es könnten auch nur Stützstellen definiert werden
+	if npq(4) > 0			% es kÃ¶nnten auch nur StÃ¼tzstellen definiert werden
 		[G_lam, H, ew, P, npq] = const_j1_j3(ew, A, B, C, P, npq);
 	else
 		[G_lam] = []; H = [];
@@ -120,14 +120,14 @@ function [K, J_opt, eigenvalues_cl] = oplace(sys, ew, options, K0, S, P, w3, W4,
 			npq(6) = 0;
 		end
 	end
-	if npq(5) > 0 		% wenn Stützstellen definiert sind
+	if npq(5) > 0 		% wenn StÃ¼tzstellen definiert sind
 		[G_xi, p_xi] = const_j2(st, ew, ews, A, B, C, npq);
 	else
 		G_xi = []; p_xi = [];
 	end
-	if ~isempty(W4)		% wenn die einzelnen Elemente gewichtet werden 
+	if ~isempty(W4)		% wenn die einzelnen Elemente gewichtet werden
 		W4 = abs(W4);
-		if ~isempty(S) 
+		if ~isempty(S)
 			%W4 = const_j4(W4,S,npq);
 			W4 = W4.*(~S);
 		end

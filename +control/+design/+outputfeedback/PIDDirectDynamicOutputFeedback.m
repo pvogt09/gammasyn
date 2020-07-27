@@ -96,7 +96,7 @@ classdef PIDDirectDynamicOutputFeedback < control.design.outputfeedback.Abstract
 	%			w_{k-1}
 	%		]
 	%	In contrast to the PIDDynamicOutputFeedback F (w - y) is fed back directly.
-	
+
 	methods(Static=true)
 		function [name] = SimulinkVariant()
 			%SIMULINKVARIANT return name of corresponding simulink variant for controller block in control_outputfeedback_lib
@@ -105,7 +105,7 @@ classdef PIDDirectDynamicOutputFeedback < control.design.outputfeedback.Abstract
 			name = 'PIDDirectDynamicOutputFeedback';
 		end
 	end
-	
+
 	methods
 		function [this] = PIDDirectDynamicOutputFeedback(system, varargin)
 			%PIDDIRECTDYNAMICOUTPUTFEEDBACK create new PID output feedback class with additional dynamics
@@ -224,7 +224,7 @@ classdef PIDDirectDynamicOutputFeedback < control.design.outputfeedback.Abstract
 				D = zeros(size(C, 1), size(B, 2));
 			end
 		end
-		
+
 		function [R_fixed, K_fixed, F_fixed, RKF_fixed, R_bounds, K_bounds, F_bounds, RKF_bounds, R_nonlin] = gainpattern_system(this, ~, ~, B, C, C_dot, ~, ~, ~, T)
 			%GAINPATTERN_SYSTEM return gain pattern constraint system for a PID output feedback with additional dynamics gain matrix R = [
 			%		F,		R,	-D_D,	-K_I,	-C_D;
@@ -260,7 +260,7 @@ classdef PIDDirectDynamicOutputFeedback < control.design.outputfeedback.Abstract
 			%		K_bounds:	cell array with inequality constraint system for derivative gain matrix
 			%		F_bounds:	cell array with inequality constraint system for prefilter gain matrix
 			%		RKF_bounds:	cell array with inequality constraint system for combined gain matrix
-			%		R_nonlin:	function pointer to nonlinear constraints on proportional and derivative gain matrix
+			%		R_nonlin:	function pointer to nonlinear constraints on proportional, derivative and prefilter gain matrix
 			%n = size(A, 1);
 			p = size(B, 2);
 			q = size(C, 1);
@@ -392,7 +392,7 @@ classdef PIDDirectDynamicOutputFeedback < control.design.outputfeedback.Abstract
 				end
 			end
 		end
-		
+
 		function [R_gain, K_gain, F_prefilter] = gainpattern_parametric_system(this, ~, ~, B, C, C_dot, ~, ~, ~, T)
 			%GAINPATTERN_PARAMETRIC_SYSTEM return parametric gain matrix for a dynamic PID output feedback gain matrix R = [
 			%		F,		R,	-D_D,	-K_I,	-C_D;
@@ -503,7 +503,7 @@ classdef PIDDirectDynamicOutputFeedback < control.design.outputfeedback.Abstract
 				end
 			end
 		end
-		
+
 		function [T_x, T_u, T_y, T_y_dot, T_w] = scalegain_system(this, T_x, T_u, T_y, T_y_dot, T_w, ~, ~, ~, C, ~, ~, ~, ~, T)
 			%SCALEGAIN_SYSTEM return scaling matrices for given system
 			%	Input:
@@ -560,7 +560,7 @@ classdef PIDDirectDynamicOutputFeedback < control.design.outputfeedback.Abstract
 				end
 			end
 		end
-		
+
 		function [F, F_fixed] = prefilterpattern_system(this, R, K, ~, ~, B, C, C_dot, ~, ~, ~, T)
 			%PREFILTERPATTERN_SYSTEM return prefilter and prefilter pattern constraint system for a PID output feedback with additional dynamics with given gain matrices
 			%	Input:
@@ -607,7 +607,7 @@ classdef PIDDirectDynamicOutputFeedback < control.design.outputfeedback.Abstract
 				end
 			end
 		end
-		
+
 		function [partitionR, partitionF] = gainpartitioning_system(this, R, K, F, ~, ~, B, C, C_dot, ~, ~, ~, T)
 			%GAINPARTITIONING_SYSTEM return partitioning for gain matrix of extended system for a PID output feedback with additional dynamics with given gain matrix
 			%	Input:
@@ -668,7 +668,7 @@ classdef PIDDirectDynamicOutputFeedback < control.design.outputfeedback.Abstract
 				end
 			end
 		end
-		
+
 		function [E, A, B, C, C_dot, D, C_ref, D_ref, needsstate, useCasCdot] = realization_system(this, R, K, F, E, A, B, C, C_dot, D, C_ref, D_ref, T)
 			%REALIZATION return controller without system for output feedback with given gain matrix
 			%	Input:

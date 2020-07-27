@@ -1,11 +1,11 @@
 classdef InitialValue < handle
 	%INITIALVALUE class for representing an initial value for gammasyn
-	
+
 	properties(Access=protected)
 		% initial values
 		x_0 = cell(0, 1);
 	end
-	
+
 	properties(Access=protected, Transient)
 		% inidicator, if initial value isnot numeric
 		isspecial = false(0, 1);
@@ -14,14 +14,14 @@ classdef InitialValue < handle
 		% indicator, if initial values are calculated
 		x_0_iscalculated = false(0, 1);
 	end
-	
+
 	properties
 		% indicator to ignore errors for non numeric initial values
 		ignoreerror = false;
 		% indicaotr, if cached initial values should be used
 		usecache = true;
 	end
-	
+
 	methods(Static=true)
 		function [this] = loadobj(load)
 			%LOADOBJ load object from file
@@ -44,7 +44,7 @@ classdef InitialValue < handle
 			end
 		end
 	end
-	
+
 	methods(Access=protected)
 		function [valid] = checkInitialValue(this, value)
 			%CHECKINITIALVALUE check initial value for correct dimensions and type
@@ -73,7 +73,7 @@ classdef InitialValue < handle
 			end
 		end
 	end
-	
+
 	methods
 		function [this] = InitialValue(varargin)
 			%INITIALVALUE create new initial value object
@@ -83,7 +83,7 @@ classdef InitialValue < handle
 			%		this:		instance
 			this.add(varargin{:});
 		end
-		
+
 		function [] = set.ignoreerror(this, ignoreerror)
 			%IGNOREERROR setter for ignoreerror indicator
 			%	Input:
@@ -94,7 +94,7 @@ classdef InitialValue < handle
 			end
 			this.ignoreerror = ignoreerror;
 		end
-		
+
 		function [] = set.usecache(this, usecache)
 			%USECACHE setter for usecache indicator
 			%	Input:
@@ -105,7 +105,7 @@ classdef InitialValue < handle
 			end
 			this.usecache = usecache;
 		end
-		
+
 		function [] = clearcache(this)
 			%CLEARCACHE clear already calculated initial values
 			%	Input:
@@ -113,7 +113,7 @@ classdef InitialValue < handle
 			this.x_0_calculated = cell(size(this.x_0_calculated, 1), 1);
 			this.x_0_iscalculated = false(size(this.x_0_iscalculated, 1), 1);
 		end
-		
+
 		function [] = add(this, varargin)
 			%ADD add initial values
 			%	Input:
@@ -209,7 +209,7 @@ classdef InitialValue < handle
 				false(size(points, 1), 1)
 			];
 		end
-		
+
 		function [] = remove(this, n)
 			%REMOVE remove initial values from list
 			%	Input:
@@ -226,7 +226,7 @@ classdef InitialValue < handle
 			this.x_0_calculated(end - n + 1:end) = [];
 			this.x_0_iscalculated(end - n + 1:end) = [];
 		end
-		
+
 		function [initialvalues] = get(this, idx, options, systems, areafun, weights, R_fixed, R_bounds, R_nonlin, varargin)
 			%GET get initial values from list at specified indices
 			%	Input:
@@ -484,13 +484,13 @@ classdef InitialValue < handle
 			% handle multiple values for special initial values
 			if any(multiplenumericR > 1)
 				numericR = ones(size(x_init, 1), 1);
-				numericR(x_init_idx) = multiplenumericR; 
+				numericR(x_init_idx) = multiplenumericR;
 				multiplenumericR = numericR;
 				numericK = ones(size(x_init, 1), 1);
-				numericK(x_init_idx) = multiplenumericK; 
+				numericK(x_init_idx) = multiplenumericK;
 				multiplenumericK = numericK;
 				numericF = ones(size(x_init, 1), 1);
-				numericF(x_init_idx) = multiplenumericF; 
+				numericF(x_init_idx) = multiplenumericF;
 				multiplenumericF = numericF;
 				idx = 1 + cumsum(multiplenumericR).';
 				idx = [
@@ -719,7 +719,7 @@ classdef InitialValue < handle
 				cat(3, x_init{:, 1}),	cat(3, x_init{:, 2}),	cat(3, x_init{:, 3})
 			};
 		end
-		
+
 		function [initialvalues] = getall(this, options, systems, areafun, weights, R_fixed, R_bounds, R_nonlin, varargin)
 			%GETALL get all initial values from list
 			%	Input:
@@ -759,7 +759,7 @@ classdef InitialValue < handle
 			end
 		end
 	end
-	
+
 end
 
 function [is] = isInitialValueElement(element)

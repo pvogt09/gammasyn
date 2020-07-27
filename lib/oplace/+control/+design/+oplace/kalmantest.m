@@ -7,7 +7,7 @@ function [s,b] = kalmantest(A,B,C)
 %
 % INPUT:
 % A 		- system matrix
-% B 		- input matrix 
+% B 		- input matrix
 % C 		- output matrix
 
 n = size(A,1);
@@ -19,21 +19,21 @@ Qb = zeros(n*q,n);
 bs = B;
 cs = C;
 for i=1:n
-   Qs(:,(i-1)*p+1:i*p) = bs;
-   Qb((i-1)*q+1:i*q,:) = cs;
-   if i<n
-      bs = A*bs;
-      cs = cs*A;
-   end
+	Qs(:,(i-1)*p+1:i*p) = bs;
+	Qb((i-1)*q+1:i*q,:) = cs;
+	if i<n
+		bs = A*bs;
+		cs = cs*A;
+	end
 end
 
 if rank(Qs) == n
-   s = 1;	% System ist steuerbar
+	s = 1;	% System ist steuerbar
 else
-   s = 0;	% System ist nicht steuerbar
+	s = 0;	% System ist nicht steuerbar
 end
 if rank(Qb) == n
-   b = 1;	% System ist beobachtbar
+	b = 1;	% System ist beobachtbar
 else
-   b = 0;	% System ist nicht beobachtbar
+	b = 0;	% System ist nicht beobachtbar
 end

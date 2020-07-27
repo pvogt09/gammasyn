@@ -52,6 +52,18 @@ function [system, areafun_strict, areafun_loose, weight_strict, weight_loose, di
 		systemoptions = struct(systemoptions);
 		systemoptions = systemoptions.system;
 	end
+	if ~isfield(systemoptions, 'couplingcontrol')
+		systemoptions.couplingcontrol = false;
+	end
+	if ~isfield(systemoptions, 'couplingconditions')
+		systemoptions.couplingconditions = 0;
+	end
+	if ~isscalar(systemoptions.couplingcontrol)
+		error('control:design:gamma:dimension', 'Indicator for coupling controller design must be scalar.');
+	end
+	if ~islogical(systemoptions.couplingcontrol)
+		error('control:design:gamma:dimension', 'Indicator for coupling controller design must be of type ''logical'', not ''%s''.', class(systemoptions.couplingcontrol));
+	end
 	[system, number_states, number_states_all, number_controls, number_measurements, number_measurements_xdot, number_references, descriptor, number_descriptors_all, ~, sample_time, expanded_models] = checkandtransformsystems(systems, systemoptions);
 	if ~allowdifferentorder && any(number_states_all(1) ~= number_states_all)
 		error('control:design:gamma:dimension', 'All systems must have %d states.', number_states_all(1));
@@ -71,6 +83,57 @@ function [system, areafun_strict, areafun_loose, weight_strict, weight_loose, di
 	] = checkandtransform_areas(areafun, number_models, number_systems, expanded_models);
 	% check weights for validity
 	[weight_strict, weight_loose] = checkandtransform_weight(weight, allownegativeweight, number_models, number_systems, expanded_models, areafun_strict, number_areas_max_strict, areafun_loose, number_areas_max_loose);
+	hasfeedthrough_coupling = false(number_models, 1);
+	if systemoptions.couplingcontrol
+		number_couplingconditions = systemoptions.couplingconditions;
+		if ~isscalar(number_couplingconditions) || ~isnumeric(number_couplingconditions)
+			error('control:design:gamma:dimension', 'Number of coupling conditions must be scalar.');
+		end
+		if isinf(number_couplingconditions) || isnan(number_couplingconditions)
+			error('control:design:gamma:dimension', 'Number of coupling consditions must be finite.');
+		end
+		if number_couplingconditions <= 0
+			error('control:design:gamma:dimension', 'Number of coupling conditions must be positive.');
+		end
+		if floor(number_couplingconditions) ~= ceil(number_couplingconditions)
+			error('control:design:gamma:dimension', 'Number of coupling conditions must be an integer.');
+		end
+		if number_couplingconditions >= number_controls
+			error('control:design:gamma:dimension', 'Number of coupling conditions has to be smaller than number of inputs.');
+		end
+		if number_references < number_couplingconditions
+			error('control:design:gamma:dimension', 'Number of coupling conditions must not exceed number of reference outputs.');
+		end
+		if ~configuration.control.design.hasGeometricApproachToolbox()
+			% VSTAR function needs "Geometric Approach Toolbox" installed
+			% http://www3.deis.unibo.it/Staff/FullProf/GiovanniMarro/geometric.htm
+			error('control:design:gamma:GeomtricApproachToolboxMissing', 'Coupling controller synthesis needs ''Geometric Approach Toolbox'' installed. See http://www3.deis.unibo.it/Staff/FullProf/GiovanniMarro/geometric.htm');
+		end
+		m_invariant_vec = zeros(number_models, 1);
+		parfor jj = 1:number_models
+			E = system(jj).E;
+			A = system(jj).A;
+			B = system(jj).B;
+			C_ref = system(jj).C_ref;
+			D_ref = system(jj).D_ref;
+			C2 = C_ref(end - number_couplingconditions + 1:end, :);
+			D2 = D_ref(end - number_couplingconditions + 1:end, :);
+			hasfeedthrough_coupling(jj, 1) = any(D2(:) ~= 0);
+			if hasfeedthrough_coupling(jj, 1)
+				m_invariant_vec(jj, 1) = size(vstar(E\A, E\B, C2, D2), 2);
+			else
+				m_invariant_vec(jj, 1) = size(mainco(E\A, E\B, null(C2)), 2);
+			end
+		end
+		if any(m_invariant_vec ~= m_invariant_vec(1))
+			error('control:design:gamma:dimension', 'Controlled invariant subspace must have same dimension for every system.')
+		else
+			m_invariant = m_invariant_vec(1);
+		end
+	else
+		number_couplingconditions = 0;
+		m_invariant = 0;
+	end
 	% create uniform fixed constraints and check for validity
 	if nargin <= 4 || isempty(R_fixed)
 		R_fixed = {false(number_controls, number_measurements), zeros(number_controls, number_measurements)};
@@ -180,6 +243,9 @@ function [system, areafun_strict, areafun_loose, weight_strict, weight_loose, di
 		'measurements',				int32(number_measurements),...% number of measurements of multi-models
 		'measurements_xdot',		int32(number_measurements_xdot),...% number of derivative measurements of multi-models
 		'references',				int32(number_references),...% number of reference inputs of multi-models
+		'couplingconditions',		int32(number_couplingconditions),...% number of coupling conditions for all multi-models
+		'm_invariant',				int32(m_invariant),...% dimension of controlled invariant subspace for coupling control. Same for all multi-models
+		'hasfeedthrough_coupling',	any(hasfeedthrough_coupling),...% indicator, whether feedthrough D2 ~= 0 in coupling conditions
 		'descriptor',				descriptor,...% indicator if the multi-models have a descriptor matrix ~= I
 		'isdiscrete',				sample_time > 0,...% indicator if systems are discrete time
 		'areas_max',				int32(number_areas_max_strict),...% maximum number of areas per multi-model
@@ -240,6 +306,9 @@ function [system, areafun_strict, areafun_loose, weight_strict, weight_loose, di
 		'measurements',				int32(number_measurements),...% number of measurements of multi-models
 		'measurements_xdot',		int32(number_measurements_xdot),...% number of derivative measurements of multi-models
 		'references',				int32(number_references),...% number of reference inputs of multi-models
+		'couplingconditions',		int32(number_couplingconditions),...% number of coupling conditions for all multi-models
+		'm_invariant',				int32(m_invariant),...% dimension of controlled invariant subspace for coupling control. Same for all multi-models
+		'hasfeedthrough_coupling',	any(hasfeedthrough_coupling),...% indicator, whether feedthrough D2 ~= 0 in coupling conditions
 		'descriptor',				descriptor,...% indicator if the multi-models have a descriptor matrix ~= I
 		'isdiscrete',				sample_time > 0,...% indicator if systems are discrete time
 		'areas_max',				int32(number_areas_max_loose),...% maximum number of areas per multi-model
@@ -463,7 +532,7 @@ function [system, areafun_strict, areafun_loose, weight_strict, weight_loose, di
 	if nargin <= 14
 		R_nonlin = [];
 	end
-	[R_nonlin, number_c_R, number_ceq_R, number_c_K, number_ceq_K, number_c_F, number_ceq_F, hasnonlinfun, hasnonlingrad, hasnonlinhessian] = checkandtransform_gain_nonlin(R_nonlin, number_controls, number_measurements, number_measurements_xdot, number_references);
+	[R_nonlin, number_c_R, number_ceq_R, number_c_K, number_ceq_K, number_c_F, number_ceq_F, hasnonlinfun, hasnonlingrad, hasnonlinhessian] = checkandtransform_gain_nonlin(R_nonlin, number_controls, number_measurements, number_measurements_xdot, number_references, []);
 	nonlcon = struct(...
 		'f',		R_nonlin,...
 		'R_c',		number_c_R,...

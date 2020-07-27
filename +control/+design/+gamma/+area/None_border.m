@@ -17,18 +17,18 @@ function [f, dfdre, dfdim, d2fdredre, d2fdimdre, d2fdredim, d2fdimdim] = None_bo
 		dfdre = 0;
 		if nargout >= 3
 			dfdim = 0;
-            if nargout >= 4
-                d2fdredre = 0;
-                if nargout >= 5
-                    d2fdimdre = 0;
-                    if nargout >= 6
-                        d2fdredim = 0;
-                        if nargout >= 7
-                            d2fdimdim = 0;
-                        end
-                    end
-                end
-            end
+			if nargout >= 4
+				d2fdredre = 0;
+				if nargout >= 5
+					d2fdimdre = 0;
+					if nargout >= 6
+						d2fdredim = 0;
+						if nargout >= 7
+							d2fdimdim = 0;
+						end
+					end
+				end
+			end
 		end
 	end
 end

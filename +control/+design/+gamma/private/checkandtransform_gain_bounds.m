@@ -141,7 +141,7 @@ function [R_bounds, bound_system, bound_border, rg_bounds, hasbounds_R, onlyboun
 				if ~isnumeric(R_bounds{1}) && ~isnumeric(R_bounds{2})
 					error('control:design:gamma:dimension', 'Bounded %s gain must contain a logical and a numeric matrix or a numerical constraint system, not a ''%s''.', gaintype, class(R_bounds{1}));
 				end
-			end	
+			end
 		else
 			error('control:design:gamma:dimension', 'Bounded %s gain constraint system must not contain more than 2 matrices.', gaintype);
 		end

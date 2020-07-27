@@ -1,6 +1,6 @@
 classdef(Abstract) GammaArea < matlab.mixin.Heterogeneous
 	%GAMMAAREA class for representation of a pole area
-	
+
 	properties(Constant=true, Access=protected)
 		% number of points to use by default in plotborder
 		NUMBEROFPOINTS = 100;
@@ -72,7 +72,7 @@ classdef(Abstract) GammaArea < matlab.mixin.Heterogeneous
 			'custom_hashess',	[1, 1]...
 		);
 	end
-	
+
 	properties(SetAccess=protected)
 		% type of pole area
 		type,
@@ -81,7 +81,7 @@ classdef(Abstract) GammaArea < matlab.mixin.Heterogeneous
 		% shift on imaginary axis
 		imshift
 	end
-	
+
 	methods(Static=true)
 		function [is] = isfunctionstruct(functionstruct)
 			%ISFUNCTIONSTRUCT return if a structure is a valid functionstruct
@@ -118,7 +118,7 @@ classdef(Abstract) GammaArea < matlab.mixin.Heterogeneous
 				return;
 			end
 		end
-		
+
 		function [this] = fromfunctionstruct(functionstruct)
 			%TOFUNCTIONSTRUCT convert parameter structure into object
 			%	Input:
@@ -223,7 +223,7 @@ classdef(Abstract) GammaArea < matlab.mixin.Heterogeneous
 				this = reshape([val{:}], size(functionstruct));
 			end
 		end
-		
+
 		function [uni, idxthis, idxuni] = unique(this)
 			%UNIQUE return uniquely parametrized GammaAreas
 			%	Input:
@@ -351,7 +351,7 @@ classdef(Abstract) GammaArea < matlab.mixin.Heterogeneous
 			end
 		end
 	end
-	
+
 	methods(Static=true, Access=protected)
 		function [str] = printshift(reshift, imshift, format, asargument)
 			%PRINTSHIFT return shift as string
@@ -385,7 +385,7 @@ classdef(Abstract) GammaArea < matlab.mixin.Heterogeneous
 			end
 		end
 	end
-	
+
 	methods%(Access=protected)
 		function [this] = GammaArea(type, shift)
 			%GAMMAAREA return new pole area of specified type and shift
@@ -407,7 +407,7 @@ classdef(Abstract) GammaArea < matlab.mixin.Heterogeneous
 			this.reshift = real(shift);
 			this.imshift = imag(shift);
 		end
-		
+
 		%PLOTINSTANCEBORDER plot border of area function
 		%	This is a template method for specialization of ploting functions as matlab.mixin.Heterogeneous does not allow overloading methods.
 		%	Input:
@@ -418,7 +418,7 @@ classdef(Abstract) GammaArea < matlab.mixin.Heterogeneous
 		%		border:		border points
 		[border] = plotinstanceborder(this, limit, numpoints);
 	end
-	
+
 	methods(Access=protected)
 		%GETPARAMETERS return structure with parameters of current object unknown to this class to parameterize instances and allow code generation
 		%	Input:
@@ -426,7 +426,7 @@ classdef(Abstract) GammaArea < matlab.mixin.Heterogeneous
 		%	Output:
 		%		parameter:	structure with parameters
 		[parameters] = getparameters(this);
-		
+
 		%GETINSTANCEBORDER return border of polearea with f < 0 for points left of the border, f = 0 for points on the border and f > 0 for points right of the border
 		%	This is a template method for specialization of function calculations as matlab.mixin.Heterogeneous does not allow overloading methods.
 		%	Input:
@@ -436,7 +436,7 @@ classdef(Abstract) GammaArea < matlab.mixin.Heterogeneous
 		%	Output:
 		%		f:			border function value at point [re, im]
 		[f] = getinstanceborder(this, re, im);
-		
+
 		%GETINSTANCEGRADBORDER return gradient of border of polearea with f < 0 for points left of the border, f = 0 for points on the border and f > 0 for points right of the border
 		%	This is a template method for specialization of gradient calculations as matlab.mixin.Heterogeneous does not allow overloading methods.
 		%	Input:
@@ -447,7 +447,7 @@ classdef(Abstract) GammaArea < matlab.mixin.Heterogeneous
 		%		dfdre:		gradient of border function value at point [re, im] for coordinate re
 		%		dfdim:		gradient of border function value at point [re, im] for coordinate im
 		[dfdre, dfdim] = getinstancegradborder(this, re, im);
-		
+
 		%GETINSTANCEHESSBORDER return hessian of border of polearea with f < 0 for points left of the border, f = 0 for points on the border and f > 0 for points right of the border
 		%	This is a template method for specialization of hessian calculations as matlab.mixin.Heterogeneous does not allow overloading methods.
 		%	Input:
@@ -460,7 +460,7 @@ classdef(Abstract) GammaArea < matlab.mixin.Heterogeneous
 		%		d2fdredim:	partial derivative of the gradient dfdim of border function value at [re, im] for coordinate re
 		%		d2fdimdim:	partial derivative of the gradient dfdim of border function value at [re, im] for coordinate im
 		[d2fdredre, d2fdimdre, d2fdredim, d2fdimdim] = getinstancehessborder(this, re, im);
-		
+
 		%GETINSTANCESTRING return string representation of object
 		%	This is a template method for specialization of gradient calculations as matlab.mixin.Heterogeneous does not allow overloading methods.
 		%	Input:
@@ -469,7 +469,7 @@ classdef(Abstract) GammaArea < matlab.mixin.Heterogeneous
 		%	Output:
 		%		str:		string representation of the instance
 		[str] = getinstancestring(this, format);
-		
+
 		%TOINSTANCELMIREGION convert area to LMI region that can be used by Matlab functions for object
 		%	Input:
 		%		this:		instance
@@ -479,7 +479,7 @@ classdef(Abstract) GammaArea < matlab.mixin.Heterogeneous
 		%		success:	indicator, if conversion to LMI was successful
 		[L, M, success] = toinstanceLMIregion(this);
 	end
-	
+
 	methods(Sealed=true)
 		function [f] = getborder(this, re, im)
 			%GETBORDER return border of polearea with f < 0 for points left of the border, f = 0 for points on the border and f > 0 for points right of the border
@@ -500,7 +500,7 @@ classdef(Abstract) GammaArea < matlab.mixin.Heterogeneous
 				f = this.getinstanceborder(re, im);
 			end
 		end
-		
+
 		function [dfdre, dfdim] = getgradborder(this, re, im)
 			%GETGRADBORDER return gradient of border of polearea with f < 0 for points left of the border, f = 0 for points on the border and f > 0 for points right of the border
 			%	Input:
@@ -523,7 +523,7 @@ classdef(Abstract) GammaArea < matlab.mixin.Heterogeneous
 				[dfdre, dfdim] = this.getinstancegradborder(re, im);
 			end
 		end
-		
+
 		function [d2fdredre, d2fdimdre, d2fdredim, d2fdimdim] = gethessborder(this, re, im)
 			%GETHESSBORDER return hessian of border of polearea with f < 0 for points left of the border, f = 0 for points on the border and f > 0 for points right of the border
 			%	Input:
@@ -550,7 +550,7 @@ classdef(Abstract) GammaArea < matlab.mixin.Heterogeneous
 				[d2fdredre, d2fdimdre, d2fdredim, d2fdimdim] = this.getinstancehessborder(re, im);
 			end
 		end
-		
+
 		function [border] = plotborder(this, limit, numpoints)
 			%PLOTBORDER plot border of area function
 			%	Input:
@@ -720,7 +720,7 @@ classdef(Abstract) GammaArea < matlab.mixin.Heterogeneous
 				end
 			end
 		end
-		
+
 		function [functionstruct] = tofunctionstruct(this)
 			%TOFUNCTIONSTRUCT convert object into parameter structure
 			%	Input:
@@ -976,7 +976,7 @@ classdef(Abstract) GammaArea < matlab.mixin.Heterogeneous
 				functionstruct = reshape(functionstruct, size(this));
 			end
 		end
-			
+
 		function [str] = getstring(this, format)
 			%GETSTRING return string representation of object
 			%	Input:
@@ -998,7 +998,7 @@ classdef(Abstract) GammaArea < matlab.mixin.Heterogeneous
 				str = reshape(str, size(this));
 			end
 		end
-		
+
 		function [L, M, success] = toLMIregion(this)
 			%TOLMIREGION convert area to LMI region that can be used by Matlab functions
 			%	Input:

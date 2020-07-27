@@ -44,7 +44,7 @@ function [X_norm, Y_norm, lambda_R, diffLambdas_R, diffLambdas_size_R, part_R, p
 		% last M rows of Y
 		Y_neu = Y(S - M + 1:S, :);
 		% last M columns of X
-		X_neu = X(:, S - M + 1:S); 
+		X_neu = X(:, S - M + 1:S);
 		% matrix for new eigenvalue problem
 		A_neu = Y_neu*A_diff*X_neu + L;
 		% initialize
@@ -72,7 +72,7 @@ function [X_norm, Y_norm, lambda_R, diffLambdas_R, diffLambdas_size_R, part_R, p
 			% new partitioning
 			part(k + 1) = M - P;
 			%part = [part, P];
-			if size(part, 1) <= k + 2
+			if size(part, 1) >= k + 2
 				part(k + 2) = P;
 			else
 				error('control:design:gamma:eigenvalues', 'Matrix has too many multiple eigenvalues and multiple derivatives and might not be differentiable.');

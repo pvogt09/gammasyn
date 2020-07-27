@@ -1,18 +1,18 @@
 function j4 = criterion_4(K,W4,T1)
-% j4 = GUETEFUNKTION_4(K,W4) berechnet das Gütekriterium 
-% J4, welches die minimale Reglernorm berücksichtigt.
+% j4 = GUETEFUNKTION_4(K,W4) berechnet das GÃ¼tekriterium
+% J4, welches die minimale Reglernorm berÃ¼cksichtigt.
 %
 % OUTPUT:
-% j4     - Gütefunktionswert für K
+% j4     - GÃ¼tefunktionswert fÃ¼r K
 %
 % INPUT:
 % K      - die zu optimierende Matrix
-% W4     - Matrix mit den Gewichtungsfaktoren für das Gütekriterium 
+% W4     - Matrix mit den Gewichtungsfaktoren fÃ¼r das GÃ¼tekriterium
 %          der minimalen Reglernorm
 
 if isempty(T1)
-   j4 = 0.5*sum(sum(W4.*(K.^2)));
+	j4 = 0.5*sum(sum(W4.*(K.^2)));
 else
-   Kh = K*T1';
-   j4 = 0.5*sum(sum(W4.*(Kh.^2)));
+	Kh = K*T1';
+	j4 = 0.5*sum(sum(W4.*(Kh.^2)));
 end

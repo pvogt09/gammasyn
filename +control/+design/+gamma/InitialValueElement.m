@@ -1,6 +1,6 @@
 classdef(Abstract) InitialValueElement < handle
 	%INITIALVALUEELEMENT Interface class for initial value elements that depend on parameters
-	
+
 	properties(Constant=true)
 		% prototype for options of iniital value elements
 		OPTION_PROTOTYPE = struct(...
@@ -13,12 +13,12 @@ classdef(Abstract) InitialValueElement < handle
 			)...
 		);
 	end
-	
+
 	properties(Hidden=true)
 		% indicator, if arguments of gammasyn (systems, areafun, weights, R_fixed, R_bounds, R_nonlin) are used. If not, the first argument for the get function is in varargin
 		usesgammasynargs = true;
 	end
-	
+
 	methods
 		function [this] = InitialValueElement(usesgammasynargs)
 			%INITIALVALUEELEMENT create new initial value element
@@ -31,7 +31,7 @@ classdef(Abstract) InitialValueElement < handle
 			end
 			this.usesgammasynargs = usesgammasynargs;
 		end
-		
+
 		function [] = set.usesgammasynargs(this, usesgammasynargs)
 			%USESGAMMASYNARGS setter for indicator of gammasyn argument compliance
 			%	Input:
@@ -42,9 +42,9 @@ classdef(Abstract) InitialValueElement < handle
 			end
 			this.usesgammasynargs = usesgammasynargs;
 		end
-		
+
 	end
-	
+
 	methods(Access={?control.design.gamma.InitialValue})
 		function [initialvalue] = get(this, options, systems, areafun, weights, fixed, bounds, nonlcon, varargin)
 			%GET get a parameter dependent initial value from the element
@@ -85,7 +85,7 @@ classdef(Abstract) InitialValueElement < handle
 			end
 		end
 	end
-	
+
 	methods(Abstract=true, Access=protected)
 		%GET_INITIAL get a parameter dependent initial value from the element
 		%	Input:

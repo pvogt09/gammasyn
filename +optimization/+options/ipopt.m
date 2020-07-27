@@ -1,6 +1,6 @@
 classdef ipopt < optimization.options.Options
 	%IPOPT solver options for ipopt
-	
+
 	methods(Access=protected)
 		function [names] = optimoptionsnames(~)
 			%OPTIMOPTIONSNAMES mapping from properties to optimoptions names
@@ -57,7 +57,7 @@ classdef ipopt < optimization.options.Options
 				%'UseParallel',					'UseParallel'
 			};
 		end
-		
+
 		function [names] = optimsetnames(~)
 			%OPTIMSETNAMES mapping from properties to optimset names
 			%	Input:
@@ -113,7 +113,7 @@ classdef ipopt < optimization.options.Options
 				%'UseParallel',					'UseParallel'
 			};
 		end
-		
+
 		function [names] = structnames(~)
 			%SSTRUCTNAMES mapping from properties to struct names
 			%	Input:
@@ -170,7 +170,7 @@ classdef ipopt < optimization.options.Options
 			};
 		end
 	end
-	
+
 	methods
 		function [this] = ipopt(varargin)
 			%IPOPT create new optimization option set
@@ -186,7 +186,7 @@ classdef ipopt < optimization.options.Options
 				this.useoptions(varargin{:});
 			end
 		end
-		
+
 		function [algorithms] = possiblealgorithms(~)
 			%POSSIBLEALGORITHMS list with possible algorithms for optimizer
 			%	Input:
@@ -205,7 +205,7 @@ classdef ipopt < optimization.options.Options
 				'custom'
 			};
 		end
-		
+
 		function [display] = displaymapping(~)
 			%DISPLAYMAPPING mapping from optimoptions display names to solver display names
 			%	Input:
@@ -222,7 +222,7 @@ classdef ipopt < optimization.options.Options
 				'final-detailed',	'4'
 			};
 		end
-		
+
 		function [information] = formatOutput(this, errorcode, time, xmin, fmin, nvars, overalliterations, overallfunevals, retries, output, alloutputs)
 			%FORMATOUTPUT unify output of optimization
 			%	Input:
@@ -283,5 +283,5 @@ classdef ipopt < optimization.options.Options
 			end
 		end
 	end
-	
+
 end

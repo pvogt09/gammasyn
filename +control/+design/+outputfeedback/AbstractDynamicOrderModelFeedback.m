@@ -1,6 +1,6 @@
 classdef(Abstract) AbstractDynamicOrderModelFeedback < control.design.outputfeedback.AbstractDynamicModelFeedback
 	%ABSTRACTDYNAMICORDERMODELFEEDBACK abstract class for casting a control system in output feedback form and specify the needed constraints on the resulting gain matrix, when a reference model is needed
-	
+
 	methods
 		function [this] = AbstractDynamicOrderModelFeedback(system, varargin)
 			%ABSTRACTDYNAMICORDERMODELFEEDBACK create new feedback with dynamic model of specified order

@@ -25,7 +25,7 @@ classdef PIOutputFeedback < control.design.outputfeedback.OutputFeedback
 	%			I
 	%		]w
 	%	In contrast to the PIDirectOutputFeedback F (w - y) is not fed back directly, but results in the same controller.
-	
+
 	methods(Static=true)
 		function [name] = SimulinkVariant()
 			%SIMULINKVARIANT return name of corresponding simulink variant for controller block in control_outputfeedback_lib
@@ -34,7 +34,7 @@ classdef PIOutputFeedback < control.design.outputfeedback.OutputFeedback
 			name = 'PIOutputFeedback';
 		end
 	end
-	
+
 	methods
 		function [this] = PIOutputFeedback(varargin) %#ok<VANUS> varargin is not used but allowes to call the constructor with arguments
 			%PIOUTPUTFEEDBACK create new PI output feedback class
@@ -45,7 +45,7 @@ classdef PIOutputFeedback < control.design.outputfeedback.OutputFeedback
 			this@control.design.outputfeedback.OutputFeedback();
 		end
 	end
-	
+
 	methods(Access=protected)
 		function [E, A, B, C, C_dot, D, C_ref, D_ref] = amend_system(~, E, A, B, C, ~, D, C_ref, ~, T)
 			%AMEND_SYSTEM add additional dynamics and partition matrices according to a PI output feedback
@@ -98,7 +98,7 @@ classdef PIOutputFeedback < control.design.outputfeedback.OutputFeedback
 			C_dot = zeros(0, n + q);
 			D = zeros(size(C, 1), size(B, 2));
 		end
-		
+
 		function [R_fixed, K_fixed, F_fixed, RKF_fixed, R_bounds, K_bounds, F_bounds, RKF_bounds, R_nonlin] = gainpattern_system(~, ~, ~, B, C, ~, ~, ~, ~, ~)
 			%GAINPATTERN_SYSTEM return gain pattern constraint system for a PI output feedback gain matrix with gain matrix R = [
 			%		R,	-K_I;
@@ -120,7 +120,7 @@ classdef PIOutputFeedback < control.design.outputfeedback.OutputFeedback
 			%		K_fixed:	derivative gain constraint system as a cell array of a 3D constraint matrix and a constraint border vector
 			%		R_bounds:	cell array with inequality constraint system for proportional gain matrix
 			%		K_bounds:	cell array with inequality constraint system for derivative gain matrix
-			%		R_nonlin:	function pointer to nonlinear constraints on proportional and derivative gain matrix
+			%		R_nonlin:	function pointer to nonlinear constraints on proportional, derivative and prefilter gain matrix
 			%n = size(A, 1);
 			p = size(B, 2);
 			q = size(C, 1);
@@ -160,7 +160,7 @@ classdef PIOutputFeedback < control.design.outputfeedback.OutputFeedback
 				end
 			end
 		end
-		
+
 		function [R_gain, K_gain, F_prefilter] = gainpattern_parametric_system(~, ~, ~, B, C, ~, ~, ~, ~, ~)
 			%GAINPATTERN_PARAMETRIC_SYSTEM return parametric gain matrix for a PI output feedback gain matrix R = [
 			%		R,	-K_I;
@@ -211,7 +211,7 @@ classdef PIOutputFeedback < control.design.outputfeedback.OutputFeedback
 				end
 			end
 		end
-		
+
 		function [T_x, T_u, T_y, T_y_dot, T_w] = scalegain_system(~, T_x, T_u, T_y, T_y_dot, T_w, ~, ~, ~, C, ~, ~, ~, ~, ~)
 			%SCALEGAIN_SYSTEM return scaling matrices for given system
 			%	Input:
@@ -251,7 +251,7 @@ classdef PIOutputFeedback < control.design.outputfeedback.OutputFeedback
 				end
 			end
 		end
-		
+
 		function [F, F_fixed] = prefilterpattern_system(~, ~, ~, ~, ~, B, C, ~, ~, ~, ~, ~)
 			%PREFILTERPATTERN_SYSTEM return prefilter and prefilter pattern constraint system for a PI output feedback with given gain matrices
 			%	Input:
@@ -284,7 +284,7 @@ classdef PIOutputFeedback < control.design.outputfeedback.OutputFeedback
 				];
 			end
 		end
-		
+
 		function [partitionR, partitionF] = gainpartitioning_system(~, R, ~, F, ~, ~, B, C, ~, ~, ~, ~, ~)
 			%GAINPARTITIONING_SYSTEM return partitioning for gain matrix of extended system for a PI output feedback with given gain matrix
 			%	Input:
@@ -318,7 +318,7 @@ classdef PIOutputFeedback < control.design.outputfeedback.OutputFeedback
 				);
 			end
 		end
-		
+
 		function [E, A, B, C, C_dot, D, C_ref, D_ref, needsstate, usesCasCdot] = realization_system(this, R, K, F, E, A, B, C, C_dot, D, C_ref, D_ref, T)
 			%REALIZATION return controller without system for output feedback with given gain matrix
 			%	Input:
@@ -392,5 +392,5 @@ classdef PIOutputFeedback < control.design.outputfeedback.OutputFeedback
 			end
 		end
 	end
-	
+
 end

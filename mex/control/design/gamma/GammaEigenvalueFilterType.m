@@ -1,7 +1,7 @@
 classdef(Enumeration) GammaEigenvalueFilterType < Simulink.IntEnumType
 	%GAMMAEIGENVALUEFILTERTYPE enumeration for characterization of different methods to filter eigenvalues in gamma pole placement for use with codegen
 	%#codegen
-	
+
 	enumeration
 		% no filtering
 		NONE(0);
@@ -9,8 +9,16 @@ classdef(Enumeration) GammaEigenvalueFilterType < Simulink.IntEnumType
 		NEGATIVEIMAG(1);
 		% filter out eigenvalues with positive imaginary part and only keep eigenvalues with nonpositive imaginary part
 		POSITIVEIMAG(2);
+		% filter out positive infinite eigenvalues to -Inf
+		INFTOMINUSINF(4);
+		% filter out negative infinite eigenvalues to Inf
+		MINUSINFTOINF(8);
+		% filter out positive infinite eigenvalues to 0
+		INFTOZERO(16);
+		% filter out negative infinite eigenvalues to 0
+		MINUSINFTOZERO(32);
 	end
-	
+
 % must not be private to allow for type cast to GammaEigenvalueFilterType, types are automatically restricted to the defined ones internally
 % 	methods(Access=private)
 % 		function [this] = GammaEigenvalueFilterType(type)
@@ -22,7 +30,7 @@ classdef(Enumeration) GammaEigenvalueFilterType < Simulink.IntEnumType
 % 			this@Simulink.IntEnumType(type);
 % 		end
 % 	end
-	
+
 	methods(Static=true)
 		function [default] = getDefaultValue()
 			%GETDEFAULTVALUE return default gamma eigenvalue filter type
@@ -30,8 +38,8 @@ classdef(Enumeration) GammaEigenvalueFilterType < Simulink.IntEnumType
 			%		default:	default eigenvalue filter type
 			default = GammaEigenvalueFilterType.NONE;
 		end
-		
-		function [description] = getDescription() 
+
+		function [description] = getDescription()
 			%GETDESCRIPTION	String to describe the class in Simulink Coder
 			%	Output:
 			%		description:	description of the class
@@ -44,7 +52,7 @@ classdef(Enumeration) GammaEigenvalueFilterType < Simulink.IntEnumType
 			%		addname:	true, to add the class name to generated code to avoid naming conflicts
 			addname = true;
 		end
-		
+
 		function [filter] = fromname(name)
 			%FROMNAME create GammaEigenvalueFilterType from name
 			%	Input:
@@ -79,22 +87,22 @@ classdef(Enumeration) GammaEigenvalueFilterType < Simulink.IntEnumType
 				end
 			else
 				filter = repmat(GammaEigenvalueFilterType.getDefaultValue(), length(name), 1);
-				hasderivative = false(length(name), 1);
+				hasfilter = false(length(name), 1);
 				for jj = 1:length(name)
 					for ii = 1:length(enum)
 						if isinteger(name(jj)) && name(jj) == int32(enum(ii))
 							filter(jj, 1) = enum(ii);
-							hasderivative(jj, 1) = true;
+							hasfilter(jj, 1) = true;
 							break;
 						end
 						if isnumeric(name(jj)) && floor(name(jj)) == ceil(name(jj)) && floor(name(jj)) == int32(enum(ii))
 							filter(jj, 1) = enum(ii);
-							hasderivative(jj, 1) = true;
+							hasfilter(jj, 1) = true;
 							break;
 						end
 					end
 				end
-				if ~all(hasderivative)
+				if ~all(hasfilter)
 					filter = [];
 				else
 					filter = reshape(filter, size(name));
@@ -104,7 +112,68 @@ classdef(Enumeration) GammaEigenvalueFilterType < Simulink.IntEnumType
 				error('control:design:gamma:filtertype:name', 'No GammaEigenvalueFilterType of specified name exists.');
 			end
 		end
-		
+
+		function [filter] = extract(name)
+			%EXTRACT create GammaEigenvalueFilterType from name
+			%	Input:
+			%		name:					name of a defined GammaEigenvalueFilterType
+			%	Output:
+			%		multiplicityhandling:	GammaEigenvalueFilterType, if one of the specified name exists
+			if isa(name, 'GammaEigenvalueFilterType')
+				filter = name;
+				return;
+			end
+			if ischar(name)
+				filter = GammaEigenvalueFilterType.fromname(name);
+				return;
+			else
+				pow2 = nextpow2(name) == name;
+				if all(pow2(:))
+					filter = GammaEigenvalueFilterType.fromname(name);
+					return;
+				end
+				enum = enumeration('GammaEigenvalueFilterType');
+				filter = cell(length(name), length(enum));
+				hasfilter = false(length(name), length(enum));
+				for jj = 1:length(name)
+					for ii = 1:length(enum)
+						if isinteger(name(jj)) && name(jj) == int32(enum(ii))
+							filter{jj, ii} = enum(ii);
+							hasfilter(jj, ii) = true;
+						end
+						if isinteger(name(jj)) && bitand(name(jj), int32(enum(ii)))
+							filter{jj, ii} = enum(ii);
+							hasfilter(jj, ii) = true;
+						end
+						if isnumeric(name(jj)) && floor(name(jj)) == ceil(name(jj)) && floor(name(jj)) == int32(enum(ii))
+							filter{jj, ii} = enum(ii);
+							hasfilter(jj, ii) = true;
+						end
+						if isnumeric(name(jj)) && floor(name(jj)) == ceil(name(jj)) && bitand(floor(name(jj)), int32(enum(ii)))
+							filter{jj, ii} = enum(ii);
+							hasfilter(jj, ii) = true;
+						end
+					end
+				end
+				% TODO: check for remainder after extraction of valid types?
+				[filter{~hasfilter}] = deal(GammaEigenvalueFilterType.NONE);
+				if ~all(any(hasfilter, 2))
+					filter = [];
+				else
+					enums = max(sum(hasfilter, 2));
+					filter_reduced = repmat(GammaEigenvalueFilterType.getDefaultValue(), [size(name), enums]);
+					for ii = 1:size(filter, 1)
+						[idx1, idx2] = ind2sub(size(name), ii);
+						filter_reduced(idx1, idx2, :) = [filter{ii, hasfilter(ii, :)}, repmat(GammaEigenvalueFilterType.NONE, 1, enums - sum(hasfilter(ii, :)))];
+					end
+					filter = filter_reduced;
+				end
+			end
+			if isempty(filter)
+				error('control:design:gamma:filtertype:name', 'No GammaEigenvalueFilterType of specified name exists.');
+			end
+		end
+
 		function [fromDCM] = fromDCM(DCMstring, ~)
 			%FROMDCM convert string from DCM file to object of GammaEigenvalueFilterType class
 			%	Input:
@@ -115,7 +184,7 @@ classdef(Enumeration) GammaEigenvalueFilterType < Simulink.IntEnumType
 			fromDCM = GammaEigenvalueFilterType.fromname(DCMstring);
 		end
 	end
-	
+
 	methods
 		function [asDCM] = toDCM(this)
 			%TODCM convert instance to string for use in an DCM file
@@ -125,7 +194,7 @@ classdef(Enumeration) GammaEigenvalueFilterType < Simulink.IntEnumType
 			%		asDCM:	string representation of the instance for use in an DCM file
 			asDCM = sprintf('%d', int32(this));
 		end
-		
+
 		function [hash] = hashCode(this)
 			%HASHCODE create hash code for object
 			%	Input:

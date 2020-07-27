@@ -24,7 +24,7 @@ classdef DynamicOutputFeedback < control.design.outputfeedback.AbstractDynamicFe
 	%			F_1;
 	%			F_2
 	%		]w
-	
+
 	methods(Static=true)
 		function [name] = SimulinkVariant()
 			%SIMULINKVARIANT return name of corresponding simulink variant for controller block in control_outputfeedback_lib
@@ -33,7 +33,7 @@ classdef DynamicOutputFeedback < control.design.outputfeedback.AbstractDynamicFe
 			name = 'DynamicOutputFeedback';
 		end
 	end
-	
+
 	methods
 		function [this] = DynamicOutputFeedback(order, varargin) %#ok<VANUS> varargin is not used but allowes to call the constructor with arguments
 			%DYNAMICOUTPUTFEEDBACK create new dynamic feedback
@@ -58,7 +58,7 @@ classdef DynamicOutputFeedback < control.design.outputfeedback.AbstractDynamicFe
 			this@control.design.outputfeedback.AbstractDynamicFeedback(order);
 		end
 	end
-	
+
 	methods(Access=protected)
 		function [E, A, B, C, C_dot, D, C_ref, D_ref] = amend_system(this, E, A, B, C, ~, ~, C_ref, ~, ~)
 			%AMEND_SYSTEM add additional dynamics and partition matrices according to a dynamic output feedback
@@ -113,7 +113,7 @@ classdef DynamicOutputFeedback < control.design.outputfeedback.AbstractDynamicFe
 			C_dot = zeros(0, n + nnom);
 			D = zeros(size(C, 1), size(B, 2));
 		end
-		
+
 		function [R_fixed, K_fixed, F_fixed, RKF_fixed, R_bounds, K_bounds, F_bounds, RKF_bounds, R_nonlin] = gainpattern_system(this, ~, ~, B, C, ~, ~, ~, ~, T)
 			%GAINPATTERN_SYSTEM return gain pattern constraint system for a dynamic output feedback gain matrix with gain matrix K = [
 			%		D_D,	C_D;
@@ -139,7 +139,7 @@ classdef DynamicOutputFeedback < control.design.outputfeedback.AbstractDynamicFe
 			%		K_bounds:	cell array with inequality constraint system for derivative gain matrix
 			%		F_bounds:	cell array with inequality constraint system for prefilter gain matrix
 			%		RKF_bounds:	cell array with inequality constraint system for combined gain matrix
-			%		R_nonlin:	function pointer to nonlinear constraints on proportional and derivative gain matrix
+			%		R_nonlin:	function pointer to nonlinear constraints on proportional, derivative and prefilter gain matrix
 			%n = size(A, 1);
 			p = size(B, 2);
 			q = size(C, 1);
@@ -170,7 +170,7 @@ classdef DynamicOutputFeedback < control.design.outputfeedback.AbstractDynamicFe
 				end
 			end
 		end
-		
+
 		function [R_gain, K_gain, F_prefilter] = gainpattern_parametric_system(this, ~, ~, B, C, ~, ~, ~, ~, ~)
 			%GAINPATTERN_PARAMETRIC_SYSTEM return parametric gain matrix for a PID output feedback gain matrix R = [
 			%		D_D,	C_D;
@@ -219,7 +219,7 @@ classdef DynamicOutputFeedback < control.design.outputfeedback.AbstractDynamicFe
 				end
 			end
 		end
-		
+
 		function [T_x, T_u, T_y, T_y_dot, T_w] = scalegain_system(this, T_x, T_u, T_y, T_y_dot, T_w, ~, ~, ~, ~, ~, ~, ~, ~, ~)
 			%SCALEGAIN_SYSTEM return scaling matrices for given system
 			%	Input:
@@ -263,7 +263,7 @@ classdef DynamicOutputFeedback < control.design.outputfeedback.AbstractDynamicFe
 				end
 			end
 		end
-		
+
 		function [F, F_fixed] = prefilterpattern_system(this, ~, ~, ~, ~, B, C, ~, ~, ~, ~, ~)
 			%PREFILTERPATTERN_SYSTEM return prefilter and prefilter pattern constraint system for a dynamic output feedback with given gain matrices
 			%	Input:
@@ -287,7 +287,7 @@ classdef DynamicOutputFeedback < control.design.outputfeedback.AbstractDynamicFe
 				F_fixed = false(size(B, 2) + nnom, size(C, 1) + nnom);
 			end
 		end
-		
+
 		function [partitionR, partitionF] = gainpartitioning_system(this, R, ~, F, ~, ~, B, C, ~, ~, ~, ~, ~)
 			%GAINPARTITIONING_SYSTEM return partitioning for gain matrix of extended system for a dynamic output feedback with given gain matrix
 			%	Input:
@@ -325,7 +325,7 @@ classdef DynamicOutputFeedback < control.design.outputfeedback.AbstractDynamicFe
 				);
 			end
 		end
-		
+
 		function [E, A, B, C, C_dot, D, C_ref, D_ref, needsstate, useCasCdot] = realization_system(this, R, K, F, E, A, B, C, C_dot, D, C_ref, D_ref, T)
 			%REALIZATION return controller without system for output feedback with given gain matrix
 			%	Input:

@@ -1,6 +1,6 @@
 classdef GammasynOptions < handle
 	%GAMMASYNOPTIONS class for storing options for objective functions and other parameters for gammasyn optimization runs
-	
+
 	properties(Constant=true, Hidden=true)
 		% prototype for options used for code generation
 		PROTOTYPE_CODEGEN = struct(...
@@ -11,6 +11,15 @@ classdef GammasynOptions < handle
 			'allowvarorder',		false,...
 			'eigenvaluederivative',	GammaEigenvalueDerivativeType.getDefaultValue(),...
 			'eigenvaluefilter',		GammaEigenvalueFilterType.getDefaultValue(),...
+			'eigenvalueignoreinf',	false,...
+			'couplingcontrol',		struct(...
+				'couplingconditions',			uint32(0),...
+				'couplingstrategy',				GammaCouplingStrategy.getDefaultValue(),...
+				'tolerance_coupling',			0,...
+				'tolerance_prefilter',			0,...
+				'solvesymbolic',				true,...
+				'round_equations_to_digits',	NaN...
+			),...
 			'objective',			struct(...
 				'preventNaN',		false,...
 				'kreisselmeier',	struct(...
@@ -31,7 +40,7 @@ classdef GammasynOptions < handle
 			)...
 		);
 	end
-	
+
 	properties(Constant=true)
 		% prototype for options with default values
 		PROTOTYPE = struct(...
@@ -42,6 +51,15 @@ classdef GammasynOptions < handle
 			'allowvarorder',		false,...
 			'eigenvaluederivative',	GammaEigenvalueDerivativeType.getDefaultValue(),...
 			'eigenvaluefilter',		GammaEigenvalueFilterType.getDefaultValue(),...
+			'eigenvalueignoreinf',	false,...
+			'couplingcontrol',		struct(...
+				'couplingconditions',			uint32(0),...
+				'couplingstrategy',				GammaCouplingStrategy.getDefaultValue(),...
+				'tolerance_coupling',			NaN,...
+				'tolerance_prefilter',			NaN,...
+				'solvesymbolic',				false,...
+				'round_equations_to_digits',	NaN...
+			),...
 			'objective',			struct(...
 				'preventNaN',		false,...
 				'kreisselmeier',	struct(...
@@ -72,7 +90,7 @@ classdef GammasynOptions < handle
 			)...
 		);
 	end
-	
+
 	properties(Dependent=true)
 		% indicator if generated code should be used
 		usecompiled = [];
@@ -88,6 +106,10 @@ classdef GammasynOptions < handle
 		eigenvaluederivative = [];
 		% filter for eigenvalues to use
 		eigenvaluefilter = [];
+		% indicator for ignoring infinte eigenvalues to use
+		eigenvalueignoreinf = [];
+		% options for coupling controller design
+		couplingcontrol = [];
 		% options for objective functions
 		objective = [];
 		% indicator if negative weights are allowed
@@ -101,7 +123,7 @@ classdef GammasynOptions < handle
 		% options for multiple models
 		system = [];
 	end
-	
+
 	properties(Dependent=true)
 		% indicator if references should be used
 		usereferences = [];
@@ -111,6 +133,18 @@ classdef GammasynOptions < handle
 		samples = [];
 		% structure with number of samples for genmat system blocks
 		Blocks = [];
+		% number of coupling conditions
+		couplingconditions = [];
+		% strategy for coupling controller design
+		couplingstrategy = [];
+		% tolerance for coupling controller design constraints
+		tolerance_coupling = [];
+		% tolerance for regularization of prefilter in coupling controller design
+		tolerance_prefilter = [];
+		% setting to perform calculations for coupling constraints symbolically
+		solvesymbolic = [];
+		% setting to how many decimal places systems of equations that have to be solved are rounded in case of numerical difficulties
+		round_equations_to_digits = [];
 		% indicator if NaN should be prevented in objective functions
 		preventNaN = [];
 		% kreisselmeier objective parameter rho
@@ -132,7 +166,7 @@ classdef GammasynOptions < handle
 		% normgain objective parameter F_shift
 		F_shift = [];
 	end
-	
+
 	properties(Access=protected)
 		% indicator if generated code should be used (internal)
 		usecompiled_internal = [];
@@ -148,6 +182,10 @@ classdef GammasynOptions < handle
 		eigenvaluederivative_internal = [];
 		% filter for eigenvalues to use (internal)
 		eigenvaluefilter_internal = [];
+		% indicator for ignoring infinite eigenvalues to use (internal)
+		eigenvalueignoreinf_internal = [];
+		% options for coupling controller design (internal)
+		couplingcontrol_internal = [];
 		% options for objective functions (internal)
 		objective_internal = [];
 		% indicator if negative weights are allowed (internal)
@@ -161,7 +199,7 @@ classdef GammasynOptions < handle
 		% options for multiple models (internal)
 		system_internal = [];
 	end
-	
+
 	properties(Access=protected)
 		% indicator if user set 'usecompiled' option
 		usecompiled_user = false;
@@ -177,6 +215,17 @@ classdef GammasynOptions < handle
 		eigenvaluederivative_user = false;
 		% indicator if user set 'eigenvaluefilter' option
 		eigenvaluefilter_user = false;
+		% indicator if user set 'eigenvalueignoreinf' option
+		eigenvalueignoreinf_user = false;
+		% indicator if user set 'couplingcontrol' option
+		couplingcontrol_user = struct(...
+			'couplingconditions',			false,...
+			'couplingstrategy',				false,...
+			'tolerance_coupling',			false,...
+			'tolerance_prefilter',			false,...
+			'solvesymbolic',				false,...
+			'round_equations_to_digits',	false...
+		);
 		% indicator if user set 'objective' option
 		objective_user = struct(...
 			'preventNaN',		false,...
@@ -212,13 +261,13 @@ classdef GammasynOptions < handle
 			'Blocks',				false...
 		);
 	end
-	
+
 	properties(Access=protected, Transient=true)% avoid saving "constant" properties containing property name mappings to files
 		% user setable options for optimization
- 		options;
+		options;
 		%structoptions;
 	end
-	
+
 	methods
 		function [this] = GammasynOptions(varargin)
 			%GAMMASYNOPTIONS class for representing options to be used with gammasyn
@@ -237,7 +286,7 @@ classdef GammasynOptions < handle
 				this.useoptions(varargin{1}, varargin{2:end});
 			end
 		end
-		
+
 		function [usecompiled] = get.usecompiled(this)
 			%USECOMPILED getter for usecompiled property
 			%	Input:
@@ -246,7 +295,7 @@ classdef GammasynOptions < handle
 			%		usecompiled:	indicator if compiled code should be used
 			usecompiled = this.usecompiled_internal;
 		end
-		
+
 		function [numthreads] = get.numthreads(this)
 			%NUMTHREADS getter for numthreads property
 			%	Input:
@@ -255,7 +304,7 @@ classdef GammasynOptions < handle
 			%		numthreads:	number of parallel threads to use
 			numthreads = this.numthreads_internal;
 		end
-		
+
 		function [type] = get.type(this)
 			%TYPE getter for objective type property
 			%	Input:
@@ -264,7 +313,7 @@ classdef GammasynOptions < handle
 			%		type:		objective type to use
 			type = this.type_internal;
 		end
-		
+
 		function [weight] = get.weight(this)
 			%WEIGHT getter for objective weight property
 			%	Input:
@@ -273,7 +322,7 @@ classdef GammasynOptions < handle
 			%		weight:		objective weight to use
 			weight = this.weight_internal;
 		end
-		
+
 		function [allowvarorder] = get.allowvarorder(this)
 			%ALLOWVARORDER getter for indicator for systems with different order
 			%	Input:
@@ -282,25 +331,126 @@ classdef GammasynOptions < handle
 			%		allowvarorder:		indicator if systems of different order are allowed
 			allowvarorder = this.allowvarorder_internal;
 		end
-		
+
 		function [eigenvaluederivative] = get.eigenvaluederivative(this)
-			%EIGENVALUEDERIVATIVE getter for typ of eigenvalue derivative method to use
+			%EIGENVALUEDERIVATIVE getter for type of eigenvalue derivative method to use
 			%	Input:
 			%		this:						instance
 			%	Output:
 			%		eigenvaluederivative:		type of eigenvalue derivative method to use
 			eigenvaluederivative = this.eigenvaluederivative_internal;
 		end
-		
+
 		function [eigenvaluefilter] = get.eigenvaluefilter(this)
-			%EIGENVALUEFILTER getter for typ of filter method to use for eigenvalues
+			%EIGENVALUEFILTER getter for type of filter method to use for eigenvalues
 			%	Input:
 			%		this:					instance
 			%	Output:
 			%		eigenvaluefilter:		type of filter method to use for eigenvalues
 			eigenvaluefilter = this.eigenvaluefilter_internal;
 		end
-		
+
+		function [eigenvalueignoreinf] = get.eigenvalueignoreinf(this)
+			%EIGENVALUEIGNOREINF getter for indicator wheter infinite eigenvalues are ignored
+			%	Input:
+			%		this:					instance
+			%	Output:
+			%		eigenvalueignoreinf:	indicator wheter infinite eigenvalues are ignored
+			eigenvalueignoreinf = this.eigenvalueignoreinf_internal;
+		end
+
+		function [couplingcontrol] = get.couplingcontrol(this)
+			%COUPLINGCONTROL getter for coupling controller design settings
+			%	Input:
+			%		this:				instance
+			%	Output:
+			%		couplingcontrol:	structure with coupling controller design settings
+			if isstruct(this.couplingcontrol_internal)
+				couplingcontrol = this.couplingcontrol_internal;
+			else
+				couplingcontrol = struct();
+			end
+		end
+
+		function [couplingconditions] = get.couplingconditions(this)
+			%COUPLINGCONDITIONS getter for number of coupling conditions
+			%	Input:
+			%		this:				instance
+			%	Output:
+			%		couplingconditions:	number of couplingconditions
+			if isstruct(this.couplingcontrol_internal) && isfield(this.couplingcontrol_internal, 'couplingconditions')
+				couplingconditions = this.couplingcontrol_internal.couplingconditions;
+			else
+				couplingconditions = [];
+			end
+		end
+
+		function [couplingstrategy] = get.couplingstrategy(this)
+			%COUPLINGSTRATEGY getter for coupling controller design strategy
+			%	Input:
+			%		this:				instance
+			%	Output:
+			%		couplingstrategy:	coupling controller design strategy
+			if isstruct(this.couplingcontrol_internal) && isfield(this.couplingcontrol_internal, 'couplingstrategy')
+				couplingstrategy = this.couplingcontrol_internal.couplingstrategy;
+			else
+				couplingstrategy = [];
+			end
+		end
+
+		function [tolerance_coupling] = get.tolerance_coupling(this)
+			%TOLERANCE_COUPLING getter for tolerance of coupling controller design constraints
+			%	Input:
+			%		this:				instance
+			%	Output:
+			%		tolerance_coupling:	tolerance for coupling controller design constraints
+			if isstruct(this.couplingcontrol_internal) && isfield(this.couplingcontrol_internal, 'tolerance_coupling')
+				tolerance_coupling = this.couplingcontrol_internal.tolerance_coupling;
+			else
+				tolerance_coupling = [];
+			end
+		end
+
+		function [tolerance_prefilter] = get.tolerance_prefilter(this)
+			%TOLERANCE_PREFILTER getter for tolerance of prefilter regularization constraint
+			%	Input:
+			%		this:				instance
+			%	Output:
+			%		tolerance_prefilter:	tolerance for coupling controller design constraints
+			if isstruct(this.couplingcontrol_internal) && isfield(this.couplingcontrol_internal, 'tolerance_prefilter')
+				tolerance_prefilter = this.couplingcontrol_internal.tolerance_prefilter;
+			else
+				tolerance_prefilter = [];
+			end
+		end
+
+		function [solvesymbolic] = get.solvesymbolic(this)
+			%SOLVESYMBOLIC getter for setting to perform calculations for coupling constraints symbolically
+			%	Input:
+			%		this:			instance
+			%	Output:
+			%		solvesymbolic:	setting to perform calculations for coupling constraints symbolically
+			if isstruct(this.couplingcontrol_internal) && isfield(this.couplingcontrol_internal, 'solvesymbolic')
+				solvesymbolic = this.couplingcontrol_internal.solvesymbolic;
+			else
+				solvesymbolic = [];
+			end
+		end
+
+
+		function [round_equations_to_digits] = get.round_equations_to_digits(this)
+			%ROUND_EQUATIONS_TO_DIGITS getter for setting to how many decimal places systems of equations that have to be solved are rounded in case of numerical difficulties
+			%	Input:
+			%		this:						instance
+			%	Output:
+			%		round_equations_to_digits:	setting for rounding to number of decimal places
+			if isstruct(this.couplingcontrol_internal) && isfield(this.couplingcontrol_internal, 'round_equations_to_digits')
+				round_equations_to_digits = this.couplingcontrol_internal.round_equations_to_digits;
+			else
+				round_equations_to_digits = [];
+			end
+		end
+
 		function [objective] = get.objective(this)
 			%OBJECTIVE getter for objectiveoptions
 			%	Input:
@@ -313,7 +463,7 @@ classdef GammasynOptions < handle
 				objective = struct();
 			end
 		end
-		
+
 		function [preventnan] = get.preventNaN(this)
 			%PREVENTNAN getter for indicator if objective function should not retun NaN
 			%	Input:
@@ -326,7 +476,7 @@ classdef GammasynOptions < handle
 				preventnan = [];
 			end
 		end
-		
+
 		function [rho] = get.rho(this)
 			%RHO getter for kreisselmeier objectiveoption rho
 			%	Input:
@@ -343,7 +493,7 @@ classdef GammasynOptions < handle
 				rho = [];
 			end
 		end
-		
+
 		function [max] = get.max(this)
 			%MAX getter for kreisselmeier objectiveoption max
 			%	Input:
@@ -360,7 +510,7 @@ classdef GammasynOptions < handle
 				max = [];
 			end
 		end
-		
+
 		function [Q] = get.Q(this)
 			%Q getter for lyapunov objectiveoption Q
 			%	Input:
@@ -377,7 +527,7 @@ classdef GammasynOptions < handle
 				Q = [];
 			end
 		end
-		
+
 		function [R] = get.R(this)
 			%R getter for normgain objectiveoption R
 			%	Input:
@@ -394,7 +544,7 @@ classdef GammasynOptions < handle
 				R = [];
 			end
 		end
-		
+
 		function [R_shift] = get.R_shift(this)
 			%R_SHIFT getter for normgain objectiveoption R_shift
 			%	Input:
@@ -411,7 +561,7 @@ classdef GammasynOptions < handle
 				R_shift = [];
 			end
 		end
-		
+
 		function [K] = get.K(this)
 			%K getter for normgain objectiveoption K
 			%	Input:
@@ -428,7 +578,7 @@ classdef GammasynOptions < handle
 				K = [];
 			end
 		end
-		
+
 		function [K_shift] = get.K_shift(this)
 			%K_SHIFT getter for normgain objectiveoption K_shift
 			%	Input:
@@ -445,7 +595,7 @@ classdef GammasynOptions < handle
 				K_shift = [];
 			end
 		end
-		
+
 		function [F] = get.F(this)
 			%F getter for normgain objectiveoption F
 			%	Input:
@@ -462,7 +612,7 @@ classdef GammasynOptions < handle
 				F = [];
 			end
 		end
-		
+
 		function [F_shift] = get.F_shift(this)
 			%F_SHIFT getter for normgain objectiveoption F_shift
 			%	Input:
@@ -479,7 +629,7 @@ classdef GammasynOptions < handle
 				F_shift = [];
 			end
 		end
-		
+
 		function [allownegativeweight] = get.allownegativeweight(this)
 			%ALLOWNEGATIVEWEIGHT getter for indicator if negative pole area weights are allowed
 			%	Input:
@@ -488,7 +638,7 @@ classdef GammasynOptions < handle
 			%		allownegativeweight:	indicator if negative pole area weights are allowed
 			allownegativeweight = this.allownegativeweight_internal;
 		end
-		
+
 		function [strategy] = get.strategy(this)
 			%STRATEGY getter for solver strategy
 			%	Input:
@@ -497,7 +647,7 @@ classdef GammasynOptions < handle
 			%		strategy:		strategy for solving problem
 			strategy = this.strategy_internal;
 		end
-		
+
 		function [errorhandler] = get.errorhandler(this)
 			%ERRORHANDLER getter for error handler
 			%	Input:
@@ -506,7 +656,7 @@ classdef GammasynOptions < handle
 			%		errorhandler:	type of error handler to use
 			errorhandler = this.errorhandler_internal;
 		end
-		
+
 		function [errorhandler_function] = get.errorhandler_function(this)
 			%ERRORHANDLER_FUNCTION getter for error handler function
 			%	Input:
@@ -515,7 +665,7 @@ classdef GammasynOptions < handle
 			%		errorhandler_function:	error handler function to use
 			errorhandler_function = this.errorhandler_function_internal;
 		end
-		
+
 		function [system] = get.system(this)
 			%SYSTEM getter for systemoptions
 			%	Input:
@@ -528,7 +678,7 @@ classdef GammasynOptions < handle
 				system = struct();
 			end
 		end
-		
+
 		function [usereferences] = get.usereferences(this)
 			%USEREFERENCES getter for systemoption usereferences
 			%	Input:
@@ -541,7 +691,7 @@ classdef GammasynOptions < handle
 				usereferences = [];
 			end
 		end
-		
+
 		function [usemeasurements_xdot] = get.usemeasurements_xdot(this)
 			%USEMEASUREMENTS_XDOT getter for systemoption usemeasurements_xdot
 			%	Input:
@@ -554,7 +704,7 @@ classdef GammasynOptions < handle
 				usemeasurements_xdot = [];
 			end
 		end
-		
+
 		function [samples] = get.samples(this)
 			%SAMPLES getter for systemoption samples
 			%	Input:
@@ -567,7 +717,7 @@ classdef GammasynOptions < handle
 				samples = [];
 			end
 		end
-		
+
 		function [Blocks] = get.Blocks(this)
 			%BLOCKS getter for systemoption Blocks
 			%	Input:
@@ -576,7 +726,7 @@ classdef GammasynOptions < handle
 			%		Blocks:		structure with number of samples
 			Blocks = this.samples;
 		end
-		
+
 		function [] = set.usecompiled(this, usecompiled)
 			%USECOMPILED setter for usecompiled property
 			%	Input:
@@ -585,7 +735,7 @@ classdef GammasynOptions < handle
 			this.usecompiled_internal = this.checkProperty('usecompiled', usecompiled);
 			this.usecompiled_user = true;
 		end
-		
+
 		function [] = set.numthreads(this, numthreads)
 			%NUMTHREADS setter for numthreads property
 			%	Input:
@@ -594,7 +744,7 @@ classdef GammasynOptions < handle
 			this.numthreads_internal = this.checkProperty('numthreads', numthreads);
 			this.numthreads_user = true;
 		end
-		
+
 		function [] = set.type(this, type)
 			%TYPE setter for objective type property
 			%	Input:
@@ -603,7 +753,7 @@ classdef GammasynOptions < handle
 			this.type_internal = this.checkProperty('type', type);
 			this.type_user = true;
 		end
-		
+
 		function [] = set.weight(this, weight)
 			%WEIGHT setter for objective weight property
 			%	Input:
@@ -612,7 +762,7 @@ classdef GammasynOptions < handle
 			this.weight_internal = this.checkProperty('weight', weight);
 			this.weight_user = true;
 		end
-		
+
 		function [] = set.allowvarorder(this, allowvarorder)
 			%ALLOWVARORDER setter for indicator for systems with different order
 			%	Input:
@@ -621,25 +771,96 @@ classdef GammasynOptions < handle
 			this.allowvarorder_internal = this.checkProperty('allowvarorder', allowvarorder);
 			this.allowvarorder_user = true;
 		end
-		
+
 		function [] = set.eigenvaluederivative(this, eigenvaluederivative)
-			%EIGENVALUEDERIVATIVE setter for typ of eigenvalue derivative method to use
+			%EIGENVALUEDERIVATIVE setter for type of eigenvalue derivative method to use
 			%	Input:
 			%		this:						instance
 			%		eigenvaluederivative:		type of eigenvalue derivative method to use
 			this.eigenvaluederivative_internal = this.checkProperty('eigenvaluederivative', eigenvaluederivative);
 			this.eigenvaluederivative_user = true;
 		end
-		
+
 		function [] = set.eigenvaluefilter(this, eigenvaluefilter)
-			%EIGENVALUEFILTER setter for typ of filter method to use for eigenvalues
+			%EIGENVALUEFILTER setter for type of filter method to use for eigenvalues
 			%	Input:
 			%		this:					instance
 			%		eigenvaluefilter:		type of filter method to use for eigenvalues
 			this.eigenvaluefilter_internal = this.checkProperty('eigenvaluefilter', eigenvaluefilter);
 			this.eigenvaluefilter_user = true;
 		end
-		
+
+		function [] = set.eigenvalueignoreinf(this, eigenvalueignoreinf)
+			%EIGENVALUEIGNOREINF setter for indicator to ignore inifite eigenvalues
+			%	Input:
+			%		this:					instance
+			%		eigenvalueignoreinf:	indicator to ignore inifite eigenvalues
+			this.eigenvalueignoreinf_internal = this.checkProperty('eigenvalueignoreinf', eigenvalueignoreinf);
+			this.eigenvalueignoreinf_user = true;
+		end
+
+		function [] = set.couplingcontrol(this, couplingcontrol)
+			%OBJECTIVE setter for coupling controller design options
+			%	Input:
+			%		this:				instance
+			%		couplingcontrol:	structure with coupling controller design options
+			this.useoptions(struct('couplingcontrol', couplingcontrol));
+		end
+
+		function [] = set.couplingconditions(this, couplingconditions)
+			%COUPLINGCONDITIONS setter for number of couplingconditions
+			%	Input:
+			%		this:				instance
+			%		couplingconditions:	number of couplingconditions
+			this.couplingcontrol_internal.couplingconditions = this.checkProperty('couplingconditions', couplingconditions);
+			this.couplingcontrol_user.couplingconditions = true;
+		end
+
+		function [] = set.couplingstrategy(this, strategy)
+			%COUPLINGSTRATEGY setter for coupling controller design strategy
+			%	Input:
+			%		this:		instance
+			%		strategy:	coupling controller design strategy
+			this.couplingcontrol_internal.couplingstrategy = this.checkProperty('couplingstrategy', strategy);
+			this.couplingcontrol_user.couplingstrategy = true;
+		end
+
+		function [] = set.tolerance_coupling(this, tolerance_coupling)
+			%TOLERNACE_COUPLING setter for tolerance of coupling condition constraints
+			%	Input:
+			%		this:				instance
+			%		tolerance_coupling:	tolerance of coupling condition constraints
+			this.couplingcontrol_internal.tolerance_coupling = this.checkProperty('tolerance_coupling', tolerance_coupling);
+			this.couplingcontrol_user.tolerance_coupling = true;
+		end
+
+		function [] = set.tolerance_prefilter(this, tolerance_prefilter)
+			%TOLERNACE_PREFILTER setter for tolerance of prefilter regularization constraint
+			%	Input:
+			%		this:				instance
+			%		tolerance_prefilter:	tolerance of prefilter regularization constraint
+			this.couplingcontrol_internal.tolerance_prefilter = this.checkProperty('tolerance_prefilter', tolerance_prefilter);
+			this.couplingcontrol_user.tolerance_prefilter = true;
+		end
+
+		function [] = set.solvesymbolic(this, solvesymbolic)
+			%SOLVESYMBOLIC setter for tolerance of prefilter regularization constraint
+			%	Input:
+			%		this:			instance
+			%		solvesymbolic:	indicator if symbolic calculations should be used
+			this.couplingcontrol_internal.solvesymbolic = this.checkProperty('solvesymbolic', solvesymbolic);
+			this.couplingcontrol_user.solvesymbolic = true;
+		end
+
+		function [] = set.round_equations_to_digits(this, round_equations_to_digits)
+			%ROUND_EQUATIONS_TO_DIGITS setter for tolerance of prefilter regularization constraint
+			%	Input:
+			%		this:						instance
+			%		round_equations_to_digits:	indicator to how many decimal places systems of equations should be rounded in case of numerical difficulties
+			this.couplingcontrol_internal.round_equations_to_digits = this.checkProperty('round_equations_to_digits', round_equations_to_digits);
+			this.couplingcontrol_user.round_equations_to_digits = true;
+		end
+
 		function [] = set.objective(this, objective)
 			%OBJECTIVE setter for objectiveoptions
 			%	Input:
@@ -647,7 +868,7 @@ classdef GammasynOptions < handle
 			%		objective:	structure with objectiveoptions
 			this.useoptions(struct('objective', objective));
 		end
-		
+
 		function [] = set.preventNaN(this, preventNaN)
 			%PREVENTNAN setter for indicator to prevent NaN in objective function
 			%	Input:
@@ -656,7 +877,7 @@ classdef GammasynOptions < handle
 			this.objective_internal.preventNaN = this.checkProperty('preventNaN', preventNaN);
 			this.objective_user.preventNaN = true;
 		end
-		
+
 		function [] = set.rho(this, rho)
 			%RHO setter for kreisselmeiser objectiveoption rho
 			%	Input:
@@ -665,7 +886,7 @@ classdef GammasynOptions < handle
 			this.objective_internal.kreisselmeier.rho = this.checkProperty('rho', rho);
 			this.objective_user.kreisselmeier.rho = true;
 		end
-		
+
 		function [] = set.max(this, max)
 			%MAX setter for kreisselmeiser objectiveoption max
 			%	Input:
@@ -674,7 +895,7 @@ classdef GammasynOptions < handle
 			this.objective_internal.kreisselmeier.max = this.checkProperty('max', max);
 			this.objective_user.kreisselmeier.max = true;
 		end
-		
+
 		function [] = set.Q(this, Q)
 			%Q setter for lyapunov objectiveoption Q
 			%	Input:
@@ -683,7 +904,7 @@ classdef GammasynOptions < handle
 			this.objective_internal.lyapunov.Q = this.checkProperty('Q', Q);
 			this.objective_user.lyapunov.Q = true;
 		end
-		
+
 		function [] = set.R(this, R)
 			%R setter for normgain objectiveoption R
 			%	Input:
@@ -692,7 +913,7 @@ classdef GammasynOptions < handle
 			this.objective_internal.normgain.R = this.checkProperty('R', R);
 			this.objective_user.normgain.R = true;
 		end
-		
+
 		function [] = set.R_shift(this, R_shift)
 			%R_SHIFT setter for normgain objectiveoption R_shift
 			%	Input:
@@ -701,7 +922,7 @@ classdef GammasynOptions < handle
 			this.objective_internal.normgain.R_shift = this.checkProperty('R_shift', R_shift);
 			this.objective_user.normgain.R_shift = true;
 		end
-		
+
 		function [] = set.K(this, K)
 			%K setter for normgain objectiveoption K
 			%	Input:
@@ -710,7 +931,7 @@ classdef GammasynOptions < handle
 			this.objective_internal.normgain.K = this.checkProperty('K', K);
 			this.objective_user.normgain.K = true;
 		end
-		
+
 		function [] = set.K_shift(this, K_shift)
 			%K_SHIFT setter for normgain objectiveoption K_shift
 			%	Input:
@@ -719,7 +940,7 @@ classdef GammasynOptions < handle
 			this.objective_internal.normgain.K_shift = this.checkProperty('K_shift', K_shift);
 			this.objective_user.normgain.K_shift = true;
 		end
-		
+
 		function [] = set.F(this, F)
 			%F setter for normgain objectiveoption F
 			%	Input:
@@ -728,7 +949,7 @@ classdef GammasynOptions < handle
 			this.objective_internal.normgain.F = this.checkProperty('F', F);
 			this.objective_user.normgain.F = true;
 		end
-		
+
 		function [] = set.F_shift(this, F_shift)
 			%F_SHIFT setter for normgain objectiveoption F_shift
 			%	Input:
@@ -737,7 +958,7 @@ classdef GammasynOptions < handle
 			this.objective_internal.normgain.F_shift = this.checkProperty('F_shift', F_shift);
 			this.objective_user.normgain.F_shift = true;
 		end
-		
+
 		function [] = set.allownegativeweight(this, allownegativeweight)
 			%ALLOWNEGATIVEWEIGHT setter for indicator if negative pole area weights are allowed
 			%	Input:
@@ -746,7 +967,7 @@ classdef GammasynOptions < handle
 			this.allownegativeweight_internal = this.checkProperty('allownegativeweight', allownegativeweight);
 			this.allownegativeweight_user = true;
 		end
-		
+
 		function [] = set.strategy(this, strategy)
 			%STRATEGY setter for solver strategy
 			%	Input:
@@ -755,7 +976,7 @@ classdef GammasynOptions < handle
 			this.strategy_internal = this.checkProperty('strategy', strategy);
 			this.strategy_user = true;
 		end
-		
+
 		function [] = set.errorhandler(this, errorhandler)
 			%ERRORHANDLER setter for error handler
 			%	Input:
@@ -764,7 +985,7 @@ classdef GammasynOptions < handle
 			this.errorhandler_internal = this.checkProperty('errorhandler', errorhandler);
 			this.errorhandler_user = true;
 		end
-		
+
 		function [] = set.errorhandler_function(this, errorhandler_function)
 			%ERRORHANDLER_FUNCTION setter for error handler function
 			%	Input:
@@ -773,7 +994,7 @@ classdef GammasynOptions < handle
 			this.errorhandler_function_internal = this.checkProperty('errorhandler_function', errorhandler_function);
 			this.errorhandler_function_user = true;
 		end
-		
+
 % 		function [] = set.system_internal(this, system)
 % 			%SYSTEM setter for systemoptions
 % 			%	Input:
@@ -822,7 +1043,7 @@ classdef GammasynOptions < handle
 % 				error();
 % 			end
 % 		end
-		
+
 		function [] = set.system(this, system)
 			%SYSTEM setter for systemoptions
 			%	Input:
@@ -830,7 +1051,7 @@ classdef GammasynOptions < handle
 			%		system:		structure with systemoptions
 			this.useoptions(struct('system', system));
 		end
-		
+
 		function [] = set.usereferences(this, usereferences)
 			%USEREFERENCES setter for systemoption usereferences
 			%	Input:
@@ -839,7 +1060,7 @@ classdef GammasynOptions < handle
 			this.system_internal.usereferences = this.checkProperty('usereferences', usereferences);
 			this.system_user.usereferences = true;
 		end
-		
+
 		function [] = set.usemeasurements_xdot(this, usemeasurements_xdot)
 			%USEMEASUREMENTS_XDOT setter for systemoption usemeasurements_xdot
 			%	Input:
@@ -848,7 +1069,7 @@ classdef GammasynOptions < handle
 			this.system_internal.usemeasurements_xdot = this.checkProperty('usemeasurements_xdot', usemeasurements_xdot);
 			this.system_user.usemeasurements_xdot = true;
 		end
-		
+
 		function [] = set.samples(this, samples)
 			%SAMPLES setter for systemoption samples
 			%	Input:
@@ -857,7 +1078,7 @@ classdef GammasynOptions < handle
 			this.system_internal.samples = this.checkProperty('samples', samples);
 			this.system_user.samples = true;
 		end
-		
+
 		function [] = set.Blocks(this, Blocks)
 			%BLOCKS setter for systemoption Blocks
 			%	Input:
@@ -866,7 +1087,7 @@ classdef GammasynOptions < handle
 			this.samples = Blocks;
 		end
 	end
-	
+
 	methods(Access=protected)
 		function [options] = available_options(~)
 			%AVAILABLE_OPTIONS cell array with information about available options
@@ -875,37 +1096,44 @@ classdef GammasynOptions < handle
 			%	Output:
 			%		option:	cell array with information about options
 			options = {
-				% name,						isroot,	codegen,	path,								catchall
-				'usecompiled',				true,	true,		{},									false;
-				'numthreads',				true,	true,		{},									false;
-				'type',						true,	true,		{},									false;
-				'weight',					true,	true,		{},									false;
-				'allowvarorder',			true,	true,		{},									false;
-				'eigenvaluederivative',		true,	true,		{},									false;
-				'eigenvaluefilter',			true,	true,		{},									false;
-				'preventNaN',				false,	true,		{'objective'},						false;
-				'rho',						false,	true,		{'objective', 'kreisselmeier'},		false;
-				'max',						false,	true,		{'objective', 'kreisselmeier'},		false;
-				'Q',						false,	true,		{'objective', 'lyapunov'},			false;
-				'R',						false,	true,		{'objective', 'normgain'},			false;
-				'R_shift',					false,	true,		{'objective', 'normgain'},			false;
-				'K',						false,	true,		{'objective', 'normgain'},			false;
-				'K_shift',					false,	true,		{'objective', 'normgain'},			false;
-				'F',						false,	true,		{'objective', 'normgain'},			false;
-				'F_shift',					false,	true,		{'objective', 'normgain'},			false;
-				'allownegativeweight',		true,	false,		{},									false;
-				'strategy',					true,	false,		{},									false;
-				'errorhandler',				true,	false,		{},									false;
-				'errorhandler_function',	true,	false,		{},									false;
-				'usereferences',			false,	false,		{'system'},							false;
-				'usemeasurements_xdot',		false,	false,		{'system'},							false;
-				'samples',					false,	false,		{'system'},							true;
-				'Blocks',					false,	false,		{'system'},							true;
+				% name,							isroot,	codegen,	path,								catchall
+				'usecompiled',					true,	true,		{},									false;
+				'numthreads',					true,	true,		{},									false;
+				'type',							true,	true,		{},									false;
+				'weight',						true,	true,		{},									false;
+				'allowvarorder',				true,	true,		{},									false;
+				'eigenvaluederivative',			true,	true,		{},									false;
+				'eigenvaluefilter',				true,	true,		{},									false;
+				'eigenvalueignoreinf',		true,	true,		{},									false;
+				'couplingconditions',			false,	true,		{'couplingcontrol'},				false;
+				'couplingstrategy',				false,	true,		{'couplingcontrol'},				false;
+				'tolerance_coupling',			false,	true,		{'couplingcontrol'},				false;
+				'tolerance_prefilter',			false,	true,		{'couplingcontrol'},				false;
+				'solvesymbolic',				false,	true,		{'couplingcontrol'},				false;
+				'round_equations_to_digits',	false,	true,		{'couplingcontrol'},				false;
+				'preventNaN',					false,	true,		{'objective'},						false;
+				'rho',							false,	true,		{'objective', 'kreisselmeier'},		false;
+				'max',							false,	true,		{'objective', 'kreisselmeier'},		false;
+				'Q',							false,	true,		{'objective', 'lyapunov'},			false;
+				'R',							false,	true,		{'objective', 'normgain'},			false;
+				'R_shift',						false,	true,		{'objective', 'normgain'},			false;
+				'K',							false,	true,		{'objective', 'normgain'},			false;
+				'K_shift',						false,	true,		{'objective', 'normgain'},			false;
+				'F',							false,	true,		{'objective', 'normgain'},			false;
+				'F_shift',						false,	true,		{'objective', 'normgain'},			false;
+				'allownegativeweight',			true,	false,		{},									false;
+				'strategy',						true,	false,		{},									false;
+				'errorhandler',					true,	false,		{},									false;
+				'errorhandler_function',		true,	false,		{},									false;
+				'usereferences',				false,	false,		{'system'},							false;
+				'usemeasurements_xdot',			false,	false,		{'system'},							false;
+				'samples',						false,	false,		{'system'},							true;
+				'Blocks',						false,	false,		{'system'},							true;
 			};
 			rootpath = cellfun(@getfirst, options(:, 4), 'UniformOutput', false);
 			options(:, end + 1) = rootpath;
 		end
-		
+
 		function [] = alldefault(this)
 			%ALLDEFAULT set indicator for all options to 'not set by user'
 			%	Input:
@@ -917,6 +1145,15 @@ classdef GammasynOptions < handle
 			this.allowvarorder_user = false;
 			this.eigenvaluederivative_user = false;
 			this.eigenvaluefilter_user = false;
+			this.eigenvalueignoreinf_user = false;
+			this.couplingcontrol_user = struct(...
+				'couplingconditions',			false,...
+				'couplingstrategy',				false,...
+				'tolerance_coupling',			false,...
+				'tolerance_prefilter',			false,...
+				'solvesymbolic',				false,...
+				'round_equations_to_digits',	false...
+			);
 			this.objective_user = struct(...
 				'preventNaN',		false,...
 				'kreisselmeier',	struct(...
@@ -946,7 +1183,7 @@ classdef GammasynOptions < handle
 				'Blocks',				false...
 			);
 		end
-		
+
 		function [] = use_default(this)
 			%USE_DEFAULT use default option for all options
 			%	Input:
@@ -959,6 +1196,15 @@ classdef GammasynOptions < handle
 			this.allowvarorder_internal = proto.allowvarorder;
 			this.eigenvaluederivative_internal = proto.eigenvaluederivative;
 			this.eigenvaluefilter_internal = proto.eigenvaluefilter;
+			this.eigenvalueignoreinf_internal = proto.eigenvalueignoreinf;
+			this.couplingcontrol_internal = struct(...
+				'couplingconditions',			proto.couplingcontrol.couplingconditions,...
+				'couplingstrategy',				proto.couplingcontrol.couplingstrategy,...
+				'tolerance_coupling',			proto.couplingcontrol.tolerance_coupling,...
+				'tolerance_prefilter',			proto.couplingcontrol.tolerance_prefilter,...
+				'solvesymbolic',				proto.couplingcontrol.solvesymbolic,...
+				'round_equations_to_digits',	proto.couplingcontrol.round_equations_to_digits...
+			);
 			this.objective_internal = struct(...
 				'preventNaN',		proto.objective.preventNaN,...
 				'kreisselmeier',	struct(...
@@ -989,7 +1235,7 @@ classdef GammasynOptions < handle
 			);
 			this.alldefault();
 		end
-		
+
 		function [] = use_options(this, options)
 			%USE_OPTIONS set options to values in supplied data structure with options, where non existent options are ignored
 			%	Input:
@@ -1090,7 +1336,7 @@ classdef GammasynOptions < handle
 				error('control:design:gamma:GammasynOptions:input', 'Options must be of type ''struct'' or ''ObjectiveOptions'', not ''%s''.', class(options));
 			end
 		end
-		
+
 		function [value, validvalue, errmsg, errid] = checkProperty(this, name, value)
 			%CHECKPROPERTY set a value for an objective option
 			%	Input:
@@ -1117,7 +1363,7 @@ classdef GammasynOptions < handle
 				throwAsCaller(ME);
 			end
 		end
-		
+
 % 		function [value] = convertProperty(this, name, value, optionstype, replacechar)
 % 			%CONVERTPROPERTY convert a property to the specified option type
 % 			%	Input:
@@ -1140,7 +1386,7 @@ classdef GammasynOptions < handle
 % 			end
 % 			value = convertfield(this, name, value, optionstype, replacechar && replaceallowed);
 % 		end
-		
+
 		function [options] = get_user(this)
 			%GET_USER get all options set by th user
 			%	Input:
@@ -1166,7 +1412,7 @@ classdef GammasynOptions < handle
 			end
 		end
 	end
-	
+
 	methods
 		function [options] = struct(this)
 			%STRUCT convert object to structure
@@ -1196,7 +1442,7 @@ classdef GammasynOptions < handle
 				end
 			end
 		end
-		
+
 		function [options] = codegenstruct(this)
 			%CODEGENSTRUCT convert object to structure used for code generation
 			%	Input:
@@ -1215,7 +1461,7 @@ classdef GammasynOptions < handle
 				end
 			end
 		end
-		
+
 		function [options] = userstruct(this)
 			%USERSTRUCT convert object to structure with only fields set by user
 			%	Input:
@@ -1225,7 +1471,7 @@ classdef GammasynOptions < handle
 			% TODO: move to temporary variable?
 			options = this.get_user();
 		end
-		
+
 		function [this] = subsasgn(this, sub, varargin)
 			%SUBSASGN overload subsasgn method to allow for indexing into nested options with argument checking
 			%	Input:
@@ -1431,6 +1677,237 @@ classdef GammasynOptions < handle
 							end
 							if ~isempty(names)
 								error('control:design:gamma:GammasynOptions:input', 'Option ''system'' does not have field%s ''%s''.', iftern(length(names) > 1, 's', ''), strjoin(names, ''', '''));
+							end
+						end
+					elseif strcmpi(sub(1).subs, 'couplingcontrol')
+						% 'system' property requested
+						couplingcontrolnames = {
+							'couplingconditions';
+							'couplingstrategy';
+							'tolerance_coupling';
+							'tolerance_prefilter';
+							'solvesymbolic';
+							'round_equations_to_digits'
+						};
+						if length(sub) > 1
+							% deeper indexing requested
+							if strcmp(sub(2).type, '()')
+								% this.system(...) indexing type
+								if length(sub(2).subs) == 1
+									% this.system(:) and this.system(1) are ok, others are converted to error by call to subsref
+									if ischar(sub(2).subs{1}) && strcmpi(sub(2).subs{1}, ':')
+										sub(2) = [];
+									elseif isnumeric(sub(2).subs{1}) && isscalar(sub(2).subs{1}) && sub(2).subs{1} == 1
+										sub(2) = [];
+									else
+										try
+											subsref(instance(ii).couplingcontrol_internal, sub(2:end));
+										catch e
+											error(e.identifier, e.message);
+										end
+										error('control:design:gamma:GammasynOptions:input', 'Undefined indexing type for Option ''couplingcontrol''.');
+									end
+								else
+									% this.system(:, :, ...) and this.system(1, 1, ....) are ok, others are converted to error by call to subsref
+									iscolon = cellfun(@(x) ischar(x) && strcmpi(x, ':'), sub(2).subs, 'UniformOutput', true);
+									isone = cellfun(@(x) isscalar(x) && x == 1, sub(2).subs, 'UniformOutput', true);
+									if all(iscolon(:))
+										sub(2) = [];
+									elseif all(isone(:))
+										sub(2) = [];
+									else
+										try
+											subsref(instance(ii).couplingcontrol_internal, sub(2:end));
+										catch e
+											error(e.identifier, e.message);
+										end
+										error('control:design:gamma:GammasynOptions:input', 'Undefined indexing type for Option ''couplingcontrol''.');
+									end
+								end
+							end
+						end
+						if length(sub) > 1
+							% setting options under this.system requested
+							if strcmp(sub(2).type, '.') && any(strcmpi(sub(2).subs, couplingcontrolnames))
+								% setting this.system.option
+								names = {sub(2).subs};
+								if strcmp(sub(2).subs, 'couplingconditions')
+									if length(sub) > 2
+										% further indexing into option
+										tmp = instance(ii).couplingcontrol_internal.couplingconditions;
+										if ~iscell(tmp) && strcmpi(sub(3).type, '{}')
+											% matlab R2015B crashes if cell index assignment is used for numerical values
+											error('control:design:gamma:GammasynOptions:input', 'Cell contents assignment to a non-cell array object. ');
+										else
+											prop = subsasgn(tmp, sub(3:end), varargin{ii});
+										end
+									else
+										% setting option directly
+										prop = varargin{ii};
+									end
+									instance(ii).couplingcontrol_internal.couplingconditions = instance(ii).checkProperty('couplingconditions', prop);
+									instance(ii).couplingcontrol_user.couplingconditions = true;
+									names(strcmp('couplingconditions', names)) = [];
+								end
+								if strcmp(sub(2).subs, 'couplingstrategy')
+									if length(sub) > 2
+										% further indexing into option
+										tmp = instance(ii).couplingcontrol_internal.couplingstrategy;
+										if ~iscell(tmp) && strcmpi(sub(3).type, '{}')
+											% matlab R2015B crashes if cell index assignment is used for numerical values
+											error('control:design:gamma:GammasynOptions:input', 'Cell contents assignment to a non-cell array object. ');
+										else
+											prop = subsasgn(tmp, sub(3:end), varargin{ii});
+										end
+									else
+										% setting option directly
+										prop = varargin{ii};
+									end
+									instance(ii).couplingcontrol_internal.couplingstrategy = instance(ii).checkProperty('couplingstrategy', prop);
+									instance(ii).couplingcontrol_user.couplingstrategy = true;
+									names(strcmp('couplingstrategy', names)) = [];
+								end
+								if strcmp(sub(2).subs, 'tolerance_coupling')
+									if length(sub) > 2
+										% further indexing into option
+										tmp = instance(ii).couplingcontrol_internal.tolerance_coupling;
+										if ~iscell(tmp) && strcmpi(sub(3).type, '{}')
+											% matlab R2015B crashes if cell index assignment is used for numerical values
+											error('control:design:gamma:GammasynOptions:input', 'Cell contents assignment to a non-cell array object. ');
+										else
+											prop = subsasgn(tmp, sub(3:end), varargin{ii});
+										end
+									else
+										% setting option directly
+										prop = varargin{ii};
+									end
+									instance(ii).couplingcontrol_internal.tolerance_coupling = instance(ii).checkProperty('tolerance_coupling', prop);
+									instance(ii).couplingcontrol_user.tolerance_coupling = true;
+									names(strcmp('tolerance_coupling', names)) = [];
+								end
+								if strcmp(sub(2).subs, 'tolerance_prefilter')
+									if length(sub) > 2
+										% further indexing into option
+										tmp = instance(ii).couplingcontrol_internal.tolerance_prefilter;
+										if ~iscell(tmp) && strcmpi(sub(3).type, '{}')
+											% matlab R2015B crashes if cell index assignment is used for numerical values
+											error('control:design:gamma:GammasynOptions:input', 'Cell contents assignment to a non-cell array object. ');
+										else
+											prop = subsasgn(tmp, sub(3:end), varargin{ii});
+										end
+									else
+										% setting option directly
+										prop = varargin{ii};
+									end
+									instance(ii).couplingcontrol_internal.tolerance_prefilter = instance(ii).checkProperty('tolerance_prefilter', prop);
+									instance(ii).couplingcontrol_user.tolerance_prefilter = true;
+									names(strcmp('tolerance_prefilter', names)) = [];
+								end
+								if strcmp(sub(2).subs, 'solvesymbolic')
+									if length(sub) > 2
+										% further indexing into option
+										tmp = instance(ii).couplingcontrol_internal.solvesymbolic;
+										if ~iscell(tmp) && strcmpi(sub(3).type, '{}')
+											% matlab R2015B crashes if cell index assignment is used for numerical values
+											error('control:design:gamma:GammasynOptions:input', 'Cell contents assignment to a non-cell array object. ');
+										else
+											prop = subsasgn(tmp, sub(3:end), varargin{ii});
+										end
+									else
+										% setting option directly
+										prop = varargin{ii};
+									end
+									instance(ii).couplingcontrol_internal.solvesymbolic = instance(ii).checkProperty('solvesymbolic', prop);
+									instance(ii).couplingcontrol_user.solvesymbolic = true;
+									names(strcmp('solvesymbolic', names)) = [];
+								end
+								if strcmp(sub(2).subs, 'round_equations_to_digits')
+									if length(sub) > 2
+										% further indexing into option
+										tmp = instance(ii).couplingcontrol_internal.round_equations_to_digits;
+										if ~iscell(tmp) && strcmpi(sub(3).type, '{}')
+											% matlab R2015B crashes if cell index assignment is used for numerical values
+											error('control:design:gamma:GammasynOptions:input', 'Cell contents assignment to a non-cell array object. ');
+										else
+											prop = subsasgn(tmp, sub(3:end), varargin{ii});
+										end
+									else
+										% setting option directly
+										prop = varargin{ii};
+									end
+									instance(ii).couplingcontrol_internal.round_equations_to_digits = instance(ii).checkProperty('round_equations_to_digits', prop);
+									instance(ii).couplingcontrol_user.round_equations_to_digits = true;
+									names(strcmp('round_equations_to_digits', names)) = [];
+								end
+								if ~isempty(names)
+									error('control:design:gamma:GammasynOptions:input', 'Option ''couplingcontrol'' does not have field%s ''%s''.', iftern(length(names) > 1, 's', ''), strjoin(names, ''', '''));
+								end
+							else
+								% indexing into this.couplingcontrol with {} or ()
+								try
+									subsref(instance(ii).couplingcontrol_internal, sub(2:end));
+								catch e
+									error(e.identifier, e.message);
+								end
+								error('control:design:gamma:GammasynOptions:input', 'Undefined indexing type for Option ''couplingcontrol''.');
+							end
+						else
+							% assigning to whole this.system structure (partially)
+							if isempty(varargin{ii})
+								instance(ii).couplingcontrol_internal = struct(...
+									'couplingconditions',			proto.couplingcontrol.couplingconditions,...
+									'couplingstrategy',				proto.couplingcontrol.couplingstrategy,...
+									'tolerance_coupling',			proto.couplingcontrol.tolerance_coupling,...
+									'tolerance_prefilter',			proto.couplingcontrol.tolerance_prefilter,...
+									'solvesymbolic',				proto.couplingcontrol.solvesymbolic,...
+									'round_equations_to_digits',	proto.couplingcontrol.round_equations_to_digits...
+								);
+								instance(ii).couplingcontrol_user = struct(...
+									'couplingconditions',			false,...
+									'couplingstrategy',				false,...
+									'tolerance_coupling',			false,...
+									'tolerance_prefilter',			false,...
+									'solvesymbolic',				false,...
+									'round_equations_to_digits',	false...
+								);
+								return;
+							end
+							if ~isstruct(varargin{ii}) || ~isscalar(varargin{ii})
+								error('control:design:gamma:GammasynOptions:input', 'Option ''couplingcontrol'' must be a scalar structure.');
+							end
+							names = fieldnames(varargin{ii});
+							if isfield(varargin{ii}, 'couplingconditions')
+								instance(ii).couplingcontrol_internal.couplingconditions = instance(ii).checkProperty('couplingconditions', varargin{ii}.couplingconditions);
+								instance(ii).couplingcontrol_user.couplingconditions = true;
+								names(strcmp('couplingconditions', names)) = [];
+							end
+							if isfield(varargin{ii}, 'couplingstrategy')
+								instance(ii).scouplingcontrol_internal.couplingstrategy = instance(ii).checkProperty('couplingstrategy', varargin{ii}.couplingstrategy);
+								instance(ii).couplingcontrol_user.couplingstrategy = true;
+								names(strcmp('couplingstrategy', names)) = [];
+							end
+							if isfield(varargin{ii}, 'tolerance_coupling')
+								instance(ii).couplingcontrol_internal.tolerance_coupling = instance(ii).checkProperty('tolerance_coupling', varargin{ii}.tolerance_coupling);
+								instance(ii).couplingcontrol_user.tolerance_coupling = true;
+								names(strcmp('tolerance_coupling', names)) = [];
+							end
+							if isfield(varargin{ii}, 'tolerance_prefilter')
+								instance(ii).couplingcontrol_internal.tolerance_prefilter = instance(ii).checkProperty('tolerance_prefilter', varargin{ii}.tolerance_prefilter);
+								instance(ii).couplingcontrol_user.tolerance_prefilter = true;
+								names(strcmp('tolerance_prefilter', names)) = [];
+							end
+							if isfield(varargin{ii}, 'solvesymbolic')
+								instance(ii).couplingcontrol_internal.solvesymbolic = instance(ii).checkProperty('solvesymbolic', varargin{ii}.solvesymbolic);
+								instance(ii).couplingcontrol_user.solvesymbolic = true;
+								names(strcmp('solvesymbolic', names)) = [];
+							end
+							if isfield(varargin{ii}, 'round_equations_to_digits')
+								instance(ii).couplingcontrol_internal.round_equations_to_digits = instance(ii).checkProperty('round_equations_to_digits', varargin{ii}.round_equations_to_digits);
+								instance(ii).couplingcontrol_user.round_equations_to_digits = true;
+								names(strcmp('round_equations_to_digits', names)) = [];
+							end
+							if ~isempty(names)
+								error('control:design:gamma:GammasynOptions:input', 'Option ''couplingcontrol'' does not have field%s ''%s''.', iftern(length(names) > 1, 's', ''), strjoin(names, ''', '''));
 							end
 						end
 					elseif strcmpi(sub(1).subs, 'objective')
@@ -2019,7 +2496,7 @@ classdef GammasynOptions < handle
 				end
 			end
 		end
-		
+
 		function [] = useoptions(this, options, varargin)
 			%USEOPTIONS set supplied options to current option set
 			%	Input:
@@ -2168,7 +2645,7 @@ classdef GammasynOptions < handle
 			end
 		end
 	end
-	
+
 end
 
 function [y] = getfirst(x)

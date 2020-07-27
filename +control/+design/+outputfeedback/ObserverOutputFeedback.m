@@ -25,7 +25,7 @@ classdef ObserverOutputFeedback < control.design.outputfeedback.AbstractReferenc
 	%			0
 	%		]w
 	%	In contrast to the ObserverDirectOutputFeedback F (w - y) is not fed back directly.
-	
+
 	methods(Static=true)
 		function [name] = SimulinkVariant()
 			%SIMULINKVARIANT return name of corresponding simulink variant for controller block in control_outputfeedback_lib
@@ -34,7 +34,7 @@ classdef ObserverOutputFeedback < control.design.outputfeedback.AbstractReferenc
 			name = 'ObserverOutputFeedback';
 		end
 	end
-	
+
 	methods
 		function [this] = ObserverOutputFeedback(system, varargin)
 			%OBSERVEROUTPUTFEEDBACK create new observer output feedback class
@@ -60,7 +60,7 @@ classdef ObserverOutputFeedback < control.design.outputfeedback.AbstractReferenc
 			end
 		end
 	end
-	
+
 	methods(Access=protected)
 		function [E, A, B, C, C_dot, D, C_ref, D_ref] = amend_system(this, E, A, B, C, ~, D, C_ref, ~, T)
 			%AMEND_SYSTEM add additional dynamics and partition matrices according to an observer output feedback
@@ -127,7 +127,7 @@ classdef ObserverOutputFeedback < control.design.outputfeedback.AbstractReferenc
 			C_dot = zeros(0, n + nnom);
 			D = zeros(size(C, 1), size(B, 2));
 		end
-		
+
 		function [R_fixed, K_fixed, F_fixed, RKF_fixed, R_bounds, K_bounds, F_bounds, RKF_bounds, R_nonlin] = gainpattern_system(this, ~, ~, B, C, ~, ~, ~, ~, ~)
 			%GAINPATTERN_SYSTEM return gain pattern constraint system for an observer output feedback gain matrix with gain matrix K = [
 			%		0,	R;
@@ -153,7 +153,7 @@ classdef ObserverOutputFeedback < control.design.outputfeedback.AbstractReferenc
 			%		K_bounds:	cell array with inequality constraint system for derivative gain matrix
 			%		F_bounds:	cell array with inequality constraint system for prefilter gain matrix
 			%		RKF_bounds:	cell array with inequality constraint system for combined gain matrix
-			%		R_nonlin:	function pointer to nonlinear constraints on proportional and derivative gain matrix
+			%		R_nonlin:	function pointer to nonlinear constraints on proportional, derivative and prefilter gain matrix
 			%n = size(A, 1);
 			p = size(B, 2);
 			q = size(C, 1);
@@ -215,7 +215,7 @@ classdef ObserverOutputFeedback < control.design.outputfeedback.AbstractReferenc
 				end
 			end
 		end
-		
+
 		function [R_gain, K_gain, F_prefilter] = gainpattern_parametric_system(this, ~, ~, B, C, ~, ~, ~, ~, ~)
 			%GAINPATTERN_PARAMETRIC_SYSTEM return parametric gain matrix for an observer output feedback gain matrix R = [
 			%		0,	R;
@@ -261,7 +261,7 @@ classdef ObserverOutputFeedback < control.design.outputfeedback.AbstractReferenc
 				end
 			end
 		end
-		
+
 		function [T_x, T_u, T_y, T_y_dot, T_w] = scalegain_system(this, T_x, T_u, T_y, T_y_dot, T_w, ~, ~, ~, ~, ~, ~, ~, ~, ~)
 			%SCALEGAIN_SYSTEM return scaling matrices for given system
 			%	Input:
@@ -302,7 +302,7 @@ classdef ObserverOutputFeedback < control.design.outputfeedback.AbstractReferenc
 				end
 			end
 		end
-		
+
 		function [F, F_fixed] = prefilterpattern_system(this, ~, ~, ~, ~, B, C, ~, ~, ~, ~, ~)
 			%PREFILTERPATTERN_SYSTEM return prefilter and prefilter pattern constraint system for an observer output feedback with given gain matrices
 			%	Input:
@@ -334,7 +334,7 @@ classdef ObserverOutputFeedback < control.design.outputfeedback.AbstractReferenc
 				];
 			end
 		end
-		
+
 		function [partitionR, partitionF] = gainpartitioning_system(this, R, ~, F, ~, ~, B, C, ~, ~, ~, ~, ~)
 			%GAINPARTITIONING_SYSTEM return partitioning for gain matrix of extended system for an observer output feedback with given gain matrix
 			%	Input:
@@ -369,7 +369,7 @@ classdef ObserverOutputFeedback < control.design.outputfeedback.AbstractReferenc
 				);
 			end
 		end
-		
+
 		function [E, A, B, C, C_dot, D, C_ref, D_ref, needsstate, useCasCdot] = realization_system(this, R, K, F, E, A, B, C, C_dot, D, C_ref, D_ref, T)
 			%REALIZATION return controller without system for output feedback with given gain matrix
 			%	Input:
@@ -444,5 +444,5 @@ classdef ObserverOutputFeedback < control.design.outputfeedback.AbstractReferenc
 			end
 		end
 	end
-	
+
 end

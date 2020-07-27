@@ -114,7 +114,7 @@ function [t, x_new, f_new, g_new, funEvals] = ArmijoBacktrackMinMax(x, t, d, f, 
 					t,		f_new,	g_new'*d;
 					t_prev,	f_prev,	g_prev'*d
 				], doPlot, 0, t);
-			 end
+			end
 		end
 
 		% Adjust if change in t is too small/large

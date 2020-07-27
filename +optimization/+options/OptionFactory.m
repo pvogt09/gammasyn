@@ -1,11 +1,11 @@
 classdef OptionFactory < handle
 	%OPTIONFACTORY create optimization options for different solvers
-	
+
 	properties(Access=private)
 		% map of registered solvers
 		map
 	end
-	
+
 	methods(Static=true)
 		function [this] = instance()
 			%INSTANCE return singleton instance for factory
@@ -18,7 +18,7 @@ classdef OptionFactory < handle
 			this = object;
 		end
 	end
-	
+
 	methods(Access=private)
 		function [this] = OptionFactory()
 			%OPTIONFACTORY create new option factory
@@ -48,7 +48,7 @@ classdef OptionFactory < handle
 			this.registerSolver(optimization.solver.Optimizer.KSOPT,			'optimization.options.ksopt');
 		end
 	end
-	
+
 	methods
 		function [] = registerSolver(this, solver, classname)
 			%REGISTERSOLVER register new solver
@@ -84,8 +84,8 @@ classdef OptionFactory < handle
 				error('optimization:options:factory', 'Registered option class ''%s'' is no subclass of ''%s''.', class(solver), 'optimization.options.Options');
 			end
 		end
-		
-        function [option] = options(this, solver, varargin)
+
+		function [option] = options(this, solver, varargin)
 			%OPTIONS return options for specified solver
 			%	Input:
 			%		this:		instance

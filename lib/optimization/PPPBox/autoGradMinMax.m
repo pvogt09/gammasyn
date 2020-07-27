@@ -41,14 +41,14 @@ elseif type == 3 % Use Complex Differentials
 			diff(j, 1) = funObj(x + mu*1i*e_j);
 		end
 	end
-	
+
 	f = mean(real(diff));
 	g = imag(diff)/mu;
 else % Use Central Differencing
 	if isfunvararg
-		 f = funObj(x, varargin{:});
+		f = funObj(x, varargin{:});
 	else
-	    f = funObj(x);
+		f = funObj(x);
 	end
 	mu = 2*sqrt(1e-12)*(1+norm(x));
 	diff1 = zeros(p, length(f));

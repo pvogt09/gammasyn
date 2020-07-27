@@ -1,6 +1,6 @@
 classdef fminsearch < optimization.options.Options
 	%FMINSEARCH solver options for fminsearch
-	
+
 	methods(Access=protected)
 		function [names] = optimoptionsnames(~)
 			%OPTIMOPTIONSNAMES mapping from properties to optimoptions names
@@ -57,7 +57,7 @@ classdef fminsearch < optimization.options.Options
 				%'UseParallel',					'UseParallel'
 			};
 		end
-		
+
 		function [names] = optimsetnames(~)
 			%OPTIMSETNAMES mapping from properties to optimset names
 			%	Input:
@@ -113,7 +113,7 @@ classdef fminsearch < optimization.options.Options
 				%'UseParallel',					'UseParallel'
 			};
 		end
-		
+
 		function [names] = structnames(~)
 			%SSTRUCTNAMES mapping from properties to struct names
 			%	Input:
@@ -170,7 +170,7 @@ classdef fminsearch < optimization.options.Options
 			};
 		end
 	end
-	
+
 	methods
 		function [this] = fminsearch(varargin)
 			%FMINSEARCH create new optimization option set
@@ -187,7 +187,7 @@ classdef fminsearch < optimization.options.Options
 				this.useoptions(varargin{:});
 			end
 		end
-		
+
 		function [algorithms] = possiblealgorithms(~)
 			%POSSIBLEALGORITHMS list with possible algorithms for optimizer
 			%	Input:
@@ -198,7 +198,7 @@ classdef fminsearch < optimization.options.Options
 				'fminsearch'
 			};
 		end
-		
+
 		function [display] = displaymapping(~)
 			%DISPLAYMAPPING mapping from optimoptions display names to solver display names
 			%	Input:
@@ -215,7 +215,7 @@ classdef fminsearch < optimization.options.Options
 				'final-detailed',	'final-detailed'
 			};
 		end
-		
+
 		function [information] = formatOutput(this, errorcode, time, xmin, fmin, nvars, overalliterations, overallfunevals, retries, output, alloutputs)
 			%FORMATOUTPUT unify output of optimization
 			%	Input:
@@ -298,5 +298,5 @@ classdef fminsearch < optimization.options.Options
 			end
 		end
 	end
-	
+
 end

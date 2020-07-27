@@ -1,22 +1,22 @@
 function [config] = constant(config)
-	%CONSTANT Einstellungen für die Codegenerierung
+	%CONSTANT Einstellungen fÃ¼r die Codegenerierung
 	%	Input:
-	%		config:	Konfigurationseinstellung, die verändert werden soll
+	%		config:	Konfigurationseinstellung, die verÃ¤ndert werden soll
 	%	Output:
-	%		config:	Konfigurationseinstellung für die Codegenerierung
+	%		config:	Konfigurationseinstellung fÃ¼r die Codegenerierung
 	if nargin < 1
 		config = coder.config('mex');
 	else
 		if ~isa(config, 'coder.MexCodeConfig')
-			error('TPFSW:codegen', 'Coder Einstellungen sind müssen vom Typ ''coder.MexCodeConfig'' sein.');
+			error('TPFSW:codegen', 'Coder Einstellungen sind mÃ¼ssen vom Typ ''coder.MexCodeConfig'' sein.');
 		end
 	end
-    config.IntegrityChecks			= ~verLessThan('matlab', '7.14');
-    config.ResponsivenessChecks		= false;
+	config.IntegrityChecks			= ~verLessThan('matlab', '7.14');
+	config.ResponsivenessChecks		= false;
 	config.EchoExpressions			= false;
-    config.GenerateComments			= true;
-    config.MATLABSourceComments		= true;
-    config.EnableDebugging			= false;
+	config.GenerateComments			= true;
+	config.MATLABSourceComments		= true;
+	config.EnableDebugging			= false;
 	config.GenerateReport			= true;
 	config.TargetLang				= 'C++';
 	%config.GenCodeOnly				= true;

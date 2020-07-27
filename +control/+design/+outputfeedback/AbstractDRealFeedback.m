@@ -1,11 +1,11 @@
 classdef(Abstract) AbstractDRealFeedback < control.design.outputfeedback.OutputFeedback
 	%ABSTRACTDREALFEEDBACK abstract class for casting a control system in output feedback form and specify the needed constraints on the resulting gain matrix, when a real D feedback with specified realization poles is needed
-	
+
 	properties(SetAccess=protected)
 		% system matrix for realization poles of real D feedback
 		realD
 	end
-	
+
 	methods
 		function [this] = AbstractDRealFeedback(varargin)
 			%ABSTRACTDREALFEEDBACK create new real D feedback

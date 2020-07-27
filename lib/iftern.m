@@ -12,4 +12,3 @@ function [out] = iftern(cond, a, b)
 		out = b;
 	end
 end
-

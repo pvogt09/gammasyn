@@ -29,7 +29,7 @@ function [pass] = Checkandtransform_gain_fixed_isforced2zeroTest(~)
 			constraint_number = constraint_number + 1;
 		end
 	end
-	
+
 	constraint_system_partial_zero = cat(3, constraint_system_partial, [
 		1,	0,	0,	0,	-1;
 		0,	0,	0,	0,	0;

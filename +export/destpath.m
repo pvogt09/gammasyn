@@ -1,6 +1,6 @@
 function [path] = destpath()
-	%DESTPATH Zielpfad für Ergebnisse
+	%DESTPATH Zielpfad fÃ¼r Ergebnisse
 	%	Output:
-	%		path:	Zielpfad für Ergebnisse
+	%		path:	Zielpfad fÃ¼r Ergebnisse
 	path = realpath(fullfile(mfilename('fullpath'), '..', '..', 'Ergebnisse'));
 end

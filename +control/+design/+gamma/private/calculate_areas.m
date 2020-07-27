@@ -12,6 +12,7 @@ function [areaval, areaval_derivative, areaval_2_derivative] = calculate_areas(a
 	%		areaval_2_derivative:	hessian of area border function for current optimization value
 	usecompiled = false;
 	numthreads = configuration.matlab.numthreads();
+	eigenvalueignoreinf = false;
 	if nargin >= 5
 		if islogical(options)
 			usecompiled = options;
@@ -20,10 +21,24 @@ function [areaval, areaval_derivative, areaval_2_derivative] = calculate_areas(a
 			if isfield(options, 'numthreads')
 				numthreads = options.numthreads;
 			end
+			if isfield(options, 'eigenvalueignoreinf')
+				eigenvalueignoreinf = options.eigenvalueignoreinf;
+			end
 		elseif isstruct(options) && isfield(options, 'numthreads')
 			numthreads = options.numthreads;
 			if isfield(options, 'usecompiled')
 				usecompiled = options.usecompiled;
+			end
+			if isfield(options, 'eigenvalueignoreinf')
+				eigenvalueignoreinf = options.eigenvalueignoreinf;
+			end
+		elseif isstruct(options) && isfield(options, 'eigenvalueignoreinf')
+			eigenvalueignoreinf = options.eigenvalueignoreinf;
+			if isfield(options, 'usecompiled')
+				usecompiled = options.usecompiled;
+			end
+			if isfield(options, 'numthreads')
+				numthreads = options.numthreads;
 			end
 		elseif isnumeric(options)
 			numthreads = options;
@@ -32,11 +47,11 @@ function [areaval, areaval_derivative, areaval_2_derivative] = calculate_areas(a
 	numthreads = uint32(floor(max([0, numthreads])));
 	if iscell(areafun)
 		if nargout >= 3
-			[areaval, areaval_derivative, areaval_2_derivative] = calculate_areas_handle(areafun, weight, eigenvalues, dimensions, numthreads);
+			[areaval, areaval_derivative, areaval_2_derivative] = calculate_areas_handle(areafun, weight, eigenvalues, dimensions, numthreads, eigenvalueignoreinf);
 		elseif nargout >= 2
-			[areaval, areaval_derivative] = calculate_areas_handle(areafun, weight, eigenvalues, dimensions, numthreads);
+			[areaval, areaval_derivative] = calculate_areas_handle(areafun, weight, eigenvalues, dimensions, numthreads, eigenvalueignoreinf);
 		else
-			areaval = calculate_areas_handle(areafun, weight, eigenvalues, dimensions, numthreads);
+			areaval = calculate_areas_handle(areafun, weight, eigenvalues, dimensions, numthreads, eigenvalueignoreinf);
 		end
 	else
 		if ndims(areafun) ~= ndims(dimensions.area_parameters) || any(size(areafun) ~= size(dimensions.area_parameters))
@@ -44,21 +59,21 @@ function [areaval, areaval_derivative, areaval_2_derivative] = calculate_areas(a
 		end
 		if nargout >= 3
 			if nargin >= 5
-				[areaval, areaval_derivative, areaval_2_derivative] = calculate_areas_fixed(areafun, weight, eigenvalues, dimensions, usecompiled, numthreads);
+				[areaval, areaval_derivative, areaval_2_derivative] = calculate_areas_fixed(areafun, weight, eigenvalues, dimensions, usecompiled, numthreads, eigenvalueignoreinf);
 			else
-				[areaval, areaval_derivative, areaval_2_derivative] = calculate_areas_fixed(areafun, weight, eigenvalues, dimensions, numthreads);
+				[areaval, areaval_derivative, areaval_2_derivative] = calculate_areas_fixed(areafun, weight, eigenvalues, dimensions, numthreads, eigenvalueignoreinf);
 			end
 		elseif nargout >= 2
 			if nargin >= 5
-				[areaval, areaval_derivative] = calculate_areas_fixed(areafun, weight, eigenvalues, dimensions, usecompiled, numthreads);
+				[areaval, areaval_derivative] = calculate_areas_fixed(areafun, weight, eigenvalues, dimensions, usecompiled, numthreads, eigenvalueignoreinf);
 			else
-				[areaval, areaval_derivative] = calculate_areas_fixed(areafun, weight, eigenvalues, dimensions, numthreads);
+				[areaval, areaval_derivative] = calculate_areas_fixed(areafun, weight, eigenvalues, dimensions, numthreads, eigenvalueignoreinf);
 			end
 		else
 			if nargin >= 5
-				areaval = calculate_areas_fixed(areafun, weight, eigenvalues, dimensions, usecompiled, numthreads);
+				areaval = calculate_areas_fixed(areafun, weight, eigenvalues, dimensions, usecompiled, numthreads, eigenvalueignoreinf);
 			else
-				areaval = calculate_areas_fixed(areafun, weight, eigenvalues, dimensions, numthreads);
+				areaval = calculate_areas_fixed(areafun, weight, eigenvalues, dimensions, numthreads, eigenvalueignoreinf);
 			end
 		end
 	end

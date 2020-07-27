@@ -425,8 +425,8 @@ function [x, fval, exitflag, output, lambda, grad, hessian] = optimize(fun, x_0,
 	end
 	solveroptions.f = function_dispatcher(Jfun, cfun, lb, ub, A, b, Aeq, beq, gradientJ, gradientc, FinDiffType, FinDiffStepSize, options.TypicalX, options.HonorBounds);
 	solveroptions.nV = options.NumberVariables;
-    solveroptions.nE = options.NumberConstraintsEquality;
-    solveroptions.nI = options.NumberConstraintsInequality + options.NumberConstraintsBounds;
+	solveroptions.nE = options.NumberConstraintsEquality;
+	solveroptions.nI = options.NumberConstraintsInequality + options.NumberConstraintsBounds;
 	solveroptions.output = str2double(solveroptions.Display);
 	solveroptions.pO = 2*options.NumberVariables;
 	solveroptions.pE = 2*ones(options.NumberConstraintsEquality, 1);

@@ -1,13 +1,13 @@
 classdef Imag < control.design.gamma.area.GammaArea
 	%IMAG class for representation of a real half plane area a*re + b = 0
-	
+
 	properties
 		% slope of line
 		a;
 		% shift of line
 		b
 	end
-	
+
 	methods(Static=true)
 		function [f, dfdre, dfdim, d2fdredre, d2fdimdre, d2fdredim, d2fdimdim] = border(re, ~, parameter)
 			%BORDER return border of polearea with f < 0 for points left of the border, f = 0 for points on the border and f > 0 for points right of the border
@@ -39,7 +39,7 @@ classdef Imag < control.design.gamma.area.GammaArea
 				f = control.design.gamma.area.Imag_border(re, 0, parameter);
 			end
 		end
-		
+
 		function [dfdre, dfdim] = gradborder(re, im, parameter)
 			%GRADBORDER return gradient of border of polearea with f < 0 for points left of the border, f = 0 for points on the border and f > 0 for points right of the border
 			%	Input:
@@ -51,7 +51,7 @@ classdef Imag < control.design.gamma.area.GammaArea
 			%		dfdim:		gradient of border function value at point [re, im] for coordinate im
 			[~, dfdre, dfdim] = control.design.gamma.area.Imag.border(re, im, parameter);
 		end
-		
+
 		function [d2fdredre, d2fdimdre, d2fdredim, d2fdimdim] = hessborder(re, im, parameter)
 			%HESSBORDER return hessian of border of polearea with f < 0 for points left of the border, f = 0 for points on the border and f > 0 for points right of the border
 			%	Input:
@@ -66,7 +66,7 @@ classdef Imag < control.design.gamma.area.GammaArea
 			[~, ~, ~, d2fdredre, d2fdimdre, d2fdredim, d2fdimdim] = control.design.gamma.area.Imag.border(re, im, parameter);
 		end
 	end
-	
+
 	methods(Access=protected)
 		function [parameters] = getparameters(this)
 			%GETPARAMETERS return structure with parameters of current object unknown to the superclass
@@ -80,7 +80,7 @@ classdef Imag < control.design.gamma.area.GammaArea
 			);
 		end
 	end
-	
+
 	methods
 		function [this] = Imag(a, b, varargin)
 			%LINE return new half plane pole area with specified slope and shift
@@ -95,7 +95,7 @@ classdef Imag < control.design.gamma.area.GammaArea
 			this.a = a;
 			this.b = b;
 		end
-		
+
 		function [this] = set.a(this, a)
 			%A setter for slope of line
 			%	Input:
@@ -108,7 +108,7 @@ classdef Imag < control.design.gamma.area.GammaArea
 			end
 			this.a = a;
 		end
-		
+
 		function [this] = set.b(this, b)
 			%B setter for shift of line
 			%	Input:
@@ -121,7 +121,7 @@ classdef Imag < control.design.gamma.area.GammaArea
 			end
 			this.b = b;
 		end
-		
+
 		function [border] = plotinstanceborder(this, limit, numpoints)
 			%PLOTINSTANCEBORDER plot border of area function
 			%	Input:
@@ -152,7 +152,7 @@ classdef Imag < control.design.gamma.area.GammaArea
 			end
 		end
 	end
-		
+
 	methods(Access=protected)
 		function [f] = getinstanceborder(this, re, im)
 			%GETINSTANCEBORDER return border of polearea with f < 0 for points left of the border, f = 0 for points on the border and f > 0 for points right of the border
@@ -169,7 +169,7 @@ classdef Imag < control.design.gamma.area.GammaArea
 			parameter.line_b = this.b;
 			f = this.border(re, im, parameter);
 		end
-		
+
 		function [dfdre, dfdim] = getinstancegradborder(this, re, im)
 			%GETINSTANCEGRADBORDER return gradient of border of polearea with f < 0 for points left of the border, f = 0 for points on the border and f > 0 for points right of the border
 			%	Input:
@@ -186,7 +186,7 @@ classdef Imag < control.design.gamma.area.GammaArea
 			parameter.line_b = this.b;
 			[dfdre, dfdim] = this.gradborder(re, im, parameter);
 		end
-		
+
 		function [d2fdredre, d2fdimdre, d2fdredim, d2fdimdim] = getinstancehessborder(this, re, im)
 			%GETINSTANCEHESSBORDER return hessian of border of polearea with f < 0 for points left of the border, f = 0 for points on the border and f > 0 for points right of the border
 			%	Input:
@@ -205,7 +205,7 @@ classdef Imag < control.design.gamma.area.GammaArea
 			parameter.line_b = this.b;
 			[d2fdredre, d2fdimdre, d2fdredim, d2fdimdim] = this.hessborder(re, im, parameter);
 		end
-		
+
 		function [str] = getinstancestring(this, format)
 			%GETINSTANCESTRING return string representation of object
 			%	Input:
@@ -218,7 +218,7 @@ classdef Imag < control.design.gamma.area.GammaArea
 			end
 			str = ['Imag(', sprintf(format, this.a), ', ', sprintf(format, this.b), this.printshift(this.reshift, this.imshift, format, true), ')'];
 		end
-		
+
 		function [L, M, success] = toinstanceLMIregion(this)
 			%TOINSTANCELMIREGION convert area to LMI region that can be used by Matlab functions for object
 			%	Input:

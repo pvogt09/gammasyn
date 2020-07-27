@@ -14,31 +14,31 @@ function A = cholmod(N,A,SIGMA,Z,H,IPOSD)
 DELTA=1.0D-17;
 SIG=SIGMA;
 for I=1:N,
-   H(I)=Z(I);
-end 
+	H(I)=Z(I);
+end
 K=1;
 for J=1:N,
-   V=H(J);
-   D=A(K);
-   DS=D+SIG*V*V;
-   if (abs(DS)< DELTA)
-      DS=sign_fortran(DELTA,DS);
-   end 
-   if (IPOSD ~= 0)
-      DS=abs(DS);
-   end 
-   A(K)=DS;
-   DEL =SIG/DS;
-   BETA=DEL*V;
-   SIG =DEL*D;
-   if (J == N)
-      return;
-   end 
-   M=J+1;
-   for I=M:N,
-      K=K+1;
-      H(I)=H(I)-V*A(K);
-      A(K)=A(K)+BETA*H(I);
-   end 
-   K=K+1;
-end 
+	V=H(J);
+	D=A(K);
+	DS=D+SIG*V*V;
+	if (abs(DS)< DELTA)
+		DS=sign_fortran(DELTA,DS);
+	end
+	if (IPOSD ~= 0)
+		DS=abs(DS);
+	end
+	A(K)=DS;
+	DEL =SIG/DS;
+	BETA=DEL*V;
+	SIG =DEL*D;
+	if (J == N)
+		return;
+	end
+	M=J+1;
+	for I=M:N,
+		K=K+1;
+		H(I)=H(I)-V*A(K);
+		A(K)=A(K)+BETA*H(I);
+	end
+	K=K+1;
+end

@@ -548,7 +548,7 @@ function [x, fval, exitflag, output, lambda, grad, hessian] = optimize(fun, x_0,
 				message = 'Not enough memory';
 			case -5
 				message = 'User Exit';
-			otherwise        
+			otherwise
 				message = 'NLOPT Error';
 		end
 		if ~isstruct(output) || isempty(output)

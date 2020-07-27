@@ -23,4 +23,3 @@ function [is] = issymmetric(A, skewOption)
 	end
 	is = all(sym(:) == 0);
 end
-

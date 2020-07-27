@@ -1,6 +1,6 @@
 classdef simulanneal < optimization.options.Options
 	%SIMULANNEAL solver options for simulanneal
-	
+
 	methods(Access=protected)
 		function [names] = optimoptionsnames(~)
 			%OPTIMOPTIONSNAMES mapping from properties to optimoptions names
@@ -57,7 +57,7 @@ classdef simulanneal < optimization.options.Options
 				'UseParallel',					'UseParallel'
 			};
 		end
-		
+
 		function [names] = optimsetnames(~)
 			%OPTIMSETNAMES mapping from properties to optimset names
 			%	Input:
@@ -113,7 +113,7 @@ classdef simulanneal < optimization.options.Options
 				'UseParallel',					'UseParallel'
 			};
 		end
-		
+
 		function [names] = structnames(~)
 			%SSTRUCTNAMES mapping from properties to struct names
 			%	Input:
@@ -169,7 +169,7 @@ classdef simulanneal < optimization.options.Options
 				'UseParallel',					'UseParallel'
 			};
 		end
-		
+
 		function [names] = optimsetsanames(~)
 			%OPTIMSETSANAMES mapping from properties to saoptimset names
 			%	Input:
@@ -226,7 +226,7 @@ classdef simulanneal < optimization.options.Options
 			};
 		end
 	end
-	
+
 	methods
 		function [this] = simulanneal(varargin)
 			%SIMULANNEAL create new optimization option set
@@ -242,7 +242,7 @@ classdef simulanneal < optimization.options.Options
 				this.useoptions(varargin{:});
 			end
 		end
-		
+
 		function [algorithms] = possiblealgorithms(~)
 			%POSSIBLEALGORITHMS list with possible algorithms for optimizer
 			%	Input:
@@ -253,7 +253,7 @@ classdef simulanneal < optimization.options.Options
 				'simulanneal'
 			};
 		end
-		
+
 		function [display] = displaymapping(~)
 			%DISPLAYMAPPING mapping from optimoptions display names to solver display names
 			%	Input:
@@ -270,7 +270,7 @@ classdef simulanneal < optimization.options.Options
 				'final-detailed',	'final'
 			};
 		end
-		
+
 		function [information] = formatOutput(this, errorcode, time, xmin, fmin, nvars, overalliterations, overallfunevals, retries, output, alloutputs)
 			%FORMATOUTPUT unify output of optimization
 			%	Input:
@@ -334,5 +334,5 @@ classdef simulanneal < optimization.options.Options
 			end
 		end
 	end
-	
+
 end

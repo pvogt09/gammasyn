@@ -1,20 +1,20 @@
 classdef PolyEllipse < control.design.gamma.area.GammaArea
 	%POLYELLIPSE class for representation of a polyellipsoidal pole area w_1 sqrt((re - re_1)^2 + w_1(im - im_1)^2) + ... + w_n sqrt((re - re_n)^2 + w_n(im - im_n)^2) - 1 = 0
-	
+
 	properties(Dependent=true)
 		% weights of the focal points
 		w;
 		% focal points of the polyellipse
 		f
 	end
-	
+
 	properties(Access=protected)
 		% weights of the focal points used in order to check compatibility with focal point size
 		weights;
 		% focal points of the polyellipse used in order to check compatibility with weight size
 		focals
 	end
-	
+
 	methods(Static=true)
 		function [f, dfdre, dfdim, d2fdredre, d2fdimdre, d2fdredim, d2fdimdim] = border(re, im, parameter)
 			%BORDER return border of polearea with f < 0 for points left of the border, f = 0 for points on the border and f > 0 for points right of the border
@@ -46,7 +46,7 @@ classdef PolyEllipse < control.design.gamma.area.GammaArea
 				f = control.design.gamma.area.PolyEllipse_border(re, im, parameter);
 			end
 		end
-		
+
 		function [dfdre, dfdim] = gradborder(re, im, parameter)
 			%GRADBORDER return gradient of border of polearea with f < 0 for points left of the border, f = 0 for points on the border and f > 0 for points right of the border
 			%	Input:
@@ -58,7 +58,7 @@ classdef PolyEllipse < control.design.gamma.area.GammaArea
 			%		dfdim:		gradient of border function value at point [re, im] for coordinate im
 			[~, dfdre, dfdim] = control.design.gamma.area.PolyEllipse.border(re, im, parameter);
 		end
-		
+
 		function [d2fdredre, d2fdimdre, d2fdredim, d2fdimdim] = hessborder(re, im, parameter)
 			%HESSBORDER return hessian of border of polearea with f < 0 for points left of the border, f = 0 for points on the border and f > 0 for points right of the border
 			%	Input:
@@ -73,7 +73,7 @@ classdef PolyEllipse < control.design.gamma.area.GammaArea
 			[~, ~, ~, d2fdredre, d2fdimdre, d2fdredim, d2fdimdim] = control.design.gamma.area.PolyEllipse.border(re, im, parameter);
 		end
 	end
-	
+
 	methods(Access=protected)
 		function [parameters] = getparameters(this)
 			%GETPARAMETERS return structure with parameters of current object unknown to the superclass
@@ -87,7 +87,7 @@ classdef PolyEllipse < control.design.gamma.area.GammaArea
 			);
 		end
 	end
-	
+
 	methods
 		function [this] = PolyEllipse(f, w, varargin)
 			%POLYELLIPSE return new polyellipse pole area with specified weights and focal points and shift
@@ -101,7 +101,7 @@ classdef PolyEllipse < control.design.gamma.area.GammaArea
 			this@control.design.gamma.area.GammaArea(GammaArea.POLYELLIPSE, shift);
 			this = this.setFocals(f, w);
 		end
-		
+
 		function [w] = get.w(this)
 			%W getter for focal points
 			%	Input:
@@ -110,7 +110,7 @@ classdef PolyEllipse < control.design.gamma.area.GammaArea
 			%		w:		weights
 			w = this.weights;
 		end
-		
+
 		function [f] = get.f(this)
 			%F getter for focal points
 			%	Input:
@@ -119,7 +119,7 @@ classdef PolyEllipse < control.design.gamma.area.GammaArea
 			%		f:		focal points
 			f = this.focals;
 		end
-		
+
 		function [this] = setFocals(this, f, w)
 			%SETFOCALS setter for focal points and weights
 			%	Input:
@@ -150,7 +150,7 @@ classdef PolyEllipse < control.design.gamma.area.GammaArea
 				this.weights = w;
 			end
 		end
-		
+
 		function [this] = set.f(this, f)
 			%F setter for focal points
 			%	Input:
@@ -172,7 +172,7 @@ classdef PolyEllipse < control.design.gamma.area.GammaArea
 			end
 			this.focals = f;
 		end
-		
+
 		function [this] = set.w(this, w)
 			%W setter for weights
 			%	Input:
@@ -194,7 +194,7 @@ classdef PolyEllipse < control.design.gamma.area.GammaArea
 			end
 			this.weights = w;
 		end
-		
+
 		function [border] = plotinstanceborder(this, ~, numpoints)
 			%PLOTINSTANCEBORDER plot border of area function
 			%	Input:
@@ -213,7 +213,7 @@ classdef PolyEllipse < control.design.gamma.area.GammaArea
 			end
 		end
 	end
-		
+
 	methods(Access=protected)
 		function [f] = getinstanceborder(this, re, im)
 			%GETINSTANCEBORDER return border of polearea with f < 0 for points left of the border, f = 0 for points on the border and f > 0 for points right of the border
@@ -230,7 +230,7 @@ classdef PolyEllipse < control.design.gamma.area.GammaArea
 			parameter.polyellipse_w = this.w;
 			f = this.border(re, im, parameter);
 		end
-		
+
 		function [dfdre, dfdim] = getinstancegradborder(this, re, im)
 			%GETINSTANCEGRADBORDER return gradient of border of polearea with f < 0 for points left of the border, f = 0 for points on the border and f > 0 for points right of the border
 			%	Input:
@@ -247,7 +247,7 @@ classdef PolyEllipse < control.design.gamma.area.GammaArea
 			parameter.polyellipse_w = this.w;
 			[dfdre, dfdim] = this.gradborder(re, im, parameter);
 		end
-		
+
 		function [d2fdredre, d2fdimdre, d2fdredim, d2fdimdim] = getinstancehessborder(this, re, im)
 			%GETINSTANCEHESSBORDER return hessian of border of polearea with f < 0 for points left of the border, f = 0 for points on the border and f > 0 for points right of the border
 			%	Input:
@@ -266,7 +266,7 @@ classdef PolyEllipse < control.design.gamma.area.GammaArea
 			parameter.polyellipse_w = this.w;
 			[d2fdredre, d2fdimdre, d2fdredim, d2fdimdim] = this.hessborder(re, im, parameter);
 		end
-		
+
 		function [str] = getinstancestring(this, format)
 			%GETINSTANCESTRING return string representation of object
 			%	Input:
@@ -281,7 +281,7 @@ classdef PolyEllipse < control.design.gamma.area.GammaArea
 			wformated = arrayfun(@(x) sprintf(format, x), this.w, 'UniformOutput', false);
 			str = ['PolyEllipse([', strjoin(fformated, ', '), '], [', strjoin(wformated, ', '), ']', this.printshift(this.reshift, this.imshift, format, true), ')'];
 		end
-		
+
 		function [L, M, success] = toinstanceLMIregion(this)
 			%TOINSTANCELMIREGION convert area to LMI region that can be used by Matlab functions for object
 			%	Input:

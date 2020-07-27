@@ -1,22 +1,22 @@
 function [P_opt, ew_opt, st_opt, ews, w1, w2, npq, index] = eigenvals(ew, A, P, npq, interactive)
-	% [ew_opt,st_opt,ew,w1,w2,npq] = EIGENVALUES(ew,A,B,C,npq) dient 
-	% zur Kommunikation mit dem Anwender: hier werden sämtliche
-	% Abfragen bezüglich der Eigenwerte, der Gewichtungsfaktoren w1,
-	% der Stützstellen sowie der Gewichtungsfaktoren w2 durchgeführt.
+	% [ew_opt,st_opt,ew,w1,w2,npq] = EIGENVALUES(ew,A,B,C,npq) dient
+	% zur Kommunikation mit dem Anwender: hier werden sÃ¤mtliche
+	% Abfragen bezÃ¼glich der Eigenwerte, der Gewichtungsfaktoren w1,
+	% der StÃ¼tzstellen sowie der Gewichtungsfaktoren w2 durchgefÃ¼hrt.
 	%
 	% OUTPUT:
-	% ew_opt - für die Optimierung zu nutzende EW (nicht mit 0 gewichtet)
-	% st_opt - für die Optimierung zu nutzende Stützstellen
+	% ew_opt - fÃ¼r die Optimierung zu nutzende EW (nicht mit 0 gewichtet)
+	% st_opt - fÃ¼r die Optimierung zu nutzende StÃ¼tzstellen
 	% ew     - Vektor mit den vorgegebenen Eigenwerten
 	% ews    - Vektor mit den Streckeneigenwerten
-	% w1     - Gewichtungsfaktoren für J1
-	% w2     - Gewichtungsfaktoren für J2
-	% npq    - Dimensionen der vorliegenden Matrizen bzw. Vektoren  
+	% w1     - Gewichtungsfaktoren fÃ¼r J1
+	% w2     - Gewichtungsfaktoren fÃ¼r J2
+	% npq    - Dimensionen der vorliegenden Matrizen bzw. Vektoren
 	%
 	% INPUT:
 	% ew     - Vektor mit den vorgegebenen Eigenwerten
 	% A      - Systemmatrix
-	% B      - Eingangsmatrix 
+	% B      - Eingangsmatrix
 	% C      - Ausgangsmatrix
 	% npq    - Dimensionen der vorliegenden Matrizen bzw. Vektoren
 	if nargin <= 4
@@ -25,7 +25,7 @@ function [P_opt, ew_opt, st_opt, ews, w1, w2, npq, index] = eigenvals(ew, A, P, 
 	if ~islogical(interactive)
 		error('oplace:arguments', 'Interactive indicator must be of type ''logical''.');
 	end
-	% Teil I: EW-Kontrolle und ggf. EW-Änderung
+	% Teil I: EW-Kontrolle und ggf. EW-Ã„nderung
 	ende = 0;
 	ews = eig(A);
 	ews = sort(ews);
@@ -52,7 +52,7 @@ function [P_opt, ew_opt, st_opt, ews, w1, w2, npq, index] = eigenvals(ew, A, P, 
 				if ~isempty(wert)
 					ew(wahl) = wert;
 					[ew, P] = sortewpv(ew, P, npq);
-					flag = ev_test(ew, ews, npq);	
+					flag = ev_test(ew, ews, npq);
 				end
 			elseif wahl == 0
 				ende = 1;
@@ -60,7 +60,7 @@ function [P_opt, ew_opt, st_opt, ews, w1, w2, npq, index] = eigenvals(ew, A, P, 
 		end
 	end
 	% Teil II: die nicht mit 0 gewichteten EW gewichten
-	npq(4) = sum(~flag); 
+	npq(4) = sum(~flag);
 	[ew_opt, P_opt, index] = weight_ev(ew, ~flag, P, npq);
 	w1 = weight_1(ew_opt, ew, ews, npq);	% Vorschlagswerte
 	flag = 1;
@@ -77,7 +77,7 @@ function [P_opt, ew_opt, st_opt, ews, w1, w2, npq, index] = eigenvals(ew, A, P, 
 				inp = inp_from_keyb(sprintf('Input w1(%d): ', wahl), 2);
 				wert = str2double(inp);
 				if ~isempty(wert) && wert >= 0
-					w1(wahl) = wert;         
+					w1(wahl) = wert;
 				end
 			elseif wahl == 0
 				ende = 2;
@@ -87,24 +87,24 @@ function [P_opt, ew_opt, st_opt, ews, w1, w2, npq, index] = eigenvals(ew, A, P, 
 	% falls ein EW mit 0 gewichtet ist, EW aus ew_opt eliminieren
 	check = sum(sign(w1));
 	if check && check < npq(4)
-		h_ew1 = zeros(check, 1);	% Hilfsvariable für die gewichteten EW
-		h_ew2 = zeros(npq(4) - check, 1);	% Hilfsvariable für die gewichteten EW
-		h_w1 = zeros(check, 1);	% Hilfsvariable für die Gewichtungsfaktoren 
-		h_P1 = zeros(npq(2) + 1, check);	% Hilfsvariable für die Parametervektoren
-		h_P2 = zeros(npq(2) + 1, npq(4) - check);	% Hilfsvariable für die Parametervektoren
+		h_ew1 = zeros(check, 1);	% Hilfsvariable fï¿½r die gewichteten EW
+		h_ew2 = zeros(npq(4) - check, 1);	% Hilfsvariable fï¿½r die gewichteten EW
+		h_w1 = zeros(check, 1);	% Hilfsvariable fï¿½r die Gewichtungsfaktoren
+		h_P1 = zeros(npq(2) + 1, check);	% Hilfsvariable fï¿½r die Parametervektoren
+		h_P2 = zeros(npq(2) + 1, npq(4) - check);	% Hilfsvariable fï¿½r die Parametervektoren
 		idx_ew1 = zeros(check, 1);
 		idx_ew2 = zeros(npq(4) - check, 1);
 		jj = 1;
 		nn = 1;
 		for ii = 1:npq(4)
 			if w1(ii) > 0
-				h_ew1(jj) = ew_opt(ii); 
+				h_ew1(jj) = ew_opt(ii);
 				idx_ew1(jj) = ii;
 				h_w1(jj) = w1(ii);
 				h_P1(:, jj) = P_opt(:, ii);
 				jj = jj + 1;
 			else
-				h_ew2(nn) = ew_opt(ii); 
+				h_ew2(nn) = ew_opt(ii);
 				idx_ew2(nn) = ii;
 				h_P2(:, nn) = P_opt(:, ii);
 				nn = nn+1;
@@ -132,7 +132,7 @@ function [P_opt, ew_opt, st_opt, ews, w1, w2, npq, index] = eigenvals(ew, A, P, 
 	npq(4) = check;
 	npq(5) = npq(1) - npq(4);
 
-	% Teil III: Stützstellen abfragen
+	% Teil III: Stï¿½tzstellen abfragen
 	if npq(5)
 		st_opt = [];
 		d = npq(5);
@@ -148,7 +148,7 @@ function [P_opt, ew_opt, st_opt, ews, w1, w2, npq, index] = eigenvals(ew, A, P, 
 		fprintf('\n\nThere are %d unweighted eigenvalues. Therefore, %d additional real data points\n', d, d);
 		fprintf('have been defined to take these eigenvalues into account for the solution.\n');
 
-		% Teil IV: Ausgabe der Stützstellen plus Vorschlag für Gewichtungsfaktor
+		% Teil IV: Ausgabe der Stï¿½tzstellen plus Vorschlag fï¿½r Gewichtungsfaktor
 		w2 = weight_2(st_opt, ew, ews, d);
 		flag = 2;
 		if interactive
@@ -176,15 +176,15 @@ function [P_opt, ew_opt, st_opt, ews, w1, w2, npq, index] = eigenvals(ew, A, P, 
 		w2 = [];
 	end
 
-	% falls eine Stützstelle mit 0 gewichtet ist, Stützstelle aus st_opt eliminieren
+	% falls eine Stï¿½tzstelle mit 0 gewichtet ist, Stï¿½tzstelle aus st_opt eliminieren
 	check = sum(sign(w2));
 	if check && check < npq(5)
-		st_1 = zeros(check, 1);	% Hilfsvariable für die gewichteten Stützstellen
-		h_w2 = zeros(check, 1);	% Hilfsvariable für die Gewichtungsfaktoren
+		st_1 = zeros(check, 1);	% Hilfsvariable fï¿½r die gewichteten Stï¿½tzstellen
+		h_w2 = zeros(check, 1);	% Hilfsvariable fï¿½r die Gewichtungsfaktoren
 		jj = 1;
 		for ii = 1:npq(5)
-			if w2(ii) > 0       
-				st_1(jj) = st_opt(ii); 
+			if w2(ii) > 0
+				st_1(jj) = st_opt(ii);
 				h_w2(jj) = w2(ii);
 				jj = jj + 1;
 			end

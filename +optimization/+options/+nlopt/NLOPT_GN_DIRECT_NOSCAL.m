@@ -2,4 +2,4 @@
 %
 % See nlopt_minimize for more information.
 function val = NLOPT_GN_DIRECT_NOSCAL
-  val = 3;
+	val = 3;

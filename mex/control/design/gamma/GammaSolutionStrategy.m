@@ -1,14 +1,16 @@
 classdef(Enumeration) GammaSolutionStrategy < Simulink.IntEnumType
 	%GAMMASOLUTIONSTRATEGY enumeration for characterization of different solution strategies for gamma pole placement for use with codegen
 	%#codegen
-	
+
 	enumeration
 		% simply run optimization problem once
 		SINGLESHOT(0);
 		% solve feasibility problem first (if supported) and then solve optimization problem with found solution
 		FEASIBILITYITERATION(1)
+		% solve feasibility problem with coupling conditions first, then solve feasibility problem (if supported) and then solve optimization problem with found solution
+		FEASIBILITYITERATION_COUPLING(2)
 	end
-	
+
 % must not be private to allow for type cast to GammaSolutionStrategy, types are automatically restricted to the defined ones internally
 % 	methods(Access=private)
 % 		function [this] = GammaSolutionStrategy(type)
@@ -20,7 +22,7 @@ classdef(Enumeration) GammaSolutionStrategy < Simulink.IntEnumType
 % 			this@Simulink.IntEnumType(type);
 % 		end
 % 	end
-	
+
 	methods(Static=true)
 		function [default] = getDefaultValue()
 			%GETDEFAULTVALUE return default gamma solution strategy type
@@ -28,8 +30,8 @@ classdef(Enumeration) GammaSolutionStrategy < Simulink.IntEnumType
 			%		default:	default solution strategy type
 			default = GammaSolutionStrategy.SINGLESHOT;
 		end
-		
-		function [description] = getDescription() 
+
+		function [description] = getDescription()
 			%GETDESCRIPTION	String to describe the class in Simulink Coder
 			%	Output:
 			%		description:	description of the class
@@ -42,7 +44,7 @@ classdef(Enumeration) GammaSolutionStrategy < Simulink.IntEnumType
 			%		addname:	true, to add the class name to generated code to avoid naming conflicts
 			addname = true;
 		end
-		
+
 		function [strategy] = fromname(name)
 			%FROMNAME create GammaSolutionStrategy from name
 			%	Input:
@@ -102,7 +104,7 @@ classdef(Enumeration) GammaSolutionStrategy < Simulink.IntEnumType
 				error('control:design:gamma:type:name', 'No GammaSolutionStrategy of specified name exists.');
 			end
 		end
-		
+
 		function [fromDCM] = fromDCM(DCMstring)
 			%FROMDCM convert string from DCM file to object of GammaSolutionStrategy class
 			%	Input:
@@ -112,7 +114,7 @@ classdef(Enumeration) GammaSolutionStrategy < Simulink.IntEnumType
 			fromDCM = GammaSolutionStrategy.fromname(DCMstring);
 		end
 	end
-	
+
 	methods
 		function [asDCM] = toDCM(this)
 			%TODCM convert instance to string for use in an DCM file
@@ -122,7 +124,7 @@ classdef(Enumeration) GammaSolutionStrategy < Simulink.IntEnumType
 			%		asDCM:	string representation of the instance for use in an DCM file
 			asDCM = sprintf('%d', int32(this));
 		end
-		
+
 		function [hash] = hashCode(this)
 			%HASHCODE create hash code for object
 			%	Input:

@@ -15,5 +15,5 @@ function [is] = isequaln(varargin)
 	%   structure are numerically equal, ISEQUALN will return 1.
 	%
 	%   See also ISEQUAL, EQ.
-	is = isequalwithequalnans(varargin{:}); %#ok<FPARK> dient gerade dazu isequaln für alte Metlabversionen zu definieren
+	is = isequalwithequalnans(varargin{:}); %#ok<FPARK> dient gerade dazu isequaln fÃ¼r alte Metlabversionen zu definieren
 end

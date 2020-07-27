@@ -1,27 +1,27 @@
 function [f, G, Rcode] = critgrad(K, S, npq, ew, w1, G_lam, w2, G_xi, p_xi, w3, P, H, W4, T1, c, optflag)
 	% f = KTITERIUM(K,K0,S,npq,w1,G_lam,w2,G_xi,p_xi,w3,P,H,W4,c,zeta)
-	% berechnet einen zusammengefaßten Funktionswert aus den einzelnen 
-	% Gütefunktionen.
+	% berechnet einen zusammengefaÃŸten Funktionswert aus den einzelnen
+	% GÃ¼tefunktionen.
 	%
 	% OUTPUT:
-	% f      - zusammengefaßter Funktionswert
+	% f      - zusammengefaÃŸter Funktionswert
 	%
 	% INPUT:
 	% K      - state or output feedback matrix to be calculated
-	% S      - Matrix für eine mögliche Strukturbeschränkung
-	% npq    - Dimensionen der vorliegenden Matrizen bzw. Vektoren  
-	% w1     - Gewichtungsfaktoren für J1
-	% G_lam  - 3-dim. Übertragungsmatrix der Regelstrecke 
-	% w2     - Gewichtungsfaktoren für J2
-	% G_xi   - 3-dim. Übertragungsmatrix der Regelstrecke 
-	% p_xi   - konst. Wert, weil Stützstelle kein EW
-	% w3     - Gewichtungsfaktoren für die einzelnen Parametervektoren
-	% P      - Matrix mit den Parametervektoren 
+	% S      - Matrix fÃ¼r eine mÃ¶gliche StrukturbeschrÃ¤nkung
+	% npq    - Dimensionen der vorliegenden Matrizen bzw. Vektoren
+	% w1     - Gewichtungsfaktoren fÃ¼r J1
+	% G_lam  - 3-dim. Ãœbertragungsmatrix der Regelstrecke
+	% w2     - Gewichtungsfaktoren fÃ¼r J2
+	% G_xi   - 3-dim. Ãœbertragungsmatrix der Regelstrecke
+	% p_xi   - konst. Wert, weil StÃ¼tzstelle kein EW
+	% w3     - Gewichtungsfaktoren fÃ¼r die einzelnen Parametervektoren
+	% P      - Matrix mit den Parametervektoren
 	% H      - aus den Parametervektoren berechnete Vektoren
-	% W4     - Matrix mit den Gewichtungsfaktoren für das Gütekriterium 
+	% W4     - Matrix mit den Gewichtungsfaktoren fÃ¼r das GÃ¼tekriterium
 	%          der minimalen Reglernorm
 	% T1		- transformation matrix
-	% c      - Vorgabevektor für die einzelnen Gütekriterien
+	% c      - Vorgabevektor fÃ¼r die einzelnen GÃ¼tekriterien
 	Rcode = 1;  %Kein Fehler
 	y = zeros(npq(2), npq(3));
 	J = zeros(4, 1);

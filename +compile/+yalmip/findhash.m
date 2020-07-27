@@ -28,7 +28,7 @@ function [success, fileinfo] = findhash(overwrite, nobuild)
 		return;
 	end
 
-    config = compile.constant();
+	config = compile.constant();
 
 	oldpwd = pwd;
 	try

@@ -211,8 +211,23 @@ function [pass] = OutputFeedbackTest(~)
 					'D',		Dtemp...
 				);
 			end
-			test.TestSuite.assertNoException('cls(systems{jj});', 'control:outputfeedback:test', 'Construction of an outputfeedback class must not throw an exception.');
-			controller = cls(systems{jj});
+			if issubclassof(meta.class.fromName(char(cls)), ?control.design.outputfeedback.AbstractCouplingFeedback)
+				if size(basesystem.C, 1) <= 1
+					% coupling control does not work with only 1 output
+					continue;
+				end
+				if issubclassof(meta.class.fromName(char(cls)), ?control.design.outputfeedback.OutputCouplingStateFeedback)
+					transformation = eye(size(basesystem.C, 1));
+					test.TestSuite.assertNoException('cls(1, transformation, systems{jj});', 'control:outputfeedback:test', 'Construction of an outputfeedback class must not throw an exception.');
+					controller = cls(1, transformation, systems{jj});
+				else
+					test.TestSuite.assertNoException('cls(1, systems{jj});', 'control:outputfeedback:test', 'Construction of an outputfeedback class must not throw an exception.');
+					controller = cls(1, systems{jj});
+				end
+			else
+				test.TestSuite.assertNoException('cls(systems{jj});', 'control:outputfeedback:test', 'Construction of an outputfeedback class must not throw an exception.');
+				controller = cls(systems{jj});
+			end
 			test.TestSuite.assertEqual(controller.SimulinkVariant(), baseclassname(controller), 'control:outputfeedback:test', 'Variant name must be equal to class name.');
 			test.TestSuite.assertNoException('controller.amend(systems{jj});', 'control:outputfeedback:test', 'Amending system with outputfeedback class must not throw an exception.');
 			test.TestSuite.assertNoException('controller.E(systems{jj});', 'control:outputfeedback:test', 'Amending system with outputfeedback class and returning E must not throw an exception.');
@@ -286,7 +301,7 @@ function [pass] = OutputFeedbackTest(~)
 			test.TestSuite.assertEqual(size(system.D, 2), size(system.B, 2), 'control:outputfeedback:test', 'Throughput matrix must have same number of columns as control matrix.');
 			test.TestSuite.assertEqual(size(system.C_ref, 1), size(system.D_ref, 1), 'control:outputfeedback:test', 'Throughput matrix of references must have same number of rows as output matrix of references.');
 			test.TestSuite.assertEqual(size(system.C_ref, 2), size(system.A, 2), 'control:outputfeedback:test', 'Output matrix of reference must have same number of columns as system matrix.');
-			
+
 			test.TestSuite.assertEqual(E, system.E, 'control:outputfeedback:test', 'Descriptor matrices must be equal.');
 			test.TestSuite.assertEqual(A, system.A, 'control:outputfeedback:test', 'System matrices must be equal.');
 			test.TestSuite.assertEqual(B, system.B, 'control:outputfeedback:test', 'Control matrices must be equal.');
@@ -295,7 +310,7 @@ function [pass] = OutputFeedbackTest(~)
 			test.TestSuite.assertEqual(D, system.D, 'control:outputfeedback:test', 'Throughput matrices must be equal.');
 			test.TestSuite.assertEqual(C_ref, system.C_ref, 'control:outputfeedback:test', 'Output matrices of references must be equal.');
 			test.TestSuite.assertEqual(D_ref, system.D_ref, 'control:outputfeedback:test', 'Throughput matrices of references must be equal.');
-			
+
 			RKF_test = {R_test, K_test, F_test};
 			test.TestSuite.assertNoException('R_scaled = controller.scalegain(RKF_test, T_x, T_u, T_y, T_y_dot, T_w, systems{jj});', 'control:outputfeedback:test', 'Gain scaling function must not throw an exception.');
 			R_scaled = controller.scalegain(RKF_test, T_x, T_u, T_y, T_y_dot, T_w, systems{jj});
@@ -310,7 +325,7 @@ function [pass] = OutputFeedbackTest(~)
 			for kk = 1:numel(RKF_test)
 				test.TestSuite.assertEqual(R_scaled{kk}, RKF_test{kk}, 'control:outputfeedback:test', 'Scaling and unscaling must not change result.');
 			end
-			
+
 			test.TestSuite.assert(iscell(r), 'control:outputfeedback:test', 'Proportional gain pattern must be a cell array.');
 			test.TestSuite.assertEqual(size(r, 2), 2, 'control:outputfeedback:test', 'Proportional gain pattern must have two elements.');
 			test.TestSuite.assertEqual(size(r{1}, 1), size(system.B, 2), 'control:outputfeedback:test', 'Proportional gain must have same number of rows as control matrix.');
@@ -373,7 +388,7 @@ function [pass] = OutputFeedbackTest(~)
 					test.TestSuite.assertEqual(size(rkf{2}, 2), size(system.C, 1) + size(system.C_dot, 1) + size(system.C_ref, 1), 'control:outputfeedback:test', 'Combined gain must have same number of columns as output, derivative output and reference output matrix.');
 				end
 			end
-			
+
 			if ~isempty(r_bound)
 				test.TestSuite.assert(iscell(r_bound), 'control:outputfeedback:test', 'Proportional gain bound pattern must be a cell array.');
 				test.TestSuite.assertEqual(size(r_bound, 2), 2, 'control:outputfeedback:test', 'Proportional gain bound pattern must have two elements.');
@@ -518,7 +533,7 @@ function [pass] = OutputFeedbackTest(~)
 					test.TestSuite.assertEqual(size(gradceq_F, 2), size(F_test, 1), 'control:outputfeedback:test', 'Gradient of nonlinear prefilter gain equality constraint must same number of rows as prefilter matrix.');
 				end
 			end
-			
+
 			test.TestSuite.assertNoException('[r_parametric] = controller.gainpattern_parametric(systems{jj});', 'control:outputfeedback:test', 'Parametric gainpattern of outputfeedback class must not throw an exception.');
 			test.TestSuite.assertNoException('[r_parametric, k_parametric] = controller.gainpattern_parametric(systems{jj});', 'control:outputfeedback:test', 'Parametric gainpattern of outputfeedback class must not throw an exception.');
 			test.TestSuite.assertNoException('[r_parametric, k_parametric, f_parametric] = controller.gainpattern_parametric(systems{jj});', 'control:outputfeedback:test', 'Parametric gainpattern of outputfeedback class must not throw an exception.');
@@ -556,20 +571,20 @@ function [pass] = OutputFeedbackTest(~)
 					end
 				end
 			end
-			
-			
+
+
 			test.TestSuite.assertNoException('F_scaled = controller.scaleprefilter(F_test, T_x, T_u, T_y, T_y_dot, T_w, systems{jj});', 'control:outputfeedback:test', 'Prefilter scaling function must not throw an exception.');
 			F_scaled = controller.scaleprefilter(F_test, T_x, T_u, T_y, T_y_dot, T_w, systems{jj});
 			test.TestSuite.assertEqual(size(F_scaled, 1), size(F_test, 1), 'control:outputfeedback:test', 'Prefilter matrix must not change size on scaling.');
 			test.TestSuite.assertEqual(size(F_scaled, 2), size(F_test, 2), 'control:outputfeedback:test', 'Prefilter matrix must not change size on scaling.');
 			F_scaled = controller.scaleprefilter(F_scaled, inv(T_x), inv(T_u), inv(T_y), inv(T_y_dot), inv(T_w), systems{jj});
 			test.TestSuite.assertEqual(F_scaled, F_test, 'control:outputfeedback:test', 'Scaling and unscaling must not change result.');
-			
+
 			test.TestSuite.assertNoException('[partitionR, partitionF] = controller.gainpartitioning({r{1}(:, :, 1), k{1}(:, :, 1)}, f, systems{jj});', 'control:outputfeedback:test', 'Gainpartitioning of outputfeedback class must not throw an exception.');
 			[partitionR, partitionF] = controller.gainpartitioning({r{1}(:, :, 1), k{1}(:, :, 1)}, f, systems{jj});
 			test.TestSuite.assert(isstruct(partitionR), 'control:outputfeedback:test', 'Partitioning of R must be a structure.');
 			test.TestSuite.assert(isstruct(partitionF), 'control:outputfeedback:test', 'Partitioning of F must be a structure.');
-			
+
 			test.TestSuite.assertNoException('[system_controller, ~, ~, ~, ~, ~, ~, ~, needsstate, useCasCdot] = controller.realization(R_test, F_test, systems{jj});', 'control:outputfeedback:test', 'Returning controllerfor outputfeedback class must not throw an exception.');
 			[system_controller, ~, ~, ~, ~, ~, ~, ~, needsstate, useCasCdot] = controller.realization(R_test, F_test, systems{jj});
 			test.TestSuite.assert(islogical(needsstate), 'control:outputfeedback:test', 'State indicator must be of type ''logical''.');
@@ -614,7 +629,7 @@ function [pass] = OutputFeedbackTest(~)
 			test.TestSuite.assertEqual(size(system_controller.D, 2), size(system_controller.B, 2), 'control:outputfeedback:test', 'Throughput matrix of controller must have same number of columns as control matrix.');
 			test.TestSuite.assertEqual(size(system_controller.C_ref, 2), size(system_controller.A, 2), 'control:outputfeedback:test', 'Output matrix of references of controller must have same number of columns as system matrix.');
 			test.TestSuite.assertEqual(size(system_controller.C_ref, 1), size(system_controller.D_ref, 1), 'control:outputfeedback:test', 'Throughput matrix of references of controller must have same number of columns as output matrix of references.');
-			
+
 			testsystem = systems{jj};
 			checkdim = (~isstruct(testsystem) && isct(testsystem)) || (isstruct(testsystem) && (~isfield(testsystem, 'T') || testsystem.T == -1));
 			checkdim = checkdim && ~isa(controller, 'control.design.outputfeedback.DynamicOutputFeedback');% DynamicOutputFeedback does not have size(C, 1) desired values
@@ -686,7 +701,7 @@ function [pass] = OutputFeedbackTest(~)
 			test.TestSuite.assertEqual(size(system.D, 2), size(system.B, 2), 'control:outputfeedback:test', 'Throughput matrix of parametric augmented system must have same number of columns as control matrix.');
 			test.TestSuite.assertEqual(size(system.C_ref, 2), size(system.A, 2), 'control:outputfeedback:test', 'Output matrix of references of parametric augmented system must have same number of columns as system matrix.');
 			test.TestSuite.assertEqual(size(system.C_ref, 1), size(system.D_ref, 1), 'control:outputfeedback:test', 'Throughput matrix of references of parametric augmented system must have same number of columns as output matrix of references.');
-			
+
 			% discrete time
 			if isa(systems{jj}, 'ss')
 				if systems{jj}.Ts > 0
@@ -708,8 +723,23 @@ function [pass] = OutputFeedbackTest(~)
 			else
 				s = systems{jj};
 			end
-			test.TestSuite.assertNoException('cls(s, T);', 'control:outputfeedback:test', 'Construction of a discrete outputfeedback class must not throw an exception.');
-			controllerT = cls(s, T);
+			if issubclassof(meta.class.fromName(char(cls)), ?control.design.outputfeedback.AbstractCouplingFeedback)
+				if size(basesystem.C, 1) <= 1
+					% coupling control does not work with only 1 output
+					continue;
+				end
+				if issubclassof(meta.class.fromName(char(cls)), ?control.design.outputfeedback.OutputCouplingStateFeedback)
+					transformation = eye(size(basesystem.C, 1));
+					test.TestSuite.assertNoException('cls(1, transformation, s, T);', 'control:outputfeedback:test', 'Construction of a discrete outputfeedback class must not throw an exception.');
+					controllerT = cls(1, transformation, s, T);
+				else
+					test.TestSuite.assertNoException('cls(1, s, T);', 'control:outputfeedback:test', 'Construction of a discrete outputfeedback class must not throw an exception.');
+					controllerT = cls(1, s, T);
+				end
+			else
+				test.TestSuite.assertNoException('cls(s, T);', 'control:outputfeedback:test', 'Construction of a discrete outputfeedback class must not throw an exception.');
+				controllerT = cls(s, T);
+			end
 			test.TestSuite.assertNoException('controllerT.amend(systems{jj}, T);', 'control:outputfeedback:test', 'Amending discrete system with outputfeedback class must not throw an exception.');
 			test.TestSuite.assertNoException('controllerT.E(systems{jj}, T);', 'control:outputfeedback:test', 'Amending discrete system with outputfeedback class and returning E must not throw an exception.');
 			test.TestSuite.assertNoException('controllerT.A(systems{jj}, T);', 'control:outputfeedback:test', 'Amending discrete system with outputfeedback class and returning A must not throw an exception.');
@@ -719,7 +749,7 @@ function [pass] = OutputFeedbackTest(~)
 			test.TestSuite.assertNoException('controllerT.D(systems{jj}, T);', 'control:outputfeedback:test', 'Amending discrete system with outputfeedback class and returning D must not throw an exception.');
 			test.TestSuite.assertNoException('controllerT.C_ref(systems{jj}, T);', 'control:outputfeedback:test', 'Amending discrete system with outputfeedback class and returning C_ref must not throw an exception.');
 			test.TestSuite.assertNoException('controllerT.D_ref(systems{jj}, T);', 'control:outputfeedback:test', 'Amending discrete system with outputfeedback class and returning D_ref must not throw an exception.');
-			
+
 			test.TestSuite.assertNoException('[r] = controllerT.gainpattern(systems{jj}, T);', 'control:outputfeedback:test', 'Gainpattern of discrete outputfeedback class must not throw an exception.');
 			test.TestSuite.assertNoException('[r, k] = controllerT.gainpattern(systems{jj}, T);', 'control:outputfeedback:test', 'Gainpattern of discrete outputfeedback class must not throw an exception.');
 			test.TestSuite.assertNoException('[r, k, f] = controllerT.gainpattern(systems{jj}, T);', 'control:outputfeedback:test', 'Gainpattern of discrete outputfeedback class must not throw an exception.');
@@ -783,7 +813,7 @@ function [pass] = OutputFeedbackTest(~)
 			test.TestSuite.assertEqual(size(system.D, 2), size(system.B, 2), 'control:outputfeedback:test', 'Throughput matrix of discrete system must have same number of columns as control matrix.');
 			test.TestSuite.assertEqual(size(system.C_ref, 2), size(system.A, 1), 'control:outputfeedback:test', 'Output matrix of references of discrete system must have same number of columns as system matrix.');
 			test.TestSuite.assertEqual(size(system.C_ref, 1), size(system.D_ref, 1), 'control:outputfeedback:test', 'Throughput matrix of references of discrete system must have same number of columns as output matrix of references.');
-			
+
 			test.TestSuite.assertEqual(E, system.E, 'control:outputfeedback:test', 'Descriptor matrices of discrete system must be equal.');
 			test.TestSuite.assertEqual(A, system.A, 'control:outputfeedback:test', 'System matrices of discrete system must be equal.');
 			test.TestSuite.assertEqual(B, system.B, 'control:outputfeedback:test', 'Control matrices of discrete system must be equal.');
@@ -792,7 +822,7 @@ function [pass] = OutputFeedbackTest(~)
 			test.TestSuite.assertEqual(D, system.D, 'control:outputfeedback:test', 'Throughput matrices of discrete system must be equal.');
 			test.TestSuite.assertEqual(C_ref, system.C_ref, 'control:outputfeedback:test', 'Output matrices of references of discrete system must be equal.');
 			test.TestSuite.assertEqual(D_ref, system.D_ref, 'control:outputfeedback:test', 'Throughput matrices of references of discrete system must be equal.');
-			
+
 			RKF_test = {R_test, K_test, F_test};
 			test.TestSuite.assertNoException('R_scaled = controller.scalegain(RKF_test, T_x, T_u, T_y, T_y_dot, T_w, systems{jj}, T);', 'control:outputfeedback:test', 'Gain scaling function must not throw an exception.');
 			R_scaled = controller.scalegain(RKF_test, T_x, T_u, T_y, T_y_dot, T_w, systems{jj}, T);
@@ -807,7 +837,7 @@ function [pass] = OutputFeedbackTest(~)
 			for kk = 1:numel(RKF_test)
 				test.TestSuite.assertEqual(R_scaled{kk}, RKF_test{kk}, 'control:outputfeedback:test', 'Scaling and unscaling must not change result.');
 			end
-			
+
 			test.TestSuite.assert(iscell(r), 'control:outputfeedback:test', 'Proportional discrete gain pattern must be a cell array.');
 			test.TestSuite.assertEqual(size(r, 2), 2, 'control:outputfeedback:test', 'Proportional discrete gain pattern must have two elements.');
 			test.TestSuite.assertEqual(size(r{1}, 1), size(system.B, 2), 'control:outputfeedback:test', 'Proportional discrete gain must have same number of rows as control matrix.');
@@ -870,7 +900,7 @@ function [pass] = OutputFeedbackTest(~)
 					test.TestSuite.assertEqual(size(rkf{1}, 2), size(system.C, 1) + size(system.C_dot, 1) + size(system.C_ref, 1), 'control:outputfeedback:test', 'Combined gain must have same number of columns as output, derivative output and reference output matrix.');
 				end
 			end
-			
+
 			if ~isempty(r_bound)
 				test.TestSuite.assert(iscell(r_bound), 'control:outputfeedback:test', 'Proportional gain bound pattern must be a cell array.');
 				test.TestSuite.assertEqual(size(r_bound, 2), 2, 'control:outputfeedback:test', 'Proportional gain bound pattern must have two elements.');
@@ -1015,7 +1045,7 @@ function [pass] = OutputFeedbackTest(~)
 					test.TestSuite.assertEqual(size(gradceq_F, 2), size(F_test, 2), 'control:outputfeedback:test', 'Gradient of nonlinear prefilter gain equality constraint must same number of rows as control matrix.');
 				end
 			end
-			
+
 			test.TestSuite.assertNoException('[r_parametric] = controller.gainpattern_parametric(systems{jj}, T);', 'control:outputfeedback:test', 'Parametric gainpattern of outputfeedback class must not throw an exception.');
 			test.TestSuite.assertNoException('[r_parametric, k_parametric] = controller.gainpattern_parametric(systems{jj}, T);', 'control:outputfeedback:test', 'Parametric gainpattern of outputfeedback class must not throw an exception.');
 			test.TestSuite.assertNoException('[r_parametric, k_parametric, f_parametric] = controller.gainpattern_parametric(systems{jj}, T);', 'control:outputfeedback:test', 'Parametric gainpattern of outputfeedback class must not throw an exception.');
@@ -1053,19 +1083,19 @@ function [pass] = OutputFeedbackTest(~)
 					end
 				end
 			end
-			
+
 			test.TestSuite.assertNoException('F_scaled = controller.scaleprefilter(F_test, T_x, T_u, T_y, T_y_dot, T_w, systems{jj}, T);', 'control:outputfeedback:test', 'Prefilter scaling function must not throw an exception.');
 			F_scaled = controller.scaleprefilter(F_test, T_x, T_u, T_y, T_y_dot, T_w, systems{jj}, T);
 			test.TestSuite.assertEqual(size(F_scaled, 1), size(F_test, 1), 'control:outputfeedback:test', 'Prefilter matrix must not change size on scaling.');
 			test.TestSuite.assertEqual(size(F_scaled, 2), size(F_test, 2), 'control:outputfeedback:test', 'Prefilter matrix must not change size on scaling.');
 			F_scaled = controller.scaleprefilter(F_scaled, inv(T_x), inv(T_u), inv(T_y), inv(T_y_dot), inv(T_w), systems{jj}, T);
 			test.TestSuite.assertEqual(F_scaled, F_test, 'control:outputfeedback:test', 'Scaling and unscaling must not change result.');
-			
+
 			test.TestSuite.assertNoException('[partitionR, partitionF] = controller.gainpartitioning({r{1}(:, :, 1), k{1}(:, :, 1)}, f, systems{jj}, T);', 'control:outputfeedback:test', 'Gainpartitioning of outputfeedback class must not throw an exception.');
 			[partitionR, partitionF] = controller.gainpartitioning({r{1}(:, :, 1), k{1}(:, :, 1)}, f, systems{jj}, T);
 			test.TestSuite.assert(isstruct(partitionR), 'control:outputfeedback:test', 'Partitioning of R must be a structure.');
 			test.TestSuite.assert(isstruct(partitionF), 'control:outputfeedback:test', 'Partitioning of F must be a structure.');
-			
+
 			test.TestSuite.assertNoException('[system_controller, ~, ~, ~, ~, ~, ~, ~, needsstate] = controller.realization(R_test, F_test, systems{jj}, T);', 'control:outputfeedback:test', 'Returning controllerfor outputfeedback class must not throw an exception.');
 			[system_controller, ~, ~, ~, ~, ~, ~, ~, needsstate] = controller.realization(R_test, F_test, systems{jj}, T);
 			test.TestSuite.assert(islogical(needsstate), 'control:outputfeedback:test', 'State indicator must be of type ''logical''.');
@@ -1110,7 +1140,7 @@ function [pass] = OutputFeedbackTest(~)
 			test.TestSuite.assertEqual(size(system_controller.D, 2), size(system_controller.B, 2), 'control:outputfeedback:test', 'Throughput matrix of controller must have same number of columns as control matrix.');
 			test.TestSuite.assertEqual(size(system_controller.C_ref, 2), size(system_controller.A, 1), 'control:outputfeedback:test', 'Output matrix of references of controller must have same number of columns as system matrix.');
 			test.TestSuite.assertEqual(size(system_controller.C_ref, 1), size(system_controller.D_ref, 1), 'control:outputfeedback:test', 'Throughput matrix of references of controller must have same number of rows as output matrix of references.');
-			
+
 			checkdim = ~isa(controller, 'control.design.outputfeedback.DynamicOutputFeedback');
 			if checkdim
 				test.TestSuite.assertEqual(size(basesystem.B, 2), size(system_controller.C, 1), 'control:outputfeedback:test', 'Output matrix of controller must have as much rows as B.');
@@ -1164,6 +1194,7 @@ function [pass] = OutputFeedbackTest(~)
 			test.TestSuite.assertEqual(size(system.D, 1), size(system.C, 1), 'control:outputfeedback:test', 'Throughput matrix of parametric augmented system must have same number of rows as output matrix.');
 			test.TestSuite.assertEqual(size(system.D, 2), size(system.B, 2), 'control:outputfeedback:test', 'Throughput matrix of parametric augmented system must have same number of columns as control matrix.');
 			test.TestSuite.assertEqual(size(system.C_ref, 2), size(system.A, 1), 'control:outputfeedback:test', 'Output matrix of references of parametric augmented system must have same number of columns as system matrix.');
+			test.TestSuite.assertEqual(size(system.C_ref, 1), size(system.D_ref, 1), 'control:outputfeedback:test', 'Throughput matrix of references of parametric augmented system must have same number of rows as output matrix of references.');
 			test.TestSuite.assertEqual(size(system.C_ref, 1), size(system.D_ref, 1), 'control:outputfeedback:test', 'Throughput matrix of references of parametric augmented system must have same number of rows as output matrix of references.');
 		end
 	end

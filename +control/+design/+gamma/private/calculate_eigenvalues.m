@@ -1,4 +1,4 @@
-function [eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot, eigenvalue_2derivative, eigenvalue_2derivative_xdot, eigenvalue_2derivative_mixed, eigenvalue_2derivative_xdot_mixed] = calculate_eigenvalues(system, R, K, dimensions, eigenvaluederivativetype, usecompiled, numthreads)
+function [eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot, eigenvalue_2derivative, eigenvalue_2derivative_xdot, eigenvalue_2derivative_mixed, eigenvalue_2derivative_xdot_mixed] = calculate_eigenvalues(system, R, K, dimensions, eigenvaluederivativetype, usecompiled, numthreads, eigenvaluefilter)
 	%CALCULATE_EIGENVALUES helper function for calculation of eigenvalues for all systems
 	%	Input:
 	%		system:								structure with systems to calculate eigenvalues for
@@ -8,6 +8,7 @@ function [eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivativ
 	%		eigenvaluederivativetype:			GammaEigenvalueDerivativeType to indicate which method for eigenvalue derivative calculation should be used
 	%		usecompiled:						indicator, if compiled version of this function should be used
 	%		numthreads:							number of threads to run loops in
+	%		eigenvaluefilter:					filter for calculated eigenvalues
 	%	Output:
 	%		eigenvalues:						eigenvalues of all systems (NaN for systems with fewer states than maximum number of states)
 	%		eigenvector_right:					right eigenvectors of all systems (NaN for systems with fewer states than maximum number of states)
@@ -31,62 +32,68 @@ function [eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivativ
 	if nargin <= 6
 		numthreads = configuration.matlab.numthreads();
 	end
+	if nargin <= 7
+		eigenvaluefilter = GammaEigenvalueFilterType.getDefaultValue();
+	end
+	if isempty(eigenvaluefilter)
+		eigenvaluefilter = GammaEigenvalueFilterType.getDefaultValue();
+	end
 	numthreads = uint32(floor(max([0, numthreads])));
 	if usecompiled
 		if nargout >= 13
-			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot, eigenvalue_2derivative, eigenvalue_2derivative_xdot, eigenvalue_2derivative_mixed, eigenvalue_2derivative_xdot_mixed] = calculate_eigenvalues_mex(system, R, K, dimensions, eigenvaluederivativetype, numthreads);
+			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot, eigenvalue_2derivative, eigenvalue_2derivative_xdot, eigenvalue_2derivative_mixed, eigenvalue_2derivative_xdot_mixed] = calculate_eigenvalues_mex(system, R, K, dimensions, eigenvaluederivativetype, numthreads, eigenvaluefilter);
 		elseif nargout >= 12
-			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot, eigenvalue_2derivative, eigenvalue_2derivative_xdot, eigenvalue_2derivative_mixed] = calculate_eigenvalues_mex(system, R, K, dimensions, eigenvaluederivativetype, numthreads);
+			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot, eigenvalue_2derivative, eigenvalue_2derivative_xdot, eigenvalue_2derivative_mixed] = calculate_eigenvalues_mex(system, R, K, dimensions, eigenvaluederivativetype, numthreads, eigenvaluefilter);
 		elseif nargout >= 11
-			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot, eigenvalue_2derivative, eigenvalue_2derivative_xdot] = calculate_eigenvalues_mex(system, R, K, dimensions, eigenvaluederivativetype, numthreads);
+			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot, eigenvalue_2derivative, eigenvalue_2derivative_xdot] = calculate_eigenvalues_mex(system, R, K, dimensions, eigenvaluederivativetype, numthreads, eigenvaluefilter);
 		elseif nargout >= 10
-			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot, eigenvalue_2derivative] = calculate_eigenvalues_mex(system, R, K, dimensions, eigenvaluederivativetype, numthreads);
+			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot, eigenvalue_2derivative] = calculate_eigenvalues_mex(system, R, K, dimensions, eigenvaluederivativetype, numthreads, eigenvaluefilter);
 		elseif nargout >= 9
-			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot] = calculate_eigenvalues_mex(system, R, K, dimensions, eigenvaluederivativetype, numthreads);
+			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot] = calculate_eigenvalues_mex(system, R, K, dimensions, eigenvaluederivativetype, numthreads, eigenvaluefilter);
 		elseif nargout >= 8
-			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative] = calculate_eigenvalues_mex(system, R, K, dimensions, eigenvaluederivativetype, numthreads);
+			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative] = calculate_eigenvalues_mex(system, R, K, dimensions, eigenvaluederivativetype, numthreads, eigenvaluefilter);
 		elseif nargout >= 7
-			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot] = calculate_eigenvalues_mex(system, R, K, dimensions, eigenvaluederivativetype, numthreads);
+			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot] = calculate_eigenvalues_mex(system, R, K, dimensions, eigenvaluederivativetype, numthreads, eigenvaluefilter);
 		elseif nargout >= 6
-			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative] = calculate_eigenvalues_mex(system, R, K, dimensions, eigenvaluederivativetype, numthreads);
+			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative] = calculate_eigenvalues_mex(system, R, K, dimensions, eigenvaluederivativetype, numthreads, eigenvaluefilter);
 		elseif nargout >= 5
-			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot] = calculate_eigenvalues_mex(system, R, K, dimensions, eigenvaluederivativetype, numthreads);
+			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot] = calculate_eigenvalues_mex(system, R, K, dimensions, eigenvaluederivativetype, numthreads, eigenvaluefilter);
 		elseif nargout >= 4
-			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative] = calculate_eigenvalues_mex(system, R, K, dimensions, eigenvaluederivativetype, numthreads);
+			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative] = calculate_eigenvalues_mex(system, R, K, dimensions, eigenvaluederivativetype, numthreads, eigenvaluefilter);
 		elseif nargout >= 3
-			[eigenvalues, eigenvector_right, eigenvector_left] = calculate_eigenvalues_mex(system, R, K, dimensions, eigenvaluederivativetype, numthreads);
+			[eigenvalues, eigenvector_right, eigenvector_left] = calculate_eigenvalues_mex(system, R, K, dimensions, eigenvaluederivativetype, numthreads, eigenvaluefilter);
 		elseif nargout >= 2
-			[eigenvalues, eigenvector_right] = calculate_eigenvalues_mex(system, R, K, dimensions, eigenvaluederivativetype, numthreads);
+			[eigenvalues, eigenvector_right] = calculate_eigenvalues_mex(system, R, K, dimensions, eigenvaluederivativetype, numthreads, eigenvaluefilter);
 		else
-			eigenvalues = calculate_eigenvalues_mex(system, R, K, dimensions, eigenvaluederivativetype, numthreads);
+			eigenvalues = calculate_eigenvalues_mex(system, R, K, dimensions, eigenvaluederivativetype, numthreads, eigenvaluefilter);
 		end
 	else
 		if nargout >= 13
-			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot, eigenvalue_2derivative, eigenvalue_2derivative_xdot, eigenvalue_2derivative_mixed, eigenvalue_2derivative_xdot_mixed] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads);
+			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot, eigenvalue_2derivative, eigenvalue_2derivative_xdot, eigenvalue_2derivative_mixed, eigenvalue_2derivative_xdot_mixed] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads, eigenvaluefilter);
 		elseif nargout >= 12
-			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot, eigenvalue_2derivative, eigenvalue_2derivative_xdot, eigenvalue_2derivative_mixed] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads);
+			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot, eigenvalue_2derivative, eigenvalue_2derivative_xdot, eigenvalue_2derivative_mixed] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads, eigenvaluefilter);
 		elseif nargout >= 11
-			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot, eigenvalue_2derivative, eigenvalue_2derivative_xdot] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads);
+			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot, eigenvalue_2derivative, eigenvalue_2derivative_xdot] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads, eigenvaluefilter);
 		elseif nargout >= 10
-			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot, eigenvalue_2derivative] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads);
+			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot, eigenvalue_2derivative] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads, eigenvaluefilter);
 		elseif nargout >= 9
-			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads);
+			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative, eigenvector_left_derivative_xdot] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads, eigenvaluefilter);
 		elseif nargout >= 8
-			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads);
+			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot, eigenvector_left_derivative] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads, eigenvaluefilter);
 		elseif nargout >= 7
-			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads);
+			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative, eigenvector_right_derivative_xdot] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads, eigenvaluefilter);
 		elseif nargout >= 6
-			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads);
+			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvector_right_derivative] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads, eigenvaluefilter);
 		elseif nargout >= 5
-			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads);
+			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, eigenvalue_derivative_xdot] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads, eigenvaluefilter);
 		elseif nargout >= 4
-			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads);
+			[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads, eigenvaluefilter);
 		elseif nargout >= 3
-			[eigenvalues, eigenvector_right, eigenvector_left] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads);
+			[eigenvalues, eigenvector_right, eigenvector_left] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads, eigenvaluefilter);
 		elseif nargout >= 2
-			[eigenvalues, eigenvector_right] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads);
+			[eigenvalues, eigenvector_right] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads, eigenvaluefilter);
 		else
-			eigenvalues = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads);
+			eigenvalues = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads, eigenvaluefilter);
 		end
 	end
 end

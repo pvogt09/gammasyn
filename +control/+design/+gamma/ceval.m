@@ -26,7 +26,10 @@ function [c, ceq, gradc, gradceq, hessc, hessceq] = ceval(R, systems, areafun, w
 		options = struct(...
 			'usecompiled',		false,...
 			'numthreads',		0,...
-			'type',				GammaJType.EXP...
+			'type',				GammaJType.EXP,...
+			'couplingcontrol',	struct(...
+				'couplingstrategy',	GammaCouplingStrategy.NONE...
+			)...
 		);
 	end
 	if ~ischar(derivativeval) || ~isscalar(derivativeval)
@@ -45,7 +48,22 @@ function [c, ceq, gradc, gradceq, hessc, hessceq] = ceval(R, systems, areafun, w
 	else
 		allownegativeweight = false;
 	end
-	[system, areafun, areafun_loose, weight, weight_loose, dimensions, dimensions_loose] = checkandtransformargs(systems, areafun, weight, [], [], [], [], [], allowvarorder, allownegativeweight);
+	systemoptions = struct();
+	if isfield(options, 'couplingcontrol')
+		if ~isstruct(options.couplingcontrol)
+			error('control:design:gamma:input', 'Coupling control options must be of type struct.');
+		end
+		couplingoptions = checkobjectiveoptions_coupling(options.couplingcontrol);
+		if couplingoptions.couplingstrategy ~= GammaCouplingStrategy.NONE
+			systemoptions.couplingcontrol = GammaCouplingStrategy_needscouplingconditions(options.couplingcontrol.couplingstrategy);
+			if systemoptions.couplingcontrol
+				systemoptions.couplingconditions = int32(couplingoptions.couplingconditions);
+				systemoptions.usereferences = true;
+				options.system.usereferences = true;
+			end
+		end
+	end
+	[system, areafun, areafun_loose, weight, weight_loose, dimensions, dimensions_loose] = checkandtransformargs(systems, areafun, weight, systemoptions, [], [], [], [], allowvarorder, allownegativeweight);
 	[R_0, K_0, F_0] = checkinitialRKF(R, dimensions);
 	[options] = checkobjectiveoptions(options, checkinitialR({R_0, K_0, F_0}, dimensions), dimensions.states, system, struct('ProblemType', optimization.options.ProblemType.CONSTRAINED), dimensions, dimensions_loose, areafun, areafun_loose, weight, weight_loose);
 	function [c, ceq, gradc, gradceq, hessc, hessceq] = cfun(R, K, F)
@@ -80,6 +98,23 @@ function [c, ceq, gradc, gradceq, hessc, hessceq] = ceval(R, systems, areafun, w
 			[c, ceq] = c_mex(x, system, weight, areafun, dimensions, options);
 		end
 	end
+	if GammaCouplingStrategy_needscouplingconditions(options.couplingcontrol.couplingstrategy)
+		number_outputconditions = 2*dimensions.m_invariant*dimensions.couplingconditions;
+		number_inputconditions  = 2*(dimensions.controls - dimensions.couplingconditions)*(dimensions.states - dimensions.m_invariant);
+		if options.couplingcontrol.couplingstrategy == GammaCouplingStrategy.NUMERIC_NONLINEAR_EQUALITY
+			number_couplingconstraints = 1;
+			number_couplingconstraints_eq = dimensions.models*(number_outputconditions + number_inputconditions);
+		elseif options.couplingcontrol.couplingstrategy == GammaCouplingStrategy.NUMERIC_NONLINEAR_INEQUALITY
+			number_couplingconstraints = 2*dimensions.models*(number_outputconditions + number_inputconditions) + 1;
+			number_couplingconstraints_eq = 0;
+		else
+			number_couplingconstraints = 0;
+			number_couplingconstraints_eq = 0;
+		end
+	else
+		number_couplingconstraints = 0;
+		number_couplingconstraints_eq = 0;
+	end
 	switch derivativeval
 		case 'R'
 			idx_val = dimensions.index_R_free;
@@ -95,17 +130,17 @@ function [c, ceq, gradc, gradceq, hessc, hessceq] = ceval(R, systems, areafun, w
 			dimension_measurement = dimensions.measurements;
 	end
 	if ~ismatrix(R_0)
-		c = NaN(dimensions.models*dimensions.areas_max*dimensions.states, size(R_0, 3));
+		c = NaN(dimensions.models*dimensions.areas_max*dimensions.states + number_couplingconstraints, size(R_0, 3));
 		if nargout >= 2
-			ceq = NaN(0, size(R_0, 3));
+			ceq = NaN(number_couplingconstraints_eq, size(R_0, 3));
 			if nargout >= 3
-				gradc = NaN(dimensions.models*dimensions.areas_max*dimensions.states, dimensions.controls, dimension_measurement, size(R_0, 3));
+				gradc = NaN(dimensions.models*dimensions.areas_max*dimensions.states + number_couplingconstraints, dimensions.controls, dimensions.measurements, size(R_0, 3));
 				if nargout >= 4
-					gradceq = NaN(0, dimensions.controls, dimensions.measurements, size(R_0, 3));
+					gradceq = NaN(number_couplingconstraints_eq, dimensions.controls, dimensions.measurements, size(R_0, 3));
 					if nargout >= 5
-						hessc = NaN(dimensions.controls*dimension_measurement, dimensions.controls*dimension_measurement, dimensions.models*dimensions.areas_max*dimensions.states, size(R_0, 3));
+						hessc = NaN(dimensions.controls*dimensions.measurements, dimensions.controls*dimensions.measurements, dimensions.models*dimensions.areas_max*dimensions.states + number_couplingconstraints, size(R_0, 3));
 						if nargout >= 6
-							hessceq = NaN(dimensions.controls*dimension_measurement, dimensions.controls*dimension_measurement, 0, size(R_0, 3));
+							hessceq = NaN(dimensions.controls*dimensions.measurements, dimensions.controls*dimensions.measurements, number_couplingconstraints_eq, size(R_0, 3));
 						end
 					end
 				end

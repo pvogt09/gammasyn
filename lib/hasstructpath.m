@@ -1,8 +1,8 @@
 function [has] = hasstructpath(struct, path)
 	%HASSTRUCTPATH ermitteln, ob ein Pfad in einer Struktur existiert
 	%	Input:
-	%		struct:		zu überprüfende Struktur
-	%		path:		zu überprüfender Pfad
+	%		struct:		zu Ã¼berprÃ¼fende Struktur
+	%		path:		zu Ã¼berprÃ¼fender Pfad
 	%	Output:
 	%		has:		true, wenn der Pfad existiert, sonst false
 	narginchk(2, 2);

@@ -1,0 +1,17 @@
+# EditorConfig is awesome: https://editorconfig.org/
+
+# top-most EditorConfig file
+root = false
+
+[*.{m,c,cpp,h,hpp}]
+insert_final_newline = unset
+indent_style = unset
+indent_size = unset
+tab_width = unset
+charset = unset
+trim_trailing_whitespace = unset
+
+# shell scripts unix
+[*.sh]
+end_of_line = lf
+insert_final_newline = true

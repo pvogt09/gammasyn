@@ -1,6 +1,6 @@
 classdef nloptcon < optimization.options.nlopt
 	%NLOPTCON solver options for nloptcon
-	
+
 	methods
 		function [this] = nloptcon(varargin)
 			%NLOPTCON create new optimization option set
@@ -13,7 +13,7 @@ classdef nloptcon < optimization.options.nlopt
 				optimization.options.ProblemType.CONSTRAINED
 			], optimization.options.ProblemType.CONSTRAINED, varargin{:});
 		end
-		
+
 		function [algorithms] = possiblealgorithms(~)
 			%POSSIBLEALGORITHMS list with possible algorithms for optimizer
 			%	Input:
@@ -30,5 +30,5 @@ classdef nloptcon < optimization.options.nlopt
 			};
 		end
 	end
-	
+
 end
