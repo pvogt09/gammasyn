@@ -1950,11 +1950,11 @@ classdef SolutionSet < handle
 			if ~isscalar(idx)
 				error('control:design:gamma:solution:plot', 'Index to plot must be scalar.');
 			end
-			if ~isscalar(T)
-				error('control:design:gamma:solution:plot', 'Sampling time must be scalar.');
-			end
 			if isempty(T)
 				T = -1;
+			end
+			if ~isscalar(T)
+				error('control:design:gamma:solution:plot', 'Sampling time must be scalar.');
 			end
 			[Ropt, Jopt, optiminfo, R0, solveroptions, ~, solcomment] = this.get(idx, false);
 			if (~isempty(Ropt{1}) && any(isnan(Ropt{1}(:)))) || (~isempty(Ropt{2}) && any(isnan(Ropt{2}(:)))) || (~isempty(Ropt{3}) && any(isnan(Ropt{3}(:))))
@@ -1983,37 +1983,49 @@ classdef SolutionSet < handle
 			isdiscrete = control.design.outputfeedback.OutputFeedback.isdiscreteT(T);
 			if isdiscrete
 				t = (0:T:5).';
-				if size(F, 2) == 2
+				if isa(this.controller, 'control.design.outputfeedback.AbstractCouplingFeedback')
 					w = [
-						ones(length(t), 1),	[
-							zeros(1, size(F, 2) > 1);
-							ones(length(t) - 1, size(F, 2) > 1)
-						]
+						ones(length(t), size(F, 2) - this.controller.number_couplingconditions),	zeros(length(t), this.controller.number_couplingconditions)
 					];
 				else
-					w = [
-						ones(length(t), 1),	[
-							zeros(1, size(F, 2) - 1);
-							ones(length(t) - 1, size(F, 2) - 1)
-						]
-					];
+					if size(F, 2) == 2
+						w = [
+							ones(length(t), 1),	[
+								zeros(1, size(F, 2) > 1);
+								ones(length(t) - 1, size(F, 2) > 1)
+							]
+						];
+					else
+						w = [
+							ones(length(t), 1),	[
+								zeros(1, size(F, 2) - 1);
+								ones(length(t) - 1, size(F, 2) - 1)
+							]
+						];
+					end
 				end
 			else
-				t = linspace(0, 5, 200);
-				if size(F, 2) == 2
+				t = linspace(0, 5, 200).';
+				if isa(this.controller, 'control.design.outputfeedback.AbstractCouplingFeedback')
 					w = [
-						ones(length(t), 1),	[
-							ones(1, size(F, 2) > 1);
-							zeros(length(t) - 1, size(F, 2) > 1)
-						]
+						ones(length(t), size(F, 2) - this.controller.number_couplingconditions),	zeros(length(t), this.controller.number_couplingconditions)
 					];
 				else
-					w = [
-						ones(length(t), 1),	[
-							ones(1, size(F, 2) - 1);
-							zeros(length(t) - 1, size(F, 2) - 1)
-						]
-					];
+					if size(F, 2) == 2
+						w = [
+							ones(length(t), 1),	[
+								ones(1, size(F, 2) > 1);
+								zeros(length(t) - 1, size(F, 2) > 1)
+							]
+						];
+					else
+						w = [
+							ones(length(t), 1),	[
+								ones(1, size(F, 2) - 1);
+								zeros(length(t) - 1, size(F, 2) - 1)
+							]
+						];
+					end
 				end
 			end
 			system = this.systems;
@@ -2058,14 +2070,20 @@ classdef SolutionSet < handle
 					end
 					allstable(ii, 1) = stable;
 					Bcl = B*F;
-
-					Gcl = ss(Acl, Bcl, [
+					Ccl = [
 						C - D*R*C;
 						-R*C
-					], [
+					];
+					Dcl = [
 						D*F;
 						F
-					], T);
+					];
+
+					if isdiscrete
+						Gcl = ss(Acl, Bcl, Ccl, Dcl, T);
+					else
+						Gcl = ss(Acl, Bcl, Ccl, Dcl);
+					end
 					y = lsim(Gcl, w, t);
 					isp(ii, 1) = trapz(t, y(:, size(C, 1) + 1)).^2/t(end);
 					iae(ii, 1) = trapz(t, abs((y(:, 1) - w(:, 1))))/t(end);
@@ -2197,11 +2215,11 @@ classdef SolutionSet < handle
 			if ~isscalar(idx)
 				error('control:design:gamma:solution:plot', 'Index to plot must be scalar.');
 			end
-			if ~isscalar(T)
-				error('control:design:gamma:solution:plot', 'Sampling time must be scalar.');
-			end
 			if isempty(T)
 				T = -1;
+			end
+			if ~isscalar(T)
+				error('control:design:gamma:solution:plot', 'Sampling time must be scalar.');
 			end
 			Ropt = this.get(idx, false);
 			if (~isempty(Ropt{1}) && any(isnan(Ropt{1}(:)))) || (~isempty(Ropt{2}) && any(isnan(Ropt{2}(:)))) || (~isempty(Ropt{3}) && any(isnan(Ropt{3}(:))))
@@ -2244,14 +2262,20 @@ classdef SolutionSet < handle
 
 					Acl = A - B*R*C;
 					Bcl = B*F;
-
-					Gcl = ss(Acl, Bcl, [
+					Ccl = [
 						C - D*R*C;
 						-R*C
-					], [
+					];
+					Dcl = [
 						D*F;
 						F
-					], T);
+					];
+
+					if model.AbstractStateSpace.isdiscreteT(T)
+						Gcl = ss(Acl, Bcl, Ccl, Dcl, T);
+					else
+						Gcl = ss(Acl, Bcl, Ccl, Dcl);
+					end
 					[zero, pole, gain] = zpkdata(Gcl);
 					ztemp = z(hh, ii, :, :, :);
 					ptemp = p(hh, ii, :, :, :);
