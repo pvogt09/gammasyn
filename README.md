@@ -1413,6 +1413,74 @@ after a call to `gammasyn` and expects the controller type used as `OutputFeedba
 It has the ability to plot the closed loop eigenvalues and pole regions with the `plot` method, plot step responses with the `step` method and solve the problem again with possibly different initial values or different optimizers with the `rerun` method.
 
 
+## Robust Coupling Control
+`gammasyn` is prepared for the synthesis of coupling controllers and will be extended to handle decoupling controllers as well.
+For archieving this a specialized wrapper function named `gammasyn_couplingcontrol` is used that converts the supplied system to the needed description for coupling controller design.
+The task of a coupling controller is to ensure
+
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/facf054b88ea95ba0659bc479687e5d8.svg?invert_in_darkmode" align=middle width=206.13289124999997pt height=15.936036599999998pt/></p>
+
+asymptotically and indpendently from any reference inputs <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/14330ec69840636094d5efd1aaa8497c.svg?invert_in_darkmode" align=middle width=13.96886699999999pt height=14.15524440000002pt/>.
+The system must be given, such that the lower rows of
+
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/0e522a57e0fe8a023037c6b6d4f7a006.svg?invert_in_darkmode" align=middle width=106.81975424999999pt height=39.452455349999994pt/></p>
+
+and
+
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/650af7b6abdbed051aff4f46279508d0.svg?invert_in_darkmode" align=middle width=110.54122860000001pt height=39.452455349999994pt/></p>
+
+contain the parameters of a given number of coupling conditions in the form
+
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/7a72d6f2d2f9a969e9e0352d438759dd.svg?invert_in_darkmode" align=middle width=158.94679349999998pt height=22.01250645pt/></p>
+
+To achieve coupling, the transfer matrix of the closed-loop system
+
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/ecac84ee7523f810eef1619d5190ff85.svg?invert_in_darkmode" align=middle width=544.4439825pt height=85.48022999999999pt/></p>
+
+is designed, such that <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/498d5adf4367e026127219d184eaaaac.svg?invert_in_darkmode" align=middle width=77.47939814999998pt height=24.65753399999998pt/> holds.
+By writing
+
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/b2e4b265ecdef5cfddb1af1f0c822c74.svg?invert_in_darkmode" align=middle width=425.13309795pt height=44.89738935pt/></p>
+
+with the closed-loop eigenvalues <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/b347645953717906984eb2b6b9c5edd0.svg?invert_in_darkmode" align=middle width=23.783411849999986pt height=22.831056599999986pt/> and the right and left eigenvectors <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/6551458533230dddbe136f9ec44086af.svg?invert_in_darkmode" align=middle width=22.16239574999999pt height=14.15524440000002pt/> and <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/cdcd24f908174dd396b6015ecb6aba4b.svg?invert_in_darkmode" align=middle width=25.962837449999988pt height=14.15524440000002pt/>, the non-linear output- and input-coupling conditions
+
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/5de47f755ef57521e36f9e79e8903048.svg?invert_in_darkmode" align=middle width=310.36146735pt height=43.53610965pt/></p>
+
+as well as
+
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/0cdb20f4cc17f85ede1b6d6ac3cbaaaf.svg?invert_in_darkmode" align=middle width=88.94639159999998pt height=15.936036599999998pt/></p>
+
+are obtained.
+Here, <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/0e51a2dede42189d77627c4d742822c3.svg?invert_in_darkmode" align=middle width=14.433101099999991pt height=14.15524440000002pt/> denotes the dimension of the output nulling space of the system <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/6d853014106627ade5b7d08d062745df.svg?invert_in_darkmode" align=middle width=140.19312449999998pt height=24.65753399999998pt/>.
+In case of <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/77f7e377b6681b54b06cedab816bcebe.svg?invert_in_darkmode" align=middle width=71.0011335pt height=22.465723500000017pt/>, this space is equivalent to the largest controlled invariant subspace within the kernel of <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/f44cb040bfa9a432f2b1cbeb66a38f0c.svg?invert_in_darkmode" align=middle width=38.18166989999999pt height=22.465723500000017pt/>.
+
+The conditions found can directly be included in the synthesis process using the built-in non-linear constraint function. Alternatively, using geometric concepts, the coupling conditions can be transformed to linear equality constraints which reduce the set of feasible controllers and prefilters.
+
+The coupling control design implemented in `gammasyn` is only available for the design of a complete state feedback, i.e. <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/9b325b9e31e85137d1de765f43c0f8bc.svg?invert_in_darkmode" align=middle width=12.92464304999999pt height=22.465723500000017pt/> must be chosen as identity matrix.
+
+### Robust DAE synthesis
+The methodology for designing robust coupling controllers using pole region assignment, can immediately be transferred to systems in differential-algebraic form (DAE systems, descriptor systems).
+
+Therefore, the systems handed over are transformed using a singular value decomposition of the descriptor matrix <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/84df98c65d88c6adf15d4645ffa25e47.svg?invert_in_darkmode" align=middle width=13.08219659999999pt height=22.465723500000017pt/> in order to obtain state space systems with feedthrough.
+For these, a robust coupling control best possibly fulfilling the algebraic equations is calculated.
+
+### Usage
+To perform the coupling control synthesis or robust DAE synthesis, `gammasyn_couplingcontrol` has to be used.
+Furthermore, the `objectiveoptions` structure has to be extended by the field `couplingcontrol` which in turn is a structure containing the following fields
+* `couplingstrategy`: the coupling design method, an instance of `GammaCouplingStrategy`.
+	* `GammaCouplingStrategy.EXACT`: Only allow <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/498d5adf4367e026127219d184eaaaac.svg?invert_in_darkmode" align=middle width=77.47939814999998pt height=24.65753399999998pt/> and use geometric methods.
+	* `GammaCouplingStrategy.APPROXIMATE`: Use geometric method but also allow <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/915780e7044163dbc382e1a9f98adea3.svg?invert_in_darkmode" align=middle width=77.47939814999998pt height=24.65753399999998pt/> if <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/498d5adf4367e026127219d184eaaaac.svg?invert_in_darkmode" align=middle width=77.47939814999998pt height=24.65753399999998pt/> is not solvable.
+	* `GammaCouplingStrategy.NUMERIC_NONLINEAR_EQUALITY`: directly use coupling conditions as non-linear equality constraints of the form `ceq(x) = 0` with `x` denoting the vector of optimization variables
+	* `GammaCouplingStrategy.NUMERIC_NONLINEAR_INEQUALITY`: directly use coupling conditions as non-linear inequality constraints of the form `c(x) < tolerance_coupling` and `-c(x) < tolerance_coupling` with `x` denoting the vector of optimization variables
+* `couplingconditions`: (`uint32`) the number of coupling conditions specified in <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/fc8611f3dc01d5ede1c5fd180b2e52f2.svg?invert_in_darkmode" align=middle width=27.72499289999999pt height=22.465723500000017pt/>
+* `tolerance_coupling`: (`double`) the tolerance when using `GammaCouplingStrategy.NUMERIC_NONLINEAR_INEQUALITY`
+* `solvesymbolic`: (`logical`) only for `EXACT` and `APPROXIMATE`: use symbolic toolbox if available to increase precision of obtained equality constraints.
+* `round_equations_to_digits`: (`double`, whole number) only for `EXACT` and `APPROXIMATE`: decimal places to which linear equality constraints are rounded in case of numerical precision difficulties. Use `NaN` if no rounding is desired.
+* `weight_coupling`: (`double`, nonnegative) weighting factor for nonlinear coupling conditions to increase/decrease importance in comparison with pole region constraints
+* `weight_prefilter`: (`double`, nonnegative) weighting factor for prefilter regularity condition to increase/decrease importance in comparison with pole region constraints
+
+`gammasyn_couplingcontrol` checks the descriptor matrix <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/84df98c65d88c6adf15d4645ffa25e47.svg?invert_in_darkmode" align=middle width=13.08219659999999pt height=22.465723500000017pt/> to choose between a regular coupling control design and DAE design.
+
 
 ## Examples
 
