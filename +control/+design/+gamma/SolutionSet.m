@@ -2612,11 +2612,11 @@ classdef SolutionSet < handle
 			if ~isscalar(idx)
 				error('control:design:gamma:solution:plot', 'Index to plot must be scalar.');
 			end
-			if ~isscalar(T)
-				error('control:design:gamma:solution:plot', 'Sampling time must be scalar.');
-			end
 			if isempty(T)
 				T = -1;
+			end
+			if ~isscalar(T)
+				error('control:design:gamma:solution:plot', 'Sampling time must be scalar.');
 			end
 			[Ropt, ~, ~, ~, ~, ~, solcomment] = this.get(idx, false);
 			if (~isempty(Ropt{1}) && any(isnan(Ropt{1}(:)))) || (~isempty(Ropt{2}) && any(isnan(Ropt{2}(:)))) || (~isempty(Ropt{3}) && any(isnan(Ropt{3}(:))))
@@ -2803,7 +2803,7 @@ classdef SolutionSet < handle
 					end
 				end
 			else
-				t = linspace(0, 5, 200);
+				t = linspace(0, 5, 200).';
 				if isa(this.controller, 'control.design.outputfeedback.AbstractCouplingFeedback')
 					w = [
 						ones(length(t), size(F, 2) - this.controller.number_couplingconditions),	zeros(length(t), this.controller.number_couplingconditions)
@@ -2860,16 +2860,22 @@ classdef SolutionSet < handle
 
 					Acl = A - B*Ropt*C;
 					Bcl = B*F;
-
-					Gcl = ss(Acl, Bcl, [
+				Ccl = [
 						C - D*Ropt*C;
 					C_ref - D_ref*Ropt*C;
 						-Ropt*C
-					], [
+				];
+				Dcl = [
 						D*F;
 					D_ref*F;
 						F
-					], T);
+				];
+
+				if isdiscrete
+					Gcl = ss(Acl, Bcl, Ccl, Dcl, T);
+				else
+					Gcl = ss(Acl, Bcl, Ccl, Dcl);
+				end
 					%y(:, (1:nplot) + nplot*(ii - 1)) = lsim(Gcl, w, t);
 					y(:, :, ii) = lsim(Gcl, w, t);
 				end
@@ -2918,16 +2924,22 @@ classdef SolutionSet < handle
 
 				Acl = A - B*Ropt*C;
 				Bcl = B*F;
-
-				Gcl = ss(Acl, Bcl, [
+					Ccl = [
 					C - D*Ropt*C;
 						C_ref - D_ref*Ropt*C;
 					-Ropt*C
-				], [
+					];
+					Dcl = [
 					D*F;
 						D_ref*F;
 					F
-				], T);
+					];
+
+					if isdiscrete
+						Gcl = ss(Acl, Bcl, Ccl, Dcl, T);
+					else
+						Gcl = ss(Acl, Bcl, Ccl, Dcl);
+					end
 				%y(:, (1:nplot) + nplot*(ii - 1)) = lsim(Gcl, w, t);
 				y(:, :, ii) = lsim(Gcl, w, t);
 			end
