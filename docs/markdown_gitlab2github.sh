@@ -8,7 +8,11 @@ else
 	username="${GITHUB_REPOSITORY%%/*}"
 fi
 if [[ "${GITHUB_REF#refs/heads/}" == "" ]]; then
-	branchname=master
+	if git branch --show-current > /dev/null; then
+		branchname=$(git branch --show-current)
+	else
+		branchname=master
+	fi
 else
 	branchname="${GITHUB_REF#refs/heads/}"
 fi
