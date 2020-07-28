@@ -1655,6 +1655,108 @@ after a call to `gammasyn` and expects the controller type used as `OutputFeedba
 It has the ability to plot the closed loop eigenvalues and pole regions with the `plot` method, plot step responses with the `step` method and solve the problem again with possibly different initial values or different optimizers with the `rerun` method.
 
 
+## Robust Coupling Control
+`gammasyn` is prepared for the synthesis of coupling controllers and will be extended to handle decoupling controllers as well.
+For archieving this a specialized wrapper function named `gammasyn_couplingcontrol` is used that converts the supplied system to the needed description for coupling controller design.
+The task of a coupling controller is to ensure
+
+$$
+	\begin{aligned}
+		y_\mathrm{ref,2} =  C_\mathrm{ref,2}x + D_\mathrm{ref,2}u = 0
+	\end{aligned}
+$$
+
+asymptotically and indpendently from any reference inputs $r_1$.
+The system must be given, such that the lower rows of
+
+$$
+	\begin{aligned}
+		C_\mathrm{ref} = \begin{bmatrix} C_\mathrm{ref,1} \\ C_\mathrm{ref,2} \end{bmatrix}
+	\end{aligned}
+$$
+
+and
+
+$$
+	\begin{aligned}
+		D_\mathrm{ref} = \begin{bmatrix} D_\mathrm{ref,1} \\ D_\mathrm{ref,2} \end{bmatrix}
+	\end{aligned}
+$$
+
+contain the parameters of a given number of coupling conditions in the form
+
+$$
+	\begin{aligned}
+		C_\mathrm{ref,2}x + D_\mathrm{ref,2}u \overset{!}{=} 0\ .
+	\end{aligned}
+$$
+
+To achieve coupling, the transfer matrix of the closed-loop system
+
+$$
+	\begin{aligned}
+		y_\mathrm{ref}(s) &= \left(\begin{bmatrix} C_\mathrm{ref,1} - D_\mathrm{ref,1}R \\ C_\mathrm{ref,2} - D_\mathrm{ref,2}R \end{bmatrix}(sI-A+BR)^{-1}B + \begin{bmatrix} D_\mathrm{ref,1} \\ D_\mathrm{ref,2} \end{bmatrix}\right)\begin{bmatrix} F_1 & F_2 \end{bmatrix}\begin{bmatrix} r_1 \\ r_2 \end{bmatrix} \\
+		&= \begin{bmatrix} G_{11}(s) & G_{12}(s) \\ G_{21}(s) & G_{22}(s)\end{bmatrix}\begin{bmatrix} r_1 \\ r_2 \end{bmatrix}
+	\end{aligned}
+$$
+
+is designed, such that $G_{21}(s) = 0$ holds.
+By writing
+
+$$
+	\begin{aligned}
+		G_{21}(s) = \sum_{i=1}^n \frac{(C_\mathrm{ref,2} - D_\mathrm{ref,2}R)v_{\mathrm{R}i}w_{\mathrm{R}i}^TBF_1}{s-\lambda_{\mathrm{R}i}} + D_\mathrm{ref,2}F_1 = 0\ ,
+	\end{aligned}
+$$
+
+with the closed-loop eigenvalues $\lambda_{\mathrm{R}i}$ and the right and left eigenvectors $v_{\mathrm{R}i}$ and $w_{\mathrm{R}i}$, the non-linear output- and input-coupling conditions
+
+$$
+	\begin{aligned}
+		(C_\mathrm{ref,2} - D_\mathrm{ref,2}R) v_{\mathrm{R}i} &= 0 \hspace{0.5cm} i=1,...,m \\
+		w_{\mathrm{R}i}^T B F_1 &= 0 \hspace{0.5cm} i=m+1,...,n
+	\end{aligned}
+$$
+
+as well as
+
+$$
+	\begin{aligned}
+		D_\mathrm{ref,2} F_1 = 0
+	\end{aligned}
+$$
+
+are obtained.
+Here, $m$ denotes the dimension of the output nulling space of the system $(A, B, C_\mathrm{ref,2}, D_\mathrm{ref,2})$.
+In case of $D_\mathrm{ref,2} = 0$, this space is equivalent to the largest controlled invariant subspace within the kernel of $C_\mathrm{ref,2}$.
+
+The conditions found can directly be included in the synthesis process using the built-in non-linear constraint function. Alternatively, using geometric concepts, the coupling conditions can be transformed to linear equality constraints which reduce the set of feasible controllers and prefilters.
+
+The coupling control design implemented in `gammasyn` is only available for the design of a complete state feedback, i.e. $C$ must be chosen as identity matrix.
+
+### Robust DAE synthesis
+The methodology for designing robust coupling controllers using pole region assignment, can immediately be transferred to systems in differential-algebraic form (DAE systems, descriptor systems).
+
+Therefore, the systems handed over are transformed using a singular value decomposition of the descriptor matrix $E$ in order to obtain state space systems with feedthrough.
+For these, a robust coupling control best possibly fulfilling the algebraic equations is calculated.
+
+### Usage
+To perform the coupling control synthesis or robust DAE synthesis, `gammasyn_couplingcontrol` has to be used.
+Furthermore, the `objectiveoptions` structure has to be extended by the field `couplingcontrol` which in turn is a structure containing the following fields
+* `couplingstrategy`: the coupling design method, an instance of `GammaCouplingStrategy`.
+	* `GammaCouplingStrategy.EXACT`: Only allow $G_{21}(s) = 0$ and use geometric methods.
+	* `GammaCouplingStrategy.APPROXIMATE`: Use geometric method but also allow $G_{21}(s) \approx 0$ if $G_{21}(s) = 0$ is not solvable.
+	* `GammaCouplingStrategy.NUMERIC_NONLINEAR_EQUALITY`: directly use coupling conditions as non-linear equality constraints of the form `ceq(x) = 0` with `x` denoting the vector of optimization variables
+	* `GammaCouplingStrategy.NUMERIC_NONLINEAR_INEQUALITY`: directly use coupling conditions as non-linear inequality constraints of the form `c(x) < tolerance_coupling` and `-c(x) < tolerance_coupling` with `x` denoting the vector of optimization variables
+* `couplingconditions`: (`uint32`) the number of coupling conditions specified in $C_\mathrm{ref}$
+* `tolerance_coupling`: (`double`) the tolerance when using `GammaCouplingStrategy.NUMERIC_NONLINEAR_INEQUALITY`
+* `solvesymbolic`: (`logical`) only for `EXACT` and `APPROXIMATE`: use symbolic toolbox if available to increase precision of obtained equality constraints.
+* `round_equations_to_digits`: (`double`, whole number) only for `EXACT` and `APPROXIMATE`: decimal places to which linear equality constraints are rounded in case of numerical precision difficulties. Use `NaN` if no rounding is desired.
+* `weight_coupling`: (`double`, nonnegative) weighting factor for nonlinear coupling conditions to increase/decrease importance in comparison with pole region constraints
+* `weight_prefilter`: (`double`, nonnegative) weighting factor for prefilter regularity condition to increase/decrease importance in comparison with pole region constraints
+
+`gammasyn_couplingcontrol` checks the descriptor matrix $E$ to choose between a regular coupling control design and DAE design.
+
 
 ## Examples
 
