@@ -24,6 +24,15 @@ tab_width = 4
 charset = unset
 trim_trailing_whitespace = true
 
+# python scripts
+[*.py]
+insert_final_newline = true
+indent_style = space
+indent_size = 4
+tab_width = 4
+charset = utf8
+trim_trailing_whitespace = true
+
 # Matlab files
 [*.{m,c,cpp,h,hpp}]
 insert_final_newline = false

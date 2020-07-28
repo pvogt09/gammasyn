@@ -1,0 +1,18 @@
+#! /bin/sh
+set -e
+if [[ "${GITHUB_REPOSITORY}" == "" ]]; then
+	projectname=gammasyn
+	username=pvogt09
+else
+	projectname="${GITHUB_REPOSITORY##*/}"
+	username="${GITHUB_REPOSITORY%%/*}"
+fi
+if [[ "${GITHUB_REF#refs/heads/}" == "" ]]; then
+	branchname=master
+else
+	branchname="${GITHUB_REF#refs/heads/}"
+fi
+python ./docs/markdown_gitlab2github.py "$(realpath ./)" || exit 1
+python -m readme2tex --svgdir docs/svgs --project "$projectname" --username "$username" --output "README.md" "README.tex.md" || exit 2
+sed -i "s#https://rawgit.com/$username/$projectname/None#https://raw.githubusercontent.com/$username/$projectname/$branchname#" "README.md"
+sed -i "s#https://rawgit.com/$username/$projectname/$branchname#https://raw.githubusercontent.com/$username/$projectname/$branchname#" "README.md"
