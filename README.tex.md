@@ -1547,7 +1547,7 @@ Ka_bounds = {Zlhs, Zrhs}
 where `Zlhs` and `Zrhs` correspond to $Z_{\mathrm{Bd},k}$ and $z_{\mathrm{Bd},k}$, resp., in
 
 $$
-    \sum_{i,j} (Z_{\mathrm{Bd},k} \odot R) \leq z_{\mathrm{Bd},k}
+	\sum_{i,j} (Z_{\mathrm{Bd},k} \odot R) \leq z_{\mathrm{Bd},k}
 $$
 
 where $\odot$ means element-wise multiplication (Hadamard product).
