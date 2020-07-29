@@ -1,6 +1,11 @@
 name: Markdown Math
 on:
-  [push, pull_request]
+  push:
+    paths:
+    - 'docs/svgs/*'
+    - 'README.md'
+    - 'README.tex.md'
+    - 'README.md.tex'
 
 jobs:
   build:
