@@ -4,6 +4,8 @@ Feature:Area:
 Feature:Documentation:
   - docs/**/*
   - README.md
+  - README.tex.md
+  - README.md.tex
 Feature:gammasyn:
   - +control/+design/+gamma/gammsyn.m
 Feature:optimize:
@@ -32,3 +34,6 @@ Feature:Couplingcontrol:
   - +control/+design/+outputfeedback/OutputCouplingStateFeedback.m
   - +control/+design/+outputfeedback/StateCouplingStateFeedback.m
   - mex/control/design/gamma/GammaCouplingStrategy.m
+Feature:CI:
+  - .github/**/*
+  - .stickler
