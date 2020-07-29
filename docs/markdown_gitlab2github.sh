@@ -1,13 +1,13 @@
 #! /bin/sh
 set -e
-if [ "${GITHUB_REPOSITORY}" = "" ]; then
+if [[ "${GITHUB_REPOSITORY}" == "" ]]; then
 	projectname=gammasyn
 	username=pvogt09
 else
 	projectname="${GITHUB_REPOSITORY##*/}"
 	username="${GITHUB_REPOSITORY%%/*}"
 fi
-if [ "${GITHUB_REF#refs/heads/}" = "" ]; then
+if [[ "${GITHUB_REF#refs/heads/}" == "" ]]; then
 	if git branch --show-current > /dev/null; then
 		branchname=$(git branch --show-current)
 	else
