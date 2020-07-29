@@ -22,5 +22,12 @@ jobs:
         run: |
           sh docs/markdown_gitlab2github.sh
       - name: Commit changed documentation
-        run: |
-          if !(git diff --quiet --exit-code docs && git diff --quiet --exit-code README.md); then git add docs/\*; git add README.md; git commit -m "updates math for documentation" --signoff; fi
+        uses: EndBug/add-and-commit@v4
+        with:
+          message: "updates math for documentation"
+          add: "docs/\* README.md"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#      - name: Commit changed documentation
+#        run: |
+#          if !(git diff --quiet --exit-code docs && git diff --quiet --exit-code README.md); then git add docs/\*; git add README.md; git commit -m "updates math for documentation" --signoff; fi
