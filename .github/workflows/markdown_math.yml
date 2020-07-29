@@ -18,3 +18,9 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: texify
+        run: |
+          sh docs/markdown_gitlab2github.sh
+      - name: diff
+        run: |
+          git diff || true
