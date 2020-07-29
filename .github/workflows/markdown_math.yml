@@ -6,6 +6,11 @@ on:
       - 'README.md'
       - 'README.tex.md'
       - 'README.md.tex'
+    paths:
+      - 'docs/svgs/*'
+      - 'README.md'
+      - 'README.tex.md'
+      - 'README.md.tex'
 
 jobs:
   build:
@@ -24,6 +29,11 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Texify
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          sh docs/markdown_gitlab2github.sh "$GITHUB_BASE_REF"
+      - name: Texify
+        if: ${{ github.event_name == 'push' }}
         run: |
           sh docs/markdown_gitlab2github.sh
       - name: Commit changed documentation
