@@ -6,6 +6,7 @@ on:
       - 'README.md'
       - 'README.tex.md'
       - 'README.md.tex'
+  pull_request:
     paths:
       - 'docs/svgs/*'
       - 'README.md'
