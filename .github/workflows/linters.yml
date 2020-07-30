@@ -11,7 +11,7 @@ jobs:
       - name: YAML Lint
         uses: bewuethr/yamllint-action@v1
         with:
-          file_or_dir: .
+          # file_or_dir: .
           config-file: .github/workflows/linters.yamllint
       - name: shellcheck
         uses: ludeeus/action-shellcheck@0.3.0

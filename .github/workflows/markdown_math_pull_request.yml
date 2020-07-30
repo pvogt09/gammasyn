@@ -49,11 +49,11 @@ jobs:
           author: pvogt09 <50047961+pvogt09@users.noreply.github.com>
           title: updates math for documentation
           body: This is an auto-generated PR which updates math for documentation for pull request into branch `${{ github.base_ref }}`.
-          #labels: Feature:Documentation
+          labels: Feature:Documentation
           branch: ${{ github.head_ref }}-docs
           signoff: true
           labels: Feature:Documentation,Status:Automerge
-      #- name: Commit changed documentation
+      # - name: Commit changed documentation
       #  if: ${{ github.event_name == 'pull_request' }}
       #  uses: EndBug/add-and-commit@v4
       #  with:
