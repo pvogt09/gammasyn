@@ -37,16 +37,17 @@ jobs:
           sh docs/markdown_gitlab2github.sh "$GITHUB_BASE_REF"
       # commit changes for pull request
       - name: Create Pull Request for documentation changes
-        uses: peter-evans/create-pull-request@v3
+        id: createPR
+        uses: pvogt09/create-pull-request@master
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: |
-            "updates math for documentation
-            Signed-off-by: ${{ github.actor }}"
+            "updates math for documentation"
           title: updates math for documentation
           body: This is an auto-generated PR which updates math for documentation.
           #labels: Feature:Documentation
           branch: ${{ github.head_ref }}-docs
+          signoff: true
       #- name: Commit changed documentation
       #  if: ${{ github.event_name == 'pull_request' }}
       #  uses: EndBug/add-and-commit@v4
