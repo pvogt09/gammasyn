@@ -1,6 +1,8 @@
 name: Markdown Math
 on:
   pull_request:
+    branches-ignore:
+      - '**-docs'
     paths:
       - 'docs/svgs/*'
       - 'README.md'
