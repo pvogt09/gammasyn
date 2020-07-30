@@ -6,12 +6,6 @@ on:
       - 'README.md'
       - 'README.tex.md'
       - 'README.md.tex'
-  pull_request:
-    paths:
-      - 'docs/svgs/*'
-      - 'README.md'
-      - 'README.tex.md'
-      - 'README.md.tex'
 
 jobs:
   build:
@@ -32,28 +26,12 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-      # run tex conversion for pull request
-      - name: Texify
-        if: ${{ github.event_name == 'pull_request' }}
-        run: |
-          sh docs/markdown_gitlab2github.sh "$GITHUB_BASE_REF"
-      # run tex conversion for push
+      # run tex conversion
       - name: Texify
         if: ${{ github.event_name == 'push' }}
         run: |
           sh docs/markdown_gitlab2github.sh
-      # commit changes for pull request
-      - name: Commit changed documentation
-        if: ${{ github.event_name == 'pull_request' }}
-        uses: EndBug/add-and-commit@v4
-        with:
-          message: "updates math for documentation"
-          add: "docs/* README.md"
-          signoff: true
-          ref: ${{ github.head_ref }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      # commit changes for push
+      # commit changes
       - name: Commit changed documentation
         if: ${{ github.event_name == 'push' }}
         uses: EndBug/add-and-commit@v4
