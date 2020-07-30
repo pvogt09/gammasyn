@@ -45,6 +45,8 @@ jobs:
         with:
           token: ${{ secrets.ACCESS_TOKEN_BRANCHPROTECTION }}
           commit-message: "updates math for documentation"
+          commiter: pvogt09 <50047961+pvogt09@users.noreply.github.com>
+          author: pvogt09 <50047961+pvogt09@users.noreply.github.com>
           title: updates math for documentation
           body: This is an auto-generated PR which updates math for documentation for pull request into branch `${{ github.base_ref }}`.
           #labels: Feature:Documentation
