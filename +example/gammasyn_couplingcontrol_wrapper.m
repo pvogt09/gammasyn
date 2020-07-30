@@ -1,7 +1,7 @@
 clear; close all;
 
 %% Settings
-[systems, system_properties] = example.load_system_coupling('descriptor_system');
+[systems, system_properties] = example.load_system_coupling('threetank');
 % EXACT								structurally constrained controller only EXAKT solution
 % APPROXIMATE						structurally constrained controller also approximate solution
 % NUMERIC_NONLINEAR_EQUALITY		fully numeric design with non-linear equality constraints
@@ -15,9 +15,9 @@ control_design_type = GammaCouplingStrategy.APPROXIMATE;
 tolerance_NUMERIC_NONLINEAR_INEQUALITY = 0.001;
 
 %% pole area parameters
-a = 0.5;
+a = 0.8;
 b = 0.5;
-R = 5;
+r = 5;
 
 %% gammasyn options
 solver = optimization.solver.Optimizer.FMINCON; %FMINCON;% solver to use
@@ -50,10 +50,10 @@ objectiveoptions = struct(...
 %% Pole area
 weight = {5, repmat([1, 10], system_properties.number_models, 1)};
 polearea = {repmat([
-% 	control.design.gamma.area.Circlesquare(R),	control.design.gamma.area.Hyperbolasquare(a, b),...
-	control.design.gamma.area.Imag(1, a) %Imag(1, a)
+	control.design.gamma.area.Circle(r), control.design.gamma.area.Hyperbola(a, b),...
+%   	control.design.gamma.area.Imag(1, a)
 ], system_properties.number_models, 1), repmat([
-	control.design.gamma.area.Circlesquare(R/2, -R/2, 0), control.design.gamma.area.Imag(1, a)
+	control.design.gamma.area.Circlesquare(r/2, -r/2, 0), control.design.gamma.area.Imag(1, a)
 ], system_properties.number_models, 1)};
 polearea = polearea{1};
 weight = weight{1};
@@ -76,6 +76,7 @@ information
 
 %% Analysis
 if ~any(any(isnan(R)))
-	gain_ratio = test.develop.analyze_results(systems, Kopt, polearea, system_properties.number_couplingconditions);
+	[gain_ratio, ~, poles_all, F] = test.develop.analyze_results(systems, Kopt, polearea, system_properties.number_couplingconditions);
+	Kopt{end} = F;
 	minimal_deviation = 100/min(abs(gain_ratio))
 end

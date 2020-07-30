@@ -15,6 +15,9 @@ classdef GammasynOptions < handle
 			'couplingcontrol',		struct(...
 				'couplingconditions',			uint32(0),...
 				'couplingstrategy',				GammaCouplingStrategy.getDefaultValue(),...
+				'sortingstrategy_coupling',		GammaCouplingconditionSortingStrategy.getDefaultValue(),...
+				'weight_coupling',				1,...
+				'weight_prefilter',				1,...
 				'tolerance_coupling',			0,...
 				'tolerance_prefilter',			0,...
 				'solvesymbolic',				true,...
@@ -55,6 +58,9 @@ classdef GammasynOptions < handle
 			'couplingcontrol',		struct(...
 				'couplingconditions',			uint32(0),...
 				'couplingstrategy',				GammaCouplingStrategy.getDefaultValue(),...
+				'sortingstrategy_coupling',		GammaCouplingconditionSortingStrategy.getDefaultValue(),...
+				'weight_coupling',				1,...
+				'weight_prefilter',				1,...
 				'tolerance_coupling',			NaN,...
 				'tolerance_prefilter',			NaN,...
 				'solvesymbolic',				false,...
@@ -137,6 +143,12 @@ classdef GammasynOptions < handle
 		couplingconditions = [];
 		% strategy for coupling controller design
 		couplingstrategy = [];
+		% strategy for sorting coupling conditions
+		sortingstrategy_coupling = [];
+		% weight for coupling controller design constraints
+		weight_coupling = [];
+		% weight for prefilter coupling controller design constraints
+		weight_prefilter = [];
 		% tolerance for coupling controller design constraints
 		tolerance_coupling = [];
 		% tolerance for regularization of prefilter in coupling controller design
@@ -221,6 +233,9 @@ classdef GammasynOptions < handle
 		couplingcontrol_user = struct(...
 			'couplingconditions',			false,...
 			'couplingstrategy',				false,...
+			'sortingstrategy_coupling',		false,...
+			'weight_coupling',				false,...
+			'weight_prefilter',				false,...
 			'tolerance_coupling',			false,...
 			'tolerance_prefilter',			false,...
 			'solvesymbolic',				false,...
@@ -398,6 +413,45 @@ classdef GammasynOptions < handle
 			end
 		end
 
+		function [sortingstrategy_coupling] = get.sortingstrategy_coupling(this)
+			%SORTINGSTRATEGY_COUPLING getter for sorting strategy for coupling conditions
+			%	Input:
+			%		this:						instance
+			%	Output:
+			%		sortingstrategy_coupling:	coupling controller design strategy
+			if isstruct(this.couplingcontrol_internal) && isfield(this.couplingcontrol_internal, 'sortingstrategy_coupling')
+				sortingstrategy_coupling = this.couplingcontrol_internal.sortingstrategy_coupling;
+			else
+				sortingstrategy_coupling = [];
+			end
+		end
+
+		function [weight_coupling] = get.weight_coupling(this)
+			%WEIGHT_COUPLING getter for weight of coupling controller design constraints
+			%	Input:
+			%		this:				instance
+			%	Output:
+			%		weight_coupling:	weight for coupling controller design constraints
+			if isstruct(this.couplingcontrol_internal) && isfield(this.couplingcontrol_internal, 'weight_coupling')
+				weight_coupling = this.couplingcontrol_internal.weight_coupling;
+			else
+				weight_coupling = [];
+			end
+		end
+
+		function [weight_prefilter] = get.weight_prefilter(this)
+			%WEIGHT_PREFILTER getter for weight of prefilter coupling controller design constraints
+			%	Input:
+			%		this:				instance
+			%	Output:
+			%		weight_prefilter:	weight for prefilter coupling controller design constraints
+			if isstruct(this.couplingcontrol_internal) && isfield(this.couplingcontrol_internal, 'weight_prefilter')
+				weight_prefilter = this.couplingcontrol_internal.weight_prefilter;
+			else
+				weight_prefilter = [];
+			end
+		end
+
 		function [tolerance_coupling] = get.tolerance_coupling(this)
 			%TOLERANCE_COUPLING getter for tolerance of coupling controller design constraints
 			%	Input:
@@ -436,7 +490,6 @@ classdef GammasynOptions < handle
 				solvesymbolic = [];
 			end
 		end
-
 
 		function [round_equations_to_digits] = get.round_equations_to_digits(this)
 			%ROUND_EQUATIONS_TO_DIGITS getter for setting to how many decimal places systems of equations that have to be solved are rounded in case of numerical difficulties
@@ -825,6 +878,33 @@ classdef GammasynOptions < handle
 			this.couplingcontrol_user.couplingstrategy = true;
 		end
 
+		function [] = set.sortingstrategy_coupling(this, strategy)
+			%SORTINGSTRATEGY_COUPLING setter for coupling condition sorting strategy
+			%	Input:
+			%		this:		instance
+			%		strategy:	coupling condition sorting strategy
+			this.couplingcontrol_internal.sortingstrategy_coupling = this.checkProperty('sortingstrategy_coupling', strategy);
+			this.couplingcontrol_user.sortingstrategy_coupling = true;
+		end
+
+		function [] = set.weight_coupling(this, weight_coupling)
+			%WEIGHT_COUPLING setter for weight of coupling condition constraints
+			%	Input:
+			%		this:				instance
+			%		weight_coupling:	weight of coupling condition constraints
+			this.couplingcontrol_internal.weight_coupling = this.checkProperty('weight_coupling', weight_coupling);
+			this.couplingcontrol_user.weight_coupling = true;
+		end
+
+		function [] = set.weight_prefilter(this, weight_prefilter)
+			%WEIGHT_PREFILTER setter for weight of prefilter coupling condition constraints
+			%	Input:
+			%		this:				instance
+			%		weight_prefilter:	weight of prefilter coupling condition constraints
+			this.couplingcontrol_internal.weight_prefilter = this.checkProperty('weight_prefilter', weight_prefilter);
+			this.couplingcontrol_user.weight_prefilter = true;
+		end
+
 		function [] = set.tolerance_coupling(this, tolerance_coupling)
 			%TOLERNACE_COUPLING setter for tolerance of coupling condition constraints
 			%	Input:
@@ -1104,9 +1184,12 @@ classdef GammasynOptions < handle
 				'allowvarorder',				true,	true,		{},									false;
 				'eigenvaluederivative',			true,	true,		{},									false;
 				'eigenvaluefilter',				true,	true,		{},									false;
-				'eigenvalueignoreinf',		true,	true,		{},									false;
+				'eigenvalueignoreinf',			true,	true,		{},									false;
 				'couplingconditions',			false,	true,		{'couplingcontrol'},				false;
 				'couplingstrategy',				false,	true,		{'couplingcontrol'},				false;
+				'sortingstrategy_coupling',		false,	true,		{'couplingcontrol'},				false;
+				'weight_coupling',				false,	true,		{'couplingcontrol'},				false;
+				'weight_prefilter',				false,	true,		{'couplingcontrol'},				false;
 				'tolerance_coupling',			false,	true,		{'couplingcontrol'},				false;
 				'tolerance_prefilter',			false,	true,		{'couplingcontrol'},				false;
 				'solvesymbolic',				false,	true,		{'couplingcontrol'},				false;
@@ -1149,6 +1232,9 @@ classdef GammasynOptions < handle
 			this.couplingcontrol_user = struct(...
 				'couplingconditions',			false,...
 				'couplingstrategy',				false,...
+				'sortingstrategy_coupling',		false,...
+				'weight_coupling',				false,...
+				'weight_prefilter',				false,...
 				'tolerance_coupling',			false,...
 				'tolerance_prefilter',			false,...
 				'solvesymbolic',				false,...
@@ -1200,6 +1286,9 @@ classdef GammasynOptions < handle
 			this.couplingcontrol_internal = struct(...
 				'couplingconditions',			proto.couplingcontrol.couplingconditions,...
 				'couplingstrategy',				proto.couplingcontrol.couplingstrategy,...
+				'sortingstrategy_coupling',		proto.couplingcontrol.sortingstrategy_coupling,...
+				'weight_coupling',				proto.couplingcontrol.weight_coupling,...
+				'weight_prefilter',				proto.couplingcontrol.weight_prefilter,...
 				'tolerance_coupling',			proto.couplingcontrol.tolerance_coupling,...
 				'tolerance_prefilter',			proto.couplingcontrol.tolerance_prefilter,...
 				'solvesymbolic',				proto.couplingcontrol.solvesymbolic,...
@@ -1684,6 +1773,9 @@ classdef GammasynOptions < handle
 						couplingcontrolnames = {
 							'couplingconditions';
 							'couplingstrategy';
+							'sortingstrategy_coupling';
+							'weight_coupling';
+							'weight_prefilter';
 							'tolerance_coupling';
 							'tolerance_prefilter';
 							'solvesymbolic';
@@ -1766,6 +1858,60 @@ classdef GammasynOptions < handle
 									instance(ii).couplingcontrol_internal.couplingstrategy = instance(ii).checkProperty('couplingstrategy', prop);
 									instance(ii).couplingcontrol_user.couplingstrategy = true;
 									names(strcmp('couplingstrategy', names)) = [];
+								end
+								if strcmp(sub(2).subs, 'sortingstrategy_coupling')
+									if length(sub) > 2
+										% further indexing into option
+										tmp = instance(ii).couplingcontrol_internal.sortingstrategy_coupling;
+										if ~iscell(tmp) && strcmpi(sub(3).type, '{}')
+											% matlab R2015B crashes if cell index assignment is used for numerical values
+											error('control:design:gamma:GammasynOptions:input', 'Cell contents assignment to a non-cell array object. ');
+										else
+											prop = subsasgn(tmp, sub(3:end), varargin{ii});
+										end
+									else
+										% setting option directly
+										prop = varargin{ii};
+									end
+									instance(ii).couplingcontrol_internal.sortingstrategy_coupling = instance(ii).checkProperty('sortingstrategy_coupling', prop);
+									instance(ii).couplingcontrol_user.sortingstrategy_coupling = true;
+									names(strcmp('sortingstrategy_coupling', names)) = [];
+								end
+								if strcmp(sub(2).subs, 'weight_coupling')
+									if length(sub) > 2
+										% further indexing into option
+										tmp = instance(ii).couplingcontrol_internal.weight_coupling;
+										if ~iscell(tmp) && strcmpi(sub(3).type, '{}')
+											% matlab R2015B crashes if cell index assignment is used for numerical values
+											error('control:design:gamma:GammasynOptions:input', 'Cell contents assignment to a non-cell array object. ');
+										else
+											prop = subsasgn(tmp, sub(3:end), varargin{ii});
+										end
+									else
+										% setting option directly
+										prop = varargin{ii};
+									end
+									instance(ii).couplingcontrol_internal.weight_coupling = instance(ii).checkProperty('weight_coupling', prop);
+									instance(ii).couplingcontrol_user.weight_coupling = true;
+									names(strcmp('weight_coupling', names)) = [];
+								end
+								if strcmp(sub(2).subs, 'weight_prefilter')
+									if length(sub) > 2
+										% further indexing into option
+										tmp = instance(ii).couplingcontrol_internal.weight_prefilter;
+										if ~iscell(tmp) && strcmpi(sub(3).type, '{}')
+											% matlab R2015B crashes if cell index assignment is used for numerical values
+											error('control:design:gamma:GammasynOptions:input', 'Cell contents assignment to a non-cell array object. ');
+										else
+											prop = subsasgn(tmp, sub(3:end), varargin{ii});
+										end
+									else
+										% setting option directly
+										prop = varargin{ii};
+									end
+									instance(ii).couplingcontrol_internal.weight_prefilter = instance(ii).checkProperty('weight_prefilter', prop);
+									instance(ii).couplingcontrol_user.weight_prefilter = true;
+									names(strcmp('weight_prefilter', names)) = [];
 								end
 								if strcmp(sub(2).subs, 'tolerance_coupling')
 									if length(sub) > 2
@@ -1857,6 +2003,9 @@ classdef GammasynOptions < handle
 								instance(ii).couplingcontrol_internal = struct(...
 									'couplingconditions',			proto.couplingcontrol.couplingconditions,...
 									'couplingstrategy',				proto.couplingcontrol.couplingstrategy,...
+									'sortingstrategy_coupling',		proto.couplingcontrol.sortingstrategy_coupling,...
+									'weight_coupling',				proto.couplingcontrol.weight_coupling,...
+									'weight_prefilter',				proto.couplingcontrol.weight_prefilter,...
 									'tolerance_coupling',			proto.couplingcontrol.tolerance_coupling,...
 									'tolerance_prefilter',			proto.couplingcontrol.tolerance_prefilter,...
 									'solvesymbolic',				proto.couplingcontrol.solvesymbolic,...
@@ -1865,6 +2014,9 @@ classdef GammasynOptions < handle
 								instance(ii).couplingcontrol_user = struct(...
 									'couplingconditions',			false,...
 									'couplingstrategy',				false,...
+									'sortingstrategy_coupling',		false,...
+									'weight_coupling',				false,...
+									'weight_prefilter',				false,...
 									'tolerance_coupling',			false,...
 									'tolerance_prefilter',			false,...
 									'solvesymbolic',				false,...
@@ -1885,6 +2037,21 @@ classdef GammasynOptions < handle
 								instance(ii).scouplingcontrol_internal.couplingstrategy = instance(ii).checkProperty('couplingstrategy', varargin{ii}.couplingstrategy);
 								instance(ii).couplingcontrol_user.couplingstrategy = true;
 								names(strcmp('couplingstrategy', names)) = [];
+							end
+							if isfield(varargin{ii}, 'sortingstrategy_coupling')
+								instance(ii).scouplingcontrol_internal.sortingstrategy_coupling = instance(ii).checkProperty('sortingstrategy_coupling', varargin{ii}.sortingstrategy_coupling);
+								instance(ii).couplingcontrol_user.sortingstrategy_coupling = true;
+								names(strcmp('sortingstrategy_coupling', names)) = [];
+							end
+							if isfield(varargin{ii}, 'weight_coupling')
+								instance(ii).couplingcontrol_internal.weight_coupling = instance(ii).checkProperty('weight_coupling', varargin{ii}.weight_coupling);
+								instance(ii).couplingcontrol_user.weight_coupling = true;
+								names(strcmp('weight_coupling', names)) = [];
+							end
+							if isfield(varargin{ii}, 'weight_prefilter')
+								instance(ii).couplingcontrol_internal.weight_prefilter = instance(ii).checkProperty('weight_prefilter', varargin{ii}.weight_prefilter);
+								instance(ii).couplingcontrol_user.weight_prefilter = true;
+								names(strcmp('weight_prefilter', names)) = [];
 							end
 							if isfield(varargin{ii}, 'tolerance_coupling')
 								instance(ii).couplingcontrol_internal.tolerance_coupling = instance(ii).checkProperty('tolerance_coupling', varargin{ii}.tolerance_coupling);

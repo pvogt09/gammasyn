@@ -99,8 +99,12 @@ function [c, ceq, gradc, gradceq, hessc, hessceq] = ceval(R, systems, areafun, w
 		end
 	end
 	if GammaCouplingStrategy_needscouplingconditions(options.couplingcontrol.couplingstrategy)
+		if dimensions.hasfeedthrough_coupling
+			number_inputconditions = (dimensions.controls - dimensions.couplingconditions)*(2*(dimensions.states - dimensions.m_invariant) + dimensions.couplingconditions);
+		else
+			number_inputconditions  = 2*(dimensions.controls - dimensions.couplingconditions)*(dimensions.states - dimensions.m_invariant);
+		end
 		number_outputconditions = 2*dimensions.m_invariant*dimensions.couplingconditions;
-		number_inputconditions  = 2*(dimensions.controls - dimensions.couplingconditions)*(dimensions.states - dimensions.m_invariant);
 		if options.couplingcontrol.couplingstrategy == GammaCouplingStrategy.NUMERIC_NONLINEAR_EQUALITY
 			number_couplingconstraints = 1;
 			number_couplingconstraints_eq = dimensions.models*(number_outputconditions + number_inputconditions);
@@ -134,19 +138,19 @@ function [c, ceq, gradc, gradceq, hessc, hessceq] = ceval(R, systems, areafun, w
 		if nargout >= 2
 			ceq = NaN(number_couplingconstraints_eq, size(R_0, 3));
 			if nargout >= 3
-				gradc = NaN(dimensions.models*dimensions.areas_max*dimensions.states + number_couplingconstraints, dimensions.controls, dimensions.measurements, size(R_0, 3));
+				gradc = NaN(dimensions.models*dimensions.areas_max*dimensions.states + number_couplingconstraints, dimensions.controls, dimension_measurement, size(R_0, 3));
 				if nargout >= 4
-					gradceq = NaN(number_couplingconstraints_eq, dimensions.controls, dimensions.measurements, size(R_0, 3));
+					gradceq = NaN(number_couplingconstraints_eq, dimensions.controls, dimension_measurement, size(R_0, 3));
 					if nargout >= 5
-						hessc = NaN(dimensions.controls*dimensions.measurements, dimensions.controls*dimensions.measurements, dimensions.models*dimensions.areas_max*dimensions.states + number_couplingconstraints, size(R_0, 3));
+						hessc = NaN(dimensions.controls*dimension_measurement, dimensions.controls*dimension_measurement, dimensions.models*dimensions.areas_max*dimensions.states + number_couplingconstraints, size(R_0, 3));
 						if nargout >= 6
-							hessceq = NaN(dimensions.controls*dimensions.measurements, dimensions.controls*dimensions.measurements, number_couplingconstraints_eq, size(R_0, 3));
+							hessceq = NaN(dimensions.controls*dimension_measurement, dimensions.controls*dimension_measurement, number_couplingconstraints_eq, size(R_0, 3));
 						end
 					end
 				end
 			end
 		end
-		for ii = 1:size(R_0, 3)
+		for ii = 1:size(R_0, 3) %#ok<FORPF> no parfor because of parfor in constraint functions
 			if nargout >= 6
 				if options.usecompiled
 					[cc, cceq, temp, tempeq, temphess, temphesseq] = cfun_mex(R_0(:, :, ii), K_0(:, :, ii), F_0(:, :, ii));

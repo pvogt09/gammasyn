@@ -1,4 +1,4 @@
-**By submitting this pull request, I confirm the following:** 
+**By submitting this pull request, I confirm the following:**
 *please fill any appropriate checkboxes, e.g: [X]*
 
 - [ ] I have read and understood the [contributors guide](https://github.com/pvogt09/gammasyn/blob/master/CONTRIBUTING.md), as well as this entire template.
@@ -24,4 +24,3 @@ This repository enforces the DCO.
 
 **What documentation changes (if any) are needed to support this PR?:**
 `{A detailed list of any necessary changes}`
-

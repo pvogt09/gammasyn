@@ -1,12 +1,22 @@
-function [R_0, K_0, F_0] = checkinitialRKF(R_0, dimensions_strict)
+function [R_0, K_0, F_0] = checkinitialRKF(R_0, dimensions_strict, allownan)
 	%CHECKINITIALRKF check initial values for proportional, derivative and prefilter gain for gammasyn
 	%	Input:
 	%		R_0:				initial value for gain matrices
 	%		dimensions_strict:	dimensions of problem variables and systems for strict problem formulation
+	%		allownan:			inicator if NaN and Inf are allowed as initial values
 	%	Output:
 	%		R_0:				initial value for proportional gain
 	%		K_0:				initial value for derivative gain
 	%		F_0:				initial value for prefilter gain
+	if nargin <= 2
+		allownan = false;
+	end
+	if ~isscalar(allownan)
+		error('control:design:gamma:dimensions', 'Indicator for NaN values must be scalar.');
+	end
+	if ~islogical(allownan)
+		error('control:design:gamma:dimensions', 'Indicator for NaN values must be of type ''logical''.');
+	end
 	if iscell(R_0)
 		if numel(R_0) >= 3
 			F_0 = R_0{3};
@@ -112,22 +122,24 @@ function [R_0, K_0, F_0] = checkinitialRKF(R_0, dimensions_strict)
 	if any(imag(F_0(:)) ~= 0)
 		error('control:design:gamma', 'Initial derivative matrix must not be complex.');
 	end
-	if any(isnan(R_0(:)))
-		error('control:design:gamma', 'Initial proportional matrix must not be NaN.');
-	end
-	if any(isnan(K_0(:)))
-		error('control:design:gamma', 'Initial derivative matrix must not be NaN.');
-	end
-	if any(isnan(F_0(:)))
-		error('control:design:gamma', 'Initial derivative matrix must not be NaN.');
-	end
-	if any(isinf(R_0(:)))
-		error('control:design:gamma', 'Initial proportional matrix must not be infinite.');
-	end
-	if any(isinf(K_0(:)))
-		error('control:design:gamma', 'Initial derivative matrix must not be infinite.');
-	end
-	if any(isinf(F_0(:)))
-		error('control:design:gamma', 'Initial derivative matrix must not be infinite.');
+	if ~allownan
+		if any(isnan(R_0(:)))
+			error('control:design:gamma', 'Initial proportional matrix must not be NaN.');
+		end
+		if any(isnan(K_0(:)))
+			error('control:design:gamma', 'Initial derivative matrix must not be NaN.');
+		end
+		if any(isnan(F_0(:)))
+			error('control:design:gamma', 'Initial derivative matrix must not be NaN.');
+		end
+		if any(isinf(R_0(:)))
+			error('control:design:gamma', 'Initial proportional matrix must not be infinite.');
+		end
+		if any(isinf(K_0(:)))
+			error('control:design:gamma', 'Initial derivative matrix must not be infinite.');
+		end
+		if any(isinf(F_0(:)))
+			error('control:design:gamma', 'Initial derivative matrix must not be infinite.');
+		end
 	end
 end

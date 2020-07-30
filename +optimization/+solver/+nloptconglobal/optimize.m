@@ -973,10 +973,10 @@ function [cfun] = constraint_dispatcher(fun, A, b, Aeq, beq, gradient)
 		end
 		[~, ~, gradc, gradceq] = fun(x);
 		if isempty(gradc)
-			gradc = zeros(0, size(x, 1));
+			gradc = zeros(size(x, 1), 0);
 		end
 		if isempty(gradceq)
-			gradceq = zeros(0, size(x, 1));
+			gradceq = zeros(size(x, 1), 0);
 		end
 		gradnonlcon = [
 			gradc';

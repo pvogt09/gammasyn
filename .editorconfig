@@ -16,6 +16,23 @@ trim_trailing_whitespace = unset
 insert_final_newline = true
 trim_trailing_whitespace = true
 
+[*.md]
+insert_final_newline = false
+indent_style = tab
+indent_size = tab
+tab_width = 4
+charset = unset
+trim_trailing_whitespace = true
+
+# python scripts
+[*.py]
+insert_final_newline = true
+indent_style = space
+indent_size = 4
+tab_width = 4
+charset = utf8
+trim_trailing_whitespace = true
+
 # Matlab files
 [*.{m,c,cpp,h,hpp}]
 insert_final_newline = false
@@ -43,7 +60,7 @@ indent_size = 2
 tab_width = 2
 insert_final_newline = true
 
-[lib/YALMIP/**/*.{m,c,cpp,h,hpp}]
+[lib/YALMIP/**/*.{m,c,cpp,h,hpp,md,gitignore,gitattributes,gitmodules}]
 insert_final_newline = unset
 indent_style = unset
 indent_size = unset
@@ -51,7 +68,15 @@ tab_width = unset
 charset = unset
 trim_trailing_whitespace = unset
 
-[lib/ROLMIP/**/*.{m,c,cpp,h,hpp}]
+[lib/ROLMIP/**/*.{m,c,cpp,h,hpp,md,gitignore,gitattributes,gitmodules}]
+insert_final_newline = unset
+indent_style = unset
+indent_size = unset
+tab_width = unset
+charset = unset
+trim_trailing_whitespace = unset
+
+[lib/optimization/NLOPT/interface/NLOPT/**/*.py]
 insert_final_newline = unset
 indent_style = unset
 indent_size = unset

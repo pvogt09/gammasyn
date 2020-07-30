@@ -27,11 +27,21 @@ function [couplingoptions] = checkobjectiveoptions_coupling(couplingoptions)
 				% use default strategy in case coupling controller design is requested
 				couplingoptions.couplingstrategy = [];
 			end
+			if ~isfield(couplingoptions, 'sortingstrategy_coupling')
+				% use default sorting strategy for coupling conditions
+				couplingoptions.couplingstrategy = [];
+			end
 			if ~isfield(couplingoptions, 'tolerance_coupling')
 				couplingoptions.tolerance_coupling = coupling_prototype.tolerance_coupling;
 			end
 			if ~isfield(couplingoptions, 'tolerance_prefilter')
 				couplingoptions.tolerance_prefilter = coupling_prototype.tolerance_prefilter;
+			end
+			if ~isfield(couplingoptions, 'weight_coupling')
+				couplingoptions.weight_coupling = coupling_prototype.weight_coupling;
+			end
+			if ~isfield(couplingoptions, 'weight_prefilter')
+				couplingoptions.weight_prefilter = coupling_prototype.weight_prefilter;
 			end
 			if ~isfield(couplingoptions, 'solvesymbolic')
 				couplingoptions.solvesymbolic = coupling_prototype.solvesymbolic;
@@ -75,11 +85,48 @@ function [couplingoptions] = checkobjectiveoptions_coupling(couplingoptions)
 			rethrow(e);
 		end
 	end
+	if isempty(couplingoptions.sortingstrategy_coupling)
+		couplingoptions.sortingstrategy_coupling = GammaCouplingconditionSortingStrategy.getDefaultValue();
+	end
+	if ~isscalar(couplingoptions.sortingstrategy_coupling)
+		error('control:design:gamma', 'Sorting strategy for coupling conditions must be scalar.');
+	end
+	if ~isa(couplingoptions.sortingstrategy_coupling, 'GammaCouplingconditionSortingStrategy')
+		try
+			couplingoptions.sortingstrategy_coupling = GammaCouplingconditionSortingStrategy.fromname(couplingoptions.sortingstrategy_coupling);
+		catch e
+			rethrow(e);
+		end
+	end
+	if isempty(couplingoptions.weight_coupling)
+		couplingoptions.weight_coupling = 1;
+	end
+	if ~isscalar(couplingoptions.weight_coupling) || ~isnumeric(couplingoptions.weight_coupling)
+		error('control:design:gamma', 'Weight for coupling condition constraints must be a numeric scalar.');
+	end
+	if isnan(couplingoptions.weight_coupling) || isinf(couplingoptions.weight_coupling)
+		error('control:design:gamma', 'Weight for coupling condition constraints must be finite.');
+	end
+	if couplingoptions.weight_coupling < 0
+		error('control:design:gamma', 'Weight for coupling constraints must be nonnegative.');
+	end
+	if isempty(couplingoptions.weight_prefilter)
+		couplingoptions.weight_prefilter = 1;
+	end
+	if ~isscalar(couplingoptions.weight_prefilter) || ~isnumeric(couplingoptions.weight_prefilter)
+		error('control:design:gamma', 'Weight for prefilter coupling condition constraints must be a numeric scalar.');
+	end
+	if isnan(couplingoptions.weight_prefilter) || isinf(couplingoptions.weight_prefilter)
+		error('control:design:gamma', 'Weight for prefilter coupling condition constraints must be finite.');
+	end
+	if couplingoptions.weight_prefilter < 0
+		error('control:design:gamma', 'Weight for prefilter coupling constraints must be nonnegative.');
+	end
 	if isempty(couplingoptions.tolerance_coupling)
 		couplingoptions.tolerance_coupling = NaN;
 	end
 	if ~isscalar(couplingoptions.tolerance_coupling) || ~isnumeric(couplingoptions.tolerance_coupling)
-		error('control:design:gamma', 'Tolerance for couplingconditions must be numeric scalar.');
+		error('control:design:gamma', 'Tolerance for couplingconditions must be a numeric scalar.');
 	end
 	if isnan(couplingoptions.tolerance_coupling)
 		if couplingoptions.couplingstrategy == GammaCouplingStrategy.NUMERIC_NONLINEAR_INEQUALITY
@@ -98,7 +145,7 @@ function [couplingoptions] = checkobjectiveoptions_coupling(couplingoptions)
 		couplingoptions.tolerance_prefilter = NaN;
 	end
 	if ~isscalar(couplingoptions.tolerance_prefilter) || ~isnumeric(couplingoptions.tolerance_prefilter)
-		error('control:design:gamma', 'Tolerance for prefilter regularization must be numeric scalar.');
+		error('control:design:gamma', 'Tolerance for prefilter regularization must be a numeric scalar.');
 	end
 	if isnan(couplingoptions.tolerance_prefilter)
 		couplingoptions.tolerance_prefilter = 1;
@@ -130,6 +177,9 @@ function [couplingoptions] = checkobjectiveoptions_coupling(couplingoptions)
 	couplingoptions = struct(...
 		'couplingconditions',			uint32(couplingoptions.couplingconditions),...
 		'couplingstrategy',				couplingoptions.couplingstrategy,...
+		'sortingstrategy_coupling',		couplingoptions.sortingstrategy_coupling,...
+		'weight_coupling',				double(couplingoptions.weight_coupling),...
+		'weight_prefilter',				double(couplingoptions.weight_prefilter),...
 		'tolerance_coupling',			double(couplingoptions.tolerance_coupling),...
 		'tolerance_prefilter',			double(couplingoptions.tolerance_prefilter),...
 		'solvesymbolic',				logical(couplingoptions.solvesymbolic),...

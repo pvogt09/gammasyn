@@ -866,10 +866,10 @@ function [eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivativ
 											A - ev(kk)*E,				-E*eigenvectors_right(:, kk)
 										];
 										%if needsgradienteigenvectorsleft% TODO: condition is not allowed to prevent "The temporary variable will be cleared at the beginning of each iteration of the parfor loop." warnings
-											mat_left = [
-												A - ev(kk)*E,					eigenvectors_left(:, kk);
-												-eigenvectors_left(:, kk)'*E,	0
-											].';
+											%mat_left = [
+											%	A - ev(kk)*E,					eigenvectors_left(:, kk);
+											%	-eigenvectors_left(:, kk)'*E,	0
+											%].';
 										%end
 										for ll = 1:number_controls
 											b_ll = system(ii).B(:, ll);
@@ -880,15 +880,19 @@ function [eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivativ
 														-b_ll*system(ii).C(hh, :)*eigenvectors_right(:, kk)
 													];
 													temp = mat_right\vec_right;
-													eigenvectors_right_derivative_temp(kk, :, ll, hh) = temp(1:system_order);
-													if needsgradienteigenvectorsleft
-														% TODO: does not work, is instead calculated later in dependence of right eigenvector derivative like in [#STRUBEL2014]
-														vec_left = [
-															-eigenvectors_left(:, kk)'*b_ll*system(ii).C(hh, :),	0
-														].';
-														temp = (mat_left\vec_left).';
-														eigenvectors_left_derivative_temp(kk, :, ll, hh) = temp(1:system_order);
+													if sign(temp(end, 1)) ~= sign(eigenvalue_derivative_temp(kk, ll, hh))
+														% change sign to match already calculated eigenvalue derivative in last element of temp
+														temp = -temp;
 													end
+													eigenvectors_right_derivative_temp(kk, :, ll, hh) = temp(1:system_order);
+													%if needsgradienteigenvectorsleft
+														% TODO: does not work, is instead calculated later in dependence of right eigenvector derivative like in [#STRUBEL2014]
+														%vec_left = [
+														%	-eigenvectors_left(:, kk)'*b_ll*system(ii).C(hh, :),	0
+														%].';
+														%temp = (mat_left\vec_left).';
+														%eigenvectors_left_derivative_temp(kk, :, ll, hh) = temp(1:system_order);
+													%end
 												end
 											end
 											if needsgradienteigenvectorsright_xdot
@@ -899,14 +903,19 @@ function [eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivativ
 															ev(kk)*b_ll*system(ii).C_dot(jj, :)*eigenvectors_right(:, kk)
 														];
 														temp = mat_right\vec_right;
-														eigenvectors_right_derivative_xdot_temp(kk, :, ll, jj) = temp(1:system_order);
-														if needsgradienteigenvectorsleft_xdot
-															vec_left = [
-																ev(kk)*eigenvectors_left(:, kk)'*b_ll*system(ii).C_dot(jj, :),	0
-															].';
-															temp = (mat_left\vec_left).';
-															eigenvectors_left_derivative_xdot_temp(kk, :, ll, jj) = temp(1:system_order);
+														if sign(temp(end, 1)) ~= sign(eigenvalue_derivative_xdot_temp(kk, ll, jj))
+															% change sign to match already calculated eigenvalue derivative in last element of temp
+															temp = -temp;
 														end
+														eigenvectors_right_derivative_xdot_temp(kk, :, ll, jj) = temp(1:system_order);
+														%if needsgradienteigenvectorsleft_xdot
+															% TODO: does not work, is instead calculated later in dependence of right eigenvector derivative like in [#STRUBEL2014]
+															%vec_left = [
+															%	ev(kk)*eigenvectors_left(:, kk)'*b_ll*system(ii).C_dot(jj, :),	0
+															%].';
+															%temp = (mat_left\vec_left).';
+															%eigenvectors_left_derivative_xdot_temp(kk, :, ll, jj) = temp(1:system_order);
+														%end
 													end
 												end
 											end
@@ -934,14 +943,14 @@ function [eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivativ
 								if needsgradienteigenvectorsleft
 									for ll = 1:number_controls
 										for hh = 1:number_measurements
-											eigenvectors_left_derivative_temp(:, :, ll, hh) = -eigenvectors_left*eigenvectors_right_derivative_temp(:, :, ll, hh)*eigenvectors_left;
+											eigenvectors_left_derivative_temp(:, :, ll, hh) = -eigenvectors_left*eigenvectors_right_derivative_temp(:, :, ll, hh)'*eigenvectors_left;
 										end
 									end
 								end
 								if needsgradienteigenvectorsleft_xdot && number_measurements_xdot > 0
 									for ll = 1:number_controls
 										for hh = 1:number_measurements_xdot
-											eigenvectors_left_derivative_xdot_temp(:, :, ll, hh) = -eigenvectors_left*eigenvectors_right_derivative_xdot_temp(:, :, ll, hh)*eigenvectors_left;
+											eigenvectors_left_derivative_xdot_temp(:, :, ll, hh) = -eigenvectors_left*eigenvectors_right_derivative_xdot_temp(:, :, ll, hh)'*eigenvectors_left;
 										end
 									end
 								end
