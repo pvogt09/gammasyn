@@ -1,6 +1,9 @@
 name: Markdown Math
 on:
   push:
+    branches-ignore:
+      master
+      development
     paths:
       - 'docs/svgs/*'
       - 'README.md'
