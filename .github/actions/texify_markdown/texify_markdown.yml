@@ -1,0 +1,6 @@
+# texify_markdown.yml
+name: 'Texify Markdown'
+description: 'Create SVG images for math formulae in README.tex.md'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
