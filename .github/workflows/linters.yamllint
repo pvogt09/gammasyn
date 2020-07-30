@@ -3,6 +3,6 @@ extends: default
 rules:
   document-start: disable
   line-length: disable
-  truthy: true
+  truthy: enable
 ignore: |
   .github/workflows-deactivated/
