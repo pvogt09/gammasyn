@@ -12,7 +12,7 @@ on:
 jobs:
   build:
     # Check if the PR is not from a fork
-    if: github.event.pull_request.head.repo.full_name == github.repository
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository && !endsWith(github.head_ref, '-docs') }}
     name: Generate Documentation
     runs-on: ubuntu-latest
     steps:
@@ -45,7 +45,7 @@ jobs:
         with:
           token: ${{ secrets.ACCESS_TOKEN_BRANCHPROTECTION }}
           commit-message: "updates math for documentation"
-          commiter: pvogt09 <50047961+pvogt09@users.noreply.github.com>
+          committer: pvogt09 <50047961+pvogt09@users.noreply.github.com>
           author: pvogt09 <50047961+pvogt09@users.noreply.github.com>
           title: updates math for documentation
           body: This is an auto-generated PR which updates math for documentation for pull request into branch `${{ github.base_ref }}`.
