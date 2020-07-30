@@ -43,7 +43,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "updates math for documentation"
           title: updates math for documentation
-          body: This is an auto-generated PR which updates math for documentation for pull request into branch ${{ github.base_ref }}.
+          body: This is an auto-generated PR which updates math for documentation for pull request into branch `${{ github.base_ref }}`.
           #labels: Feature:Documentation
           branch: ${{ github.head_ref }}-docs
           signoff: true
