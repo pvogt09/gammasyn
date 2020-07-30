@@ -15,19 +15,3 @@ jobs:
       - uses: actions/labeler@v2
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
-
-# automatically add Status:Accepted label to PRs with reviews
-name: Label approved pull requests
-on: pull_request_review
-jobs:
-  labelWhenApproved:
-    name: Label when approved
-    runs-on: ubuntu-latest
-    steps:
-    - name: Label when approved
-      uses: pullreminders/label-when-approved-action@v1
-      env:
-        APPROVALS: "1"
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        ADD_LABEL: "Status:Accepted"
-        REMOVE_LABEL: "Status:ReviewNeeded"
