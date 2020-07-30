@@ -43,7 +43,7 @@ jobs:
           title: updates math for documentation
           body: This is an auto-generated PR which updates math for documentation.
           #labels: Feature:Documentation
-          branch: ${{ github.head_ref }}
+          branch: ${{ github.head_ref }}/docs
       #- name: Commit changed documentation
       #  if: ${{ github.event_name == 'pull_request' }}
       #  uses: EndBug/add-and-commit@v4
