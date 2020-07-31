@@ -41,7 +41,7 @@ jobs:
       # commit changes for pull request
       - name: Create Pull Request for documentation changes
         id: createPR
-        uses: pvogt09/create-pull-request@master
+        uses: peter-evans/create-pull-request@v3.1.0
         with:
           token: ${{ secrets.ACCESS_TOKEN_BRANCHPROTECTION }}
           commit-message: "updates math for documentation"
@@ -49,20 +49,19 @@ jobs:
           author: pvogt09 <50047961+pvogt09@users.noreply.github.com>
           title: updates math for documentation
           body: This is an auto-generated PR which updates math for documentation for pull request into branch `${{ github.base_ref }}`.
-          #labels: Feature:Documentation
           branch: ${{ github.head_ref }}-docs
           signoff: true
           labels: Feature:Documentation,Status:Automerge
-      #- name: Commit changed documentation
-      #  if: ${{ github.event_name == 'pull_request' }}
-      #  uses: EndBug/add-and-commit@v4
-      #  with:
-      #    message: "updates math for documentation"
-      #    add: "docs/* README.md"
-      #    signoff: true
-      #    ref: ${{ github.head_ref }}
-      #  env:
-      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#      - name: Commit changed documentation
+#        if: ${{ github.event_name == 'pull_request' }}
+#        uses: EndBug/add-and-commit@v4
+#        with:
+#          message: "updates math for documentation"
+#          add: "docs/* README.md"
+#          signoff: true
+#          ref: ${{ github.head_ref }}
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 #      - name: Commit changed documentation
 #        run: |
 #          if !(git diff --quiet --exit-code docs && git diff --quiet --exit-code README.md); then git add docs/\*; git add README.md; git commit -m "updates math for documentation" --signoff; fi
