@@ -41,7 +41,7 @@ jobs:
       # commit changes for pull request
       - name: Create Pull Request for documentation changes
         id: createPR
-        uses: pvogt09/create-pull-request@master
+        uses: peter-evans/create-pull-request@v3.1.0
         with:
           token: ${{ secrets.ACCESS_TOKEN_BRANCHPROTECTION }}
           commit-message: "updates math for documentation"
