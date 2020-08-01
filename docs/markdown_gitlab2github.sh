@@ -22,7 +22,8 @@ else
 	branchname="${GITHUB_REF#refs/heads/}"
 fi
 python ./docs/markdown_gitlab2github.py "$(realpath ./)" || exit 1
-python -m readme2tex --svgdir docs/svgs --project "$projectname" --username "$username" --output "README.md" "README.tex.md" || exit 2
+python -m readme2tex --svgdir "docs/svgs" --project "$projectname" --username "$username" --output "README.md" "README.tex.md" || exit 2
+git checkout -- "README.tex.md" || exit 3
 sed -i "s#https://rawgit.com/$username/$projectname/None#https://raw.githubusercontent.com/$username/$projectname/$branchname#" "README.md"
 sed -i "s#https://rawgit.com/$username/$projectname/$branchname#https://raw.githubusercontent.com/$username/$projectname/$branchname#" "README.md"
 if [ -n "$targetbranch" ]; then
