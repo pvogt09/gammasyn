@@ -2,6 +2,9 @@ FROM miktex/miktex:2.9.6990
 
 RUN mpm --admin --update
 
+COPY texlive.packages /texlive.packages
+RUN mpm --admin --install=@/texlive.packages
+
 COPY entrypoint.sh /entrypoint.sh
 
 RUN chmod +x /entrypoint.sh
