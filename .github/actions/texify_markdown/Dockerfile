@@ -1,9 +1,10 @@
-FROM miktex/miktex:2.9.6990
+FROM danteev/texlive:latest
 
-RUN mpm --admin --verbose --update
+# RUN mpm --admin --verbose --update
 
 COPY texlive.packages /texlive.packages
-RUN mpm --admin --verbose --require=@texlive.packages
+# RUN mpm --admin --verbose --require=@texlive.packages
+RUN tlmgr install $(xargs < texlive.packages)
 
 COPY entrypoint.sh /entrypoint.sh
 
