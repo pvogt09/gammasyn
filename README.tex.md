@@ -95,7 +95,7 @@ For the robust design the parameters $`m`$ and $`d`$ are assumed to be uncertain
 
 The following function is used in the examples to construct the system for given parameter values $`m`$, $`d`$ and $`c`$:
 ```matlab
-function sys = omo_sys(m, d, c)
+function [sys] = omo_sys(m, d, c)
 
 	A = [0, 1; -c/m, -d/m];
 	B = [0; 1/m];
@@ -666,10 +666,10 @@ The following table lists the most common choices for $`j`$:
 
 | loss function | $`j(z_{\mu \rho}(\cdot,\cdot))`$ |
 | --- | --- |
-| Quadratic loss function | $`(\max(0,\ w_{\mu \rho} z_{\mu \rho}(\cdot,\cdot)))^2`$
+| Quadratic loss function | $`(\max(0,\ w_{\mu \rho} z_{\mu \rho}(\cdot,\cdot)))^2`$ |
 | $`l_1`$ loss function | $`\max(0,\ w_{\mu \rho} z_{\mu \rho}(\cdot,\cdot))`$ |
-| Exponential loss function | $`\exp(w_{\mu \rho} z_{\mu \rho}(\cdot,\cdot))`$
-| Logarithmic loss function | $`-\log(-w_{\mu \rho} z_{\mu \rho}(\cdot,\cdot))`$
+| Exponential loss function | $`\exp(w_{\mu \rho} z_{\mu \rho}(\cdot,\cdot))`$ |
+| Logarithmic loss function | $`-\log(-w_{\mu \rho} z_{\mu \rho}(\cdot,\cdot))`$ |
 
 * The downside of the $`l_1`$ loss function is that it is not differentiable on the border curves.
 * The logarithmic loss function is an inner penalty function which is not defined for any pole not lying within the defined region. Therefore, it can only be used if the initial value for the optimization variables is feasible.
@@ -891,9 +891,9 @@ Rfixed = {Ra_fixed}
 		}
 	```
 	* As said above, linear dependencies for `K` and `F` can be specified in the same way in `Ka_fixed` and `Fa_fixed`. For dependecies involving all matrices `RKFa_fixed` can be used, specifying `{Zlhs, Zrhs}` corresponding to
-```math
-	\sum_{i,j} (Z_k \odot \begin{bmatrix} R & K & F \end{bmatrix}) = z_k
-```
+	```math
+		\sum_{i,j} (Z_k \odot \begin{bmatrix} R & K & F \end{bmatrix}) = z_k
+	```
 * Symbolic dependencies between controller parameters
 If the Symbolic Math Toolbox is available, it is also possible, to formulate the controller coefficient constraints as symbolic expressions.
 This can be achieved by specifying the symbolic gain matrix in the first element of a cell array and the symbolic equation system in the second element of the cell array for every gain matrix like in
@@ -1240,18 +1240,18 @@ The elements are listed in the following table and some examples are given below
 
 | GammaJType | Remark | Loss function
 | --- | --- | --- |
-| ZERO | no objective function (pure feasibility problem) | $`J = 0`$
-| MAX | $`l_1`$ loss function | $`j = \max(0,\ w_{\mu \rho} z_{\mu \rho}(\cdot,\cdot))`$
-| SQUAREPENALTY | Quadratic loss function | $`j = (\max(0,\ w_{\mu \rho} z_{\mu \rho}(\cdot,\cdot)))^2`$
-| EXP | Exponential loss function | $`j = \exp(w_{\mu \rho} z_{\mu \rho}(\cdot,\cdot))`$
-| LINEAR | (*) linear weighting of pole areas | $`j = w_{\mu \rho} z_{\mu \rho}(\cdot,\cdot)`$
+| ZERO | no objective function (pure feasibility problem) | $`J = 0`$ |
+| MAX | $`l_1`$ loss function | $`j = \max(0,\ w_{\mu \rho} z_{\mu \rho}(\cdot,\cdot))`$ |
+| SQUAREPENALTY | Quadratic loss function | $`j = (\max(0,\ w_{\mu \rho} z_{\mu \rho}(\cdot,\cdot)))^2`$ |
+| EXP | Exponential loss function | $`j = \exp(w_{\mu \rho} z_{\mu \rho}(\cdot,\cdot))`$ |
+| LINEAR | (*) linear weighting of pole areas | $`j = w_{\mu \rho} z_{\mu \rho}(\cdot,\cdot)`$ |
 | SQUARE | (*) *signed* quadratic weighting of pole areas | $`j = \mathrm{sign}(w_{\mu \rho} z_{\mu \rho}(\cdot,\cdot)) \cdot (w_{\mu \rho} z_{\mu \rho}(\cdot,\cdot))^2`$ |
 | CUBIC | (*) cubic weighting of pole areas | $`j = (w_{\mu \rho} z_{\mu \rho}(\cdot,\cdot))^3`$ |
-| LOG | (*) Logarithmic loss function | $`j = -\log(-w_{\mu \rho} z_{\mu \rho}(\cdot,\cdot))`$
-| KREISSELMEIER | vector performance index weighting according to Kreisselmeier | $`J = f_\mathrm{max,KM} + \rho_\mathrm{KM}^{-1}\ln\left( \sum_{\mu, \rho, \nu} \exp(\rho _\mathrm{KM} w_{\mu \rho} z_{\mu \rho}(\cdot,\cdot) - f_\mathrm{max,KM}) \right)`$
-| EIGENVALUECONDITION | (**) eigenvector matrix condition objective function |
-| NORMGAIN | (**) norm of gain matrices | $`J = \| W_\mathrm{R} \odot R \|_\mathrm{F}^2 + \| W_\mathrm{K} \odot K \|_\mathrm{F}^2 + \| W_\mathrm{F} \odot F \|_\mathrm{F}^2`$
-| LYAPUNOV | (**) norm of Lyapunov matrix of closed loop |
+| LOG | (*) Logarithmic loss function | $`j = -\log(-w_{\mu \rho} z_{\mu \rho}(\cdot,\cdot))`$ |
+| KREISSELMEIER | vector performance index weighting according to Kreisselmeier | $`J = f_\mathrm{max,KM} + \rho_\mathrm{KM}^{-1}\ln\left( \sum_{\mu, \rho, \nu} \exp(\rho _\mathrm{KM} w_{\mu \rho} z_{\mu \rho}(\cdot,\cdot) - f_\mathrm{max,KM}) \right)`$ |
+| EIGENVALUECONDITION | (**) eigenvector matrix condition objective function ||
+| NORMGAIN | (**) norm of gain matrices | $`J = \| W_\mathrm{R} \odot R \|_\mathrm{F}^2 + \| W_\mathrm{K} \odot K \|_\mathrm{F}^2 + \| W_\mathrm{F} \odot F \|_\mathrm{F}^2`$ |
+| LYAPUNOV | (**) norm of Lyapunov matrix of closed loop ||
 
 (*) These loss functions are unbounded below.
 This may lead to unexpected results if the closed loop possesses conjugate complex poles.
@@ -1372,8 +1372,9 @@ is to be used, the following options are to be set:
 
 | GammaSolutionStrategy | Remark |
 | --- | --- |
-| SINGLESHOT | solve pole region assignment problem "as is"
-| FEASIBILITYITERATION | solve a feasibility problem before solving the actual problem and use the solution of the feasibility problem as initial value
+| SINGLESHOT | solve pole region assignment problem "as is" |
+| FEASIBILITYITERATION | solve a feasibility problem before solving the actual problem and use the solution of the feasibility problem as initial value |
+| FEASIBILITYITERATION_COUPLING | solve a feasibility problem with only coupling conditions before solving the actual problem and use the solution of the feasibility problem as initial value |
 
 
 #### Error handling
