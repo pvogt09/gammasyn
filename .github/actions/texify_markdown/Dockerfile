@@ -1,9 +1,9 @@
 FROM miktex/miktex:2.9.6990
 
-RUN mpm --admin --update
+RUN mpm --admin --verbose --update
 
 COPY texlive.packages /texlive.packages
-RUN mpm --verbose --admin --install=dvisvgm
+RUN mpm --admin --verbose --require=@texlive.packages
 
 COPY entrypoint.sh /entrypoint.sh
 
