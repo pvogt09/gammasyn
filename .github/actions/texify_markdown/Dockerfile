@@ -4,7 +4,9 @@ FROM danteev/texlive:latest
 
 COPY texlive.packages /texlive.packages
 # RUN mpm --admin --verbose --require=@texlive.packages
-RUN tlmgr install $(xargs < texlive.packages)
+RUN apt-get install texlive-dvisvgm || true
+RUN tlmgr init-usertree
+RUN su root -c "tlmgr install $(xargs < /texlive.packages)"
 
 COPY entrypoint.sh /entrypoint.sh
 
