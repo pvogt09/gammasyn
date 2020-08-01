@@ -4,7 +4,7 @@ FROM danteev/texlive:latest
 
 COPY texlive.packages /texlive.packages
 # RUN mpm --admin --verbose --require=@texlive.packages
-RUN apt-get install dvisvgm || true
+RUN apt-get install texlive-extra-utils || true
 # RUN tlmgr init-usertree
 # RUN su root -c "tlmgr install $(xargs < /texlive.packages)"
 
