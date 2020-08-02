@@ -26,6 +26,7 @@ RUN dvisvgm --version || true
 RUN find /usr/share/texlive -name '**dvisvg**' || true
 RUN ls -lah /usr/bin || true
 RUN ls -lah /usr/share/texlive/texmf-dist/scripts/texlive-extra || true
+RUN sed -i "s#\['dvisvgm'#\['/usr/bin/dvisvgm'#" /opt/hostedtoolcache/Python/3.8.5/x64/lib/python3.8/site-packages/readme2tex/render.py
 
 COPY entrypoint.sh /entrypoint.sh
 
