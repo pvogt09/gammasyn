@@ -4,13 +4,18 @@ FROM danteev/texlive:latest
 
 COPY texlive.packages /texlive.packages
 # RUN mpm --admin --verbose --require=@texlive.packages
-# RUN apt-get install texlive-extra-utils || true
-# RUN tlmgr init-usertree
-# RUN su root -c "tlmgr install $(xargs < /texlive.packages)"
-RUN which dvisvgm
-RUN whereis dvisvgm
-RUN test -r /usr/bin/dvisvgm
+RUN cat /etc/apt/sources.list
+RUN apt-get install texlive-binaries -y --install-recommends || true
+RUN apt-get install dvisvgm -y --install-recommends || true
+RUN tlmgr init-usertree
+RUN su root -c "tlmgr install $(xargs < /texlive.packages)" || true
+RUN find /usr/share/texlive -name '*dvisvg*' || true
+RUN test -r /usr/bin/dvisvgm || true
 RUN tlmgr info dvisvgm || true
+RUN echo "$PATH"
+RUN find /usr/share/texlive -name '*dvisvg*' || true
+RUN ls -lah /usr/bin || true
+RUN ls -lah /usr/share/texlive/texmf-dist/scripts/texlive-extra || true
 
 COPY entrypoint.sh /entrypoint.sh
 
