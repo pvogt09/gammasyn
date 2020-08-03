@@ -30,7 +30,7 @@ else:
 if not readme:
     raise Exception('No readme file found')
 readme = directory + os.sep + readme
-readme_out = directory + os.sep + 'README.md'
+readme_out = directory + os.sep + 'README.tex.md'
 
 # read file
 with open(readme, 'r') as file:

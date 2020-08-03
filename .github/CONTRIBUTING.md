@@ -32,5 +32,6 @@ Think about whether or not your feature is likely to be used by other users of t
 
 - Submit Pull Requests to the **development branch only**.
 - Before Submitting your Pull Request, merge `development` with your new branch and fix any conflicts. (Make sure you don't break anything in development!)
+- The documentation (`README.md`) is automatically created from `README.tex.md` when the pull request is created and the `README.tex.md` file uses Gitlab markdown instead of Github markdown to support math formulae.
 - Commit Unix line endings.
 - Indent your code using tabulators.

@@ -1,5 +1,5 @@
 # gammasyn
-
+<!-- This file uses Gitlab markdown and is automatically converted to Github markdown with SVG images as math formulae. -->
 
 ## Purpose
 

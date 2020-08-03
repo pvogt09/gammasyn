@@ -1,5 +1,5 @@
 # gammasyn
-
+<!-- This file uses Gitlab markdown and is automatically converted to Github markdown with SVG images as math formulae. -->
 
 ## Purpose
 
@@ -71,17 +71,13 @@ Therefore, it is recommended to execute this script with a cleared base workspac
 
 For the minimal examples the test system is a simple one-mass-oscillator described by
 
-```math
-	<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/c49ba4306d29141bff2884630138be34.svg?invert_in_darkmode" align=middle width=272.43645pt height=95.16181784999999pt/></p>
-```
-The nominal parameters are <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/943d82f958eef033f361fb6b7386d70a.svg?invert_in_darkmode" align=middle width=53.70238829999999pt height=22.831056599999986pt/>, <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/ff152ba203143cd6f6f7d125c0f36c9f.svg?invert_in_darkmode" align=middle width=56.04446099999999pt height=22.831056599999986pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/f5afd9293d92b9f847f43089fcf1e781.svg?invert_in_darkmode" align=middle width=71.04072029999999pt height=22.831056599999986pt/>.
-For the robust design the parameters <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/e7edab300a93d640814d40ac9152468e.svg?invert_in_darkmode" align=middle width=23.565549149999992pt height=22.831056599999986pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/c29664102abae7738be73af4aca73735.svg?invert_in_darkmode" align=middle width=17.68841084999999pt height=22.831056599999986pt/> are assumed to be uncertain, given by
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/2d855da25eabd8f7687947dd0ede1bbf.svg?invert_in_darkmode" align=middle width=272.43645pt height=95.16181784999999pt/></p>
+The nominal parameters are <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/a08aa3f720eb59983ccb69372a8b620d.svg?invert_in_darkmode" align=middle width=44.56994024999999pt height=21.18721440000001pt/>, <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/7474a88176e3b7318768ff82da2d4a2c.svg?invert_in_darkmode" align=middle width=46.91201294999998pt height=22.831056599999986pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/982ad20eaa8b08dbe1bd927db94f4959.svg?invert_in_darkmode" align=middle width=61.90827224999998pt height=21.18721440000001pt/>.
+For the robust design the parameters <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/0e51a2dede42189d77627c4d742822c3.svg?invert_in_darkmode" align=middle width=14.433101099999991pt height=14.15524440000002pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/2103f85b8b1477f430fc407cad462224.svg?invert_in_darkmode" align=middle width=8.55596444999999pt height=22.831056599999986pt/> are assumed to be uncertain, given by
 
-```math
-	<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/c2e3d8f3ee369745e6bac24d5170b081.svg?invert_in_darkmode" align=middle width=98.4512991pt height=41.09589pt/></p>
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/19e316faf489a90f74e47cf68da13c63.svg?invert_in_darkmode" align=middle width=98.4512991pt height=41.09589pt/></p>
 
-The following function is used in the examples to construct the system for given parameter values <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/e7edab300a93d640814d40ac9152468e.svg?invert_in_darkmode" align=middle width=23.565549149999992pt height=22.831056599999986pt/>, <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/c29664102abae7738be73af4aca73735.svg?invert_in_darkmode" align=middle width=17.68841084999999pt height=22.831056599999986pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/da26587c8582f87667b0c05aee338b31.svg?invert_in_darkmode" align=middle width=16.24625309999999pt height=22.831056599999986pt/>:
+The following function is used in the examples to construct the system for given parameter values <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/0e51a2dede42189d77627c4d742822c3.svg?invert_in_darkmode" align=middle width=14.433101099999991pt height=14.15524440000002pt/>, <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/2103f85b8b1477f430fc407cad462224.svg?invert_in_darkmode" align=middle width=8.55596444999999pt height=22.831056599999986pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/3e18a4a28fdee1744e5e3f79d13b9ff6.svg?invert_in_darkmode" align=middle width=7.11380504999999pt height=14.15524440000002pt/>:
 ```matlab
 function [sys] = omo_sys(m, d, c)
 
@@ -121,11 +117,9 @@ polearea = [
 
 For this example the solution can be determined analytically:
 
-```math
-	R \in [-991,\ -950]
-```
-(<img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/81134b13734180a1832d4760261e96e4.svg?invert_in_darkmode" align=middle width=21.74091809999999pt height=22.831056599999986pt/> is negative, which means that it is actually positive feedback.
-This is correct, as with this feedback structure the only possibility to dampen the system is to partly "compensate" the spring <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/da26587c8582f87667b0c05aee338b31.svg?invert_in_darkmode" align=middle width=16.24625309999999pt height=22.831056599999986pt/>.)
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/5031cdcfeb9b4f06e5cb2436359b08c6.svg?invert_in_darkmode" align=middle width=129.50350545pt height=16.438356pt/></p>
+(<img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/1e438235ef9ec72fc51ac5025516017c.svg?invert_in_darkmode" align=middle width=12.60847334999999pt height=22.465723500000017pt/> is negative, which means that it is actually positive feedback.
+This is correct, as with this feedback structure the only possibility to dampen the system is to partly "compensate" the spring <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/3e18a4a28fdee1744e5e3f79d13b9ff6.svg?invert_in_darkmode" align=middle width=7.11380504999999pt height=14.15524440000002pt/>.)
 
 #### Pole region assignment
 
@@ -147,13 +141,13 @@ gammaopts = control.design.gamma.GammasynOptions();
 
 #### Additional objective term
 
-With the code above, all solutions for <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/81134b13734180a1832d4760261e96e4.svg?invert_in_darkmode" align=middle width=21.74091809999999pt height=22.831056599999986pt/> within the interval <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/18d0d2c1f9a644ae84ac09fbb73b0e26.svg?invert_in_darkmode" align=middle width=105.93634589999999pt height=24.65753399999998pt/> are "equally good" solution of the feasibility problem.
+With the code above, all solutions for <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/1e438235ef9ec72fc51ac5025516017c.svg?invert_in_darkmode" align=middle width=12.60847334999999pt height=22.465723500000017pt/> within the interval <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/13233b491e745213e4f4d891faadb905.svg?invert_in_darkmode" align=middle width=96.80389784999998pt height=24.65753399999998pt/> are "equally good" solution of the feasibility problem.
 The exact value found depends on the initial value and the optimizer used.
-(You could change the start value to <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/71a21aee671591207ba93e51f462f4cb.svg?invert_in_darkmode" align=middle width=62.10047744999999pt height=22.831056599999986pt/> to observe a difference.)
+(You could change the start value to <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/cd9981ea0a7b60c42e599e40874e4798.svg?invert_in_darkmode" align=middle width=45.66227159999998pt height=21.18721440000001pt/> to observe a difference.)
 
 This means there exists a certain degree of freedom which can be used for other purposes.
 The following code finds the controller among the feasible ones with the smallest norm of the feedback matrix.
-In this case, it is just the <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/81134b13734180a1832d4760261e96e4.svg?invert_in_darkmode" align=middle width=21.74091809999999pt height=22.831056599999986pt/> with the smallest absolute value, i.e. the unique solution now is <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/2d0877be8d7875b4ac8d2e03f5bc5a29.svg?invert_in_darkmode" align=middle width=100.74639464999998pt height=22.831056599999986pt/>.
+In this case, it is just the <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/1e438235ef9ec72fc51ac5025516017c.svg?invert_in_darkmode" align=middle width=12.60847334999999pt height=22.465723500000017pt/> with the smallest absolute value, i.e. the unique solution now is <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/5e6cdf4bc23893eaed8ff5077bdd34de.svg?invert_in_darkmode" align=middle width=91.61394659999998pt height=22.465723500000017pt/>.
 
 ```matlab
 weight = 1;
@@ -233,7 +227,7 @@ The following image shows the poles of all five closed loop systems
 
 <img src="docs/images/tex/tikz_ext/ex-omo-area-probust-sol.png" width=25%/>
 
-This multiple model approach is heuristic and makes no guarantees about the <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/8436263fb7e9bd7a5e2a43bbf948f9be.svg?invert_in_darkmode" align=middle width=19.40645189999999pt height=22.831056599999986pt/>-stability of the other systems described by the given parameter ranges.
+This multiple model approach is heuristic and makes no guarantees about the <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/b2af456716f3117a91da7afe70758041.svg?invert_in_darkmode" align=middle width=10.274003849999989pt height=22.465723500000017pt/>-stability of the other systems described by the given parameter ranges.
 It is advisable to check the properties for a larger subset of the admissible systems.
 This is made in the following image, where the poles of 100 additional closed loop systems are shown in gray.
 
@@ -246,43 +240,31 @@ This is made in the following image, where the poles of 100 additional closed lo
 This framework considers static, possibly structured output feedback only.
 As will be discussed later, this is actually not a restriction, as any dynamic feedback can be cast into this form.
 
-In the simplest form for this framework a system is given by the three matrices <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/73b6888541fd61edff8be10b90799836.svg?invert_in_darkmode" align=middle width=21.46124639999999pt height=22.831056599999986pt/>, <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/173837d7aca5fffcacc62295b7bf910b.svg?invert_in_darkmode" align=middle width=22.42585124999999pt height=22.831056599999986pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/dcd597547a375785ec8589f3b8f30f5d.svg?invert_in_darkmode" align=middle width=22.05708614999999pt height=22.831056599999986pt/> of the state space representation
+In the simplest form for this framework a system is given by the three matrices <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/53d147e7f3fe6e47ee05b88b166bd3f6.svg?invert_in_darkmode" align=middle width=12.32879834999999pt height=22.465723500000017pt/>, <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/61e84f854bc6258d4108d08d4c4a0852.svg?invert_in_darkmode" align=middle width=13.29340979999999pt height=22.465723500000017pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/9b325b9e31e85137d1de765f43c0f8bc.svg?invert_in_darkmode" align=middle width=12.92464304999999pt height=22.465723500000017pt/> of the state space representation
 
-```math
-	<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/dc79e7c316e6be7ff32bf486f6d2494a.svg?invert_in_darkmode" align=middle width=95.8312509pt height=39.086746049999995pt/></p>
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/630a49462d90298851d8779e862b65c1.svg?invert_in_darkmode" align=middle width=95.8312509pt height=39.086746049999995pt/></p>
 and the control loop is to be closed with the controller
 
-```math
-	u = -R y + F r
-```
-where <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/c760dcb89001e7e63d44cd4e872d48d3.svg?invert_in_darkmode" align=middle width=17.00540324999999pt height=22.831056599999986pt/> is the reference value.
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/cc75a88a708dca3113d838ffc170448d.svg?invert_in_darkmode" align=middle width=106.18908134999998pt height=14.42921205pt/></p>
+where <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/89f2e0d2d24bcf44db73aab8fc03252c.svg?invert_in_darkmode" align=middle width=7.87295519999999pt height=14.15524440000002pt/> is the reference value.
 This leads to a closed loop
 
-```math
-	\dot x = (A - B R C) \cdot x + B F r
-```
-whose poles <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/755185fdc9bddd3acb135005c7eb4738.svg?invert_in_darkmode" align=middle width=26.900801399999988pt height=22.831056599999986pt/> are the solutions of the eigenvalue problem
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/8fde37fbc12d569cda06ae370c2ac5bc.svg?invert_in_darkmode" align=middle width=190.72297365pt height=16.438356pt/></p>
+whose poles <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/962558fefb867b121af066dabdd42400.svg?invert_in_darkmode" align=middle width=16.94645864999999pt height=22.831056599999986pt/> are the solutions of the eigenvalue problem
 
-```math
-	\det(I \lambda_\nu - (A - B R C)) = 0
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/6c9a30773bc8488f5e62660aab52b707.svg?invert_in_darkmode" align=middle width=196.16081265pt height=16.438356pt/></p>
 
 
 #### Mass matrix
 
 As a small notational convenience in some cases, the model can be described as
 
-```math
-	<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/86c3c1299a761865a5b29c693fc023d6.svg?invert_in_darkmode" align=middle width=108.91340955pt height=39.086746049999995pt/></p>
-```
-with the *invertible* mass matrix <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/ad159e0c806e1c3479f7b557e7134490.svg?invert_in_darkmode" align=middle width=22.21462484999999pt height=22.831056599999986pt/>.
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/e01822cd600f489f570906037b3bcd2c.svg?invert_in_darkmode" align=middle width=108.91340955pt height=39.086746049999995pt/></p>
+with the *invertible* mass matrix <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/84df98c65d88c6adf15d4645ffa25e47.svg?invert_in_darkmode" align=middle width=13.08219659999999pt height=22.465723500000017pt/>.
 
 The feedback has the same form as above which leads to the associated eigenvalue problem
 
-```math
-	\det(E \lambda_\nu - (A - B R C)) = 0
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/77874513416b948fee925ae38578dce6.svg?invert_in_darkmode" align=middle width=200.72702429999998pt height=16.438356pt/></p>
 to determine the eigenvalues or poles of the closed loop system.
 
 
@@ -290,32 +272,24 @@ to determine the eigenvalues or poles of the closed loop system.
 
 To allow modeling true differential feedback, the model can be extended to
 
-```math
-	<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/2370ad6488cd7df83298120c2b7a9603.svg?invert_in_darkmode" align=middle width=99.6973593pt height=63.744281699999995pt/></p>
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/945ef8d22fce7aed97d9bb8d19a31a68.svg?invert_in_darkmode" align=middle width=99.6973593pt height=63.744281699999995pt/></p>
 for which the controller has the structure
 
-```math
-	u = - R y + K y' + F r
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/39c66dd6fca28c18549393869ade7974.svg?invert_in_darkmode" align=middle width=154.67835405pt height=16.3763325pt/></p>
 
-* The prime-notation <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/eaa5d1dc1ac16e43babbd082522328cc.svg?invert_in_darkmode" align=middle width=22.393529399999988pt height=24.7161288pt/> is not the same as <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/80ebc002da084114a605586296f32059.svg?invert_in_darkmode" align=middle width=17.78164739999999pt height=22.831056599999986pt/> but allows that not all or others outputs are used for the differential feedback than for the "normal" feedback. If all outputs should be used for the differential feedback, i.e. <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/ede960c4d58fa452c52f9e36f2d3b6e8.svg?invert_in_darkmode" align=middle width=52.96036019999999pt height=24.7161288pt/>, then <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/6e2e3534920142241655bd2794f24810.svg?invert_in_darkmode" align=middle width=61.51122779999999pt height=24.7161288pt/> can be chosen.
+* The prime-notation <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/15f93b25ba881e5829e8fc647b680fb2.svg?invert_in_darkmode" align=middle width=12.43916849999999pt height=24.7161288pt/> is not the same as <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/5ab82db224334014ef8fba6bda1943d8.svg?invert_in_darkmode" align=middle width=8.649225749999989pt height=21.95701200000001pt/> but allows that not all or others outputs are used for the differential feedback than for the "normal" feedback. If all outputs should be used for the differential feedback, i.e. <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/bd5a17cad5a2a508fe4fbd64a14a2d1b.svg?invert_in_darkmode" align=middle width=43.82793689999998pt height=24.7161288pt/>, then <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/5a9e46cf5d21302df360f9c1c5161e52.svg?invert_in_darkmode" align=middle width=52.37878634999999pt height=24.7161288pt/> can be chosen.
 * The differential feedback is defined as positive feedback whereas the normal feedback is defined as negative feedback. This is a deliberate choice which leads to a more symmetric generalized eigenvalue problem
 
-```math
-	\det((I - B K C') \cdot \lambda_\nu - (A - B R C)) = 0
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/227b8db999bc51a3d41e3e9d69ccbc02.svg?invert_in_darkmode" align=middle width=286.87633589999996pt height=17.2895712pt/></p>
 
 
 
 #### Process variables
 
-As the model used here is an augmented system, as discussed below, the output <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/c7dea865aff30fe079cee413fde80793.svg?invert_in_darkmode" align=middle width=17.78165399999999pt height=22.831056599999986pt/> doesn't generally reflect the actual process variables.
+As the model used here is an augmented system, as discussed below, the output <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/deceeaf6940a8c7a5a02373728002b0f.svg?invert_in_darkmode" align=middle width=8.649225749999989pt height=14.15524440000002pt/> doesn't generally reflect the actual process variables.
 Therefore, the process variables for which sensible reference values (or set points) exist are described by an additional output equation:
 
-```math
-	<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/8b433ca5e00ee665ef532538f8b75dab.svg?invert_in_darkmode" align=middle width=144.62609039999998pt height=63.744281699999995pt/></p>
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/009d08c570c9f22117fdecb3bd497b3d.svg?invert_in_darkmode" align=middle width=144.62609039999998pt height=63.744281699999995pt/></p>
 
 
 
@@ -323,20 +297,14 @@ Therefore, the process variables for which sensible reference values (or set poi
 
 Combining all extensions, the most general system description used by this toolbox is
 
-```math
-	<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/c8ebec63975502639ce8a7df339af0fa.svg?invert_in_darkmode" align=middle width=144.62609039999998pt height=88.4018157pt/></p>
-```
-where <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/ad159e0c806e1c3479f7b557e7134490.svg?invert_in_darkmode" align=middle width=22.21462484999999pt height=22.831056599999986pt/> must be an invertible matrix and the controller is given by
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/46056c63a3e69e0e1c41876421f7a2ea.svg?invert_in_darkmode" align=middle width=144.62609039999998pt height=88.4018157pt/></p>
+where <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/84df98c65d88c6adf15d4645ffa25e47.svg?invert_in_darkmode" align=middle width=13.08219659999999pt height=22.465723500000017pt/> must be an invertible matrix and the controller is given by
 
-```math
-	u = - R y + K y' + F r
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/39c66dd6fca28c18549393869ade7974.svg?invert_in_darkmode" align=middle width=154.67835405pt height=16.3763325pt/></p>
 
 The eigenvalues or poles of the closed loop are the solution of the generalized eigenvalue problem
 
-```math
-	\det((E - B K C') \cdot \lambda_\nu - (A - B R C)) = 0
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/126db5cd7a1b3e25f775805a93cd4586.svg?invert_in_darkmode" align=middle width=291.44254755pt height=17.2895712pt/></p>
 
 The structure is depicted here:
 
@@ -348,16 +316,12 @@ The structure is depicted here:
 #### Discrete time model
 The discrete time model is defined analogously to the continuous time case as
 
-```math
-	<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/dfddb00d931bdc6437d431201de77f74.svg?invert_in_darkmode" align=middle width=182.33157195pt height=89.9086386pt/></p>
-```
-where <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/ad159e0c806e1c3479f7b557e7134490.svg?invert_in_darkmode" align=middle width=22.21462484999999pt height=22.831056599999986pt/> must be an invertible matrix and the controller is given by
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/3410cec00c7dc92f756f727e03b84861.svg?invert_in_darkmode" align=middle width=182.33157195pt height=89.9086386pt/></p>
+where <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/84df98c65d88c6adf15d4645ffa25e47.svg?invert_in_darkmode" align=middle width=13.08219659999999pt height=22.465723500000017pt/> must be an invertible matrix and the controller is given by
 
-```math
-	u_k = - R y_k + K y'_k + F r_k
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/45078af303b9933fa803c1a060434e7e.svg?invert_in_darkmode" align=middle width=179.96015565pt height=17.24382pt/></p>
 
-The discrete time analogous "derivative" output <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/a0ed369069bcc5f493c3d69a606a672b.svg?invert_in_darkmode" align=middle width=25.279823249999993pt height=24.7161288pt/> is only defined for accordance with the continuous time system matrices and serves no engineering purpose because it results in a non causal system.
+The discrete time analogous "derivative" output <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/23eee364c1d8932bb54dc8fa9e0709e2.svg?invert_in_darkmode" align=middle width=15.325460699999988pt height=24.7161288pt/> is only defined for accordance with the continuous time system matrices and serves no engineering purpose because it results in a non causal system.
 
 The structure is depicted here:
 
@@ -374,51 +338,32 @@ However, this is a very general approach, as all the controller dynamics can be 
 
 If for example the system
 
-```math
-	<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/dc79e7c316e6be7ff32bf486f6d2494a.svg?invert_in_darkmode" align=middle width=95.8312509pt height=39.086746049999995pt/></p>
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/630a49462d90298851d8779e862b65c1.svg?invert_in_darkmode" align=middle width=95.8312509pt height=39.086746049999995pt/></p>
 is to be controlled by a PI-controller
 
-```math
-	u = K_\mathrm{P} e + K_\mathrm{I} \int e \mathrm{d} \tau
-```
-with <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/ba91339813ac55b903219e3d70e0b671.svg?invert_in_darkmode" align=middle width=75.31756814999999pt height=22.831056599999986pt/>, <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/c760dcb89001e7e63d44cd4e872d48d3.svg?invert_in_darkmode" align=middle width=17.00540324999999pt height=22.831056599999986pt/> being the reference value, which can be written in the state space representation
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/1e3bb984e05eaea8010f168e90b47bac.svg?invert_in_darkmode" align=middle width=149.97517425pt height=36.53007435pt/></p>
+with <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/b0b4a9c53fe95b7982c4d835492ac549.svg?invert_in_darkmode" align=middle width=66.18513989999998pt height=19.1781018pt/>, <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/89f2e0d2d24bcf44db73aab8fc03252c.svg?invert_in_darkmode" align=middle width=7.87295519999999pt height=14.15524440000002pt/> being the reference value, which can be written in the state space representation
 
-```math
-	<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/7f4eae2db028308f1bda4689bd86c082.svg?invert_in_darkmode" align=middle width=175.32334545pt height=39.086746049999995pt/></p>
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/de04af6c2cb29ccf6a9f2477adbf4dc3.svg?invert_in_darkmode" align=middle width=175.32334545pt height=39.086746049999995pt/></p>
 the resulting augmented system is
 
-```math
-	<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/f1914aa8ec2ac01062aa4a732c5c3bed.svg?invert_in_darkmode" align=middle width=238.0232877pt height=85.48022999999999pt/></p>
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/46c4007ad81f99f6d886ef21f6797d99.svg?invert_in_darkmode" align=middle width=238.0232877pt height=85.48022999999999pt/></p>
 to which the static output feedback
 
-```math
-	u_\mathrm{a}
-		=
-			- \underbrace{<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/d8391c69bfcba1709d7b82fc88e155bd.svg?invert_in_darkmode" align=middle width=89.72622615pt height=39.452455349999994pt/></p>}_{K} y_\mathrm{a}
-			+ <p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/b7de5b2d7c9c67e4b856ecc84862f895.svg?invert_in_darkmode" align=middle width=40.970432249999995pt height=39.452455349999994pt/></p> r
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/b6c2df3202fb1a2b5551324a5499fb3d.svg?invert_in_darkmode" align=middle width=233.8014558pt height=61.890745949999996pt/></p>
 is applied.
-This is a *structured* feedback, as the second row of the feedback matrix <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/81134b13734180a1832d4760261e96e4.svg?invert_in_darkmode" align=middle width=21.74091809999999pt height=22.831056599999986pt/> doesn't contain any free parameter but values which must not be altered by the optimizer.
+This is a *structured* feedback, as the second row of the feedback matrix <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/1e438235ef9ec72fc51ac5025516017c.svg?invert_in_darkmode" align=middle width=12.60847334999999pt height=22.465723500000017pt/> doesn't contain any free parameter but values which must not be altered by the optimizer.
 
 More generally, if the given system is controlled with a general dynamic controller
 
-```math
-	<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/cf49255b3c8608824934e820bdb04fb6.svg?invert_in_darkmode" align=middle width=183.59271149999998pt height=39.086746049999995pt/></p>
-```
-(where <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/1ffcd284453ce446756898febd59e893.svg?invert_in_darkmode" align=middle width=32.18046644999999pt height=22.831056599999986pt/> to <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/cbbf25b739f309e298ec0f9b1d28e933.svg?invert_in_darkmode" align=middle width=33.46126409999999pt height=22.831056599999986pt/> may be structured) the augmented system is
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/5f7127c5f83bc0598980dad9a6c11862.svg?invert_in_darkmode" align=middle width=183.59271149999998pt height=39.086746049999995pt/></p>
+(where <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/9e33e6bbd7546c272dc91ad2a39ca6c4.svg?invert_in_darkmode" align=middle width=22.22612204999999pt height=22.465723500000017pt/> to <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/607e0a21936280851772fd807af6b597.svg?invert_in_darkmode" align=middle width=23.50691969999999pt height=22.465723500000017pt/> may be structured) the augmented system is
 
-```math
-	<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/c75b6f37f28f18273f45c61d6f055cb9.svg?invert_in_darkmode" align=middle width=248.32008464999996pt height=85.48022999999999pt/></p>
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/3e62dce4f42687bc9fd6e9fb5fe6b3d9.svg?invert_in_darkmode" align=middle width=248.32008464999996pt height=85.48022999999999pt/></p>
 which is closed by
 
-```math
-	u_\mathrm{a} = - \underbrace{<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/5f62941933e29d07ef62da9822c4af51.svg?invert_in_darkmode" align=middle width=106.73770304999998pt height=39.452455349999994pt/></p>}_{K} y_\mathrm{a} + \underbrace{<p align="center"><img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/247a2a45afb83b997b692325258f2821.svg?invert_in_darkmode" align=middle width=35.296922099999996pt height=39.452455349999994pt/></p>}_{F} r
-```
-where <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/81134b13734180a1832d4760261e96e4.svg?invert_in_darkmode" align=middle width=21.74091809999999pt height=22.831056599999986pt/> (and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/f309af093099f0f9fe6b32d48b711ec0.svg?invert_in_darkmode" align=middle width=21.986370449999992pt height=22.831056599999986pt/>) are generally structured corresponding to the structure of <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/1ffcd284453ce446756898febd59e893.svg?invert_in_darkmode" align=middle width=32.18046644999999pt height=22.831056599999986pt/> to <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/cbbf25b739f309e298ec0f9b1d28e933.svg?invert_in_darkmode" align=middle width=33.46126409999999pt height=22.831056599999986pt/> (and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/39c5e9ca979b2a643a9526ff951a82f6.svg?invert_in_darkmode" align=middle width=27.07770614999999pt height=22.831056599999986pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/d427c052d18f55771936a702e62a9119.svg?invert_in_darkmode" align=middle width=27.07770614999999pt height=22.831056599999986pt/>).
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/c3af50e56e45c306954af03e0f7aac71.svg?invert_in_darkmode" align=middle width=245.13942254999998pt height=61.890745949999996pt/></p>
+where <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/1e438235ef9ec72fc51ac5025516017c.svg?invert_in_darkmode" align=middle width=12.60847334999999pt height=22.465723500000017pt/> (and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/b8bc815b5e9d5177af01fd4d3d3c2f10.svg?invert_in_darkmode" align=middle width=12.85392569999999pt height=22.465723500000017pt/>) are generally structured corresponding to the structure of <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/9e33e6bbd7546c272dc91ad2a39ca6c4.svg?invert_in_darkmode" align=middle width=22.22612204999999pt height=22.465723500000017pt/> to <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/607e0a21936280851772fd807af6b597.svg?invert_in_darkmode" align=middle width=23.50691969999999pt height=22.465723500000017pt/> (and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/2144c3c4436ef35026e895fed8fd671f.svg?invert_in_darkmode" align=middle width=17.12334524999999pt height=22.465723500000017pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/3956a0723425282b441b7a17d9cc4be7.svg?invert_in_darkmode" align=middle width=17.12334524999999pt height=22.465723500000017pt/>).
 
 As such structure is mandatory to achieve given controller structures as for example PI or PID controllers, this toolbox provides the possibility to define such structures.
 
@@ -427,19 +372,17 @@ As such structure is mandatory to achieve given controller structures as for exa
 
 ### Pole region
 
-The basic aim of this control design procedure is to determine <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/81134b13734180a1832d4760261e96e4.svg?invert_in_darkmode" align=middle width=21.74091809999999pt height=22.831056599999986pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/0be7b0830bddac0f6300ac856ea79086.svg?invert_in_darkmode" align=middle width=24.26944739999999pt height=22.831056599999986pt/> such that all poles <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/755185fdc9bddd3acb135005c7eb4738.svg?invert_in_darkmode" align=middle width=26.900801399999988pt height=22.831056599999986pt/>, <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/2701a8831eba9a316bda93bd233e5471.svg?invert_in_darkmode" align=middle width=105.79115085pt height=22.831056599999986pt/>, of the closed loop system lie within a certain region <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/8436263fb7e9bd7a5e2a43bbf948f9be.svg?invert_in_darkmode" align=middle width=19.40645189999999pt height=22.831056599999986pt/> of the complex plane.
+The basic aim of this control design procedure is to determine <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/1e438235ef9ec72fc51ac5025516017c.svg?invert_in_darkmode" align=middle width=12.60847334999999pt height=22.465723500000017pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/d6328eaebbcd5c358f426dbea4bdbf70.svg?invert_in_darkmode" align=middle width=15.13700594999999pt height=22.465723500000017pt/> such that all poles <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/962558fefb867b121af066dabdd42400.svg?invert_in_darkmode" align=middle width=16.94645864999999pt height=22.831056599999986pt/>, <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/ef66b7d203ea6148b4134cf2b8a8c9c5.svg?invert_in_darkmode" align=middle width=96.65870279999999pt height=21.18721440000001pt/>, of the closed loop system lie within a certain region <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/b2af456716f3117a91da7afe70758041.svg?invert_in_darkmode" align=middle width=10.274003849999989pt height=22.465723500000017pt/> of the complex plane.
 
 This toolbox distinguishes between two regions:
-* <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/36cb13ae33627acd528ae02168b32d0e.svg?invert_in_darkmode" align=middle width=46.43853884999999pt height=22.831056599999986pt/>: All poles <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/755185fdc9bddd3acb135005c7eb4738.svg?invert_in_darkmode" align=middle width=26.900801399999988pt height=22.831056599999986pt/> must lie within this region to consider the problem solved.
-* <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/dfe2859bce17e960d93ffcc75663c341.svg?invert_in_darkmode" align=middle width=41.20109399999999pt height=22.831056599999986pt/>: All poles should lie within or as near as possible to this region.
+* <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/de5a52553d8cf2cc14565b900b829269.svg?invert_in_darkmode" align=middle width=36.484191149999994pt height=22.465723500000017pt/>: All poles <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/962558fefb867b121af066dabdd42400.svg?invert_in_darkmode" align=middle width=16.94645864999999pt height=22.831056599999986pt/> must lie within this region to consider the problem solved.
+* <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/1936e598115038507ce0370e92814601.svg?invert_in_darkmode" align=middle width=31.24674299999999pt height=22.465723500000017pt/>: All poles should lie within or as near as possible to this region.
 
 
 
-For a compact notation, the real part of a complex value is written as <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/7ef9c6ad75ebe921d5bf5ae0bf1202ec.svg?invert_in_darkmode" align=middle width=19.115329199999987pt height=22.831056599999986pt/> and the imaginary part as <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/d2442540953667226e65f04c65f6deab.svg?invert_in_darkmode" align=middle width=19.95435419999999pt height=22.831056599999986pt/>, i.e. for example
+For a compact notation, the real part of a complex value is written as <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/8cda31ed38c6d59d14ebefa440099572.svg?invert_in_darkmode" align=middle width=9.98290094999999pt height=14.15524440000002pt/> and the imaginary part as <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/ae4fb5973f393577570881fc24fc2054.svg?invert_in_darkmode" align=middle width=10.82192594999999pt height=14.15524440000002pt/>, i.e. for example
 
-```math
-	\lambda_\nu = \sigma_\nu + \mathrm{j} \omega_\nu
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/6deb7ba8d8da9e8afb0b6e59146304ab.svg?invert_in_darkmode" align=middle width=99.96191864999999pt height=14.611878599999999pt/></p>
 
 
 #### Mathematical description of pole regions
@@ -447,29 +390,22 @@ For a compact notation, the real part of a complex value is written as <img src=
 A region is defined by one or the intersection of more areas.
 Here, "area" refers to the "left side" of a curve in the complex plane.
 
-```math
-	z_\rho(\sigma,\ \omega)
-		<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/5ab607a84ec3481ad62a1c3f282b2682.svg?invert_in_darkmode" align=middle width=261.62698155pt height=69.0417981pt/></p>
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/9e70b842c3ce72eda98c33440580235a.svg?invert_in_darkmode" align=middle width=325.115769pt height=69.0417981pt/></p>
 
-Depending on the optimizer, a function <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/4de785608ddea1555c130ed2ebc3bbc0.svg?invert_in_darkmode" align=middle width=69.8815755pt height=24.65753399999998pt/> should be differentiable twice after each argument.
+Depending on the optimizer, a function <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/7d9cb65db969d7e8addac3679a5e6916.svg?invert_in_darkmode" align=middle width=60.74912744999998pt height=24.65753399999998pt/> should be differentiable twice after each argument.
 
-A region is defined as a set of areas, <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/4eb4ef773e9577c24064e489f743496a.svg?invert_in_darkmode" align=middle width=135.19389179999996pt height=24.65753399999998pt/>.
+A region is defined as a set of areas, <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/bc3dd8032ae136048582aa1b14dbbb0e.svg?invert_in_darkmode" align=middle width=126.06144375pt height=24.65753399999998pt/>.
 The condition that all poles lie within this area translates to
 
-```math
-	z_\rho(\sigma_\nu,\ \omega_\nu) \leq 0 \forall \rho = 1,\ \ldots,\ r, \ \forall \nu = 1,\ \ldots, n
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/6bde997a133b58d1ac244dcdc102b028.svg?invert_in_darkmode" align=middle width=322.29142275pt height=17.031940199999998pt/></p>
 
-For the robust case, where <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/e7edab300a93d640814d40ac9152468e.svg?invert_in_darkmode" align=middle width=23.565549149999992pt height=22.831056599999986pt/> models are to be considered, the condition is
+For the robust case, where <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/0e51a2dede42189d77627c4d742822c3.svg?invert_in_darkmode" align=middle width=14.433101099999991pt height=14.15524440000002pt/> models are to be considered, the condition is
 
-```math
-	z_{\mu \rho}(\sigma_{\mu \nu},\ \omega_{\mu \nu}) \leq 0 \forall \rho = 1,\ \ldots,\ r_\mu, \ \forall \nu = 1,\ \ldots, n_\mu, \ \forall \mu = 1,\ \ldots,\ m
-```
-* The region may depend on the model <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/f52ae2404372e97b59c9eb89084d4fcd.svg?invert_in_darkmode" align=middle width=19.03737164999999pt height=22.831056599999986pt/>. This can be important from a practical point of view. If the uncertainty is rather large one may have to loosen the performance goals, described by the region, for corner case models.
-* The system order <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/9c1d214bdbbfbbb1b7c68988915d4982.svg?invert_in_darkmode" align=middle width=27.81409784999999pt height=22.831056599999986pt/> may depend on the model <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/f52ae2404372e97b59c9eb89084d4fcd.svg?invert_in_darkmode" align=middle width=19.03737164999999pt height=22.831056599999986pt/> as well.
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/2a35781de336bc005aa1f505c569a06a.svg?invert_in_darkmode" align=middle width=488.23708394999994pt height=17.031940199999998pt/></p>
+* The region may depend on the model <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/07617f9d8fe48b4a7b3f523d6730eef0.svg?invert_in_darkmode" align=middle width=9.90492359999999pt height=14.15524440000002pt/>. This can be important from a practical point of view. If the uncertainty is rather large one may have to loosen the performance goals, described by the region, for corner case models.
+* The system order <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/b8bec55ac391e9fa94465fbf510f20cd.svg?invert_in_darkmode" align=middle width=17.85973364999999pt height=14.15524440000002pt/> may depend on the model <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/07617f9d8fe48b4a7b3f523d6730eef0.svg?invert_in_darkmode" align=middle width=9.90492359999999pt height=14.15524440000002pt/> as well.
 
-As there are two pole regions, <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/36cb13ae33627acd528ae02168b32d0e.svg?invert_in_darkmode" align=middle width=46.43853884999999pt height=22.831056599999986pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/dfe2859bce17e960d93ffcc75663c341.svg?invert_in_darkmode" align=middle width=41.20109399999999pt height=22.831056599999986pt/>, there are also two sets of functions <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/c510280481df699418095e09a741dd09.svg?invert_in_darkmode" align=middle width=32.41212644999999pt height=22.831056599999986pt/>: <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/904b5ca3320f10fe8cb99890ea2716e5.svg?invert_in_darkmode" align=middle width=138.1885428pt height=24.65753399999998pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/4ac3f97061f7a5aae313696ec54c760a.svg?invert_in_darkmode" align=middle width=127.71365639999999pt height=24.65753399999998pt/>.
+As there are two pole regions, <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/de5a52553d8cf2cc14565b900b829269.svg?invert_in_darkmode" align=middle width=36.484191149999994pt height=22.465723500000017pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/1936e598115038507ce0370e92814601.svg?invert_in_darkmode" align=middle width=31.24674299999999pt height=22.465723500000017pt/>, there are also two sets of functions <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/52d8d23328f6321bd363d9d31b42b4cc.svg?invert_in_darkmode" align=middle width=22.457762249999988pt height=14.15524440000002pt/>: <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/dbbfd6a0d7f6f830f7d362fc841281b7.svg?invert_in_darkmode" align=middle width=129.05609474999997pt height=24.65753399999998pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/151a8a36f5efa9a4b3a7696282e72e3d.svg?invert_in_darkmode" align=middle width=118.58120834999998pt height=24.65753399999998pt/>.
 
 
 
@@ -478,57 +414,41 @@ As there are two pole regions, <img src="https://raw.githubusercontent.com/pvogt
 
 The aim is to determine the matrices of the controller
 
-```math
-	u = - R y + K y' + F r
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/39c66dd6fca28c18549393869ade7974.svg?invert_in_darkmode" align=middle width=154.67835405pt height=16.3763325pt/></p>
 
 
 #### Controller structure
 
 Generally it is structured feedback, that is, the matrices cannot be chosen freely but certain entries are fixed and there may be additional conditions to be respected.
 Mathematically fixed entries and linear dependencies between different entries can be expressed in the form
-```math
-	<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/8491ebd57c48fe73211deeea5aad6e6c.svg?invert_in_darkmode" align=middle width=149.0489649pt height=66.34700985pt/></p>
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/89e689d61eb42d228222271863f860aa.svg?invert_in_darkmode" align=middle width=149.0489649pt height=66.34700985pt/></p>
 which allows dependecies of entries of the same matrix only or the more general form
-```math
-	<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/42354ae19bf33315daa86f291ff6a80a.svg?invert_in_darkmode" align=middle width=207.01724174999998pt height=59.1786591pt/></p>
-```
-where <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/13dbd0b1769a1ce03b092176f89e0db5.svg?invert_in_darkmode" align=middle width=31.963517849999988pt height=22.831056599999986pt/> is the vectorization operator.
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/5bcdee3eb3e78b2f55fb68053955cd98.svg?invert_in_darkmode" align=middle width=207.01724174999998pt height=59.1786591pt/></p>
+where <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/13f9c330184054cf60379a7375c5472a.svg?invert_in_darkmode" align=middle width=22.831119299999987pt height=14.15524440000002pt/> is the vectorization operator.
 Mathematically the latter form comprises the precedent three equations, but this framework allows the specification in either form or both forms simultanously.
 
 The notation used here is versatile.
-Of course equality conditions of the form <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/719fcb6b8bed75e29a14b9c0e5c418e3.svg?invert_in_darkmode" align=middle width=82.49430254999999pt height=24.65753399999998pt/> actually simply reduce the effective number of optimization variables.
+Of course equality conditions of the form <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/a77f5c7d34114e3f704ff10b3466e703.svg?invert_in_darkmode" align=middle width=73.36185449999999pt height=24.65753399999998pt/> actually simply reduce the effective number of optimization variables.
 The same is valid for linear equation constraints between two and more optimization variables.
 This is used by the toolbox when it constructs the problem, but for the sake of readability it is not denoted explicitly here.
 
 The possibility to formulate linear equality conditions is necessary for the design of a structured controller.
 Not necessary but possible are linear inequality conditions (aside from the ones resulting from the pole region constraints which are introduced below), which can be specified in the form
 
-```math
-	<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/09aefdd06ad0a52f885432b46a5e2020.svg?invert_in_darkmode" align=middle width=149.96215245pt height=66.34700985pt/></p>
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/67ae15ac260bf15cc7d9face49a2966a.svg?invert_in_darkmode" align=middle width=149.96215245pt height=66.34700985pt/></p>
 and
-```math
-	<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/258cd22b7574404d589b7bc75909d0a8.svg?invert_in_darkmode" align=middle width=207.9304293pt height=59.1786591pt/></p>
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/f612a787aaba4f76a2550c1e767995a0.svg?invert_in_darkmode" align=middle width=207.9304293pt height=59.1786591pt/></p>
 
 To provide more flexibility, this toolbox allows also for nonlinear equality and inequality conditions,
 
-```math
-	<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/fa25999ffd4d3436835309d9ff4821a4.svg?invert_in_darkmode" align=middle width=88.86044475pt height=140.31961184999997pt/></p>
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/d3d96d5b41fedc24839e9a3421ac0a1d.svg?invert_in_darkmode" align=middle width=88.86044475pt height=140.31961184999997pt/></p>
 
 Instead of referring to these seven equations and seven inequalities in the feasibility and optimization problems that follow, it is used the shorter notation
 
-```math
-	(R,\ K,\ F) \in \mathcal{S}
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/5a9dd70a37d6a096c4636b383543d153.svg?invert_in_darkmode" align=middle width=109.32055199999999pt height=16.438356pt/></p>
 For example
 
-```math
-	\min_{(R,\ K,\ F) \in \mathcal{S}} J
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/5a3916ab93b1ecaf69e4b1cd750aea3f.svg?invert_in_darkmode" align=middle width=91.45655144999999pt height=25.47942045pt/></p>
 
 
 
@@ -544,13 +464,11 @@ These are translated into constraints or into an objective function, depending o
 
 If the optimizer supports inequality constraints directly,
 
-```math
-	<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/81a05acc3b38a9a4007669e22df25d9c.svg?invert_in_darkmode" align=middle width=598.3804348499999pt height=56.5021809pt/></p>
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/15649eec25bca60abad4f1cf2fcc202e.svg?invert_in_darkmode" align=middle width=598.3804348499999pt height=56.5021809pt/></p>
 
-If no additional objective function is given, i.e. <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/01eb1509890c54fdde448ee1d585c93d.svg?invert_in_darkmode" align=middle width=49.96563824999999pt height=22.831056599999986pt/>, this is a feasibility problem.
+If no additional objective function is given, i.e. <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/570884d514512e4e25a77aaf2bae5688.svg?invert_in_darkmode" align=middle width=40.83319019999999pt height=22.465723500000017pt/>, this is a feasibility problem.
 
-The weights <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/d7e5b844958d67af4f5b2fffc16024bf.svg?invert_in_darkmode" align=middle width=36.53598134999999pt height=22.831056599999986pt/> are not necessary from a theoretical - and mostly practical - point of view.
+The weights <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/28457d95bce65adb96ba5eb9eebd9dec.svg?invert_in_darkmode" align=middle width=26.58161714999999pt height=14.15524440000002pt/> are not necessary from a theoretical - and mostly practical - point of view.
 Generally they should be set to 1.
 
 * The weights can be used to reverse the left and right side of an area.
@@ -559,51 +477,43 @@ Generally they should be set to 1.
 
 ##### Hard pole region - Unconstrained optimization using a loss function
 
-If the optimizer doesn't support inequality constraints (or for the soft pole region <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/dfe2859bce17e960d93ffcc75663c341.svg?invert_in_darkmode" align=middle width=41.20109399999999pt height=22.831056599999986pt/>) the inequality constraints have to be transformed into an objective function using loss functions.
+If the optimizer doesn't support inequality constraints (or for the soft pole region <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/1936e598115038507ce0370e92814601.svg?invert_in_darkmode" align=middle width=31.24674299999999pt height=22.465723500000017pt/>) the inequality constraints have to be transformed into an objective function using loss functions.
 
 In most cases the resulting objective function has the form
 
-```math
-	J_\Gamma = \sum_{\mu=1}^m \sum_{\nu=1}^{n_\mu} \sum_{\rho=1}^{r_\mu} j(z_{\mu \rho}(\sigma_{\mu \nu},\ \omega_{\mu \nu}))
-```
-i.e. for each combination of model, pole and area the value of <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/ce521aa40a0f103efbda012ca0aa06dd.svg?invert_in_darkmode" align=middle width=109.95237659999998pt height=24.65753399999998pt/> is assessed by some loss function <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/8bfa4e773baaafee75f9b9e78a22a43a.svg?invert_in_darkmode" align=middle width=16.84286504999999pt height=22.831056599999986pt/> and the sum is used as objective function.
-The following table lists the most common choices for <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/8bfa4e773baaafee75f9b9e78a22a43a.svg?invert_in_darkmode" align=middle width=16.84286504999999pt height=22.831056599999986pt/>:
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/14a51f73f1bd32a93a2a2e409f447c57.svg?invert_in_darkmode" align=middle width=241.89984719999998pt height=48.717066749999994pt/></p>
+i.e. for each combination of model, pole and area the value of <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/2f7e7a6f478ee8461ca31a848d05f5dd.svg?invert_in_darkmode" align=middle width=100.81992854999999pt height=24.65753399999998pt/> is assessed by some loss function <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/36b5afebdba34564d884d347484ac0c7.svg?invert_in_darkmode" align=middle width=7.710416999999989pt height=21.68300969999999pt/> and the sum is used as objective function.
+The following table lists the most common choices for <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/36b5afebdba34564d884d347484ac0c7.svg?invert_in_darkmode" align=middle width=7.710416999999989pt height=21.68300969999999pt/>:
 
-| loss function | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/b3b00dd5c9e494ec6a38ee644803c938.svg?invert_in_darkmode" align=middle width=82.13174144999999pt height=24.65753399999998pt/> |
+| loss function | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/63de8bf13006e75fc90561e40af887e0.svg?invert_in_darkmode" align=middle width=72.99929339999998pt height=24.65753399999998pt/> |
 | --- | --- |
-| Quadratic loss function | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/5533ae840db83be5d6995f62fc9cbf74.svg?invert_in_darkmode" align=middle width=173.58299969999996pt height=26.76175259999998pt/> |
-| <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/83771fef97f748cb0fed8d9e1d007c87.svg?invert_in_darkmode" align=middle width=21.41178269999999pt height=22.831056599999986pt/> loss function | <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/5aca9b1e154d3cff0896bb38a81718a5.svg?invert_in_darkmode" align=middle width=156.16276499999998pt height=24.65753399999998pt/> |
-| Exponential loss function | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/8ef7fd695c3f0a0d83e7cacdaa98cbd6.svg?invert_in_darkmode" align=middle width=129.67873544999998pt height=24.65753399999998pt/> |
-| Logarithmic loss function | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/95bfe004bb048e4146b3f3c917360dc3.svg?invert_in_darkmode" align=middle width=155.9343918pt height=24.65753399999998pt/> |
+| Quadratic loss function | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/8fdf71042a11097ae98df42e2cdae3b9.svg?invert_in_darkmode" align=middle width=163.62863879999998pt height=26.76175259999998pt/> |
+| <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/469f525d671e1e96713a0a17a13f2468.svg?invert_in_darkmode" align=middle width=11.45742179999999pt height=22.831056599999986pt/> loss function | <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/4729d237a36fe7960fd0883a2d691f84.svg?invert_in_darkmode" align=middle width=144.29065859999997pt height=24.65753399999998pt/> |
+| Exponential loss function | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/2ad3f337209d9b064b8670da975ad833.svg?invert_in_darkmode" align=middle width=117.80662904999998pt height=24.65753399999998pt/> |
+| Logarithmic loss function | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/550d940341e7aadd9a9f436e27409b64.svg?invert_in_darkmode" align=middle width=142.23584595pt height=24.65753399999998pt/> |
 
-* The downside of the <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/83771fef97f748cb0fed8d9e1d007c87.svg?invert_in_darkmode" align=middle width=21.41178269999999pt height=22.831056599999986pt/> loss function is that it is not differentiable on the border curves.
+* The downside of the <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/469f525d671e1e96713a0a17a13f2468.svg?invert_in_darkmode" align=middle width=11.45742179999999pt height=22.831056599999986pt/> loss function is that it is not differentiable on the border curves.
 * The logarithmic loss function is an inner penalty function which is not defined for any pole not lying within the defined region. Therefore, it can only be used if the initial value for the optimization variables is feasible.
 * The exponential loss function may lead to very high values if the poles are far out of the regions. This may results in problems if the initial value for the optimization variables are not chosen carefully. In this case, the quadratic loss function may be a better choice.
 
 An alternative objective function is based on the Kreisselmeier-Steinhauser function,
 
-```math
-	J = f_\mathrm{max,KM} + \frac{1}{\rho_\mathrm{KM}} \cdot \ln\left( \sum_{\mu=1}^m \sum_{\nu=1}^{n_\mu} \sum_{\rho=1}^{r_\mu} \exp(\rho_\mathrm{KM} w_{\mu \rho} z_{\mu \rho}(\cdot,\cdot) - f_\mathrm{max,KM}) \right)
-```
-which is an (rough) approximation of <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/8eb0cf9d781959aad64df7ceddc2abd7.svg?invert_in_darkmode" align=middle width=135.15823035pt height=24.65753399999998pt/>.
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/41fb148ee352ba9b09b4e9f9917bf183.svg?invert_in_darkmode" align=middle width=509.728032pt height=50.2012401pt/></p>
+which is an (rough) approximation of <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/a715e8d5c642395eb64658e9490f8b33.svg?invert_in_darkmode" align=middle width=123.2861223pt height=24.65753399999998pt/>.
 
 The resulting optimization problem is
 
-```math
-	(R^\star,\ K^\star,\ F^\star) = \underset{(R,\ K,\ F) \in \mathcal{S}}{\arg \min} J_{\Gamma, \mathrm{hard}}
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/455dcf7f9ecbf373835f56cdd42793f5.svg?invert_in_darkmode" align=middle width=248.922432pt height=29.771669399999997pt/></p>
 
 #### Soft pole region
 
 If a constrained optimizer is used, a second pole region can be defined.
 This soft region is treated in the same way as unconstrained optimizers treat the hard pole region, i.e.
-* The soft pole region <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/dfe2859bce17e960d93ffcc75663c341.svg?invert_in_darkmode" align=middle width=41.20109399999999pt height=22.831056599999986pt/>
+* The soft pole region <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/1936e598115038507ce0370e92814601.svg?invert_in_darkmode" align=middle width=31.24674299999999pt height=22.465723500000017pt/>
 * It makes only sense if the optimizer supports inequality constraints
 
 
-```math
-	<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/265bdbeb3e6c19285ed3623bf9caf5cf.svg?invert_in_darkmode" align=middle width=565.4974578pt height=56.5021809pt/></p>
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/73617ee0f338dd11910a3c554d1885fa.svg?invert_in_darkmode" align=middle width=565.4974578pt height=56.5021809pt/></p>
 
 
 #### Additional objective terms
@@ -613,26 +523,20 @@ Additional objective functions can be selected.
 
 ##### Controller norm
 In order to get a small control action, the controller matrices can be minimized by the choice of `GammaJType.NORMGAIN` as objective type with the objective function
-```math
-	J_\mathrm{Ctrl} = \| W_\mathrm{R} \odot (R - S_\mathrm{R}) \|_\mathrm{F}^2 + \| W_\mathrm{K} \odot (K - S_\mathrm{K}) \|_\mathrm{F}^2 + \| W_\mathrm{F} \odot (F - S_\mathrm{F}) \|_\mathrm{F}^2
-```
-where the matrices <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/e509759439a4ef1b95bc06ed8208b1d5.svg?invert_in_darkmode" align=middle width=26.94070664999999pt height=22.831056599999986pt/> of appropriate dimension are chosen for weighting.
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/78ce3d5021b739f30ff3b82718ca61c3.svg?invert_in_darkmode" align=middle width=509.23495095pt height=18.312383099999998pt/></p>
+where the matrices <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/84c95f91a742c9ceb460a83f9b5090bf.svg?invert_in_darkmode" align=middle width=17.80826024999999pt height=22.465723500000017pt/> of appropriate dimension are chosen for weighting.
 
 
 ##### Condition of the eigenvector matrix
 For greater robustness of the closed loop, the condition number of the eigenvector matrix can be minimized by the choice of `GammaJType.EIGENVALUECONDITION` with the objective function
-```math
-	J_\mathrm{EV} = \mathrm{cond}(V)
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/81d712a04f386548a26b8b37b126271f.svg?invert_in_darkmode" align=middle width=110.38815479999998pt height=16.438356pt/></p>
 
 ##### Norm of the Lyapunov matrix
 Another possibility for achieving greater robustness against time varying unstructured uncertainty in the system matrix of the closed loop, is the minimization of the norm of the Lyapunov matrix of the closed loop system, which can be achieved by the choice of `GammaJType.LYAPUNOV`.
 The objective function in this case has the form
-```math
-	J_\mathrm{Lyap} = -\frac{1}{\|\tilde{P}_{11}\|_{F}^2} + \frac{1}{\|\tilde{P}_{22}\|_{F}^2}
-```
-where the matrices <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/4c28a537aacd5fac8f4df776ace4ccfb.svg?invert_in_darkmode" align=middle width=22.12787279999999pt height=22.831056599999986pt/> in the Lyapunov equation can be chosen independently for every multiple model.
-The matrices <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/dbd9e92afae6d85716b521a8b16d61c5.svg?invert_in_darkmode" align=middle width=33.61309709999999pt height=30.267491100000004pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/8e0de3a3fde533378f202abc749498b6.svg?invert_in_darkmode" align=middle width=33.61309709999999pt height=30.267491100000004pt/> which correspond to the unstable and stable part of the system respectively stem from a Schur decomposition of the closed loop system matrix where the unstable system matrix is replaced by <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/2a1d0d29316f1346b3d73abf6df529fc.svg?invert_in_darkmode" align=middle width=41.55243839999999pt height=22.831056599999986pt/> in the continuous time case and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/2801e4248c173ffc825d75a59ea47cc3.svg?invert_in_darkmode" align=middle width=39.10970414999999pt height=26.76175259999998pt/> in the discrete time case.
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/9aef7a915c378b7f5c365a52a3ebdd05.svg?invert_in_darkmode" align=middle width=202.83691394999997pt height=39.8706165pt/></p>
+where the matrices <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/1afcdb0f704394b16fe85fb40c45ca7a.svg?invert_in_darkmode" align=middle width=12.99542474999999pt height=22.465723500000017pt/> in the Lyapunov equation can be chosen independently for every multiple model.
+The matrices <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/dc865b14fe6def23743a60b71824ed4a.svg?invert_in_darkmode" align=middle width=23.65874114999999pt height=30.267491100000004pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/77d779e1d0f8d94889a60f70335de686.svg?invert_in_darkmode" align=middle width=23.65874114999999pt height=30.267491100000004pt/> which correspond to the unstable and stable part of the system respectively stem from a Schur decomposition of the closed loop system matrix where the unstable system matrix is replaced by <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/604210d982922a6467b88270ff97a28d.svg?invert_in_darkmode" align=middle width=25.114232549999993pt height=22.465723500000017pt/> in the continuous time case and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/471d65ea6d03a4f1ea1dd8be931d26c9.svg?invert_in_darkmode" align=middle width=29.155366349999987pt height=26.76175259999998pt/> in the discrete time case.
 
 
 #### Complete optimization problem
@@ -640,15 +544,11 @@ The matrices <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/develo
 ##### Constrained optimizers
 
 For constrained optimizers the "full" optimization problem is
-```math
-	<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/5d0ae9573889fc992940426d025b18f1.svg?invert_in_darkmode" align=middle width=623.0152697999999pt height=56.5021809pt/></p>
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/70a9b6fe4af3f92d9d32d64177df55e9.svg?invert_in_darkmode" align=middle width=623.0152697999999pt height=56.5021809pt/></p>
 
 For unconstrained optimizers the "full" optimization problem is
-```math
-	(R^\star,\ K^\star,\ F^\star) = \underset{(R,\ K,\ F) \in \mathcal{S}}{\arg \min} w_\Gamma J_\mathrm{\Gamma,hard} + w_\mathrm{Ctrl} J_\mathrm{Ctrl} + w_\mathrm{EV} J_\mathrm{EV}
-```
-In this case only "simple" linear equality conditions can be imposed for the entries of <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/81134b13734180a1832d4760261e96e4.svg?invert_in_darkmode" align=middle width=21.74091809999999pt height=22.831056599999986pt/>, <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/0be7b0830bddac0f6300ac856ea79086.svg?invert_in_darkmode" align=middle width=24.26944739999999pt height=22.831056599999986pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/86cac5c1ecaa751197c77cbfb01c0dc7.svg?invert_in_darkmode" align=middle width=26.59824584999999pt height=24.7161288pt/> which can be incorporated directly by reducing the number of optimization variables.
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/e9c340c5086676fc6287c2330d918da8.svg?invert_in_darkmode" align=middle width=439.06821749999995pt height=29.771669399999997pt/></p>
+In this case only "simple" linear equality conditions can be imposed for the entries of <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/1e438235ef9ec72fc51ac5025516017c.svg?invert_in_darkmode" align=middle width=12.60847334999999pt height=22.465723500000017pt/>, <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/d6328eaebbcd5c358f426dbea4bdbf70.svg?invert_in_darkmode" align=middle width=15.13700594999999pt height=22.465723500000017pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/f7fe419d8681ca1be2f53fbd90acf017.svg?invert_in_darkmode" align=middle width=16.64388494999999pt height=24.7161288pt/> which can be incorporated directly by reducing the number of optimization variables.
 
 
 ## Usage
@@ -666,17 +566,17 @@ In this case only "simple" linear equality conditions can be imposed for the ent
 ### Return values
 
 * `R_opt`: Found solution, the format depends on relevant
-	* If `sys` defines neither <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/2a400357c40ac1a7a9c87a249c6796a6.svg?invert_in_darkmode" align=middle width=26.66895989999999pt height=24.7161288pt/> nor <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/7c35e2cd0b773a91d1eb4c717108d4df.svg?invert_in_darkmode" align=middle width=37.67934389999999pt height=22.831056599999986pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/5b753e899e8d08ad505db14679284ed3.svg?invert_in_darkmode" align=middle width=39.54009014999999pt height=22.831056599999986pt/>, then `R_opt`  is simply a numerical matrix corresponding to <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/bae6ff213faeb39b314e9b7bb2202984.svg?invert_in_darkmode" align=middle width=29.29800719999999pt height=22.831056599999986pt/>
-	* If `sys` defines all matrixes, then `R_opt` is a cell array with three numerical entries corresponding to the solution <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/47a2f14955944778512cb25f1035e7d0.svg?invert_in_darkmode" align=middle width=110.75919359999999pt height=24.65753399999998pt/>
+	* If `sys` defines neither <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/f0e9592dd37df872e4eaae9c6e9b44e5.svg?invert_in_darkmode" align=middle width=16.71459899999999pt height=24.7161288pt/> nor <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/fc8611f3dc01d5ede1c5fd180b2e52f2.svg?invert_in_darkmode" align=middle width=27.72499289999999pt height=22.465723500000017pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/0ef8acdb75fa4d1cadb0bd690498414a.svg?invert_in_darkmode" align=middle width=29.585739149999988pt height=22.465723500000017pt/>, then `R_opt`  is simply a numerical matrix corresponding to <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/9882033dc7a3868ecfaf27408a6ea3e3.svg?invert_in_darkmode" align=middle width=19.343664449999988pt height=22.63846199999998pt/>
+	* If `sys` defines all matrixes, then `R_opt` is a cell array with three numerical entries corresponding to the solution <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/cfe96b7369b7d046a2114a06db8e1932.svg?invert_in_darkmode" align=middle width=101.62674555pt height=24.65753399999998pt/>
 * `J_opt`: value of the objective function at `R_opt`
 * `info`: structure with additional information about the result
 
 
 PLEASE NOTE: The current version of the toolbox "ignores" the prefilter <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/b8bc815b5e9d5177af01fd4d3d3c2f10.svg?invert_in_darkmode" align=middle width=12.85392569999999pt height=22.465723500000017pt/>.
 Current work aims to extend the toolbox for the design of coupling and decoupling controllers.
-In theses cases the manipulation of <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/f309af093099f0f9fe6b32d48b711ec0.svg?invert_in_darkmode" align=middle width=21.986370449999992pt height=22.831056599999986pt/> is necessary.
+In theses cases the manipulation of <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/b8bc815b5e9d5177af01fd4d3d3c2f10.svg?invert_in_darkmode" align=middle width=12.85392569999999pt height=22.465723500000017pt/> is necessary.
 Therefore, it is included in the API.
-But in the current release version, <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/f309af093099f0f9fe6b32d48b711ec0.svg?invert_in_darkmode" align=middle width=21.986370449999992pt height=22.831056599999986pt/> will always be returned as the initial value or a zero matrix.
+But in the current release version, <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/b8bc815b5e9d5177af01fd4d3d3c2f10.svg?invert_in_darkmode" align=middle width=12.85392569999999pt height=22.465723500000017pt/> will always be returned as the initial value or a zero matrix.
 
 
 ### System `sys`
@@ -687,19 +587,15 @@ If more than one system is given, `sys` is a vector of structs.
 
 These systems are always the augmented systems which may include (parts of) the controller.
 
-In the simplest form a system is given by the three matrices <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/73b6888541fd61edff8be10b90799836.svg?invert_in_darkmode" align=middle width=21.46124639999999pt height=22.831056599999986pt/>, <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/173837d7aca5fffcacc62295b7bf910b.svg?invert_in_darkmode" align=middle width=22.42585124999999pt height=22.831056599999986pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/dcd597547a375785ec8589f3b8f30f5d.svg?invert_in_darkmode" align=middle width=22.05708614999999pt height=22.831056599999986pt/> of the state space representation
+In the simplest form a system is given by the three matrices <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/53d147e7f3fe6e47ee05b88b166bd3f6.svg?invert_in_darkmode" align=middle width=12.32879834999999pt height=22.465723500000017pt/>, <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/61e84f854bc6258d4108d08d4c4a0852.svg?invert_in_darkmode" align=middle width=13.29340979999999pt height=22.465723500000017pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/9b325b9e31e85137d1de765f43c0f8bc.svg?invert_in_darkmode" align=middle width=12.92464304999999pt height=22.465723500000017pt/> of the state space representation
 
-```math
-	<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/dc79e7c316e6be7ff32bf486f6d2494a.svg?invert_in_darkmode" align=middle width=95.8312509pt height=39.086746049999995pt/></p>
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/630a49462d90298851d8779e862b65c1.svg?invert_in_darkmode" align=middle width=95.8312509pt height=39.086746049999995pt/></p>
 
 Optionally, this toolbox allows to specify a mass matrix and to design ideal differential feedback as well as it can design a prefilter.
 The "full" system form is given by
 
-```math
-	<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/c8ebec63975502639ce8a7df339af0fa.svg?invert_in_darkmode" align=middle width=144.62609039999998pt height=88.4018157pt/></p>
-```
-where <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/ad159e0c806e1c3479f7b557e7134490.svg?invert_in_darkmode" align=middle width=22.21462484999999pt height=22.831056599999986pt/> must be an invertible matrix.
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/46056c63a3e69e0e1c41876421f7a2ea.svg?invert_in_darkmode" align=middle width=144.62609039999998pt height=88.4018157pt/></p>
+where <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/84df98c65d88c6adf15d4645ffa25e47.svg?invert_in_darkmode" align=middle width=13.08219659999999pt height=22.465723500000017pt/> must be an invertible matrix.
 
 | Fields | Remark |
 | --- | --- |
@@ -718,7 +614,7 @@ If the additional flexibility of differential feedback or reference outputs is n
 
 The controller structure is given by the mandatory argument `Rfixed` as well as the optional arguments `Rbounds` and `Rnonlin`.
 
-In the following, the structure of one of the matrices <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/81134b13734180a1832d4760261e96e4.svg?invert_in_darkmode" align=middle width=21.74091809999999pt height=22.831056599999986pt/>, <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/0be7b0830bddac0f6300ac856ea79086.svg?invert_in_darkmode" align=middle width=24.26944739999999pt height=22.831056599999986pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/f309af093099f0f9fe6b32d48b711ec0.svg?invert_in_darkmode" align=middle width=21.986370449999992pt height=22.831056599999986pt/> are explained.
+In the following, the structure of one of the matrices <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/1e438235ef9ec72fc51ac5025516017c.svg?invert_in_darkmode" align=middle width=12.60847334999999pt height=22.465723500000017pt/>, <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/d6328eaebbcd5c358f426dbea4bdbf70.svg?invert_in_darkmode" align=middle width=15.13700594999999pt height=22.465723500000017pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/b8bc815b5e9d5177af01fd4d3d3c2f10.svg?invert_in_darkmode" align=middle width=12.85392569999999pt height=22.465723500000017pt/> are explained.
 (It is the same for each one.)
 They are combined by forming a cell array, i.e. if all three matrices are used:
 ```matlab
@@ -728,11 +624,11 @@ If no dependencies between different gain matrices are needed, this can be reduc
 ```matlab
 Rfixed = {Ra_fixed, Ka_fixed, Fa_fixed}
 ```
-If only <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/81134b13734180a1832d4760261e96e4.svg?invert_in_darkmode" align=middle width=21.74091809999999pt height=22.831056599999986pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/0be7b0830bddac0f6300ac856ea79086.svg?invert_in_darkmode" align=middle width=24.26944739999999pt height=22.831056599999986pt/> is used,
+If only <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/1e438235ef9ec72fc51ac5025516017c.svg?invert_in_darkmode" align=middle width=12.60847334999999pt height=22.465723500000017pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/d6328eaebbcd5c358f426dbea4bdbf70.svg?invert_in_darkmode" align=middle width=15.13700594999999pt height=22.465723500000017pt/> is used,
 ```matlab
 Rfixed = {Ra_fixed, Ka_fixed}
 ```
-and if only <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/81134b13734180a1832d4760261e96e4.svg?invert_in_darkmode" align=middle width=21.74091809999999pt height=22.831056599999986pt/> is used,
+and if only <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/1e438235ef9ec72fc51ac5025516017c.svg?invert_in_darkmode" align=middle width=12.60847334999999pt height=22.465723500000017pt/> is used,
 ```matlab
 Rfixed = {Ra_fixed}
 ```
@@ -747,7 +643,7 @@ Rfixed = {Ra_fixed}
 
 	(This is redundant, as `Rfix = ~isnan(Rval)` but is needed to distinguish the format.)
 
-	For example, if <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/dd92860b95894e6ee841c5f145daf6f8.svg?invert_in_darkmode" align=middle width=123.03464414999999pt height=47.6716218pt/> with the parameters <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/30c3d28d77c09e9badacba39ddbed7c0.svg?invert_in_darkmode" align=middle width=26.20632794999999pt height=22.831056599999986pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/9828cb0c9bfc81bafba8a244a6d5eb5a.svg?invert_in_darkmode" align=middle width=22.11958979999999pt height=22.831056599999986pt/> being free, the definition of the structure would be
+	For example, if <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/710691f91bcc303044ab837f0292077e.svg?invert_in_darkmode" align=middle width=111.16254269999997pt height=47.6716218pt/> with the parameters <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/11b758cdd4af7852d80a4a6bfd04319c.svg?invert_in_darkmode" align=middle width=16.25198519999999pt height=14.15524440000002pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/7ea284f8038dab36b863285a40d1c92f.svg?invert_in_darkmode" align=middle width=12.165227249999989pt height=14.15524440000002pt/> being free, the definition of the structure would be
 	```matlab
 		{[false, false; true, true], [NaN, NaN; 1, 0]}
 	```
@@ -758,14 +654,12 @@ Rfixed = {Ra_fixed}
 
 	Linear dependencies are given by linear equations of the form
 
-	```math
-	\sum_{i,j} (Z_k \odot R) = z_k
-	```
-	where <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/d1866f3bd35e683d8cd331a170875548.svg?invert_in_darkmode" align=middle width=29.223638399999988pt height=22.831056599999986pt/> means element-wise multiplication (Hadamard product).
-	If there is more than one equation <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/fbdb696db6a1b0322aa20999d63696f2.svg?invert_in_darkmode" align=middle width=18.207811049999993pt height=22.831056599999986pt/>, the matrices <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/f7cfe92bfcf30ad9f3819deb842583ce.svg?invert_in_darkmode" align=middle width=28.44187334999999pt height=22.831056599999986pt/> are stacked along the third dimension in `Zlhs`.
+	<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/013c8d019fc571406f020fed4c09cf06.svg?invert_in_darkmode" align=middle width=125.36717324999998pt height=38.89287435pt/></p>
+	where <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/9b808701e2b68072679bcc95e3891b8e.svg?invert_in_darkmode" align=middle width=12.785434199999989pt height=19.1781018pt/> means element-wise multiplication (Hadamard product).
+	If there is more than one equation <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/63bb9849783d01d91403bc9a5fea12a2.svg?invert_in_darkmode" align=middle width=9.075367949999992pt height=22.831056599999986pt/>, the matrices <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/3173677423a86e28caa6d954dbc490ff.svg?invert_in_darkmode" align=middle width=18.487510799999992pt height=22.465723500000017pt/> are stacked along the third dimension in `Zlhs`.
 	I.e, if `Nz` linear dependencies are specified, the dimensions of `Zlhs` and `zrhs` are `size(Zlhs): [size(R, 1), size(R, 2), Nz]` (for the combined constraints `size(Zlhs): [size(R, 1), size(R, 2) + size(K, 2) + size(F, 2), Nz]`) and `size(Zrhs): [Nz, 1]`, resp.
 
-	For example, if <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/e7c635b38c4d368b3e2276b5ffb04124.svg?invert_in_darkmode" align=middle width=140.99887065pt height=47.6716218pt/> with <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/1004f031aecbdc845e115b29a111a469.svg?invert_in_darkmode" align=middle width=22.02156494999999pt height=22.831056599999986pt/> being free but subject to the constraints <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/791f7e515eb6072bfc082980f3829fe8.svg?invert_in_darkmode" align=middle width=97.34004884999999pt height=22.831056599999986pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/eb64dfe5317e3c242ddef997f1ef45a6.svg?invert_in_darkmode" align=middle width=60.63163919999999pt height=22.831056599999986pt/>, the definition of the structure would be
+	For example, if <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/fe99331370ca6afffac4ff559965a264.svg?invert_in_darkmode" align=middle width=129.12676919999998pt height=47.6716218pt/> with <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/3cf87ea38a615ed99e0232f8ed9431fe.svg?invert_in_darkmode" align=middle width=12.067218899999991pt height=14.15524440000002pt/> being free but subject to the constraints <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/28c88fd24ac31015c0584a4e470e21ed.svg?invert_in_darkmode" align=middle width=87.38568794999999pt height=14.15524440000002pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/41c2a69ed2fcbc9e857470e0439203e2.svg?invert_in_darkmode" align=middle width=50.67727829999998pt height=14.15524440000002pt/>, the definition of the structure would be
 	```matlab
 		{cat(3,...
 			[1, -1, 0; 0, 0, 0],... % lhs of r_1 - r_2 = 0
@@ -782,9 +676,7 @@ Rfixed = {Ra_fixed}
 		}
 	```
 	* As said above, linear dependencies for `K` and `F` can be specified in the same way in `Ka_fixed` and `Fa_fixed`. For dependecies involving all matrices `RKFa_fixed` can be used, specifying `{Zlhs, Zrhs}` corresponding to
-	```math
-		\sum_{i,j} (Z_k \odot <p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/d292f58aeafdaf08bc59e1c2ca6d3cb2.svg?invert_in_darkmode" align=middle width=87.1747602pt height=19.726228499999998pt/></p>) = z_k
-	```
+	<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/655f91b399398d24bd15431c3fb6f811.svg?invert_in_darkmode" align=middle width=199.9334601pt height=38.89287435pt/></p>
 * Symbolic dependencies between controller parameters
 If the Symbolic Math Toolbox is available, it is also possible, to formulate the controller coefficient constraints as symbolic expressions.
 This can be achieved by specifying the symbolic gain matrix in the first element of a cell array and the symbolic equation system in the second element of the cell array for every gain matrix like in
@@ -877,18 +769,18 @@ Rfixed = {Ra_fixed, Ka_fixed};
 
 ### Initial value `R0`
 
-An initial value for the feedback matrix <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/81134b13734180a1832d4760261e96e4.svg?invert_in_darkmode" align=middle width=21.74091809999999pt height=22.831056599999986pt/> must be given.
+An initial value for the feedback matrix <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/1e438235ef9ec72fc51ac5025516017c.svg?invert_in_darkmode" align=middle width=12.60847334999999pt height=22.465723500000017pt/> must be given.
 
 #### Numerical value
-It must have the same dimension as <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/81134b13734180a1832d4760261e96e4.svg?invert_in_darkmode" align=middle width=21.74091809999999pt height=22.831056599999986pt/>, i.e. `size(R0) : [size(sys.B, 1), size(sys.C, 2)]`.
-If <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/81134b13734180a1832d4760261e96e4.svg?invert_in_darkmode" align=middle width=21.74091809999999pt height=22.831056599999986pt/> contains fixed values, the corresponding entries of `R0` are ignored.
+It must have the same dimension as <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/1e438235ef9ec72fc51ac5025516017c.svg?invert_in_darkmode" align=middle width=12.60847334999999pt height=22.465723500000017pt/>, i.e. `size(R0) : [size(sys.B, 1), size(sys.C, 2)]`.
+If <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/1e438235ef9ec72fc51ac5025516017c.svg?invert_in_darkmode" align=middle width=12.60847334999999pt height=22.465723500000017pt/> contains fixed values, the corresponding entries of `R0` are ignored.
 
-An inital value for the differential feedback matrix <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/0be7b0830bddac0f6300ac856ea79086.svg?invert_in_darkmode" align=middle width=24.26944739999999pt height=22.831056599999986pt/> may be given.
+An inital value for the differential feedback matrix <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/d6328eaebbcd5c358f426dbea4bdbf70.svg?invert_in_darkmode" align=middle width=15.13700594999999pt height=22.465723500000017pt/> may be given.
 In this case, `R0` is a cell array containing two matrices,
 ```matlab
 R0 = {Ra0, Ka0}
 ```
-If the structure employs differential feedback but no initial value for <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/0be7b0830bddac0f6300ac856ea79086.svg?invert_in_darkmode" align=middle width=24.26944739999999pt height=22.831056599999986pt/> is given, it is set to <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/1e6574b129f717202571fb320ccf3996.svg?invert_in_darkmode" align=middle width=17.35165739999999pt height=22.831056599999986pt/>.
+If the structure employs differential feedback but no initial value for <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/d6328eaebbcd5c358f426dbea4bdbf70.svg?invert_in_darkmode" align=middle width=15.13700594999999pt height=22.465723500000017pt/> is given, it is set to <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/29632a9bf827ce0200454dd32fc3be82.svg?invert_in_darkmode" align=middle width=8.219209349999991pt height=21.18721440000001pt/>.
 Supplying an initial value for the prefilter gain `<img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/b8bc815b5e9d5177af01fd4d3d3c2f10.svg?invert_in_darkmode" align=middle width=12.85392569999999pt height=22.465723500000017pt/>` is possbile with three matrices
 ```matlab
 R0 = {Ra0, Ka0, Fa0}
@@ -921,7 +813,7 @@ which creates two random initial values and the numeric initial value `Ra0`.
 ### Region definition
 
 A region is defined by one or the intersection of more areas.
-Here, "area" means a function which maps any point of the complex plane, <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/10725299aee15314a4e0e1094cd54a1a.svg?invert_in_darkmode" align=middle width=55.05128639999998pt height=22.831056599999986pt/>, to a real number, <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/4de785608ddea1555c130ed2ebc3bbc0.svg?invert_in_darkmode" align=middle width=69.8815755pt height=24.65753399999998pt/>.
+Here, "area" means a function which maps any point of the complex plane, <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/f571789b2d5d5d518339628e412509bd.svg?invert_in_darkmode" align=middle width=45.91885649999999pt height=21.95701200000001pt/>, to a real number, <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/7d9cb65db969d7e8addac3679a5e6916.svg?invert_in_darkmode" align=middle width=60.74912744999998pt height=24.65753399999998pt/>.
 It is zero on the border of the area, has negative values on the side at which poles must or should lie and positive values on the other side.
 It should be differentiable twice.
 
@@ -1030,19 +922,13 @@ z = areafun(re, im)
 
 ##### Example
 
-In this simple example, the _exterior_ of a circle with radius <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/81134b13734180a1832d4760261e96e4.svg?invert_in_darkmode" align=middle width=21.74091809999999pt height=22.831056599999986pt/> is chosen as desired area.
+In this simple example, the _exterior_ of a circle with radius <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/1e438235ef9ec72fc51ac5025516017c.svg?invert_in_darkmode" align=middle width=12.60847334999999pt height=22.465723500000017pt/> is chosen as desired area.
 In square form, the area is defined by
 
-```math
-	z(\sigma,\ \omega) = R^2 - \underbrace{(\sigma^2 + \omega^2)}_{\textnormal{distance}^2}
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/d7e806bad3b7fd040e4ba8d7c69de607.svg?invert_in_darkmode" align=middle width=184.25200695pt height=42.1113528pt/></p>
 which gives the derivatives
 
-```math
-	\frac{\mathrm{d}z}{\mathrm{d}\sigma} = -2 \sigma
-	\qquad
-	\frac{\mathrm{d}z}{\mathrm{d}\omega} = - 2 \omega
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/0746dd18f7615f4d156168a35d3d375c.svg?invert_in_darkmode" align=middle width=184.51355009999997pt height=33.81208709999999pt/></p>
 
 Accordingly, the function could be implemented as
 ```matlab
@@ -1063,7 +949,7 @@ Multiple regions can be defined by simply letting the function return row vector
 
 ### `weight`: Weighting of areas
 
-As described above, each area and model is associated with a weight <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/d7e5b844958d67af4f5b2fffc16024bf.svg?invert_in_darkmode" align=middle width=36.53598134999999pt height=22.831056599999986pt/> which appears within the inequality constraints or the derived loss functions.
+As described above, each area and model is associated with a weight <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/28457d95bce65adb96ba5eb9eebd9dec.svg?invert_in_darkmode" align=middle width=26.58161714999999pt height=14.15524440000002pt/> which appears within the inequality constraints or the derived loss functions.
 
 `weight` is structured like `polearea`.
 If both a hard and a soft region is defined, `weight` is a cell array with two numeric elements (scalar, vector or matrix)
@@ -1116,8 +1002,8 @@ The parameter name may contain dots, for example `'objective.normgain.K`.
 | `strategy` | strategy for solution to use
 | `errorhandler` | type of error handler to use
 | `errorhandler_function` | error handler function to use in case of `GammaErrorHandler.USER`
-| `system.usereferences` | indicator if output matrix `C` should be used as <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/7c35e2cd0b773a91d1eb4c717108d4df.svg?invert_in_darkmode" align=middle width=37.67934389999999pt height=22.831056599999986pt/> for matlab system descriptions
-| `system.usemeasurements_xdot` | indicator if output matrix `C_dot` should be used as <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/2a400357c40ac1a7a9c87a249c6796a6.svg?invert_in_darkmode" align=middle width=26.66895989999999pt height=24.7161288pt/> for matlab system descriptions
+| `system.usereferences` | indicator if output matrix `C` should be used as <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/fc8611f3dc01d5ede1c5fd180b2e52f2.svg?invert_in_darkmode" align=middle width=27.72499289999999pt height=22.465723500000017pt/> for matlab system descriptions
+| `system.usemeasurements_xdot` | indicator if output matrix `C_dot` should be used as <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/f0e9592dd37df872e4eaae9c6e9b44e5.svg?invert_in_darkmode" align=middle width=16.71459899999999pt height=24.7161288pt/> for matlab system descriptions
 | `system.samples` | structure with fields equal to the names of uncertain blocks in the `uss` system description to indicate the number of multiple models to create from the corresponding uncertain parameter
 | `system.Blocks` | structure with fields equal to the names of uncertain blocks in the `uss` system description to indicate the number of multiple models to create from the corresponding uncertain parameter
 
@@ -1131,17 +1017,17 @@ The elements are listed in the following table and some examples are given below
 
 | GammaJType | Remark | Loss function
 | --- | --- | --- |
-| ZERO | no objective function (pure feasibility problem) | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/01eb1509890c54fdde448ee1d585c93d.svg?invert_in_darkmode" align=middle width=49.96563824999999pt height=22.831056599999986pt/> |
-| MAX | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/83771fef97f748cb0fed8d9e1d007c87.svg?invert_in_darkmode" align=middle width=21.41178269999999pt height=22.831056599999986pt/> loss function | <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/bd9e679fbdea3041b2a9b5553be90432.svg?invert_in_darkmode" align=middle width=183.05115509999996pt height=24.65753399999998pt/> |
-| SQUAREPENALTY | Quadratic loss function | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/9a7c7fb4f6f4435ea790f8e15a05ede0.svg?invert_in_darkmode" align=middle width=203.21104815pt height=26.76175259999998pt/> |
-| EXP | Exponential loss function | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/130afde698621f42bd151157080a3c5f.svg?invert_in_darkmode" align=middle width=156.56712555pt height=24.65753399999998pt/> |
-| LINEAR | (*) linear weighting of pole areas | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/31b35fb65ff05ba0f31b9e0cbafa10d4.svg?invert_in_darkmode" align=middle width=118.66747199999999pt height=24.65753399999998pt/> |
-| SQUARE | (*) *signed* quadratic weighting of pole areas | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/121ce94b2164ec14bbabf435ace4fe49.svg?invert_in_darkmode" align=middle width=271.7936462999999pt height=26.76175259999998pt/> |
-| CUBIC | (*) cubic weighting of pole areas | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/69db3b15e730043270c993c4e9ca1c46.svg?invert_in_darkmode" align=middle width=138.82736504999997pt height=26.76175259999998pt/> |
-| LOG | (*) Logarithmic loss function | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/0dd673d3135574a815a11bfe17322942.svg?invert_in_darkmode" align=middle width=180.99634079999998pt height=24.65753399999998pt/> |
-| KREISSELMEIER | vector performance index weighting according to Kreisselmeier | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/4332e56ccc38d7e00fd5719ad10179ae.svg?invert_in_darkmode" align=middle width=472.4203869pt height=37.80850590000001pt/> |
+| ZERO | no objective function (pure feasibility problem) | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/570884d514512e4e25a77aaf2bae5688.svg?invert_in_darkmode" align=middle width=40.83319019999999pt height=22.465723500000017pt/> |
+| MAX | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/469f525d671e1e96713a0a17a13f2468.svg?invert_in_darkmode" align=middle width=11.45742179999999pt height=22.831056599999986pt/> loss function | <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/758292e218d7e32a67393291d1feab28.svg?invert_in_darkmode" align=middle width=173.91870705pt height=24.65753399999998pt/> |
+| SQUAREPENALTY | Quadratic loss function | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/b3bab96dfe2f245a69181fb7e194407f.svg?invert_in_darkmode" align=middle width=193.25668725pt height=26.76175259999998pt/> |
+| EXP | Exponential loss function | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/475a959b7f59ffef29889f79ed5e3360.svg?invert_in_darkmode" align=middle width=147.4346775pt height=24.65753399999998pt/> |
+| LINEAR | (*) linear weighting of pole areas | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/b8489ef8b7dc196e8a1473c5df8af8d7.svg?invert_in_darkmode" align=middle width=109.53502394999998pt height=24.65753399999998pt/> |
+| SQUARE | (*) *signed* quadratic weighting of pole areas | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/a48511cf7a575025c4146ef0dab3aceb.svg?invert_in_darkmode" align=middle width=261.8392854pt height=26.76175259999998pt/> |
+| CUBIC | (*) cubic weighting of pole areas | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/b52ea3cee45e3c3b494047ef6faab37e.svg?invert_in_darkmode" align=middle width=128.87300414999999pt height=26.76175259999998pt/> |
+| LOG | (*) Logarithmic loss function | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/ef63c03d9de6976c06ff53ff6616b74f.svg?invert_in_darkmode" align=middle width=171.86389274999996pt height=24.65753399999998pt/> |
+| KREISSELMEIER | vector performance index weighting according to Kreisselmeier | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/62d6f6e3b9e3509a437667e83e4ca157.svg?invert_in_darkmode" align=middle width=460.54834485pt height=37.80850590000001pt/> |
 | EIGENVALUECONDITION | (**) eigenvector matrix condition objective function ||
-| NORMGAIN | (**) norm of gain matrices | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/7de3dded5b15d9464a9d240657cfb862.svg?invert_in_darkmode" align=middle width=337.1515884pt height=26.76175259999998pt/> |
+| NORMGAIN | (**) norm of gain matrices | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/c51c6e0c57b00ee6828bfddbddc8132d.svg?invert_in_darkmode" align=middle width=327.19724399999996pt height=26.76175259999998pt/> |
 | LYAPUNOV | (**) norm of Lyapunov matrix of closed loop ||
 
 (*) These loss functions are unbounded below.
@@ -1155,7 +1041,7 @@ For example, if `type` is set to
 ```matlab
 	GammaJType.SQUAREPENALTY
 ```
-the quadratic loss function is used and none of the additional objective functions <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/54fab8c1beec1c6440e1029278fd7a23.svg?invert_in_darkmode" align=middle width=42.44876954999999pt height=22.831056599999986pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/497e7dba7d286918a8185ecee89f5d27.svg?invert_in_darkmode" align=middle width=37.78547519999999pt height=22.831056599999986pt/> is added.
+the quadratic loss function is used and none of the additional objective functions <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/0fbada9664742235c13fd5f06143b572.svg?invert_in_darkmode" align=middle width=32.49442349999999pt height=22.465723500000017pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/4d699c8c7d348b88a53015712da1e79b.svg?invert_in_darkmode" align=middle width=27.831157199999993pt height=22.465723500000017pt/> is added.
 
 If `type` is set to
 ```matlab
@@ -1187,50 +1073,48 @@ does *not* mean that the hard and the soft region are both translated to an obje
 
 ##### NORMGAIN
 
-If `NORMGAIN` is used as objective function, the weighting matrices <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/4cce0316187ef5316734515fe9c3cc67.svg?invert_in_darkmode" align=middle width=35.02290659999999pt height=22.831056599999986pt/>, <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/c2652e379b5063fcafc5643c92d0091c.svg?invert_in_darkmode" align=middle width=35.53665554999999pt height=22.831056599999986pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/5f29510662c3f8494fa81846f7b84da4.svg?invert_in_darkmode" align=middle width=33.96127019999999pt height=22.831056599999986pt/> have to be specified using the following parameters of `objoptions`:
+If `NORMGAIN` is used as objective function, the weighting matrices <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/4a2945d96c9cdea43eb20c863ebd23dd.svg?invert_in_darkmode" align=middle width=25.06856384999999pt height=22.465723500000017pt/>, <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/d8191adeee56915fd4b7583ffe1d6b9a.svg?invert_in_darkmode" align=middle width=25.58229134999999pt height=22.465723500000017pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/90cf59c9816b6b1d764ff69d1b443366.svg?invert_in_darkmode" align=middle width=24.006927449999992pt height=22.465723500000017pt/> have to be specified using the following parameters of `objoptions`:
 
 | Parameter | Description |
 | --- | --- |
-| `objective.normgain.R` | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/4cce0316187ef5316734515fe9c3cc67.svg?invert_in_darkmode" align=middle width=35.02290659999999pt height=22.831056599999986pt/> |
-| `objective.normgain.K` | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/c2652e379b5063fcafc5643c92d0091c.svg?invert_in_darkmode" align=middle width=35.53665554999999pt height=22.831056599999986pt/> (only necessary if <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/0be7b0830bddac0f6300ac856ea79086.svg?invert_in_darkmode" align=middle width=24.26944739999999pt height=22.831056599999986pt/> is used in the structure) |
-| `objective.normgain.F` | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/5f29510662c3f8494fa81846f7b84da4.svg?invert_in_darkmode" align=middle width=33.96127019999999pt height=22.831056599999986pt/> (only necessary if <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/f309af093099f0f9fe6b32d48b711ec0.svg?invert_in_darkmode" align=middle width=21.986370449999992pt height=22.831056599999986pt/> is used in the structure) |
-| `objective.normgain.R_shift` | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/010535dc9b457be63091f94c31124f8c.svg?invert_in_darkmode" align=middle width=29.577697049999987pt height=22.831056599999986pt/> |
-| `objective.normgain.K_shift` | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/81b2f56f8d8efcb815fbabf58ff1c13a.svg?invert_in_darkmode" align=middle width=30.091445999999987pt height=22.831056599999986pt/> |
-| `objective.normgain.F_shift` | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/fb5f4c889d388e55ae8b2ed8eced2a29.svg?invert_in_darkmode" align=middle width=28.51606229999999pt height=22.831056599999986pt/> |
+| `objective.normgain.R` | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/4a2945d96c9cdea43eb20c863ebd23dd.svg?invert_in_darkmode" align=middle width=25.06856384999999pt height=22.465723500000017pt/> |
+| `objective.normgain.K` | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/d8191adeee56915fd4b7583ffe1d6b9a.svg?invert_in_darkmode" align=middle width=25.58229134999999pt height=22.465723500000017pt/> (only necessary if <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/d6328eaebbcd5c358f426dbea4bdbf70.svg?invert_in_darkmode" align=middle width=15.13700594999999pt height=22.465723500000017pt/> is used in the structure) |
+| `objective.normgain.F` | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/90cf59c9816b6b1d764ff69d1b443366.svg?invert_in_darkmode" align=middle width=24.006927449999992pt height=22.465723500000017pt/> (only necessary if <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/b8bc815b5e9d5177af01fd4d3d3c2f10.svg?invert_in_darkmode" align=middle width=12.85392569999999pt height=22.465723500000017pt/> is used in the structure) |
+| `objective.normgain.R_shift` | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/5f0dccb5552bd232b7985454add6e7b4.svg?invert_in_darkmode" align=middle width=19.62335594999999pt height=22.465723500000017pt/> |
+| `objective.normgain.K_shift` | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/c373456ab0d7851561301c6b2678a4ab.svg?invert_in_darkmode" align=middle width=20.13708179999999pt height=22.465723500000017pt/> |
+| `objective.normgain.F_shift` | <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/c4873c061eefcc8ebd4339ace473b4a1.svg?invert_in_darkmode" align=middle width=18.56171789999999pt height=22.465723500000017pt/> |
 
 The weighting matrices have to be of the same dimension as the corresponding controller matrix.
 It is not sufficient to use a scalar value, even if the weight should be the same for all entries.
-The shifting matrices <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/a7497f8350e9923cbd5ee9132dbbed9e.svg?invert_in_darkmode" align=middle width=20.159830349999993pt height=22.831056599999986pt/> are optional.
+The shifting matrices <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/e257acd1ccbe7fcb654708f1a866bfe9.svg?invert_in_darkmode" align=middle width=11.027402099999989pt height=22.465723500000017pt/> are optional.
 
 
 ##### KREISSELMEIER
 
 | Parameter | Description |
 | --- | --- |
-| `objective.kreisselmeier.rho` |  <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/3f0bcdb0b50dea0c8f1b76d1c1157ec0.svg?invert_in_darkmode" align=middle width=40.33696259999999pt height=22.831056599999986pt/> |
-| `objective.kreisselmeier.max` |  <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/433d7f35ff78e09fc4d480720831e341.svg?invert_in_darkmode" align=middle width=68.04828855pt height=22.831056599999986pt/> |
+| `objective.kreisselmeier.rho` |  <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/0a2b32d0756b6f073b21139d7bc38e1d.svg?invert_in_darkmode" align=middle width=30.382601699999988pt height=14.15524440000002pt/> |
+| `objective.kreisselmeier.max` |  <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/ab2af6a289bafde852951069cbfc771c.svg?invert_in_darkmode" align=middle width=58.093962299999994pt height=22.831056599999986pt/> |
 
 ##### LYAPUNOV
-If `LYAPUNOV` is used as objective function, the matrices <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/4c28a537aacd5fac8f4df776ace4ccfb.svg?invert_in_darkmode" align=middle width=22.12787279999999pt height=22.831056599999986pt/> have to be specified using the following parameters of `objoptions`:
+If `LYAPUNOV` is used as objective function, the matrices <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/1afcdb0f704394b16fe85fb40c45ca7a.svg?invert_in_darkmode" align=middle width=12.99542474999999pt height=22.465723500000017pt/> have to be specified using the following parameters of `objoptions`:
 
 | Parameter | Description |
 | --- | --- |
-| `objective.lyapunov.Q` |  <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/4c28a537aacd5fac8f4df776ace4ccfb.svg?invert_in_darkmode" align=middle width=22.12787279999999pt height=22.831056599999986pt/> |
+| `objective.lyapunov.Q` |  <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/1afcdb0f704394b16fe85fb40c45ca7a.svg?invert_in_darkmode" align=middle width=12.99542474999999pt height=22.465723500000017pt/> |
 
 If the same matrix is to be used for all multiple model, it is sufficient to supply a single matrix.
-In case a specific matrix <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/4c28a537aacd5fac8f4df776ace4ccfb.svg?invert_in_darkmode" align=middle width=22.12787279999999pt height=22.831056599999986pt/> for every multiple model should be used, the matrices have to be concatenated in the third dimension.
+In case a specific matrix <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/1afcdb0f704394b16fe85fb40c45ca7a.svg?invert_in_darkmode" align=middle width=12.99542474999999pt height=22.465723500000017pt/> for every multiple model should be used, the matrices have to be concatenated in the third dimension.
 When nothing is specified, the identity matrix is used.
 If the discrete time Lyapunov equation is to be solved in case of discrete time systems, it is vital to add a field `T` with the sampling time to the system description in order to signal this.
-When the option `allowvarorder` is set to `true` and therefore systems with different state dimension are allowed, the remaining elements of <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/4c28a537aacd5fac8f4df776ace4ccfb.svg?invert_in_darkmode" align=middle width=22.12787279999999pt height=22.831056599999986pt/> must be filled with `NaN` to match the dimension of the largest system in use.
+When the option `allowvarorder` is set to `true` and therefore systems with different state dimension are allowed, the remaining elements of <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/1afcdb0f704394b16fe85fb40c45ca7a.svg?invert_in_darkmode" align=middle width=12.99542474999999pt height=22.465723500000017pt/> must be filled with `NaN` to match the dimension of the largest system in use.
 
 #### Weighting of the objective function terms
 
 If more than one objective function term is selected by `type`, their weighting can be specified by `weight` which is a numeric vector of the same dimension as `type` with the corresponding non-negative weights.
 
 If for example the objective function
-```math
-	J = 1 \cdot J_\mathrm{\Gamma,soft} + 10^{-5} \cdot J_\mathrm{Ctrl}
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/4058397f923a95c6f8b9efdc62ffad8e.svg?invert_in_darkmode" align=middle width=194.19157065pt height=18.905967299999997pt/></p>
 is to be used, the following options are to be set:
 ```matlab
 	'type'   : [GammaJType.SQUAREPENALTY; GammaJType.NORMGAIN]
@@ -1370,7 +1254,7 @@ Generally speaking, the solvers from the Opimization Toolbox support the same se
 
 #### `Rbounds`: Bounds (linear inequality constraints)
 
-Bounds can be imposed for single entries of the controller matrices as well as bounds on linear combinations of parameters of the same matrix <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/81134b13734180a1832d4760261e96e4.svg?invert_in_darkmode" align=middle width=21.74091809999999pt height=22.831056599999986pt/>, <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/0be7b0830bddac0f6300ac856ea79086.svg?invert_in_darkmode" align=middle width=24.26944739999999pt height=22.831056599999986pt/> or <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/f309af093099f0f9fe6b32d48b711ec0.svg?invert_in_darkmode" align=middle width=21.986370449999992pt height=22.831056599999986pt/> (i.e. linear inequality constraints) can be imposed.
+Bounds can be imposed for single entries of the controller matrices as well as bounds on linear combinations of parameters of the same matrix <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/1e438235ef9ec72fc51ac5025516017c.svg?invert_in_darkmode" align=middle width=12.60847334999999pt height=22.465723500000017pt/>, <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/d6328eaebbcd5c358f426dbea4bdbf70.svg?invert_in_darkmode" align=middle width=15.13700594999999pt height=22.465723500000017pt/> or <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/b8bc815b5e9d5177af01fd4d3d3c2f10.svg?invert_in_darkmode" align=middle width=12.85392569999999pt height=22.465723500000017pt/> (i.e. linear inequality constraints) can be imposed.
 
 They are defined similarly to the equality constraints in `Rfixed`.
 
@@ -1382,25 +1266,23 @@ The definitions of the bounds for the single matrices (which are explained below
 ```matlab
 Rbounds = {Ra_bounds, Ka_bounds, Fa_bounds}
 ```
-If only <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/81134b13734180a1832d4760261e96e4.svg?invert_in_darkmode" align=middle width=21.74091809999999pt height=22.831056599999986pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/0be7b0830bddac0f6300ac856ea79086.svg?invert_in_darkmode" align=middle width=24.26944739999999pt height=22.831056599999986pt/> is used,
+If only <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/1e438235ef9ec72fc51ac5025516017c.svg?invert_in_darkmode" align=middle width=12.60847334999999pt height=22.465723500000017pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/d6328eaebbcd5c358f426dbea4bdbf70.svg?invert_in_darkmode" align=middle width=15.13700594999999pt height=22.465723500000017pt/> is used,
 ```matlab
 Rbounds = {Ra_bounds, Ka_bounds}
 ```
-and if only <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/81134b13734180a1832d4760261e96e4.svg?invert_in_darkmode" align=middle width=21.74091809999999pt height=22.831056599999986pt/> is used,
+and if only <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/1e438235ef9ec72fc51ac5025516017c.svg?invert_in_darkmode" align=middle width=12.60847334999999pt height=22.465723500000017pt/> is used,
 ```matlab
 Rbounds = {Ra_bounds}
 ```
 
-The bounds of <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/81134b13734180a1832d4760261e96e4.svg?invert_in_darkmode" align=middle width=21.74091809999999pt height=22.831056599999986pt/> (<img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/0be7b0830bddac0f6300ac856ea79086.svg?invert_in_darkmode" align=middle width=24.26944739999999pt height=22.831056599999986pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/f309af093099f0f9fe6b32d48b711ec0.svg?invert_in_darkmode" align=middle width=21.986370449999992pt height=22.831056599999986pt/> analogously) are defined by
+The bounds of <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/1e438235ef9ec72fc51ac5025516017c.svg?invert_in_darkmode" align=middle width=12.60847334999999pt height=22.465723500000017pt/> (<img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/d6328eaebbcd5c358f426dbea4bdbf70.svg?invert_in_darkmode" align=middle width=15.13700594999999pt height=22.465723500000017pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/b8bc815b5e9d5177af01fd4d3d3c2f10.svg?invert_in_darkmode" align=middle width=12.85392569999999pt height=22.465723500000017pt/> analogously) are defined by
 ```matlab
 Ka_bounds = {Zlhs, Zrhs}
 ```
-where `Zlhs` and `Zrhs` correspond to <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/bdd12812852764fdf0a0441c3eaac725.svg?invert_in_darkmode" align=middle width=48.795826199999986pt height=22.831056599999986pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/73b5748e1a609785e1fca7bc7a8e83f0.svg?invert_in_darkmode" align=middle width=35.26465964999999pt height=14.15524440000002pt/>, resp., in
-```math
-\sum_{i,j} (Z_{\mathrm{Bd},k} \odot R) \leq z_{\mathrm{Bd},k}
-```
-where <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/d1866f3bd35e683d8cd331a170875548.svg?invert_in_darkmode" align=middle width=29.223638399999988pt height=22.831056599999986pt/> means element-wise multiplication (Hadamard product).
-If there is more than one inequality <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/fbdb696db6a1b0322aa20999d63696f2.svg?invert_in_darkmode" align=middle width=18.207811049999993pt height=22.831056599999986pt/>, the matrices <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/f7cfe92bfcf30ad9f3819deb842583ce.svg?invert_in_darkmode" align=middle width=28.44187334999999pt height=22.831056599999986pt/> are stacked along the third dimension in `Zlhs`.
+where `Zlhs` and `Zrhs` correspond to <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/9c3c09544033898d9b2ca67679838af6.svg?invert_in_darkmode" align=middle width=38.84148674999999pt height=22.465723500000017pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/73b5748e1a609785e1fca7bc7a8e83f0.svg?invert_in_darkmode" align=middle width=35.26465964999999pt height=14.15524440000002pt/>, resp., in
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/bd077028e1c2625f02d1fa5c264adc32.svg?invert_in_darkmode" align=middle width=166.0751037pt height=38.89287435pt/></p>
+where <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/9b808701e2b68072679bcc95e3891b8e.svg?invert_in_darkmode" align=middle width=12.785434199999989pt height=19.1781018pt/> means element-wise multiplication (Hadamard product).
+If there is more than one inequality <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/63bb9849783d01d91403bc9a5fea12a2.svg?invert_in_darkmode" align=middle width=9.075367949999992pt height=22.831056599999986pt/>, the matrices <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/3173677423a86e28caa6d954dbc490ff.svg?invert_in_darkmode" align=middle width=18.487510799999992pt height=22.465723500000017pt/> are stacked along the third dimension in `Zlhs`.
 I.e, if `Nz` linear inequalities are specified, the dimensions of `Zlhs` and `zrhs` are `size(Zlhs): [size(R, 1), size(R, 2), Nz]` (`size(Zlhs): [size(R, 1), size(R, 2) + size(K, 2) + size(F, 2), Nz]` for combined constraints) and `size(Zrhs): [Nz, 1]`, resp.
 
 For an example refer to the section about the parameter `Rfixed`.
@@ -1409,12 +1291,10 @@ For an example refer to the section about the parameter `Rfixed`.
 
 #### `Rnonlin`: Nonlinear inequality and equality constraints
 
-It is possible to impose nonlinear equality and inequality constraints on the parameters of the matrices <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/81134b13734180a1832d4760261e96e4.svg?invert_in_darkmode" align=middle width=21.74091809999999pt height=22.831056599999986pt/>, <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/0be7b0830bddac0f6300ac856ea79086.svg?invert_in_darkmode" align=middle width=24.26944739999999pt height=22.831056599999986pt/> or <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/f309af093099f0f9fe6b32d48b711ec0.svg?invert_in_darkmode" align=middle width=21.986370449999992pt height=22.831056599999986pt/>.
+It is possible to impose nonlinear equality and inequality constraints on the parameters of the matrices <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/1e438235ef9ec72fc51ac5025516017c.svg?invert_in_darkmode" align=middle width=12.60847334999999pt height=22.465723500000017pt/>, <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/d6328eaebbcd5c358f426dbea4bdbf70.svg?invert_in_darkmode" align=middle width=15.13700594999999pt height=22.465723500000017pt/> or <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/b8bc815b5e9d5177af01fd4d3d3c2f10.svg?invert_in_darkmode" align=middle width=12.85392569999999pt height=22.465723500000017pt/>.
 In contrast to the linear constraints, a single constraint can only be imposed on one or more parameter of the same matrix, i.e.
 
-```math
-	<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/fa25999ffd4d3436835309d9ff4821a4.svg?invert_in_darkmode" align=middle width=88.86044475pt height=140.31961184999997pt/></p>
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/d3d96d5b41fedc24839e9a3421ac0a1d.svg?invert_in_darkmode" align=middle width=88.86044475pt height=140.31961184999997pt/></p>
 
 These functions are provided by a single function `Rnonlin_wrapper` which is to be passed as the argument `Rnonlin` and has the signature
 ```matlab
@@ -1434,14 +1314,9 @@ size(gineq_R) : [size(R, 1), size(R, 2), length(cineq_R) ]
 
 ##### Example
 If the controller matrix is
-```math
-R =
-	<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/0ce11da9d3c771dc5cac564c8a7dd8ac.svg?invert_in_darkmode" align=middle width=94.60066935pt height=39.452455349999994pt/></p>
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/5636f8b878eb096bb9be618bc1bfb9c3.svg?invert_in_darkmode" align=middle width=129.12676919999998pt height=39.452455349999994pt/></p>
 and the constraints
-```math
-	<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/bc582530c7c77897031a2dbc3e1f4db7.svg?invert_in_darkmode" align=middle width=80.26617555pt height=44.96263035pt/></p>
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/65007a62f8c5c58d7439ac6b363f4fed.svg?invert_in_darkmode" align=middle width=80.26617555pt height=44.96263035pt/></p>
 are given (and ignoring that the first constraint can be expressed as two simpler linear constraints), the `Rnonlin_wrapper` would be
 ```matlab
 function [cineq_R, ceq_R, cineq_K, ceq_K, cineq_F, ceq_F] = Rnonlin_wrapper(R, K, F)
@@ -1491,69 +1366,53 @@ It has the ability to plot the closed loop eigenvalues and pole regions with the
 `gammasyn` is prepared for the synthesis of coupling controllers and will be extended to handle decoupling controllers as well.
 For archieving this a specialized wrapper function named `gammasyn_couplingcontrol` is used that converts the supplied system to the needed description for coupling controller design.
 The task of a coupling controller is to ensure
-```math
-	<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/080a458ea7f49587d5ba79ee152a9ada.svg?invert_in_darkmode" align=middle width=206.13289124999997pt height=15.936036599999998pt/></p>
-```
-asymptotically and indpendently from any reference inputs <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/3a7ef255fdc6c23ddc9686f25569ab00.svg?invert_in_darkmode" align=middle width=23.92322789999999pt height=22.831056599999986pt/>.
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/2657a647f932315591115da1d1840af9.svg?invert_in_darkmode" align=middle width=206.13289124999997pt height=15.936036599999998pt/></p>
+asymptotically and indpendently from any reference inputs <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/14330ec69840636094d5efd1aaa8497c.svg?invert_in_darkmode" align=middle width=13.96886699999999pt height=14.15524440000002pt/>.
 The system must be given, such that the lower rows of
-```math
-	<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/5a689c4e41591c781bed2cf5caf75c64.svg?invert_in_darkmode" align=middle width=106.81975424999999pt height=39.452455349999994pt/></p>
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/e18f0bfd3806784bd4dd88d67ff65bf2.svg?invert_in_darkmode" align=middle width=106.81975424999999pt height=39.452455349999994pt/></p>
 and
-```math
-	<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/3565f2cf72a1a18f86ebd1f0f57e68e9.svg?invert_in_darkmode" align=middle width=110.54122860000001pt height=39.452455349999994pt/></p>
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/e7509d109afe76bb59bf3a543016a11d.svg?invert_in_darkmode" align=middle width=110.54122860000001pt height=39.452455349999994pt/></p>
 contain the parameters of a given number of coupling conditions in the form
-```math
-	<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/8c806f3dd66c31ff078fddaf55feec19.svg?invert_in_darkmode" align=middle width=158.94679349999998pt height=22.01250645pt/></p>
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/6586abdd36bcff3d17743a5616ce88ce.svg?invert_in_darkmode" align=middle width=158.94679349999998pt height=22.01250645pt/></p>
 To achieve coupling, the transfer matrix of the closed-loop system
-```math
-	<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/1e24b9cd3e4e9dd4b6a14c537b2cec54.svg?invert_in_darkmode" align=middle width=544.4439825pt height=85.48022999999999pt/></p>
-```
-is designed, such that <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/bbed6fe0fa386e053dce60c85bbc32db.svg?invert_in_darkmode" align=middle width=86.61184619999999pt height=24.65753399999998pt/> holds.
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/56863a15946bd295cfdf60787cdf6b9e.svg?invert_in_darkmode" align=middle width=544.4439825pt height=85.48022999999999pt/></p>
+is designed, such that <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/498d5adf4367e026127219d184eaaaac.svg?invert_in_darkmode" align=middle width=77.47939814999998pt height=24.65753399999998pt/> holds.
 By writing
-```math
-	<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/fcb45cb210935a07b307d3cd1e72a87e.svg?invert_in_darkmode" align=middle width=425.13309795pt height=44.89738935pt/></p>
-```
-with the closed-loop eigenvalues <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/4dbc9eca92668245d9328036dda93234.svg?invert_in_darkmode" align=middle width=33.737734799999984pt height=22.831056599999986pt/> and the right and left eigenvectors <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/1172410e50024277db5d6cd7afbd14e8.svg?invert_in_darkmode" align=middle width=32.11671869999999pt height=22.831056599999986pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/e144bd133a34dbf5fd2d376fc4a46f7b.svg?invert_in_darkmode" align=middle width=35.917160399999986pt height=22.831056599999986pt/>, the non-linear output- and input-coupling conditions
-```math
-	<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/deb3c9ec26e9faa96d0c78604eb2776a.svg?invert_in_darkmode" align=middle width=310.36146735pt height=43.53610965pt/></p>
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/23e3062808c4775330f1c611e3421191.svg?invert_in_darkmode" align=middle width=425.13309795pt height=44.89738935pt/></p>
+with the closed-loop eigenvalues <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/b347645953717906984eb2b6b9c5edd0.svg?invert_in_darkmode" align=middle width=23.783411849999986pt height=22.831056599999986pt/> and the right and left eigenvectors <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/6551458533230dddbe136f9ec44086af.svg?invert_in_darkmode" align=middle width=22.16239574999999pt height=14.15524440000002pt/> and <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/cdcd24f908174dd396b6015ecb6aba4b.svg?invert_in_darkmode" align=middle width=25.962837449999988pt height=14.15524440000002pt/>, the non-linear output- and input-coupling conditions
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/805cf71175547a5c47583bee95ca6e1e.svg?invert_in_darkmode" align=middle width=310.36146735pt height=43.53610965pt/></p>
 as well as
-```math
-	<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/e4ff8756abbf6eb2279222820a0a8e17.svg?invert_in_darkmode" align=middle width=88.94639159999998pt height=15.936036599999998pt/></p>
-```
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/0cdb20f4cc17f85ede1b6d6ac3cbaaaf.svg?invert_in_darkmode" align=middle width=88.94639159999998pt height=15.936036599999998pt/></p>
 are obtained.
-Here, <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/e7edab300a93d640814d40ac9152468e.svg?invert_in_darkmode" align=middle width=23.565549149999992pt height=22.831056599999986pt/> denotes the dimension of the output nulling space of the system <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/644d98a3e0e0d7838b92f369af564cdd.svg?invert_in_darkmode" align=middle width=149.32557254999998pt height=24.65753399999998pt/>.
-In case of <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/8147c6f8fd95fa6b643b89b4af5d1a7f.svg?invert_in_darkmode" align=middle width=80.13358154999999pt height=22.831056599999986pt/>, this space is equivalent to the largest controlled invariant subspace within the kernel of <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/8fe58364f433e3ea467ebffa083ecb2a.svg?invert_in_darkmode" align=middle width=48.13599449999999pt height=22.831056599999986pt/>.
+Here, <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/0e51a2dede42189d77627c4d742822c3.svg?invert_in_darkmode" align=middle width=14.433101099999991pt height=14.15524440000002pt/> denotes the dimension of the output nulling space of the system <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/6d853014106627ade5b7d08d062745df.svg?invert_in_darkmode" align=middle width=140.19312449999998pt height=24.65753399999998pt/>.
+In case of <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/77f7e377b6681b54b06cedab816bcebe.svg?invert_in_darkmode" align=middle width=71.0011335pt height=22.465723500000017pt/>, this space is equivalent to the largest controlled invariant subspace within the kernel of <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/f44cb040bfa9a432f2b1cbeb66a38f0c.svg?invert_in_darkmode" align=middle width=38.18166989999999pt height=22.465723500000017pt/>.
 
 The conditions found can directly be included in the synthesis process using the built-in non-linear constraint function. Alternatively, using geometric concepts, the coupling conditions can be transformed to linear equality constraints which reduce the set of feasible controllers and prefilters.
 
-The coupling control design implemented in `gammasyn` is only available for the design of a complete state feedback, i.e. <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/dcd597547a375785ec8589f3b8f30f5d.svg?invert_in_darkmode" align=middle width=22.05708614999999pt height=22.831056599999986pt/> must be chosen as identity matrix.
+The coupling control design implemented in `gammasyn` is only available for the design of a complete state feedback, i.e. <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/9b325b9e31e85137d1de765f43c0f8bc.svg?invert_in_darkmode" align=middle width=12.92464304999999pt height=22.465723500000017pt/> must be chosen as identity matrix.
 
 ### Robust DAE synthesis
 The methodology for designing robust coupling controllers using pole region assignment, can immediately be transferred to systems in differential-algebraic form (DAE systems, descriptor systems).
 
-Therefore, the systems handed over are transformed using a singular value decomposition of the descriptor matrix <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/ad159e0c806e1c3479f7b557e7134490.svg?invert_in_darkmode" align=middle width=22.21462484999999pt height=22.831056599999986pt/> in order to obtain state space systems with feedthrough.
+Therefore, the systems handed over are transformed using a singular value decomposition of the descriptor matrix <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/84df98c65d88c6adf15d4645ffa25e47.svg?invert_in_darkmode" align=middle width=13.08219659999999pt height=22.465723500000017pt/> in order to obtain state space systems with feedthrough.
 For these, a robust coupling control best possibly fulfilling the algebraic equations is calculated.
 
 ### Usage
 To perform the coupling control synthesis or robust DAE synthesis, `gammasyn_couplingcontrol` has to be used.
 Furthermore, the `objectiveoptions` structure has to be extended by the field `couplingcontrol` which in turn is a structure containing the following fields
 * `couplingstrategy`: the coupling design method, an instance of `GammaCouplingStrategy`.
-	* `GammaCouplingStrategy.EXACT`: Only allow <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/bbed6fe0fa386e053dce60c85bbc32db.svg?invert_in_darkmode" align=middle width=86.61184619999999pt height=24.65753399999998pt/> and use geometric methods.
-	* `GammaCouplingStrategy.APPROXIMATE`: Use geometric method but also allow <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/302f35a74246b05f98ee241108b7b9d9.svg?invert_in_darkmode" align=middle width=86.61184619999999pt height=24.65753399999998pt/> if <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/bbed6fe0fa386e053dce60c85bbc32db.svg?invert_in_darkmode" align=middle width=86.61184619999999pt height=24.65753399999998pt/> is not solvable.
+	* `GammaCouplingStrategy.EXACT`: Only allow <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/498d5adf4367e026127219d184eaaaac.svg?invert_in_darkmode" align=middle width=77.47939814999998pt height=24.65753399999998pt/> and use geometric methods.
+	* `GammaCouplingStrategy.APPROXIMATE`: Use geometric method but also allow <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/915780e7044163dbc382e1a9f98adea3.svg?invert_in_darkmode" align=middle width=77.47939814999998pt height=24.65753399999998pt/> if <img src="https://rawgit.com/pvogt09/gammasyn/feature/gitlabdoc/docs/svgs/498d5adf4367e026127219d184eaaaac.svg?invert_in_darkmode" align=middle width=77.47939814999998pt height=24.65753399999998pt/> is not solvable.
 	* `GammaCouplingStrategy.NUMERIC_NONLINEAR_EQUALITY`: directly use coupling conditions as non-linear equality constraints of the form `ceq(x) = 0` with `x` denoting the vector of optimization variables
 	* `GammaCouplingStrategy.NUMERIC_NONLINEAR_INEQUALITY`: directly use coupling conditions as non-linear inequality constraints of the form `c(x) < tolerance_coupling` and `-c(x) < tolerance_coupling` with `x` denoting the vector of optimization variables
-* `couplingconditions`: (`uint32`) the number of coupling conditions specified in <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/7c35e2cd0b773a91d1eb4c717108d4df.svg?invert_in_darkmode" align=middle width=37.67934389999999pt height=22.831056599999986pt/>
+* `couplingconditions`: (`uint32`) the number of coupling conditions specified in <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/fc8611f3dc01d5ede1c5fd180b2e52f2.svg?invert_in_darkmode" align=middle width=27.72499289999999pt height=22.465723500000017pt/>
 * `tolerance_coupling`: (`double`) the tolerance when using `GammaCouplingStrategy.NUMERIC_NONLINEAR_INEQUALITY`
 * `solvesymbolic`: (`logical`) only for `EXACT` and `APPROXIMATE`: use symbolic toolbox if available to increase precision of obtained equality constraints.
 * `round_equations_to_digits`: (`double`, whole number) only for `EXACT` and `APPROXIMATE`: decimal places to which linear equality constraints are rounded in case of numerical precision difficulties. Use `NaN` if no rounding is desired.
 * `weight_coupling`: (`double`, nonnegative) weighting factor for nonlinear coupling conditions to increase/decrease importance in comparison with pole region constraints
 * `weight_prefilter`: (`double`, nonnegative) weighting factor for prefilter regularity condition to increase/decrease importance in comparison with pole region constraints
 
-`gammasyn_couplingcontrol` checks the descriptor matrix <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/ad159e0c806e1c3479f7b557e7134490.svg?invert_in_darkmode" align=middle width=22.21462484999999pt height=22.831056599999986pt/> to choose between a regular coupling control design and DAE design.
+`gammasyn_couplingcontrol` checks the descriptor matrix <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/development/docs/svgs/84df98c65d88c6adf15d4645ffa25e47.svg?invert_in_darkmode" align=middle width=13.08219659999999pt height=22.465723500000017pt/> to choose between a regular coupling control design and DAE design.
 
 ## Examples
 
