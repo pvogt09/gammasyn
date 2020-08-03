@@ -15,21 +15,23 @@ jobs:
     if: ${{ github.event.pull_request.head.repo.full_name == github.repository && !endsWith(github.head_ref, '-docs') }}
     name: Generate Documentation
     runs-on: ubuntu-latest
-    # container:
-    #  image: danteev/texlive:latest
+    container:
+      image: danteev/texlive:latest
     steps:
       # checkout repository
       - uses: actions/checkout@v2
         with:
           ref: ${{ github.head_ref }}
           token: ${{ secrets.ACCESS_TOKEN_BRANCHPROTECTION }}
-      #- name: Install latex packages
-      #  run: |
-      #    apt-get install sudo
-      #    tlmgr init-usertree
-      #    sudo tlmgr install $(xargs < ./.github/actions/texify_markdown/texlive.packages)
-      - name: Setup miktex container
-        uses: ./.github/actions/texify_markdown
+      - name: Install latex packages
+        run: |
+          apt-get update && apt-get upgrade -y --no-install-recommends || true
+          #tlmgr init-usertree
+          #sudo tlmgr install $(xargs < ./.github/actions/texify_markdown/texlive.packages)
+          apt-get install apt-utils -y
+          apt-get install libwoff1 dvisvgm -y
+      #- name: Setup miktex container
+      #  uses: ./.github/actions/texify_markdown
       # install python
       - name: Set up Python 3
         uses: actions/setup-python@v2
