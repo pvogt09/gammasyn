@@ -12,7 +12,7 @@ else
 	projectname="${GITHUB_REPOSITORY##*/}"
 	username="${GITHUB_REPOSITORY%%/*}"
 fi
-if [ -z "${GITHUB_REF#refs/heads/}" ]; then
+if [ "${GITHUB_REF#refs/heads/}" = "" ]; then
 	if git branch --show-current > /dev/null; then
 		branchname=$(git branch --show-current)
 	else
