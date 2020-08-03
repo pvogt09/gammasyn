@@ -35,8 +35,8 @@ sed -i "s#https://rawgit.com/$username/$projectname/$GITHUB_REF#https://raw.gith
 sed -i "s#https://rawgit.com/$username/$projectname/$GITHUB_HEAD_REF#https://raw.githubusercontent.com/$username/$projectname/$branchname#" "README.md"
 sed -i "s#https://rawgit.com/$username/$projectname/$GITHUB_BASE_REF#https://raw.githubusercontent.com/$username/$projectname/$branchname#" "README.md"
 sed -i "s#https://rawgit.com/$username/$projectname/$branchname#https://raw.githubusercontent.com/$username/$projectname/$branchname#" "README.md"
-sed -i "s#https://rawgit.com/$username/$projectname/.*/docs/svgs#https://raw.githubusercontent.com/$username/$projectname/$branchname/docs/svgs#" "README.md"
-sed -i "s#https://raw.githubusercontent.com/$username/$projectname/.*/docs/svgs#https://raw.githubusercontent.com/$username/$projectname/$branchname/docs/svgs#" "README.md"
+sed -i "s#https://rawgit.com/$username/$projectname/[^\"]*/docs/svgs#https://raw.githubusercontent.com/$username/$projectname/$branchname/docs/svgs#" "README.md"
+sed -i "s#https://raw.githubusercontent.com/$username/$projectname/[^\"]*/docs/svgs#https://raw.githubusercontent.com/$username/$projectname/$branchname/docs/svgs#" "README.md"
 if [ -n "$targetbranch" ]; then
 	sed -i "s#https://raw.githubusercontent.com/$username/$projectname/$branchname#https://raw.githubusercontent.com/$username/$projectname/$targetbranch#" "README.md"
 fi
