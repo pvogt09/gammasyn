@@ -30,13 +30,4 @@ fi
 python ./docs/markdown_gitlab2github.py "$(realpath ./)" || exit 1
 python -m readme2tex --svgdir "docs/svgs" --project "$projectname" --username "$username" --output "README.md" "README.tex.md" || exit 2
 git checkout -- "README.tex.md" || exit 3
-sed -i "s#https://rawgit.com/$username/$projectname/None#https://raw.githubusercontent.com/$username/$projectname/$branchname#" "README.md"
-sed -i "s#https://rawgit.com/$username/$projectname/$GITHUB_REF#https://raw.githubusercontent.com/$username/$projectname/$branchname#" "README.md"
-sed -i "s#https://rawgit.com/$username/$projectname/$GITHUB_HEAD_REF#https://raw.githubusercontent.com/$username/$projectname/$branchname#" "README.md"
-sed -i "s#https://rawgit.com/$username/$projectname/$GITHUB_BASE_REF#https://raw.githubusercontent.com/$username/$projectname/$branchname#" "README.md"
-sed -i "s#https://rawgit.com/$username/$projectname/$branchname#https://raw.githubusercontent.com/$username/$projectname/$branchname#" "README.md"
-sed -i "s#https://rawgit.com/$username/$projectname/[^\"]*/docs/svgs#https://raw.githubusercontent.com/$username/$projectname/$branchname/docs/svgs#" "README.md"
-sed -i "s#https://raw.githubusercontent.com/$username/$projectname/[^\"]*/docs/svgs#https://raw.githubusercontent.com/$username/$projectname/$branchname/docs/svgs#" "README.md"
-if [ -n "$targetbranch" ]; then
-	sed -i "s#https://raw.githubusercontent.com/$username/$projectname/$branchname#https://raw.githubusercontent.com/$username/$projectname/$targetbranch#" "README.md"
-fi
+python ./docs/markdown_gitlab2github_replace.py "README.md" "$branchname" "$targetbranch" "$username" "$projectname" || exit 4
