@@ -3,7 +3,7 @@ on:
   [push, pull_request]
 
 jobs:
-  build:
+  lint:
     name: Linting
     runs-on: ubuntu-latest
     steps:
@@ -23,7 +23,7 @@ jobs:
           ALWAYS_LINT_ALL_FILES: false
         uses: zbeekman/EditorConfig-Action@master
       - name: Update status
-        if: always()
+        if: ${{ github.event_name == 'pull_request' }}
         uses: ouzi-dev/commit-status-updater@v1.0.4
         with:
           status: "${{ job.status }}"
