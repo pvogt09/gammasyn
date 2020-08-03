@@ -15,14 +15,24 @@ jobs:
     if: ${{ github.event.pull_request.head.repo.full_name == github.repository && !endsWith(github.head_ref, '-docs') }}
     name: Generate Documentation
     runs-on: ubuntu-latest
+    # base on and run in container with texlive
+    container:
+      image: danteev/texlive:latest
     steps:
       # checkout repository
       - uses: actions/checkout@v2
         with:
           ref: ${{ github.head_ref }}
           token: ${{ secrets.ACCESS_TOKEN_BRANCHPROTECTION }}
-      - name: Setup miktex container
-        uses: ./.github/actions/texify_markdown
+      # install necessary latex packages
+      - name: Install latex packages
+        run: |
+          apt-get update && apt-get upgrade -y --no-install-recommends || true
+          apt-get install apt-utils -y || true
+          apt-get install $(xargs < ./.github/actions/texify_markdown/texlive.packages) -y
+      # alternative for setting up container
+      # - name: Setup miktex container
+      #   uses: ./.github/actions/texify_markdown
       # install python
       - name: Set up Python 3
         uses: actions/setup-python@v2
@@ -33,9 +43,19 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      # regenerate all images for master and development
+      - name: Clear image cache
+        if: ${{ github.event_name == 'pull_request' && (github.base_ref == 'master' || github.base_ref == 'development') }}
+        run: |
+          rm -rfv docs/svgs/*.svg
       # run tex conversion for pull request
       - name: Texify
         if: ${{ github.event_name == 'pull_request' }}
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_REF: ${{ github.ref }}
+          GITHUB_HEAD_REF: ${{ github.head_ref }}
+          GITHUB_BASE_REF: ${{ github.base_ref }}
         run: |
           sh docs/markdown_gitlab2github.sh "$GITHUB_BASE_REF"
       # commit changes for pull request
@@ -52,6 +72,13 @@ jobs:
           branch: ${{ github.head_ref }}-docs
           signoff: true
           labels: Feature:Documentation,Status:Automerge
+      - name: Update status
+        if: always()
+        uses: ouzi-dev/commit-status-updater@v1.0.4
+        with:
+          status: "${{ job.status }}"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          name: ${{ github.workflow }}
 #      - name: Commit changed documentation
 #        if: ${{ github.event_name == 'pull_request' }}
 #        uses: EndBug/add-and-commit@v4
