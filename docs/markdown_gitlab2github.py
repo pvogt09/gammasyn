@@ -37,15 +37,10 @@ with open(readme, 'r') as file:
     content = file.read()
 
 # replace content
+# at minimum one blank line before and after formula
 content = re.sub(
-    r'(```math)(.*?)(```)',
-    r'$$\2$$',
-    content,
-    flags=re.MULTILINE | re.DOTALL)
-# at minimum one blank line before formula
-content = re.sub(
-    r'([^\r\n]+[\r\n])(\$\$)(.*?)(\$\$)',
-    r'\1\n$$\3$$',
+    r'([^\r\n]+)?([\r\n]*?)?(\s*?)(```math)(.*?)(```)([\r\n]*?)?([^\r\n]+)?',
+    r'\1\n\n$$\5$$\n\n\8',
     content,
     flags=re.MULTILINE | re.DOTALL)
 content = re.sub(r'(\$`)(.*?)(`\$)', r'$\2$', content)

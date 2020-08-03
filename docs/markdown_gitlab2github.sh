@@ -12,7 +12,7 @@ else
 	projectname="${GITHUB_REPOSITORY##*/}"
 	username="${GITHUB_REPOSITORY%%/*}"
 fi
-echo "$GITHUB_REF" | grep -qE "^refs/pull/[0-9]+/merge\$"
+echo "$GITHUB_REF" | grep -qE "^refs/pull/[0-9]+/merge\$" || :
 if [ "${GITHUB_REF#refs/heads/}" = "" ] || [ $? ]; then
 	if git branch --show-current > /dev/null; then
 		branchname=$(git branch --show-current)
@@ -32,6 +32,8 @@ python -m readme2tex --svgdir "docs/svgs" --project "$projectname" --username "$
 git checkout -- "README.tex.md" || exit 3
 sed -i "s#https://rawgit.com/$username/$projectname/None#https://raw.githubusercontent.com/$username/$projectname/$branchname#" "README.md"
 sed -i "s#https://rawgit.com/$username/$projectname/$GITHUB_REF#https://raw.githubusercontent.com/$username/$projectname/$branchname#" "README.md"
+sed -i "s#https://rawgit.com/$username/$projectname/$GITHUB_HEAD_REF#https://raw.githubusercontent.com/$username/$projectname/$branchname#" "README.md"
+sed -i "s#https://rawgit.com/$username/$projectname/$GITHUB_BASE_REF#https://raw.githubusercontent.com/$username/$projectname/$branchname#" "README.md"
 sed -i "s#https://rawgit.com/$username/$projectname/$branchname#https://raw.githubusercontent.com/$username/$projectname/$branchname#" "README.md"
 if [ -n "$targetbranch" ]; then
 	sed -i "s#https://raw.githubusercontent.com/$username/$projectname/$branchname#https://raw.githubusercontent.com/$username/$projectname/$targetbranch#" "README.md"
