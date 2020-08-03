@@ -12,7 +12,7 @@ else
 	projectname="${GITHUB_REPOSITORY##*/}"
 	username="${GITHUB_REPOSITORY%%/*}"
 fi
-echo "$GITHUB_REF" | grep -qE "^refs/pull/[0-9]+/merge\$"
+echo "$GITHUB_REF" | grep -qE "^refs/pull/[0-9]+/merge\$" || :
 if [ "${GITHUB_REF#refs/heads/}" = "" ] || [ $? ]; then
 	if git branch --show-current > /dev/null; then
 		branchname=$(git branch --show-current)

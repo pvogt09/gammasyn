@@ -47,7 +47,7 @@ jobs:
       - name: Clear image cache
         if: ${{ github.event_name == 'pull_request' && (github.base_ref == 'master' || github.base_ref == 'development') }}
         run: |
-          rm -rf docs/svgs/*.svg
+          rm -rfv docs/svgs/*.svg
       # run tex conversion for pull request
       - name: Texify
         if: ${{ github.event_name == 'pull_request' }}
