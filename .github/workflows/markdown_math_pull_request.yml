@@ -51,6 +51,11 @@ jobs:
       # run tex conversion for pull request
       - name: Texify
         if: ${{ github.event_name == 'pull_request' }}
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_REF: ${{ github.ref }}
+          GITHUB_HEAD_REF: ${{ github.head_ref }}
+          GITHUB_BASE_REF: ${{ github.base_ref }}
         run: |
           sh docs/markdown_gitlab2github.sh "$GITHUB_BASE_REF"
       # commit changes for pull request
