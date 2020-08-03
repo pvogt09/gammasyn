@@ -45,7 +45,7 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       # regenerate all images for master and development
       - name: Clear image cache
-        if: ${{ github.event_name == 'pull_request' && (github.ref == 'master' || github.ref == 'development') }}
+        if: ${{ github.event_name == 'pull_request' && (github.base_ref == 'master' || github.base_ref == 'development') }}
         run: |
           rm -rf docs/svgs/*.svg
       # run tex conversion for pull request
