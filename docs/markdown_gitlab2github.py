@@ -39,8 +39,8 @@ with open(readme, 'r') as file:
 # replace content
 # at minimum one blank line before and after formula
 content = re.sub(
-    r'([^\r\n]+)([\r\n]*?)(```math)(.*?)(```)([\r\n]*?)([^\r\n]+)',
-    r'\1\n\n$$\4$$\n\n\7',
+    r'([^\r\n]+)?([\r\n]*?)?(\s*?)(```math)(.*?)(```)([\r\n]*?)?([^\r\n]+)?',
+    r'\1\n\n$$\5$$\n\n\8',
     content,
     flags=re.MULTILINE | re.DOTALL)
 content = re.sub(r'(\$`)(.*?)(`\$)', r'$\2$', content)
