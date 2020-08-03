@@ -12,7 +12,8 @@ else
 	projectname="${GITHUB_REPOSITORY##*/}"
 	username="${GITHUB_REPOSITORY%%/*}"
 fi
-if [ "${GITHUB_REF#refs/heads/}" = "" ]; then
+git branch --show-current || true
+if [ -z "${GITHUB_REF#refs/heads/}" ]; then
 	if git branch --show-current > /dev/null; then
 		branchname=$(git branch --show-current)
 	else
@@ -20,6 +21,11 @@ if [ "${GITHUB_REF#refs/heads/}" = "" ]; then
 	fi
 else
 	branchname="${GITHUB_REF#refs/heads/}"
+fi
+if [ -z "$targetbranch" ]; then
+	echo "Creating documentation for branch $branchname"
+else
+	echo "Creating documentation for PR from ${branchname} to ${targetbranch}"
 fi
 python ./docs/markdown_gitlab2github.py "$(realpath ./)" || exit 1
 python -m readme2tex --svgdir "docs/svgs" --project "$projectname" --username "$username" --output "README.md" "README.tex.md" || exit 2
