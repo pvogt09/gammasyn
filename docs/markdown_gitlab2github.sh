@@ -27,6 +27,8 @@ if [ -z "$targetbranch" ]; then
 else
 	echo "Creating documentation for PR from ${branchname} to ${targetbranch}"
 fi
+realpath ./
+echo "$GITHUB_WORKSPACE"
 python ./docs/markdown_gitlab2github.py "$(realpath ./)" || exit 1
 python -m readme2tex --svgdir "docs/svgs" --project "$projectname" --username "$username" --output "README.md" "README.tex.md" || exit 2
 git checkout -- "README.tex.md" || exit 3
