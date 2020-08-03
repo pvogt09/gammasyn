@@ -72,6 +72,13 @@ jobs:
           branch: ${{ github.head_ref }}-docs
           signoff: true
           labels: Feature:Documentation,Status:Automerge
+      - name: Update status
+        if: always()
+        uses: ouzi-dev/commit-status-updater@v1.0.4
+        with:
+          status: "${{ job.status }}"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          name: ${{ github.workflow }}
 #      - name: Commit changed documentation
 #        if: ${{ github.event_name == 'pull_request' }}
 #        uses: EndBug/add-and-commit@v4

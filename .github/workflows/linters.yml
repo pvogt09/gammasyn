@@ -22,3 +22,10 @@ jobs:
           EC_FIX_ERROR: false
           ALWAYS_LINT_ALL_FILES: false
         uses: zbeekman/EditorConfig-Action@master
+      - name: Update status
+        if: always()
+        uses: ouzi-dev/commit-status-updater@v1.0.4
+        with:
+          status: "${{ job.status }}"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          name: ${{ github.workflow }}
