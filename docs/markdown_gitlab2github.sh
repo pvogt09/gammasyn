@@ -12,6 +12,12 @@ else
 	projectname="${GITHUB_REPOSITORY##*/}"
 	username="${GITHUB_REPOSITORY%%/*}"
 fi
+echo "${GITHUB_REF#refs/heads/}"
+git branch --show-current
+echo "$GITHUB_BASE_REF"
+echo "$GITHUB_HEAD_REF"
+echo "$GITHUB_REPOSITORY"
+echo "$targetbranch"
 if [ "${GITHUB_REF#refs/heads/}" = "" ]; then
 	if git branch --show-current > /dev/null; then
 		branchname=$(git branch --show-current)
