@@ -21,11 +21,7 @@ if [ "${GITHUB_REF#refs/heads/}" = "" ]; then
 else
 	branchname="${GITHUB_REF#refs/heads/}"
 fi
-echo "$PATH"
-ls -lah /usr/bin
-which dvisvgm || true
 python ./docs/markdown_gitlab2github.py "$(realpath ./)" || exit 1
-echo "$PATH"
 python -m readme2tex --svgdir "docs/svgs" --project "$projectname" --username "$username" --output "README.md" "README.tex.md" || exit 2
 git checkout -- "README.tex.md" || exit 3
 sed -i "s#https://rawgit.com/$username/$projectname/None#https://raw.githubusercontent.com/$username/$projectname/$branchname#" "README.md"
