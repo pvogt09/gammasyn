@@ -24,6 +24,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: ${{ github.head_ref }}
+          fetch-depth: 0
           token: ${{ secrets.ACCESS_TOKEN_BRANCHPROTECTION }}
       # install necessary latex packages
       - name: Install latex packages
