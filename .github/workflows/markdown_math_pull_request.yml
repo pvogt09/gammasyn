@@ -49,7 +49,7 @@ jobs:
       - name: Build images
         if: ${{ github.event_name == 'pull_request' }}
         run: |
-          sh docs/make_images.sh
+          bash docs/make_images.sh
       # regenerate all images for master and development
       - name: Clear image cache
         if: ${{ github.event_name == 'pull_request' && (github.base_ref == 'master' || github.base_ref == 'development') }}
