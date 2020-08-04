@@ -31,6 +31,7 @@ jobs:
           apt-get update && apt-get upgrade -y --no-install-recommends || true
           apt-get install apt-utils -y || true
           apt-get install $(xargs < ./.github/actions/texify_markdown/texlive.packages) -y
+          apt-get install imagemagick -y
       # alternative for setting up container
       # - name: Setup miktex container
       #   uses: ./.github/actions/texify_markdown
