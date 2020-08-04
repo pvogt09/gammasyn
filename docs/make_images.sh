@@ -1,8 +1,8 @@
-#! /bin/sh
+#! /bin/bash
 set -e
 cd docs/images/tex || exit 1
 buildfile=build.tex
-find ./tikz_src/ -name "*.tikz" -print0 | while read -d $'\0' file; do
+find ./tikz_src/ -name "*.tikz" -print0 | while read -r -d $'\0' file; do
 	[ -e "$file" ] || continue
 	echo "Building image '$file'"
 	if true || git diff --exit-code HEAD...HEAD^@ -- "$file"; then
