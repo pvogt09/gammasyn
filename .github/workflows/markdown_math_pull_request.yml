@@ -4,6 +4,7 @@ on:
     branches-ignore:
       - '**-docs'
     paths:
+      - 'docs/images/**/*.tikz'
       - 'docs/svgs/*'
       - 'README.md'
       - 'README.tex.md'
@@ -23,6 +24,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: ${{ github.head_ref }}
+          fetch-depth: 0
           token: ${{ secrets.ACCESS_TOKEN_BRANCHPROTECTION }}
       # install necessary latex packages
       - name: Install latex packages
@@ -30,6 +32,7 @@ jobs:
           apt-get update && apt-get upgrade -y --no-install-recommends || true
           apt-get install apt-utils -y || true
           apt-get install $(xargs < ./.github/actions/texify_markdown/texlive.packages) -y
+          apt-get install imagemagick -y
       # alternative for setting up container
       # - name: Setup miktex container
       #   uses: ./.github/actions/texify_markdown
@@ -43,6 +46,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      # build images for documentation
+      - name: Build images
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          bash docs/make_images.sh "$GITHUB_REF"
       # regenerate all images for master and development
       - name: Clear image cache
         if: ${{ github.event_name == 'pull_request' && (github.base_ref == 'master' || github.base_ref == 'development') }}

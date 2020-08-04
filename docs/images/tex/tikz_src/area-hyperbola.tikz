@@ -1,44 +1,43 @@
 \begin{tikzpicture}[]
-  \begin{axis}[
-      width = 4cm, height = 4cm,
-      scale only axis,
-      xlabel={$\sigma$},
-      ylabel={$\iu \omega$},
-      axis x line = center,
+	\begin{axis}[
+			width = 4cm, height = 4cm,
+			scale only axis,
+			xlabel={$\sigma$},
+			ylabel={$\iu \omega$},
+			axis x line = center,
 			axis y line = center,
-      xmin=-1.5, xmax=1.5,
-      ymin=-1.5, ymax=1.5,
-      xtick={\empty},
-      ytick={\empty},
-      axis on top,
-    ]
-    
-  \addplot[name path=lu, domain=-2:-0.5,samples=100]
-    {  0.25/0.5 * (x^2 - 0.5^2)^0.5 };
+			xmin=-1.5, xmax=1.5,
+			ymin=-1.5, ymax=1.5,
+			xtick={\empty},
+			ytick={\empty},
+			axis on top,
+		]
+		\addplot[name path=lu, domain=-2:-0.5,samples=100]
+			{  0.25/0.5 * (x^2 - 0.5^2)^0.5 };
 
-  \addplot[name path=ll, domain=-2:-0.5,samples=100]
-    {  -0.25/0.5 * (x^2 - 0.5^2)^0.5 };
+		\addplot[name path=ll, domain=-2:-0.5,samples=100]
+			{  -0.25/0.5 * (x^2 - 0.5^2)^0.5 };
 
-  \addplot[name path=ru, domain=0.5:2,samples=100]
-    {  0.25/0.5 * (x^2 - 0.5^2)^0.5 };
+		\addplot[name path=ru, domain=0.5:2,samples=100]
+			{  0.25/0.5 * (x^2 - 0.5^2)^0.5 };
 
-  \addplot[name path=rl, domain=0.5:2,samples=100]
-    {  -0.25/0.5 * (x^2 - 0.5^2)^0.5 };
+		\addplot[name path=rl, domain=0.5:2,samples=100]
+			{  -0.25/0.5 * (x^2 - 0.5^2)^0.5 };
 
-  \addplot[fill=green!25!white] fill between[of=lu and ll];
-              
-  \addplot[fill=green!10!white] fill between[of=ru and rl];
-  
-  \draw[thin] (1.3, -0.5) -- (1, -1) coordinate (aux);
-  
-  \draw[dashed] (-2, 1) -- (0, 0);
-  \draw[dashed] (-0.5, -0.75) -- (-0.5, 0.75);
-  \draw[dashed] (-0.5, 0.25) -- (-1.25, 0.25);
-  
-  \draw[<->] (-0.5, 0.5) -- node[midway,sloped,above]{$a$} (0, 0.5);
-  \draw[<->] (-1.15, 0) -- node[midway,sloped,above]{$b$} (-1.15, 0.25);
-    
-  \end{axis}
-  
-  \node[anchor=north east,inner sep=1pt,fill=white] at (aux) {\footnotesize only Hyperbolasquare};  
+		\addplot[fill=green!25!white] fill between[of=lu and ll];
+
+		\addplot[fill=green!10!white] fill between[of=ru and rl];
+
+		\draw[thin] (1.3, -0.5) -- (1, -1) coordinate (aux);
+
+		\draw[dashed] (-2, 1) -- (0, 0);
+		\draw[dashed] (-0.5, -0.75) -- (-0.5, 0.75);
+		\draw[dashed] (-0.5, 0.25) -- (-1.25, 0.25);
+
+		\draw[<->] (-0.5, 0.5) -- node[midway,sloped,above]{$a$} (0, 0.5);
+		\draw[<->] (-1.15, 0) -- node[midway,sloped,above]{$b$} (-1.15, 0.25);
+
+	\end{axis}
+
+	\node[anchor=north east,inner sep=1pt,fill=white] at (aux) {\footnotesize only Hyperbolasquare};
 \end{tikzpicture}

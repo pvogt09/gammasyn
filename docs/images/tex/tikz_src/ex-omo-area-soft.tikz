@@ -1,30 +1,29 @@
 \begin{tikzpicture}[]
-  \begin{axis}[
-      width = 4cm, height = 4cm,
-      scale only axis,
-      xlabel={$\sigma$},
-      ylabel={$\iu \omega$},
-      axis x line = center,
-			axis y line = center,
-      xmin=-6, xmax=2,
-      ymin=-4, ymax=4,
-      xtick={-2, -1},
-%      xtick={\empty},
-      ytick={-1, 1},
-      y tick label style={anchor=west,xshift=1mm},
-      x tick label style={xshift=-3mm},
-      axis on top,
-    ]
-    
-  \draw[fill=green!25!white] (-15, 15) -- (-1, 1) -- (-1, -1) -- (-15, -15) -- cycle;
-  \draw[dashed] (-1, 1) -- (0, 0);
-  \draw[dashed] (-1, -1) -- (0, 0);
-  \draw[dashed] (-1, -15) -- (-1, 15);
-    
-  \draw[fill=green!75!white] (-14, 7) -- (-2, 1) -- (-2, -1) -- (-14, -7) -- cycle;
-  \draw[dotted] (-2, 1) -- (0, 0);
-  \draw[dotted] (-2, -1) -- (0, 0);
-  \draw[dotted] (-2, -15) -- (-2, 15);
+	\begin{axis}[
+		width = 4cm, height = 4cm,
+		scale only axis,
+		xlabel={$\sigma$},
+		ylabel={$\iu \omega$},
+		axis x line = center,
+		axis y line = center,
+		xmin=-6, xmax=2,
+		ymin=-4, ymax=4,
+		xtick={-2, -1},
+		%xtick={\empty},
+		ytick={-1, 1},
+		y tick label style={anchor=west,xshift=1mm},
+		x tick label style={xshift=-3mm},
+		axis on top,
+	]
 
-  \end{axis}
+	\draw[fill=green!25!white] (-15, 15) -- (-1, 1) -- (-1, -1) -- (-15, -15) -- cycle;
+	\draw[dashed] (-1, 1) -- (0, 0);
+	\draw[dashed] (-1, -1) -- (0, 0);
+	\draw[dashed] (-1, -15) -- (-1, 15);
+
+	\draw[fill=green!75!white] (-14, 7) -- (-2, 1) -- (-2, -1) -- (-14, -7) -- cycle;
+	\draw[dotted] (-2, 1) -- (0, 0);
+	\draw[dotted] (-2, -1) -- (0, 0);
+	\draw[dotted] (-2, -15) -- (-2, 15);
+	\end{axis}
 \end{tikzpicture}

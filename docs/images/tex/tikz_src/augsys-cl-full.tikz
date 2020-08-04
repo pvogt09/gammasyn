@@ -1,69 +1,67 @@
 \begin{tikzpicture}[node distance=5mm]
-  
-  \node[block] (F) {$\ma{F}$};
 
-  \node[sum] (su) [right=of F] {};
-  \node[branch,node distance=20mm] (bu) [right=of su] {};
-  \node[block] (B) [right=of bu] {$\ma{B}$};
-  \node[sum] (sdx) [right=of B] {};
-  \node[block] (int) [right=of sdx] {$\maI{E} \int$};
-  \node[branch] (bx) [right=of int] {};
-  \node[block] (C) [right=of bx] {$\ma{C}$};
-  \node[block] (A) [below=of int] {$\ma{A}$};
-  \node[block,node distance=15mm] (Cref) [above=of bx] {$\ma{C}_\mrm{ref}$};
-  \node[sum] (syref) [above=of Cref] {};
-  \node[block] (Dref) at (Cref -| bu) {$\ma{D}_\mrm{ref}$};
-  
-  \node[block] (dx) [above=of C] {$\frac{\ud}{\ud t}$};
-  \node[block] (Cp) [right=of dx] {$\ma{C}'$};
-  \node[branch] (bx2) at (dx -| bx) {};
+	\node[block] (F) {$\ma{F}$};
 
-  \coordinate (yp) at ($(Cp.east)+(20mm,0)$);
-  \coordinate (y) at (yp |- C);
-  \coordinate (yref) at (yp |- syref);
+	\node[sum] (su) [right=of F] {};
+	\node[branch,node distance=20mm] (bu) [right=of su] {};
+	\node[block] (B) [right=of bu] {$\ma{B}$};
+	\node[sum] (sdx) [right=of B] {};
+	\node[block] (int) [right=of sdx] {$\maI{E} \int$};
+	\node[branch] (bx) [right=of int] {};
+	\node[block] (C) [right=of bx] {$\ma{C}$};
+	\node[block] (A) [below=of int] {$\ma{A}$};
+	\node[block,node distance=15mm] (Cref) [above=of bx] {$\ma{C}_\mrm{ref}$};
+	\node[sum] (syref) [above=of Cref] {};
+	\node[block] (Dref) at (Cref -| bu) {$\ma{D}_\mrm{ref}$};
 
-  \node[branch] (byp) at ($(yp) + (-5mm,0)$)  {};
-  \node[branch] (by) at ($(y) + (-10mm,0)$)  {};
+	\node[block] (dx) [above=of C] {$\frac{\ud}{\ud t}$};
+	\node[block] (Cp) [right=of dx] {$\ma{C}'$};
+	\node[branch] (bx2) at (dx -| bx) {};
+
+	\coordinate (yp) at ($(Cp.east)+(20mm,0)$);
+	\coordinate (y) at (yp |- C);
+	\coordinate (yref) at (yp |- syref);
+
+	\node[branch] (byp) at ($(yp) + (-5mm,0)$)  {};
+	\node[branch] (by) at ($(y) + (-10mm,0)$)  {};
 
 
-  
-  \node[block,node distance=15mm] (K) [below=of su] {$\ma{R}$};
-  \node[block] (Kp) [left=of K] {$\ma{K}$};
 
-  \draw[connector,->] (F) -- (su);
-  \draw[connector,->] (su) --node{$\ve{u}$} (bu) -- (B);
-  \draw[connector,->] (B) -- (sdx);
-  \draw[connector,->] (sdx) -- (int);
-  %\draw[connector,->] (Einv) -- node{$\dot{\ve{x}}$} (bdx) -- (int);
-  \draw[connector,->] (int) -- node{$\ve{x}$} (bx) -- (C);
-  \draw[connector,->] (bx) |- (A);
-  \draw[connector,->] (A) -| (sdx);
-  \draw[connector,->] (bx2) -- (dx);
-  \draw[connector,->] (dx) -- (Cp);
-  \draw[connector,->] (bx) -- (bx2) -- (Cref);
-  \draw[connector,->] (Cref) -- (syref);
-  \draw[connector,->] (bu) -- (Dref);
-  \draw[connector,->] (Dref) |- (syref);
-  
-  \draw[connector,->] (C) -- (by) -- node[pos=1]{$\ve{y}$}(y);
-  \draw[connector,->] (Cp) -- (byp) -- node[pos=1]{$\ve{y}'$}(yp);
-  \draw[connector,->] (syref) -- node[pos=1]{$\ve{y}_\mrm{ref}$}(yref);
-  
-  
-  \draw[connector,->] (F.west) ++(-10mm,0) -- node[pos=0.25]{$\ve{r}$} (F);
-  \draw[connector,->] (K) -- (su);
-  \sumsign{(su)}{270};
-  \draw[connector,->] (Kp) -- (su);
-  
-  
-  \draw[connectorbw,<-] (K.south) -- ++(0, -5mm) -| (by);
-  \draw[connectorbw,<-] (Kp.south) -- ++(0, -10mm) -| (byp);
-  
-  \node[draw,dashed,fit={(F) (K) (Kp)},inner sep=2mm] (ctrl) {};
-  \node[anchor=south west,inner sep=2pt] at (ctrl.north west) {Static Controller};
-  
-  \node[draw,dashed,fit={(Dref) (Cref) (syref) (bu) (B) (A) (C) (Cp)},inner sep=2mm] (augplant) {};
-  \node[anchor=south west,inner sep=2pt] at (augplant.north west) {Augmented plant};
-  
-  
+	\node[block,node distance=15mm] (K) [below=of su] {$\ma{R}$};
+	\node[block] (Kp) [left=of K] {$\ma{K}$};
+
+	\draw[connector,->] (F) -- (su);
+	\draw[connector,->] (su) --node{$\ve{u}$} (bu) -- (B);
+	\draw[connector,->] (B) -- (sdx);
+	\draw[connector,->] (sdx) -- (int);
+	%\draw[connector,->] (Einv) -- node{$\dot{\ve{x}}$} (bdx) -- (int);
+	\draw[connector,->] (int) -- node{$\ve{x}$} (bx) -- (C);
+	\draw[connector,->] (bx) |- (A);
+	\draw[connector,->] (A) -| (sdx);
+	\draw[connector,->] (bx2) -- (dx);
+	\draw[connector,->] (dx) -- (Cp);
+	\draw[connector,->] (bx) -- (bx2) -- (Cref);
+	\draw[connector,->] (Cref) -- (syref);
+	\draw[connector,->] (bu) -- (Dref);
+	\draw[connector,->] (Dref) |- (syref);
+
+	\draw[connector,->] (C) -- (by) -- node[pos=1]{$\ve{y}$}(y);
+	\draw[connector,->] (Cp) -- (byp) -- node[pos=1]{$\ve{y}'$}(yp);
+	\draw[connector,->] (syref) -- node[pos=1]{$\ve{y}_\mrm{ref}$}(yref);
+
+
+	\draw[connector,->] (F.west) ++(-10mm,0) -- node[pos=0.25]{$\ve{r}$} (F);
+	\draw[connector,->] (K) -- (su);
+	\sumsign{(su)}{270};
+	\draw[connector,->] (Kp) -- (su);
+
+
+	\draw[connectorbw,<-] (K.south) -- ++(0, -5mm) -| (by);
+	\draw[connectorbw,<-] (Kp.south) -- ++(0, -10mm) -| (byp);
+
+	\node[draw,dashed,fit={(F) (K) (Kp)},inner sep=2mm] (ctrl) {};
+	\node[anchor=south west,inner sep=2pt] at (ctrl.north west) {Static Controller};
+
+	\node[draw,dashed,fit={(Dref) (Cref) (syref) (bu) (B) (A) (C) (Cp)},inner sep=2mm] (augplant) {};
+	\node[anchor=south west,inner sep=2pt] at (augplant.north west) {Augmented plant};
 \end{tikzpicture}

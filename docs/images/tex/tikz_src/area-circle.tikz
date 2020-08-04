@@ -1,21 +1,18 @@
 \begin{tikzpicture}[]
-  \begin{axis}[
-      width = 4cm, height = 4cm,
-      scale only axis,
-      xlabel={$\sigma$},
-      ylabel={$\iu \omega$},
-      axis x line = center,
+	\begin{axis}[
+			width = 4cm, height = 4cm,
+			scale only axis,
+			xlabel={$\sigma$},
+			ylabel={$\iu \omega$},
+			axis x line = center,
 			axis y line = center,
-      xmin=-1.5, xmax=1.5,
-      ymin=-1.5, ymax=1.5,
-      xtick={\empty},
-      ytick={\empty},
-      axis on top,
-    ]
-    
-    \draw[fill=green!25!white] (0,0) circle (1);
-    
-    \draw[<->] (0, 0) -- node[midway,sloped,above]{$R$} (0.866, 0.5);
-    
-  \end{axis}
+			xmin=-1.5, xmax=1.5,
+			ymin=-1.5, ymax=1.5,
+			xtick={\empty},
+			ytick={\empty},
+			axis on top,
+		]
+		\draw[fill=green!25!white] (0,0) circle[radius=1];
+		\draw[<->] (0, 0) -- node[midway,sloped,above]{$R$} (0.866, 0.5);
+	\end{axis}
 \end{tikzpicture}
