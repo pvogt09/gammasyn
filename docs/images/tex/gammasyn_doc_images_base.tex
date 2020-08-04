@@ -1,0 +1,62 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+\input{setup_math.tex}
+
+
+\usepackage{etoolbox}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{pgf}
+\usepackage{ifxetex}
+\ifxetex \else
+	\pdfinfoomitdate=1
+	\pdftrailerid{}
+	\pdfsuppressptexinfo15%Suppress PTEX.Fullbanner and info of imported PDFs
+\fi
+
+\input{setup_tikz.tex}
+
+\tikzset{every picture/.style = {auto, >=stealth'}}
+
+
+\usetikzlibrary{external}
+
+\tikzexternalize[prefix=tikz_ext/,
+                 %mode=list and make
+                ]
+
+\tikzset{external/force remake}
+
+\makeatletter
+\edef\PERCENTSYMBOL{\@percentchar}
+\makeatother
+
+\tikzset{png export/.style={
+	external/system call={
+		pdflatex \tikzexternalcheckshellescape
+			-halt-on-error -interaction=batchmode -jobname "\image" "\texsource" &
+		convert -units pixelsperinch -density 300 -resize "100\PERCENTSYMBOL" -background white -alpha remove -alpha off "\image.pdf" "\image.png"
+}}}
+
+\tikzset{png export}
+
+
+\newcommand{\addtikzimage}[1]{%
+  \tikzsetnextfilename{#1}
+  \begin{tabular}{|l|}
+    \hline
+    \textbf{#1.pdf} \\
+    \hline
+    \\
+    \input{tikz_src/#1.tikz} \\
+    \hline
+    #1.png \\
+    \hline
+    \\
+    \includegraphics{tikz_ext/#1.png} \\
+    \hline
+  \end{tabular}
+}
+
+\begin{document}
