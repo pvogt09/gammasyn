@@ -3,7 +3,7 @@ set -e
 cd docs/images/tex || exit 1
 buildfile=build.tex
 retval=0
-find ./tikz_src/ -name "*.tikz" -print0 | while read -r -d $'\0' file; do
+while read -r -d $'\0' file; do
 	[ -e "$file" ] || continue
 	echo "Building image '$file'"
 	if ! git diff --exit-code HEAD^...HEAD -- "$file" > /dev/null; then
@@ -19,6 +19,6 @@ find ./tikz_src/ -name "*.tikz" -print0 | while read -r -d $'\0' file; do
 			exit $retval
 		fi
 	fi
-done
+done < <(find ./tikz_src/ -name "*.tikz" -print0)
 rm -f "$buildfile"
 exit $retval
