@@ -22,9 +22,10 @@
 
 \usetikzlibrary{external}
 
-\tikzexternalize[prefix=tikz_ext/,
-                 %mode=list and make
-                ]
+\tikzexternalize[
+	prefix=tikz_ext/,
+	%mode=list and make
+]
 
 \tikzset{external/force remake}
 
@@ -43,20 +44,20 @@
 
 
 \newcommand{\addtikzimage}[1]{%
-  \tikzsetnextfilename{#1}
-  \begin{tabular}{|l|}
-    \hline
-    \textbf{#1.pdf} \\
-    \hline
-    \\
-    \input{tikz_src/#1.tikz} \\
-    \hline
-    #1.png \\
-    \hline
-    \\
-    \includegraphics{tikz_ext/#1.png} \\
-    \hline
-  \end{tabular}
+	\tikzsetnextfilename{#1}
+	\begin{tabular}{|l|}
+		\hline
+		\textbf{#1.pdf} \\
+		\hline
+		\\
+		\input{tikz_src/#1.tikz} \\
+		\hline
+		#1.png \\
+		\hline
+		\\
+		\includegraphics{tikz_ext/#1.png} \\
+		\hline
+	\end{tabular}
 }
 
 \begin{document}

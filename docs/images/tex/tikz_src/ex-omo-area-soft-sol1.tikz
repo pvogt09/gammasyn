@@ -1,28 +1,27 @@
 \begin{tikzpicture}[]
-  \begin{axis}[
-      width = 4cm, height = 4cm,
-      scale only axis,
-      xlabel={$\sigma$},
-      ylabel={$\iu \omega$},
-      axis x line = center,
-			axis y line = center,
-      xmin=-6, xmax=2,
-      ymin=-4, ymax=4,
-      xtick={-2, -1},
-%      xtick={\empty},
-      ytick={-1, 1},
-      y tick label style={anchor=west,xshift=1mm},
-      x tick label style={xshift=-3mm},
-      axis on top,
-    ]
-    
-  \draw[fill=green!25!white] (-15, 15) -- (-1, 1) -- (-1, -1) -- (-15, -15) -- cycle;
-    
-  \draw[fill=green!75!white] (-14, 7) -- (-2, 1) -- (-2, -1) -- (-14, -7) -- cycle;
-  
-  \addplot[mark=x,only marks,black,thick] coordinates {
-(-4.44444, 1.06778) (-4.44444, -1.06778) (-3.63636, 1.96757) (-3.63636, -1.96757) (-1.81371, 0) (-11.5196, 0) (-1.8968, 0) (-9.0123, 0) (-2.51081, 0) (-7.48919, 0)
-  };
+	\begin{axis}[
+		width = 4cm, height = 4cm,
+		scale only axis,
+		xlabel={$\sigma$},
+		ylabel={$\iu \omega$},
+		axis x line = center,
+		axis y line = center,
+		xmin=-6, xmax=2,
+		ymin=-4, ymax=4,
+		xtick={-2, -1},
+		%xtick={\empty},
+		ytick={-1, 1},
+		y tick label style={anchor=west,xshift=1mm},
+		x tick label style={xshift=-3mm},
+		axis on top,
+	]
 
-  \end{axis}
+	\draw[fill=green!25!white] (-15, 15) -- (-1, 1) -- (-1, -1) -- (-15, -15) -- cycle;
+
+	\draw[fill=green!75!white] (-14, 7) -- (-2, 1) -- (-2, -1) -- (-14, -7) -- cycle;
+
+	\addplot[mark=x,only marks,black,thick] coordinates {
+		(-4.44444, 1.06778) (-4.44444, -1.06778) (-3.63636, 1.96757) (-3.63636, -1.96757) (-1.81371, 0) (-11.5196, 0) (-1.8968, 0) (-9.0123, 0) (-2.51081, 0) (-7.48919, 0)
+	};
+	\end{axis}
 \end{tikzpicture}

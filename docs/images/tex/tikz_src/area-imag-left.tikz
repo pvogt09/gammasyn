@@ -1,32 +1,31 @@
 \begin{tikzpicture}[]
-  \begin{axis}[
-      width = 4cm, height = 4cm,
-      scale only axis,
-      xlabel={$\sigma$},
-      ylabel={$\iu \omega$},
-      axis x line = center,
+	\begin{axis}[
+			width = 4cm, height = 4cm,
+			scale only axis,
+			xlabel={$\sigma$},
+			ylabel={$\iu \omega$},
+			axis x line = center,
 			axis y line = center,
-      xmin=-1.5, xmax=1.5,
-      ymin=-1.5, ymax=1.5,
-      xtick={-0.5},
-      xticklabels={},
-      ytick={\empty},
-      axis on top,
-    ]
-    
-  \addplot[name path=f]
-  coordinates {
-      (-0.5,-2)
-      (-0.5, 2)
-  };
+			xmin=-1.5, xmax=1.5,
+			ymin=-1.5, ymax=1.5,
+			xtick={-0.5},
+			xticklabels={},
+			ytick={\empty},
+			axis on top,
+		]
 
-  \path[name path=axis] (axis cs:-2,-2) -- (axis cs:-2,2);
+		\addplot[name path=f]
+		coordinates {
+			(-0.5,-2)
+			(-0.5, 2)
+		};
 
-  \addplot[fill=green!25!white] fill between[of=f and axis];
-              
-  \node at (-1, 0.5) {$a = 1$};
-  
-  \draw[thin] (-0.5, 0) -- (-0.7,-0.2) node[anchor=north east, inner sep =1pt]{$-b$};
-  
-  \end{axis}
+		\path[name path=axis] (axis cs:-2,-2) -- (axis cs:-2,2);
+
+		\addplot[fill=green!25!white] fill between[of=f and axis];
+
+		\node at (-1, 0.5) {$a = 1$};
+
+		\draw[thin] (-0.5, 0) -- (-0.7,-0.2) node[anchor=north east, inner sep =1pt]{$-b$};
+	\end{axis}
 \end{tikzpicture}
