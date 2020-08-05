@@ -53,7 +53,10 @@ function [Ropt, Jopt, information] = gammasyn_couplingcontrol(systems, areafun, 
 	end
 	if control_design_type == GammaCouplingStrategy.EXACT
 		numeric = false;
-	elseif control_design_type == GammaCouplingStrategy.APPROXIMATE
+	elseif any(control_design_type == [
+		GammaCouplingStrategy.APPROXIMATE;
+		GammaCouplingStrategy.APPROXIMATE_INEQUALITY
+	])
 		numeric = false;
 	elseif control_design_type == GammaCouplingStrategy.NUMERIC_NONLINEAR_EQUALITY
 		numeric = true;
@@ -322,9 +325,6 @@ function [Ropt, Jopt, information] = gammasyn_couplingcontrol(systems, areafun, 
 	RKF_bounds_tilde = {
 		reshape(RKF_bounds_A_tilde.', number_controls_tilde, number_states_tilde + number_measurements_xdot_tilde + number_references_tilde, size(RKF_bounds_A_tilde, 1)), RKF_bounds_b_tilde
 	};
-	R_bounds_tilde = {
-		R_bounds_tilde, K_bounds_tilde, F_bounds_tilde, RKF_bounds_tilde
-	};
 
 	%% transform R_nonlin
 	if descriptor
@@ -416,9 +416,12 @@ function [Ropt, Jopt, information] = gammasyn_couplingcontrol(systems, areafun, 
 		R_fixed_tilde = {
 			R_fixed_tilde, K_fixed_tilde, F_fixed_tilde, RKF_fixed_tilde
 		};
+		R_bounds_tilde = {
+			R_bounds_tilde, K_bounds_tilde, F_bounds_tilde, RKF_bounds_tilde
+		};
 	else
 		% calculate structural constraints
-		[RF_fixed_tilde, valid, message] = coupling_RF_fixed(systems_tilde, objectiveoptions, solveroptions, descriptor);
+		[RF_fixed_tilde, RF_bounds_tilde, valid, message] = coupling_RF_fixed(systems_tilde, objectiveoptions, solveroptions, descriptor);
 		if ~valid % then abort control design
 			Ropt = {
 				NaN(number_controls, number_states);
@@ -434,8 +437,15 @@ function [Ropt, Jopt, information] = gammasyn_couplingcontrol(systems, areafun, 
 		K_fixed_tilde_all = cat_RKF_fixed(K_fixed_tilde, RF_fixed_tilde{2});
 		F_fixed_tilde_all = cat_RKF_fixed(F_fixed_tilde, RF_fixed_tilde{3});
 
+		R_bounds_tilde_all = cat_RKF_fixed(R_bounds_tilde, RF_bounds_tilde{1});
+		K_bounds_tilde_all = cat_RKF_fixed(K_bounds_tilde, RF_bounds_tilde{2});
+		F_bounds_tilde_all = cat_RKF_fixed(F_bounds_tilde, RF_bounds_tilde{3});
+
 		R_fixed_tilde = {
 			R_fixed_tilde_all, K_fixed_tilde_all, F_fixed_tilde_all, RKF_fixed_tilde
+		};
+		R_bounds_tilde = {
+			R_bounds_tilde_all, K_bounds_tilde_all, F_bounds_tilde_all, RKF_bounds_tilde
 		};
 	end
 
