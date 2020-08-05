@@ -1,13 +1,13 @@
-function [RF_fixed, RF_bounds, valid, message] = coupling_RF_fixed(systems, objectiveoptions, solveroptions, descriptor)
-	%COUPLING_RF_FIXED calculates structural constraints for proportional controller and prefilter coefficients, that are necessary for coupling control
+function [RKF_fixed, RKF_bounds, valid, message] = coupling_RKF_fixed(systems, objectiveoptions, solveroptions, descriptor)
+	%COUPLING_RKF_FIXED calculates structural constraints for proportional controller and prefilter coefficients, that are necessary for coupling control
 	%	Input:
 	%		systems:					structure with dynamic systems to take into consideration
 	%		objectiveoptions:			structure with objective options
 	%		solveroptions:				options for optimization algorithm to use
 	%		descriptor:					indicator if design should be performed for a DAE system
 	%	Output:
-	%		RF_fixed:					cell array of three cell arrays providing the structural constraints of proportional, derivative and prefilter gain compatible with gammasyn
-	%		RF_bounds:					cell array of three cell arrays providing the structural inequality constraints of proportional, derivative and prefilter gain compatible with gammasyn
+	%		RKF_fixed:					cell array of three cell arrays providing the structural constraints of proportional, derivative and prefilter gain compatible with gammasyn
+	%		RKF_bounds:					cell array of three cell arrays providing the structural inequality constraints of proportional, derivative and prefilter gain compatible with gammasyn
 	%		valid:						indicator of failure
 	%		message:					failure message
 	if nargin <= 3
@@ -21,7 +21,8 @@ function [RF_fixed, RF_bounds, valid, message] = coupling_RF_fixed(systems, obje
 	solvesymbolic = hassymbolic && solvesymbolic;
 	% parameter for rounding equation systems in case no solution of normal equations (which must have a solution) is found
 	round_to = objectiveoptions.couplingcontrol.round_equations_to_digits;
-	RF_fixed = [];
+	RKF_fixed = [];
+	RKF_bounds = [];
 	R_bounds = {[], []};
 	F_bounds = {[], []};
 	valid = true;
@@ -253,7 +254,7 @@ function [RF_fixed, RF_bounds, valid, message] = coupling_RF_fixed(systems, obje
 					% try solution with parametric solution returned by \
 					if rank(X_R) == rank(equation_system_aug)% TODO: use tolerance to allow for solution?
 						% TODO: No, but round equation systems if approximate system also does not have solution?
-						% TODO: another possibility would be to define a tube of inequalities around the equations system and solve with linprog
+						% TODO: another possibility would be to define a tube of inequalities around the equation system and solve with linprog
 						r_0 = X_R\z_R;
 						r_0_ker = null(X_R, 'r');
 						A = null(r_0_ker.', 'r').';
@@ -410,7 +411,7 @@ function [RF_fixed, RF_bounds, valid, message] = coupling_RF_fixed(systems, obje
 					% try solution with parametric solution returned by \
 					if rank(X_F) == rank(equation_system_aug)% TODO: use tolerance to allow for solution?
 						% TODO: No, but round equation systems if approximate system also does not have solution?
-						% TODO: another possibility would be to define a tube of inequalities around the equations system and solve with linprog
+						% TODO: another possibility would be to define a tube of inequalities around the equation system and solve with linprog
 						f_0 = X_F\z_F;
 						f_0_ker = null(X_F, 'r');
 						A = null(f_0_ker.', 'r').';
@@ -486,7 +487,7 @@ function [RF_fixed, RF_bounds, valid, message] = coupling_RF_fixed(systems, obje
 			end
 		end
 	end
-	RF_fixed = {
+	RKF_fixed = {
 		R_fixed;
 		{
 			[], []
@@ -495,7 +496,7 @@ function [RF_fixed, RF_bounds, valid, message] = coupling_RF_fixed(systems, obje
 			F_fixed_A, F_fixed_B
 		}
 	};
-	RF_bounds = {
+	RKF_bounds = {
 		R_bounds;
 		{
 			[], []

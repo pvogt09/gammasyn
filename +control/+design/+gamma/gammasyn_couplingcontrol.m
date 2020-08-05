@@ -421,7 +421,7 @@ function [Ropt, Jopt, information] = gammasyn_couplingcontrol(systems, areafun, 
 		};
 	else
 		% calculate structural constraints
-		[RF_fixed_tilde, RF_bounds_tilde, valid, message] = coupling_RF_fixed(systems_tilde, objectiveoptions, solveroptions, descriptor);
+		[RF_fixed_tilde, RF_bounds_tilde, valid, message] = coupling_RKF_fixed(systems_tilde, objectiveoptions, solveroptions, descriptor);
 		if ~valid % then abort control design
 			Ropt = {
 				NaN(number_controls, number_states);
