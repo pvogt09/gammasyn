@@ -61,7 +61,7 @@ function [J, gradJ, hessianJ] = J_mex_m(x, system, weight, areafun, dimensions, 
 					[J_gain, gradJ_gain] = calculate_objective_gain(system, R, K, F, dimensions, options);
 				else
 					J_gain = 0;
-					gradJ_gain = zeros(number_controls, number_measurements + number_measurements_xdot + number_references, size(options.type, 1));
+					gradJ_gain = zeros(number_controls, number_measurements + number_measurements_xdot + number_references, 1);
 				end
 				J = J + J_eigenvector + J_gain;
 				gradJtemp = gradJtemp + gradJtemp_eigenvector + gradJ_gain;
@@ -93,7 +93,7 @@ function [J, gradJ, hessianJ] = J_mex_m(x, system, weight, areafun, dimensions, 
 					[J_gain, gradJ_gain] = calculate_objective_gain(system, R, K, F, dimensions, options);
 				else
 					J_gain = 0;
-					gradJ_gain = zeros(number_controls, number_measurements + number_references, size(options.type, 1));
+					gradJ_gain = zeros(number_controls, number_measurements + number_references, 1);
 				end
 				J = J + J_eigenvector + J_gain;
 				gradJtemp = gradJtemp + gradJtemp_eigenvector + gradJ_gain;
@@ -126,14 +126,14 @@ function [J, gradJ, hessianJ] = J_mex_m(x, system, weight, areafun, dimensions, 
 					[J, gradJtemp, hessianJ] = calculate_objective(areaval, weight, eigenvalue_derivative, eigenvalue_derivative_xdot, areaval_derivative, dimensions, options, eigenvalue_2derivative, areaval_2_derivative, eigenvalue_2derivative_xdot, eigenvalue_2derivative_m, eigenvalue_2derivative_xdot_m);
 				else
 					J = 0;
-					gradJtemp = zeros(number_controls, number_measurements + number_measurements_xdot + number_references, size(options.type, 1));
+					gradJtemp = zeros(number_controls, number_measurements + number_measurements_xdot + number_references, 1);
 					hessianJ = zeros(number_controls*(number_measurements + number_measurements_xdot + number_references), number_controls*(number_measurements + number_measurements_xdot + number_references));
 				end
 				if isgaintype
 					[J_gain, gradJ_gain, hessianJ_gain] = calculate_objective_gain(system, R, K, F, dimensions, options);
 				else
 					J_gain = 0;
-					gradJ_gain = zeros(number_controls, number_measurements + number_measurements_xdot + number_references, size(options.type, 1));
+					gradJ_gain = zeros(number_controls, number_measurements + number_measurements_xdot + number_references, 1);
 					hessianJ_gain = zeros(number_controls*(number_measurements + number_measurements_xdot + number_references), number_controls*(number_measurements + number_measurements_xdot + number_references));
 				end
 				J = J + J_gain;
@@ -172,14 +172,14 @@ function [J, gradJ, hessianJ] = J_mex_m(x, system, weight, areafun, dimensions, 
 					[J, gradJtemp, hessianJ] = calculate_objective(areaval, weight, eigenvalue_derivative, eigenvalue_derivative_xdot, areaval_derivative, dimensions, options, eigenvalue_2derivative, areaval_2_derivative, eigenvalue_2derivative_tmp, eigenvalue_2derivative_tmp, eigenvalue_2derivative_tmp);
 				else
 					J = 0;
-					gradJtemp = zeros(number_controls, number_measurements + number_references, size(options.type, 1));
+					gradJtemp = zeros(number_controls, number_measurements + number_references, 1);
 					hessianJ = zeros(number_controls*(number_measurements + number_references), number_controls*(number_measurements + number_references));
 				end
 				if isgaintype
 					[J_gain, gradJ_gain, hessianJ_gain] = calculate_objective_gain(system, R, K, F, dimensions, options);
 				else
 					J_gain = 0;
-					gradJ_gain = zeros(number_controls, number_measurements + number_measurements_xdot + number_references, size(options.type, 1));
+					gradJ_gain = zeros(number_controls, number_measurements + number_measurements_xdot + number_references, 1);
 					hessianJ_gain = zeros(number_controls*(number_measurements + number_measurements_xdot + number_references), number_controls*(number_measurements + number_measurements_xdot + number_references));
 				end
 				J = J + J_gain;
@@ -230,7 +230,7 @@ function [J, gradJ, hessianJ] = J_mex_m(x, system, weight, areafun, dimensions, 
 					[J_gain, gradJ_gain] = calculate_objective_gain(system, R, K, F, dimensions, options);
 				else
 					J_gain = 0;
-					gradJ_gain = zeros(number_controls, number_measurements + number_measurements_xdot + number_references, size(options.type, 1));
+					gradJ_gain = zeros(number_controls, number_measurements + number_measurements_xdot + number_references, 1);
 				end
 				J = J + J_eigenvector + J_gain;
 				gradJtemp = gradJtemp + gradJtemp_eigenvector + gradJ_gain;
@@ -262,7 +262,7 @@ function [J, gradJ, hessianJ] = J_mex_m(x, system, weight, areafun, dimensions, 
 					[J_gain, gradJ_gain] = calculate_objective_gain(system, R, K, F, dimensions, options);
 				else
 					J_gain = 0;
-					gradJ_gain = zeros(number_controls, number_measurements + number_references, size(options.type, 1));
+					gradJ_gain = zeros(number_controls, number_measurements + number_references, 1);
 				end
 				J = J + J_eigenvector + J_gain;
 				gradJtemp = gradJtemp + gradJtemp_eigenvector + gradJ_gain;
@@ -295,13 +295,13 @@ function [J, gradJ, hessianJ] = J_mex_m(x, system, weight, areafun, dimensions, 
 					[J, gradJtemp] = calculate_objective(areaval, weight, eigenvalue_derivative, eigenvalue_derivative_xdot, areaval_derivative, dimensions, options);
 				else
 					J = 0;
-					gradJtemp = zeros(number_controls, number_measurements + number_measurements_xdot + number_references, size(options.type, 1));
+					gradJtemp = zeros(number_controls, number_measurements + number_measurements_xdot + number_references, 1);
 				end
 				if isgaintype
 					[J_gain, gradJ_gain] = calculate_objective_gain(system, R, K, F, dimensions, options);
 				else
 					J_gain = 0;
-					gradJ_gain = zeros(number_controls, number_measurements + number_measurements_xdot + number_references, size(options.type, 1));
+					gradJ_gain = zeros(number_controls, number_measurements + number_measurements_xdot + number_references, 1);
 				end
 				J = J + J_gain;
 				gradJtemp = gradJtemp + gradJ_gain;
@@ -333,13 +333,13 @@ function [J, gradJ, hessianJ] = J_mex_m(x, system, weight, areafun, dimensions, 
 					[J, gradJtemp] = calculate_objective(areaval, weight, eigenvalue_derivative, eigenvalue_derivative_xdot, areaval_derivative, dimensions, options);
 				else
 					J = 0;
-					gradJtemp = zeros(number_controls, number_measurements + number_references, size(options.type, 1));
+					gradJtemp = zeros(number_controls, number_measurements + number_references, 1);
 				end
 				if isgaintype
 					[J_gain, gradJ_gain] = calculate_objective_gain(system, R, K, F, dimensions, options);
 				else
 					J_gain = 0;
-					gradJ_gain = zeros(number_controls, number_measurements + number_references, size(options.type, 1));
+					gradJ_gain = zeros(number_controls, number_measurements + number_references, 1);
 				end
 				J = J + J_gain;
 				gradJtemp = gradJtemp + gradJ_gain;
