@@ -675,13 +675,6 @@ In this case only "simple" linear equality conditions can be imposed for the ent
 * `info`: structure with additional information about the result
 
 
-PLEASE NOTE: The current version of the toolbox "ignores" the prefilter <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/b8bc815b5e9d5177af01fd4d3d3c2f10.svg?invert_in_darkmode" align=middle width=12.85392569999999pt height=22.465723500000017pt/>.
-Current work aims to extend the toolbox for the design of coupling and decoupling controllers.
-In theses cases the manipulation of <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/b8bc815b5e9d5177af01fd4d3d3c2f10.svg?invert_in_darkmode" align=middle width=12.85392569999999pt height=22.465723500000017pt/> is necessary.
-Therefore, it is included in the API.
-But in the current release version, <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/b8bc815b5e9d5177af01fd4d3d3c2f10.svg?invert_in_darkmode" align=middle width=12.85392569999999pt height=22.465723500000017pt/> will always be returned as the initial value or a zero matrix.
-
-
 ### System `sys`
 
 The argument `sys` describes one or more systems.
@@ -1557,6 +1550,7 @@ Furthermore, the `objectiveoptions` structure has to be extended by the field `c
 * `couplingstrategy`: the coupling design method, an instance of `GammaCouplingStrategy`.
 	* `GammaCouplingStrategy.EXACT`: Only allow <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/498d5adf4367e026127219d184eaaaac.svg?invert_in_darkmode" align=middle width=77.47939814999998pt height=24.65753399999998pt/> and use geometric methods.
 	* `GammaCouplingStrategy.APPROXIMATE`: Use geometric method but also allow <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/915780e7044163dbc382e1a9f98adea3.svg?invert_in_darkmode" align=middle width=77.47939814999998pt height=24.65753399999998pt/> if <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/498d5adf4367e026127219d184eaaaac.svg?invert_in_darkmode" align=middle width=77.47939814999998pt height=24.65753399999998pt/> is not solvable.
+	* `GammaCouplingStrategy.APPROXIMATE_INEQUALITY`: Use geometric method but also allow <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/915780e7044163dbc382e1a9f98adea3.svg?invert_in_darkmode" align=middle width=77.47939814999998pt height=24.65753399999998pt/> if <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/498d5adf4367e026127219d184eaaaac.svg?invert_in_darkmode" align=middle width=77.47939814999998pt height=24.65753399999998pt/> is not solvable and formulate inequality constraint system with tolerance.
 	* `GammaCouplingStrategy.NUMERIC_NONLINEAR_EQUALITY`: directly use coupling conditions as non-linear equality constraints of the form `ceq(x) = 0` with `x` denoting the vector of optimization variables
 	* `GammaCouplingStrategy.NUMERIC_NONLINEAR_INEQUALITY`: directly use coupling conditions as non-linear inequality constraints of the form `c(x) < tolerance_coupling` and `-c(x) < tolerance_coupling` with `x` denoting the vector of optimization variables
 * `couplingconditions`: (`uint32`) the number of coupling conditions specified in <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/fc8611f3dc01d5ede1c5fd180b2e52f2.svg?invert_in_darkmode" align=middle width=27.72499289999999pt height=22.465723500000017pt/>

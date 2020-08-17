@@ -168,15 +168,15 @@ function [system, areafun_strict, areafun_loose, weight_strict, weight_loose, di
 	isforced2zero_R = false;
 	isforced2zero_F = false;
 	% create uniform bound constraints and check for validity
-	if nargin <= 10 || isempty(R_bounds)
+	if nargin <= 10 || isempty(R_bounds) || (iscell(R_bounds) && numel(R_bounds) >= 2 && isempty(R_bounds{1}) && isempty(R_bounds{2}))
 		R_bounds = {-Inf(number_controls, number_measurements), Inf(number_controls, number_measurements)};
 	end
 	[R_bounds, bound_system, bound_border, rg_bounds, hasbounds_R, onlybounds_R, bound_system_hadamard_R] = checkandtransform_gain_bounds(R_bounds, number_controls, number_measurements, 'proportional');
-	if nargin <= 11 || isempty(K_bounds)
+	if nargin <= 11 || isempty(K_bounds) || (iscell(K_bounds) && numel(K_bounds) >= 2 && isempty(K_bounds{1}) && isempty(K_bounds{2}))
 		K_bounds = {-Inf(number_controls, number_measurements_xdot), Inf(number_controls, number_measurements_xdot)};
 	end
 	[K_bounds, bound_system_xdot, bound_border_xdot, rg_xdot_bounds, hasbounds_K, onlybounds_K, bound_system_hadamard_K] = checkandtransform_gain_bounds(K_bounds, number_controls, number_measurements_xdot, 'proportional');
-	if nargin <= 12 || isempty(F_bounds)
+	if nargin <= 12 || isempty(F_bounds) || (iscell(F_bounds) && numel(F_bounds) >= 2 && isempty(F_bounds{1}) && isempty(F_bounds{2}))
 		F_bounds = {-Inf(number_controls, number_references), Inf(number_controls, number_references)};
 	end
 	[F_bounds, bound_system_prefilter, bound_border_prefilter, rg_prefilter_bounds, hasbounds_F, onlybounds_F, bound_system_hadamard_F] = checkandtransform_gain_bounds(F_bounds, number_controls, number_references, 'prefilter');
@@ -396,6 +396,7 @@ function [system, areafun_strict, areafun_loose, weight_strict, weight_loose, di
 			end
 			if number_measurements_xdot > 0
 				A = bound_system_xdot*dimensions_strict.K_fixed_T_inv;
+				A = A(:, 1:number_controls*number_measurements_xdot - size(dimensions_strict.K_fixed_b, 1));
 				temp = bound_system_xdot*dimensions_strict.K_fixed_T_inv*[
 					dimensions_strict.K_fixed_b;
 					zeros(number_controls*number_measurements_xdot - size(dimensions_strict.K_fixed_b, 1), 1)
@@ -426,6 +427,7 @@ function [system, areafun_strict, areafun_loose, weight_strict, weight_loose, di
 			end
 			if number_references > 0
 				A = bound_system_prefilter*dimensions_strict.F_fixed_T_inv;
+				A = A(:, 1:number_controls*number_references - size(dimensions_strict.F_fixed_b, 1));
 				temp = bound_system_prefilter*dimensions_strict.F_fixed_T_inv*[
 					dimensions_strict.F_fixed_b;
 					zeros(number_controls*number_references - size(dimensions_strict.F_fixed_b, 1), 1)

@@ -193,6 +193,9 @@ function [A, b, lb, ub] = R2bound(dimensions, bounds)
 		if any(lb_K > ub_K)
 			error('control:design:gamma', 'Lower bound for derivative gains must not be larger than upper bound.');
 		end
+		if any(lb_F > ub_F)
+			error('control:design:gamma', 'Lower bound for prefilter gains must not be larger than upper bound.');
+		end
 		% transform simple bound constraints to general linear inequality constraints
 		% (not possible to transform with T_inv*ub because sign could change and upper bound could become lower bound when fixed gains are present)
 		A_R_lb = -eye(number_controls*number_measurements);
