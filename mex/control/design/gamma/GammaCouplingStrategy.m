@@ -10,10 +10,12 @@ classdef(Enumeration) GammaCouplingStrategy < Simulink.IntEnumType
 		EXACT(1);
 		% coupling controller design via structural constrained controller. Approximate coupling allowed.
 		APPROXIMATE(2);
+		% coupling controller design via structural constrained controller. Approximate coupling allowed.
+		APPROXIMATE_INEQUALITY(3);
 		% fully numeric coupling controller design with nonlinear equality constraints.
-		NUMERIC_NONLINEAR_EQUALITY(3);
+		NUMERIC_NONLINEAR_EQUALITY(4);
 		% fully numeric coupling controller design with nonlinear inequality constraints.
-		NUMERIC_NONLINEAR_INEQUALITY(4);
+		NUMERIC_NONLINEAR_INEQUALITY(5);
 	end
 
 % must not be private to allow for type cast to GammaCouplingStrategy, types are automatically restricted to the defined ones internally

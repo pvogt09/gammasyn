@@ -150,7 +150,9 @@ classdef(Abstract) GammaArea < matlab.mixin.Heterogeneous
 				}))
 				error('control:design:gamma:area', 'Structure is not a valid parameter structure for a GammaArea.');
 			end
-			if isscalar(functionstruct)
+			if isempty(functionstruct)
+				this = control.design.gamma.area.GammaArea.empty(size(functionstruct));
+			elseif isscalar(functionstruct)
 				switch functionstruct.type
 					case GammaArea.CIRCLE
 						this = control.design.gamma.area.Circle(functionstruct.circle_R, functionstruct.reshift + 1i*functionstruct.imshift);
@@ -308,18 +310,20 @@ classdef(Abstract) GammaArea < matlab.mixin.Heterogeneous
 				valuesidx = 1;
 				varsizevalueidx = 1;
 				parametermappingidx = NaN(1, size(allvalues, 2));
-				for ii = 1:size(allvalues, 2)
-					parametermappingidx(1, ii) = valuesidx;
-					if ~isvarsize(1, valuesidx)
-						allvalues(:, ii) = values(:, valuesidx);
-						valuesidx = valuesidx + 1;
-					else
-						allvalues(:, ii) = varsizevalues{1, valuesidx}(:, varsizevalueidx);
-						if varsizevalueidx == size(varsizevalues{1, valuesidx}, 2)
-							varsizevalueidx = 1;
+				if ~isempty(allvalues)
+					for ii = 1:size(allvalues, 2)
+						parametermappingidx(1, ii) = valuesidx;
+						if ~isvarsize(1, valuesidx)
+							allvalues(:, ii) = values(:, valuesidx);
 							valuesidx = valuesidx + 1;
 						else
-							varsizevalueidx = varsizevalueidx + 1;
+							allvalues(:, ii) = varsizevalues{1, valuesidx}(:, varsizevalueidx);
+							if varsizevalueidx == size(varsizevalues{1, valuesidx}, 2)
+								varsizevalueidx = 1;
+								valuesidx = valuesidx + 1;
+							else
+								varsizevalueidx = varsizevalueidx + 1;
+							end
 						end
 					end
 				end

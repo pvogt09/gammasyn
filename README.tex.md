@@ -773,13 +773,6 @@ In this case only "simple" linear equality conditions can be imposed for the ent
 * `info`: structure with additional information about the result
 
 
-PLEASE NOTE: The current version of the toolbox "ignores" the prefilter $F$.
-Current work aims to extend the toolbox for the design of coupling and decoupling controllers.
-In theses cases the manipulation of $`F`$ is necessary.
-Therefore, it is included in the API.
-But in the current release version, $`F`$ will always be returned as the initial value or a zero matrix.
-
-
 ### System `sys`
 
 The argument `sys` describes one or more systems.
@@ -1683,6 +1676,7 @@ Furthermore, the `objectiveoptions` structure has to be extended by the field `c
 * `couplingstrategy`: the coupling design method, an instance of `GammaCouplingStrategy`.
 	* `GammaCouplingStrategy.EXACT`: Only allow $`G_{21}(s) = 0`$ and use geometric methods.
 	* `GammaCouplingStrategy.APPROXIMATE`: Use geometric method but also allow $`G_{21}(s) \approx 0`$ if $`G_{21}(s) = 0`$ is not solvable.
+	* `GammaCouplingStrategy.APPROXIMATE_INEQUALITY`: Use geometric method but also allow $`G_{21}(s) \approx 0`$ if $`G_{21}(s) = 0`$ is not solvable and formulate inequality constraint system with tolerance.
 	* `GammaCouplingStrategy.NUMERIC_NONLINEAR_EQUALITY`: directly use coupling conditions as non-linear equality constraints of the form `ceq(x) = 0` with `x` denoting the vector of optimization variables
 	* `GammaCouplingStrategy.NUMERIC_NONLINEAR_INEQUALITY`: directly use coupling conditions as non-linear inequality constraints of the form `c(x) < tolerance_coupling` and `-c(x) < tolerance_coupling` with `x` denoting the vector of optimization variables
 * `couplingconditions`: (`uint32`) the number of coupling conditions specified in $`C_\mathrm{ref}`$
