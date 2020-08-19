@@ -433,13 +433,13 @@ function [Ropt, Jopt, information] = gammasyn_couplingcontrol(systems, areafun, 
 			information.message = message;
 			return;
 		end
-		R_fixed_tilde_all = cat_RKF_fixed(R_fixed_tilde, RF_fixed_tilde{1});
-		K_fixed_tilde_all = cat_RKF_fixed(K_fixed_tilde, RF_fixed_tilde{2});
-		F_fixed_tilde_all = cat_RKF_fixed(F_fixed_tilde, RF_fixed_tilde{3});
+		R_fixed_tilde_all = cat_RKF_fixed(R_fixed_tilde, RF_fixed_tilde{1}, true);
+		K_fixed_tilde_all = cat_RKF_fixed(K_fixed_tilde, RF_fixed_tilde{2}, true);
+		F_fixed_tilde_all = cat_RKF_fixed(F_fixed_tilde, RF_fixed_tilde{3}, true);
 
-		R_bounds_tilde_all = cat_RKF_fixed(R_bounds_tilde, RF_bounds_tilde{1});
-		K_bounds_tilde_all = cat_RKF_fixed(K_bounds_tilde, RF_bounds_tilde{2});
-		F_bounds_tilde_all = cat_RKF_fixed(F_bounds_tilde, RF_bounds_tilde{3});
+		R_bounds_tilde_all = cat_RKF_fixed(R_bounds_tilde, RF_bounds_tilde{1}, false);
+		K_bounds_tilde_all = cat_RKF_fixed(K_bounds_tilde, RF_bounds_tilde{2}, false);
+		F_bounds_tilde_all = cat_RKF_fixed(F_bounds_tilde, RF_bounds_tilde{3}, false);
 
 		R_fixed_tilde = {
 			R_fixed_tilde_all, K_fixed_tilde_all, F_fixed_tilde_all, RKF_fixed_tilde
@@ -712,13 +712,17 @@ function [R_A_tilde, R_b_tilde, K_A_tilde, K_b_tilde, F_A_tilde, F_b_tilde, RKF_
 	end
 end
 
-function [RKF_fixed_tilde_all] = cat_RKF_fixed(RKF_fixed_tilde, RKF_fixed_tilde_coupling)
+function [RKF_fixed_tilde_all] = cat_RKF_fixed(RKF_fixed_tilde, RKF_fixed_tilde_coupling, fixed)
 	%CAT_RKF_fixed concatenate constraint equation systems
 	%	Input:
 	%		RKF_fixed_tilde:			user defined equation system
 	%		RKF_fixed_tilde_coupling:	coupling condition equation system
+	%		fixed:						indicator if fixed constraints are to be handled
 	%	Output:
 	%		RKF_fixed_tilde_all:		combined equation system
+	if nargin <= 2
+		fixed = false;
+	end
 	if isempty(RKF_fixed_tilde)
 		RKF_fixed_tilde = {[], []};
 	end
@@ -730,6 +734,20 @@ function [RKF_fixed_tilde_all] = cat_RKF_fixed(RKF_fixed_tilde, RKF_fixed_tilde_
 			RKF_fixed_tilde{2};
 			RKF_fixed_tilde_coupling{2}
 		]};
+		if fixed
+			[A, b] = convert_hadamard2vectorized(RKF_fixed_tilde_all);
+			rg = rank(A);
+			if rg ~= size(A, 1)
+				if rg == rank([A, b])
+					% if equation system is solvable and has redundant equations, reduce to unique set of equations, else error handling is done later
+					A_rref = rref([A, b]);
+					A = A_rref(1:rg, :);
+					b = A(:, end);
+					A = A(:, 1:end - 1);
+					RKF_fixed_tilde_all = convert_vectorized2hadamard(A, b, [size(RKF_fixed_tilde_all{1}, 1), size(RKF_fixed_tilde_all{1}, 2)]);
+				end
+			end
+		end
 	elseif isempty(RKF_fixed_tilde{1}) && ~isempty(RKF_fixed_tilde_coupling{1})
 		RKF_fixed_tilde_all = RKF_fixed_tilde_coupling;
 	elseif isempty(RKF_fixed_tilde_coupling{1}) && ~isempty(RKF_fixed_tilde{1})
