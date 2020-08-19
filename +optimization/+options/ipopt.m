@@ -250,6 +250,9 @@ classdef ipopt < optimization.options.Options
 			if outputstruct && isfield(output, 'funevals')
 				information.funcCount		= output.funevals;
 			end
+			if outputstruct && isfield(output, 'constrviol')
+				information.constrviolation = output.constrviol;
+			end
 			information.algorithm			= 'IPOPT';
 			if nargin >= 10
 				information.additional			= output;
@@ -274,6 +277,12 @@ classdef ipopt < optimization.options.Options
 			information.information.feasibility			= errorcode;
 			information.information.xmin				= xmin;
 			information.information.fmin				= fmin;
+			if outputstruct && isfield(output, 'constrviol')
+				information.information.constrviol		= output.constrviol;
+			end
+			if outputstruct && isfield(output, 'outputstr')
+				information.information.output			= output.outputstr;
+			end
 			if nargin >= 11
 				if iscell(alloutputs) && numel(alloutputs) > 1
 					information.runs = alloutputs;

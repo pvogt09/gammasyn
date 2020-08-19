@@ -752,7 +752,7 @@ function [x, fval, exitflag, output, lambda, grad, hessian] = optimize(fun, x_0,
 							ineqnonlin = NaN(size(c, 1), 1);
 							eqnonlin = NaN(size(ceq, 1), 1);
 							ineqlin = NaN(size(b, 1), 1);
-							eqlin = NaN(size(b, 1), 1);
+							eqlin = NaN(size(beq, 1), 1);
 						else
 							ineqnonlin = info{1, ii}.lambda(1:size(c, 1));
 							eqnonlin = info{1, ii}.lambda(size(c, 1) + 1:size(c, 1) + size(ceq, 1));
@@ -828,7 +828,7 @@ function [x, fval, exitflag, output, lambda, grad, hessian] = optimize(fun, x_0,
 							ineqnonlin = NaN(size(c, 1), 1);
 							eqnonlin = NaN(size(ceq, 1), 1);
 							ineqlin = NaN(size(b, 1), 1);
-							eqlin = NaN(size(b, 1), 1);
+							eqlin = NaN(size(beq, 1), 1);
 						else
 							ineqnonlin = info{1, ii}.lambda(1:size(c, 1));
 							eqnonlin = info{1, ii}.lambda(size(c, 1) + 1:size(c, 1) + size(ceq, 1));
