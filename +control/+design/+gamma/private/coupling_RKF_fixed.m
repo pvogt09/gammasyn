@@ -217,6 +217,9 @@ function [RKF_fixed, RKF_bounds, valid, message] = coupling_RKF_fixed(systems, o
 						z_rij, r(idx_intersect_r)
 					];
 					free_params_r = z_rij(:, 2).';
+					if size(free_params, 1) ~= size(free_params_r, 1)
+						free_params_r = transpose(free_params_r);
+					end
 					R = subs(R, free_params, free_params_r);
 				else
 					if output_verbosity(solveroptions)
@@ -370,7 +373,11 @@ function [RKF_fixed, RKF_bounds, valid, message] = coupling_RKF_fixed(systems, o
 				F1 = reshape(f_sol_array, dim_F1_1, dim_F1_2);
 
 				if ~isempty(free_params_zf)
-					F1 = subs(F1, free_params_zf, f(idx_intersect_f));
+					f_intersect = f(idx_intersect_f);
+					if size(f_intersect, 1) ~= size(free_params_zf, 1)
+						f_intersect = transpose(f_intersect);
+					end
+					F1 = subs(F1, free_params_zf, f_intersect);
 					prefilter_sym = true;
 				else
 					prefilter_sym = false;
