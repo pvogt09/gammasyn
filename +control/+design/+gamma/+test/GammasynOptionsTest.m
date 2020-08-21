@@ -25,6 +25,7 @@ function [pass] = GammasynOptionsTest(~)
 		'tolerance_prefilter',			{1, 0, 2, 1.1, NaN, [], true},										{-1, ones(2, 1), true(2, 1), struct()},																						{'couplingcontrol'},				false;
 		'solvesymbolic',				{true, false},														{-1, ones(2, 1), true(2, 1), struct(), {}},																					{'couplingcontrol'},				false;
 		'round_equations_to_digits',	{1, 0, 2, NaN, -1, []},												{1.1, ones(2, 1), true, struct()},																							{'couplingcontrol'},				false;
+		'allowoutputcoupling',			{true, false},														{-1, ones(2, 1), true(2, 1), struct(), {}},																					{'couplingcontrol'},				false;
 		'rho',							{1, 0, -1, NaN, 1.1},												{ones(2, 1), true, struct(), {}},																							{'objective', 'kreisselmeier'},		false;
 		'max',							{1, 0, -1, NaN, 1.1},												{ones(2, 1), true, struct(), {}},																							{'objective', 'kreisselmeier'},		false;
 		'Q',							{1, 0, -1, NaN, ones(2, 2), 1.1},									{Inf, true, struct(), 1 + 1j},																								{'objective', 'lyapunov'},			false;

@@ -49,6 +49,9 @@ function [couplingoptions] = checkobjectiveoptions_coupling(couplingoptions)
 			if ~isfield(couplingoptions, 'round_equations_to_digits')
 				couplingoptions.round_equations_to_digits = coupling_prototype.round_equations_to_digits;
 			end
+			if ~isfield(couplingoptions, 'allowoutputcoupling')
+				couplingoptions.allowoutputcoupling = coupling_prototype.allowoutputcoupling;
+			end
 		end
 	end
 	if ~isstruct(couplingoptions)
@@ -157,7 +160,7 @@ function [couplingoptions] = checkobjectiveoptions_coupling(couplingoptions)
 		error('control:design:gamma', 'Tolerance for prefilter regularization must be nonnegative.');
 	end
 	if ~isscalar(couplingoptions.solvesymbolic) || ~islogical(couplingoptions.solvesymbolic)
-		error('control:design:gamma', 'Indicator for symbolic solution of coupling conditions must be logical scalar.');
+		error('control:design:gamma', 'Indicator for symbolic solution of coupling conditions must be a logical scalar.');
 	end
 	if isempty(couplingoptions.round_equations_to_digits)
 		couplingoptions.round_equations_to_digits = NaN;
@@ -174,6 +177,9 @@ function [couplingoptions] = checkobjectiveoptions_coupling(couplingoptions)
 	if ~isnan(couplingoptions.round_equations_to_digits) && (floor(couplingoptions.round_equations_to_digits) ~= ceil(couplingoptions.round_equations_to_digits))
 		error('control:design:gamma', 'Places to round coupling equations to must be an integer.');
 	end
+	if ~isscalar(couplingoptions.allowoutputcoupling) || ~islogical(couplingoptions.allowoutputcoupling)
+		error('control:design:gamma', 'Indicator for output feedback in coupling control must be a logical scalar.');
+	end
 	couplingoptions = struct(...
 		'couplingconditions',			uint32(couplingoptions.couplingconditions),...
 		'couplingstrategy',				couplingoptions.couplingstrategy,...
@@ -183,6 +189,7 @@ function [couplingoptions] = checkobjectiveoptions_coupling(couplingoptions)
 		'tolerance_coupling',			double(couplingoptions.tolerance_coupling),...
 		'tolerance_prefilter',			double(couplingoptions.tolerance_prefilter),...
 		'solvesymbolic',				logical(couplingoptions.solvesymbolic),...
-		'round_equations_to_digits',	double(couplingoptions.round_equations_to_digits)...
+		'round_equations_to_digits',	double(couplingoptions.round_equations_to_digits),...
+		'allowoutputcoupling',			logical(couplingoptions.allowoutputcoupling)...
 	);
 end

@@ -77,14 +77,14 @@ function [Ropt, Jopt, information] = gammasyn_couplingcontrol(systems, areafun, 
 	if number_references ~= number_controls
 		error('control:design:gamma:dimensions', 'For coupling controller design, systems must have as many references as controls.');
 	end
-	if ~numeric
+	if ~numeric || ~objectiveoptions.couplingcontrol.allowoutputcoupling
 		if number_states ~= number_measurements
 			error('control:design:gamma:dimensions', 'For coupling controller design, all states must be measured.');
 		end
 	end
 	C_dot = systems(1).C_dot;
-	parfor ii = 1:number_models
-		if ~numeric
+	for ii = 1:number_models %#ok<FORPF> no parfor because of error checking
+		if ~numeric || ~objectiveoptions.couplingcontrol.allowoutputcoupling
 			if any(any(systems(ii).C ~= eye(number_states)))
 				error('control:design:gamma:dimensions', 'For coupling controller design, a complete state feedback must be calculated. Matrix C must be eye(%d)', number_states);
 			end

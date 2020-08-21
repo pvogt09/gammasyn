@@ -214,7 +214,7 @@ function [value, validvalue, errmsg, errid, validfield] = objectiveoptions_check
 			if ~validvalue
 				errid = 'control:design:gamma:input';
 			end
-		case {'usecompiled', 'allowvarorder', 'allownegativeweight', 'usereferences', 'usemeasurements_xdot', 'preventNaN', 'eigenvalueignoreinf', 'solvesymbolic'}
+		case {'usecompiled', 'allowvarorder', 'allownegativeweight', 'usereferences', 'usemeasurements_xdot', 'preventNaN', 'eigenvalueignoreinf', 'solvesymbolic', 'allowoutputcoupling'}
 			if ~isscalar(value)
 				validvalue = false;
 				errmsg = sprintf('Value for option ''%s'' must be scalar.', field);

@@ -30,6 +30,11 @@ function [c, ceq, gradc, gradceq] = calculate_coupling_conditions(system, R, ~, 
 	hasfeedthrough = dimensions.hasfeedthrough_coupling;
 	n_xi = number_measurements*number_controls + number_controls*number_references;% number of controller and prefilter coefficients
 	minimumnormsorting = options.couplingcontrol.sortingstrategy_coupling == GammaCouplingconditionSortingStrategy.MINIMUMNORM;
+	if ~options.couplingcontrol.allowoutputcoupling
+		if number_states ~= number_measurements
+			error('control:design:gamma:coupling', 'Number of states (%d) must match number of measurements (%d) for coupling control.', number_states, number_measurements);
+		end
+	end
 
 	if nargin <= 8
 		eigenvector_right_derivative = zeros(number_states, number_states, number_controls, number_measurements, number_models);
