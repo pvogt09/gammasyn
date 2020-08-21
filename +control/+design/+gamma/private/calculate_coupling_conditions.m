@@ -32,10 +32,10 @@ function [c, ceq, gradc, gradceq] = calculate_coupling_conditions(system, R, ~, 
 	minimumnormsorting = options.couplingcontrol.sortingstrategy_coupling == GammaCouplingconditionSortingStrategy.MINIMUMNORM;
 
 	if nargin <= 8
-		eigenvector_right_derivative = zeros(number_states, number_states, number_controls, number_states, number_models);
+		eigenvector_right_derivative = zeros(number_states, number_states, number_controls, number_measurements, number_models);
 	end
 	if nargin <= 9
-		eigenvector_left_derivative = zeros(number_states, number_states, number_controls, number_states, number_models);
+		eigenvector_left_derivative = zeros(number_states, number_states, number_controls, number_measurements, number_models);
 	end
 
 	number_outputconditions_per_sys = 2*dim_invariant*number_couplingconditions;
