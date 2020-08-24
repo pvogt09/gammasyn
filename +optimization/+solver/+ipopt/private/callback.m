@@ -6,6 +6,24 @@ function [fun] = callback(x, optimmodel, sigma, lambda)
 	%	Output:
 	%		fun:		function value of objective function and constraint functions
 	persistent model;
+	persistent last_f;
+	persistent last_gradf;
+	persistent last_hessf;
+	persistent last_c;
+	persistent last_gradc;
+	persistent last_hessc;
+	persistent last_ceq;
+	persistent last_gradceq;
+	persistent last_hessceq;
+	persistent last_x_f;
+	persistent last_x_c;
+	persistent last_x_hess;
+	persistent initialize_f;
+	persistent initialize_gradf;
+	persistent initialize_c;
+	persistent initialize_gradc;
+	persistent initialize_hessf;
+	persistent initialize_hessc;
 	if nargin > 1 && ~ischar(optimmodel)
 		if ~isfield(optimmodel, 'f') || ~isfield(optimmodel, 'gradfun') || ~isfield(optimmodel, 'hessfun')
 			error('optimization:solver:ipopt:callback', 'Optimization problem is defined incorrectly.')
@@ -35,6 +53,21 @@ function [fun] = callback(x, optimmodel, sigma, lambda)
 			error('optimization:solver:ipopt:callback', 'Optimization problem is defined incorrectly, emptynonlcon is missing.')
 		end
 		model = optimmodel;
+		last_f = [];
+		last_gradf = [];
+		last_c = [];
+		last_gradc = [];
+		last_ceq = [];
+		last_gradceq = [];
+		last_x_f = [];
+		last_x_c = [];
+		last_x_hess = [];
+		initialize_f = false;
+		initialize_gradf = false;
+		initialize_c = false;
+		initialize_gradc = false;
+		initialize_hessf = false;
+		initialize_hessc = false;
 		return;
 	elseif nargin <= 1
 		optimmodel = 'fun';
@@ -52,14 +85,30 @@ function [fun] = callback(x, optimmodel, sigma, lambda)
 	if fun || gradfun
 		fun_pointer = model.f;
 		if model.gradfun && (nargout >= 2 || gradfun)
-			[J, gradJ] = fun_pointer(x);
+			if isempty(last_x_f) || ~initialize_gradf || ~isequal(x, last_x_f)
+				[J, gradJ] = fun_pointer(x);
+				initialize_f = true;
+				initialize_gradf = true;
+				last_f = J;
+				last_gradf = gradJ;
+			else
+				J = last_f;
+				gradJ = last_gradf;
+			end
 			if ~isempty(gradJ)
 				gradJ = gradJ.';
 			else
 				gradJ = NaN(1, size(x, 1));
 			end
 		else
-			J = fun_pointer(x);
+			if isempty(last_x_f) || (~initialize_f && ~initialize_gradf) || ~isequal(x, last_x_f)
+				J = fun_pointer(x);
+				initialize_f = true;
+				initialize_gradf = false;
+				last_f = J;
+			else
+				J = last_f;
+			end
 			if nargout >= 2 || gradfun
 				gradJ = NaN(1, size(x, 1));
 			end
@@ -69,13 +118,27 @@ function [fun] = callback(x, optimmodel, sigma, lambda)
 		else
 			fun = J;
 		end
+		last_x_f = x;
 	elseif con || gradcon || gradconstruct
 		constr_pointer = model.c;
 		if gradconstruct && isempty(x)
 			x = NaN(size(model.A, 2), 1);
 		end
 		if model.gradcon && (nargout >= 2 || gradcon || gradconstruct)
-			[c, ceq, gradc, gradceq] = constr_pointer(x);
+			if isempty(last_x_c) || ~initialize_gradc || ~isequal(x, last_x_c)
+				[c, ceq, gradc, gradceq] = constr_pointer(x);
+				initialize_c = true;
+				initialize_gradc = true;
+				last_c = c;
+				last_gradc = gradc;
+				last_ceq = ceq;
+				last_gradceq = gradceq;
+			else
+				c = last_c;
+				gradc = last_gradc;
+				ceq = last_ceq;
+				gradceq = last_gradceq;
+			end
 			if ~isempty(gradc)
 				gradc = gradc.';
 			else
@@ -87,7 +150,16 @@ function [fun] = callback(x, optimmodel, sigma, lambda)
 				gradceq = zeros(0, size(x, 1));
 			end
 		else
-			[c, ceq] = constr_pointer(x);
+			if isempty(last_x_c) || (~initialize_c && ~initialize_gradc) || ~isequal(x, last_x_c)
+				[c, ceq] = constr_pointer(x);
+				initialize_c = true;
+				initialize_gradc = false;
+				last_c = c;
+				last_ceq = ceq;
+			else
+				c = last_c;
+				ceq = last_ceq;
+			end
 			if nargout >= 2 || gradcon || gradconstruct
 				if ~isempty(c)
 					gradc = NaN(size(c, 1), size(x, 1));
@@ -123,6 +195,7 @@ function [fun] = callback(x, optimmodel, sigma, lambda)
 				model.Aeq*x - model.beq
 			];
 		end
+		last_x_c = x;
 	elseif hess || hessstruct
 		fun_pointer = model.f;
 		constr_pointer = model.c;
@@ -130,7 +203,13 @@ function [fun] = callback(x, optimmodel, sigma, lambda)
 			x = NaN(size(model.A, 2), 1);
 		end
 		if model.hessfun
-			[~, ~, H_objective] = fun_pointer(x);
+			if isempty(last_x_hess) || ~initialize_hessf || ~isequal(x, last_x_hess)
+				[~, ~, H_objective] = fun_pointer(x);
+				initialize_hessf = true;
+				last_hessf = H_objective;
+			else
+				H_objective = last_hessf;
+			end
 			if isempty(H_objective)
 				H_objective = NaN(size(x, 1), size(x, 1));
 			end
@@ -143,7 +222,15 @@ function [fun] = callback(x, optimmodel, sigma, lambda)
 		H_constraint = zeros(size(x, 1), size(x, 1));
 		if hessstruct || (nargin >= 4 && ~isempty(lambda))
 			if model.hesscon
-				[~, ~, ~, ~, hessianc, hessianceq] = constr_pointer(x);
+				if isempty(last_x_hess) || ~initialize_hessc || ~isequal(x, last_x_hess)
+					[~, ~, ~, ~, hessianc, hessianceq] = constr_pointer(x);
+					initialize_hessc = true;
+					last_hessc = hessianc;
+					last_hessceq = hessianceq;
+				else
+					hessianc = last_hessc;
+					hessianceq = last_hessceq;
+				end
 				if isempty(hessianc)
 					hessianc = zeros(size(x, 1), size(x, 1), 0);
 				end
@@ -174,6 +261,7 @@ function [fun] = callback(x, optimmodel, sigma, lambda)
 		else
 			fun = sparse(tril(H));
 		end
+		last_x_hess = x;
 	else
 		error('optimization:solver:ipopt:callback', 'Optimization problem is defined incorrectly, only ''fun'', ''con'', ''gradfun'', ''gradcon'', ''gradconstruct'', ''hess'' and ''hessstruct'' are allowed.');
 	end
