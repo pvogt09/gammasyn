@@ -158,66 +158,7 @@ function [eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivativ
 					(1 + 1i)*NaN(number_states - system_order, 1)
 				];
 			end
-			%ev = eigenvalues(:, ii);
-			multiplicity = ones(size(ev, 1), 1, 'uint32');
-			replacemap = false(0, size(ev, 1));
-			rankupdate = 0;
-			while rank(V_tilde) < size(V_tilde, 2) && rankupdate < 4
-				% TODO: arbitrary tolerance should be replaced by a reasonable value
-				[multiplicity, multiplicity_map] = eigenvalue_multiplicity(ev, 10^rankupdate/condeig_tolerance);
-				rankupdate = rankupdate + 1;
-				idxtemp = (1:system_order);
-				multiplicityidx = idxtemp(multiplicity > 1);
-				if isempty(multiplicityidx)
-					continue;
-				end
-				[replacemap, idxmap] = unique(multiplicity_map(multiplicityidx, :), 'rows');
-				if isempty(idxmap)
-					continue;
-				end
-				V_tilde_k = NaN(system_order, max(multiplicity), size(idxmap, 1)) + NaN*1i;
-				for jj = 1:size(idxmap, 1)
-					V_tilde_k(:, 1, jj) = V_tilde(:, multiplicityidx(1, idxmap(jj, 1)));
-					k = 2;
-					for gg = 2:multiplicity(multiplicityidx(1, idxmap(jj, 1)), 1)
-						if descriptor || derivative_feedback
-							if isinf(ev(multiplicityidx(1, idxmap(jj, 1)))) || isnan(isinf(ev(multiplicityidx(1, idxmap(jj, 1)))))
-								evsysA = E;
-								evsysb = A*V_tilde_k(:, gg - 1, jj);
-							else
-								evsysA = (ev(multiplicityidx(1, idxmap(jj, 1)))*E - A);
-								evsysb = -E*V_tilde_k(:, gg - 1, jj);
-							end
-							if rank(evsysA) < size(evsysA, 1)
-								sol_particular = pinv(evsysA)*evsysb;
-							else
-								sol_particular = evsysA\evsysb;
-							end
-							sol = null(evsysA);
-							sol_particular(any(sol, 2), :) = 0;
-							sol = sol + repmat(sol_particular, 1, size(sol, 2));
-							temp = orth([V_tilde_k(:, 1:k - 1, jj), sol]) + 0i;
-							if size(temp, 2) > k
-								temp = temp(:, 1:k);
-							end
-						else
-							temp = orth([V_tilde_k(:, 1:k - 1, jj), null((ev(multiplicityidx(1, idxmap(jj, 1)))*E - A)^k)]) + 0i;
-						end
-						if size(temp, 1) ~= system_order || size(temp, 2) ~= k
-							error('control:design:gamma:eigenvalues', 'No regular basis of right eigenvectors could be found.');
-						end
-						V_tilde_k(:, 1:k, jj) = temp;
-						k = k + 1;
-					end
-				end
-				for ff = 1:size(idxmap, 1)
-					if sum(replacemap(ff, :)) ~= multiplicity(multiplicityidx(1, idxmap(ff, 1)), 1)
-						% if we get here, multiplicity and number of equal eigenvalues in map are not equal, which should not occur under all circumstances
-						error('control:design:gamma:eigenvalues', 'Something went wrong in the eigenvector calculation, check the implementation.');
-					end
-					V_tilde(:, replacemap(ff, :)) = V_tilde_k(:, 1:multiplicity(multiplicityidx(1, idxmap(ff, 1)), 1), multiplicityidx(1, idxmap(ff, 1)));
-				end
-			end
+			V_tilde = eigenvector_chain(V_tilde, ev, E, A, system_order, derivative_feedback, descriptor, condeig_tolerance);
 			if rank(V_tilde) < size(V_tilde, 2)
 				error('control:design:gamma:eigenvalues', 'No regular basis of right eigenvectors could be found.');
 			end
@@ -498,66 +439,7 @@ function [eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivativ
 					(1 + 1i)*NaN(number_states - system_order, 1)
 				];
 			end
-			%ev = eigenvalues(:, ii);
-			multiplicity = ones(size(ev, 1), 1, 'uint32');
-			replacemap = false(0, size(ev, 1));
-			rankupdate = 0;
-			while rank(eigenvectors_right) < size(eigenvectors_right, 2) && rankupdate < 4
-				% TODO: arbitrary tolerance should be replaced by a reasonable value
-				[multiplicity, multiplicity_map] = eigenvalue_multiplicity(ev, 10^rankupdate/condeig_tolerance);
-				rankupdate = rankupdate + 1;
-				idxtemp = (1:system_order);
-				multiplicityidx = idxtemp(multiplicity > 1);
-				if isempty(multiplicityidx)
-					continue;
-				end
-				[replacemap, idxmap] = unique(multiplicity_map(multiplicityidx, :), 'rows');
-				if isempty(idxmap)
-					continue;
-				end
-				eigenvectors_right_k = NaN(system_order, max(multiplicity), size(idxmap, 1)) + NaN*1i;
-				for jj = 1:size(idxmap, 1)
-					eigenvectors_right_k(:, 1, jj) = eigenvectors_right(:, multiplicityidx(1, idxmap(jj, 1)));
-					k = 2;
-					for gg = 2:multiplicity(multiplicityidx(1, idxmap(jj, 1)), 1)
-						if descriptor || derivative_feedback
-							if isinf(ev(multiplicityidx(1, idxmap(jj, 1)))) || isnan(isinf(ev(multiplicityidx(1, idxmap(jj, 1)))))
-								evsysA = E;
-								evsysb = A*eigenvectors_right_k(:, gg - 1, jj);
-							else
-								evsysA = (ev(multiplicityidx(1, idxmap(jj, 1)))*E - A);
-								evsysb = -E*eigenvectors_right_k(:, gg - 1, jj);
-							end
-							if rank(evsysA) < size(evsysA, 1)
-								sol_particular = pinv(evsysA)*evsysb;
-							else
-								sol_particular = evsysA\evsysb;
-							end
-							sol = null(evsysA);
-							sol_particular(any(sol, 2), :) = 0;
-							sol = sol + repmat(sol_particular, 1, size(sol, 2));
-							temp = orth([eigenvectors_right_k(:, 1:k - 1, jj), sol]) + 0i;
-							if size(temp, 2) > k
-								temp = temp(:, 1:k);
-							end
-						else
-							temp = orth([eigenvectors_right_k(:, 1:k - 1, jj), null((ev(multiplicityidx(1, idxmap(jj, 1)))*E - A)^k)]) + 0i;
-						end
-						if size(temp, 1) ~= system_order || size(temp, 2) ~= k
-							error('control:design:gamma:eigenvalues', 'No regular basis of right eigenvectors could be found.');
-						end
-						eigenvectors_right_k(:, 1:k, jj) = temp;
-						k = k + 1;
-					end
-				end
-				for ff = 1:size(idxmap, 1)
-					if sum(replacemap(ff, :)) ~= multiplicity(multiplicityidx(1, idxmap(ff, 1)), 1)
-						% if we get here, multiplicity and number of equal eigenvalues in map are not equal, which should not occur under all circumstances
-						error('control:design:gamma:eigenvalues', 'Something went wrong in the eigenvector calculation, check the implementation.');
-					end
-					eigenvectors_right(:, replacemap(ff, :)) = eigenvectors_right_k(:, 1:multiplicity(multiplicityidx(1, idxmap(ff, 1)), 1), multiplicityidx(1, idxmap(ff, 1)));
-				end
-			end
+			[eigenvectors_right, multiplicity, replacemap] = eigenvector_chain(eigenvectors_right, ev, E, A, system_order, derivative_feedback, descriptor, condeig_tolerance);
 			if rank(eigenvectors_right) < size(eigenvectors_right, 2)
 				error('control:design:gamma:eigenvalues', 'No regular basis of right eigenvectors could be found.');
 			end
@@ -1051,66 +933,7 @@ function [eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivativ
 							(1 + 1i)*NaN(number_states - system_order, 1)
 						];
 					end
-					%ev = eigenvalues(:, ii);
-					multiplicity = ones(size(ev, 1), 1, 'uint32');
-					replacemap = false(0, size(ev, 1));
-					rankupdate = 0;
-					while rank(eigenvectors_right) < size(eigenvectors_right, 2) && rankupdate < 4
-						% TODO: arbitrary tolerance should be replaced by a reasonable value
-						[multiplicity, multiplicity_map] = eigenvalue_multiplicity(ev, 10^rankupdate/condeig_tolerance);
-						rankupdate = rankupdate + 1;
-						idxtemp = (1:system_order);
-						multiplicityidx = idxtemp(multiplicity > 1);
-						if isempty(multiplicityidx)
-							continue;
-						end
-						[replacemap, idxmap] = unique(multiplicity_map(multiplicityidx, :), 'rows');
-						if isempty(idxmap)
-							continue;
-						end
-						eigenvectors_right_k = NaN(system_order, max(multiplicity), size(idxmap, 1)) + NaN*1i;
-						for jj = 1:size(idxmap, 1)
-							eigenvectors_right_k(:, 1, jj) = eigenvectors_right(:, multiplicityidx(1, idxmap(jj, 1)));
-							k = 2;
-							for gg = 2:multiplicity(multiplicityidx(1, idxmap(jj, 1)), 1)
-								if descriptor || derivative_feedback
-									if isinf(ev(multiplicityidx(1, idxmap(jj, 1)))) || isnan(isinf(ev(multiplicityidx(1, idxmap(jj, 1)))))
-										evsysA = E;
-										evsysb = A*eigenvectors_right_k(:, gg - 1, jj);
-									else
-										evsysA = (ev(multiplicityidx(1, idxmap(jj, 1)))*E - A);
-										evsysb = -E*eigenvectors_right_k(:, gg - 1, jj);
-									end
-									if rank(evsysA) < size(evsysA, 1)
-										sol_particular = pinv(evsysA)*evsysb;
-									else
-										sol_particular = evsysA\evsysb;
-									end
-									sol = null(evsysA);
-									sol_particular(any(sol, 2), :) = 0;
-									sol = sol + repmat(sol_particular, 1, size(sol, 2));
-									temp = orth([eigenvectors_right_k(:, 1:k - 1, jj), sol]) + 0i;
-									if size(temp, 2) > k
-										temp = temp(:, 1:k);
-									end
-								else
-									temp = orth([eigenvectors_right_k(:, 1:k - 1, jj), null((ev(multiplicityidx(1, idxmap(jj, 1)))*E - A)^k)]) + 0i;
-								end
-								if size(temp, 1) ~= system_order || size(temp, 2) ~= k
-									error('control:design:gamma:eigenvalues', 'No regular basis of right eigenvectors could be found.');
-								end
-								eigenvectors_right_k(:, 1:k, jj) = temp;
-								k = k + 1;
-							end
-						end
-						for ff = 1:size(idxmap, 1)
-							if sum(replacemap(ff, :)) ~= multiplicity(multiplicityidx(1, idxmap(ff, 1)), 1)
-								% if we get here, multiplicity and number of equal eigenvalues in map are not equal, which should not occur under all circumstances
-								error('control:design:gamma:eigenvalues', 'Something went wrong in the eigenvector calculation, check the implementation.');
-							end
-							eigenvectors_right(:, replacemap(ff, :)) = eigenvectors_right_k(:, 1:multiplicity(multiplicityidx(1, idxmap(ff, 1)), 1), multiplicityidx(1, idxmap(ff, 1)));
-						end
-					end
+					eigenvectors_right = eigenvector_chain(eigenvectors_right, ev, E, A, system_order, derivative_feedback, descriptor, condeig_tolerance);
 					if rank(eigenvectors_right) < size(eigenvectors_right, 2)
 						error('control:design:gamma:eigenvalues', 'No regular basis of right eigenvectors could be found.');
 					end
@@ -1174,6 +997,82 @@ function [eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivativ
 					];
 				end
 			end
+		end
+	end
+end
+
+function [eigenvectors_right, multiplicity, replacemap] = eigenvector_chain(eigenvectors_right, ev, E, A, system_order, derivative_feedback, descriptor, condeig_tolerance)
+	%EIGENVECTOR_CHAIN calculate invertible right eigenvector matrix via eigenvector chains if possible
+	%	Input:
+	%		eigenvectors_right:		matrix of right eigenvectors with possibly linear dependent eigenvectors for multiple eigenvalues
+	%		ev:						eigenvalues
+	%		E:						descriptor matrix
+	%		A:						system matrix
+	%		system_order:			order of system
+	%		derivative_feedback:	indicator for derivative feedback
+	%		descriptor:				indicator for descriptor system
+	%		condeig_tolerance:		tolerance for eigenvalue multiplicity
+	%	Output:
+	%		eigenvectors_right:		matrix of right eigenvectors with eigenvector chains for multiple eigenvalues
+	%		multiplicity:			multiplicity of eigenvalues
+	%		replacemap:				replaced eigenvectors
+	multiplicity = ones(size(ev, 1), 1, 'uint32');
+	replacemap = false(0, size(ev, 1));
+	rankupdate = 0;
+	while rank(eigenvectors_right) < size(eigenvectors_right, 2) && rankupdate < 4
+		% TODO: arbitrary tolerance should be replaced by a reasonable value
+		[multiplicity, multiplicity_map] = eigenvalue_multiplicity(ev, 10^rankupdate/condeig_tolerance);
+		rankupdate = rankupdate + 1;
+		idxtemp = (1:system_order);
+		multiplicityidx = idxtemp(multiplicity > 1);
+		if isempty(multiplicityidx)
+			continue;
+		end
+		[replacemap, idxmap] = unique(multiplicity_map(multiplicityidx, :), 'rows');
+		if isempty(idxmap)
+			continue;
+		end
+		eigenvectors_right_k = NaN(system_order, max(multiplicity), size(idxmap, 1)) + NaN*1i;
+		for jj = 1:size(idxmap, 1) %#ok<FORPF> no parfor because of different indexing in eigenvectors_right_k
+			eigenvectors_right_k(:, 1, jj) = eigenvectors_right(:, multiplicityidx(1, idxmap(jj, 1)));
+			k = 2;
+			for gg = 2:multiplicity(multiplicityidx(1, idxmap(jj, 1)), 1)
+				if descriptor || derivative_feedback
+					if isinf(ev(multiplicityidx(1, idxmap(jj, 1)))) || isnan(isinf(ev(multiplicityidx(1, idxmap(jj, 1)))))
+						evsysA = E;
+						evsysb = A*eigenvectors_right_k(:, gg - 1, jj);
+					else
+						evsysA = (ev(multiplicityidx(1, idxmap(jj, 1)))*E - A);
+						evsysb = -E*eigenvectors_right_k(:, gg - 1, jj);
+					end
+					if rank(evsysA) < size(evsysA, 1)
+						sol_particular = pinv(evsysA)*evsysb;
+					else
+						sol_particular = evsysA\evsysb;
+					end
+					sol = null(evsysA);
+					sol_particular(any(sol, 2), :) = 0;
+					sol = sol + repmat(sol_particular, 1, size(sol, 2));
+					temp = orth([eigenvectors_right_k(:, 1:k - 1, jj), sol]) + 0i;
+					if size(temp, 2) > k
+						temp = temp(:, 1:k);
+					end
+				else
+					temp = orth([eigenvectors_right_k(:, 1:k - 1, jj), null((ev(multiplicityidx(1, idxmap(jj, 1)))*E - A)^k)]) + 0i;
+				end
+				if size(temp, 1) ~= system_order || size(temp, 2) ~= k
+					error('control:design:gamma:eigenvalues', 'No regular basis of right eigenvectors could be found.');
+				end
+				eigenvectors_right_k(:, 1:k, jj) = temp;
+				k = k + 1;
+			end
+		end
+		for ff = 1:size(idxmap, 1) %#ok<FORPF> no parfor because of dependent indexing
+			if sum(replacemap(ff, :)) ~= multiplicity(multiplicityidx(1, idxmap(ff, 1)), 1)
+				% if we get here, multiplicity and number of equal eigenvalues in map are not equal, which should not occur under all circumstances
+				error('control:design:gamma:eigenvalues', 'Something went wrong in the eigenvector calculation, check the implementation.');
+			end
+			eigenvectors_right(:, replacemap(ff, :)) = eigenvectors_right_k(:, 1:multiplicity(multiplicityidx(1, idxmap(ff, 1)), 1), multiplicityidx(1, idxmap(ff, 1)));
 		end
 	end
 end
