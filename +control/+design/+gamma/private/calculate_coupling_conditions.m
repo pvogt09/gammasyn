@@ -45,14 +45,14 @@ function [c, ceq, gradc, gradceq] = calculate_coupling_conditions(system, R, ~, 
 
 	number_outputconditions_per_sys = 2*dim_invariant*number_couplingconditions;
 	if hasfeedthrough
-		number_inputconditions_per_sys = (number_controls - number_couplingconditions)*(2*(number_states - dim_invariant) + number_couplingconditions);
+		number_inputconditions_per_sys = (number_references - number_couplingconditions)*(2*(number_states - dim_invariant) + number_couplingconditions);
 	else
-		number_inputconditions_per_sys = (number_controls - number_couplingconditions)*2*(number_states - dim_invariant);
+		number_inputconditions_per_sys = (number_references - number_couplingconditions)*2*(number_states - dim_invariant);
 	end
 
 	[permutations_VR1, permutations_WR2, number_permutations] = set_permutations(number_states, dim_invariant, numthreads);
 
-	dF1dxi = zeros(number_controls, number_controls - number_couplingconditions, number_controls*(number_controls - number_couplingconditions));
+	dF1dxi = zeros(number_controls, number_references - number_couplingconditions, number_controls*(number_references - number_couplingconditions));
 	if needsgradient
 		% loop code in combination with set_permutations as literal code in this function crashes R2015B at runtime in compiled code, therefore linear indexing is used
 		%parfor (ii = 1:number_controls*(number_controls - number_couplingconditions), numthreads)
@@ -60,7 +60,7 @@ function [c, ceq, gradc, gradceq] = calculate_coupling_conditions(system, R, ~, 
 		%	dF1dxi_tmp(ii) = 1;
 		%	dF1dxi(:, :, ii) = dF1dxi_tmp;
 		%end
-		indices = (1:number_controls*(number_controls - number_couplingconditions)) + number_controls*(number_controls - number_couplingconditions)*(-1 + (1:number_controls*(number_controls - number_couplingconditions)));
+		indices = (1:number_controls*(number_references - number_couplingconditions)) + number_controls*(number_references - number_couplingconditions)*(-1 + (1:number_controls*(number_references - number_couplingconditions)));
 		dF1dxi(indices) = 1;
 	end
 	F1 = F(:, 1:end - number_couplingconditions);
@@ -124,14 +124,14 @@ function [c, ceq, gradc, gradceq] = calculate_coupling_conditions(system, R, ~, 
 		];
 		if hasfeedthrough
 			ceq_in(:, :, ii) = [
-				reshape(real(WBF.'),	(number_states - dim_invariant)*(number_controls - number_couplingconditions), 1);
-				reshape(imag(WBF.'),	(number_states - dim_invariant)*(number_controls - number_couplingconditions), 1);
-				reshape(D2*F1,			(number_couplingconditions)*(number_controls - number_couplingconditions), 1)
+				reshape(real(WBF.'),	(number_states - dim_invariant)*(number_references - number_couplingconditions), 1);
+				reshape(imag(WBF.'),	(number_states - dim_invariant)*(number_references - number_couplingconditions), 1);
+				reshape(D2*F1,			(number_couplingconditions)*(number_references - number_couplingconditions), 1)
 			];
 		else
 			ceq_in(:, :, ii) = [
-				reshape(real(WBF.'),	(number_states - dim_invariant)*(number_controls - number_couplingconditions), 1);
-				reshape(imag(WBF.'),	(number_states - dim_invariant)*(number_controls - number_couplingconditions), 1);
+				reshape(real(WBF.'),	(number_states - dim_invariant)*(number_references - number_couplingconditions), 1);
+				reshape(imag(WBF.'),	(number_states - dim_invariant)*(number_references - number_couplingconditions), 1);
 			];
 		end
 		% input and output coupling conditions of the system end
@@ -172,14 +172,14 @@ function [c, ceq, gradc, gradceq] = calculate_coupling_conditions(system, R, ~, 
 				all_grads_lev_split = reshape(all_grads_lev_mixed, number_states, number_states - dim_invariant, number_measurements*number_controls);
 				all_grads_lev_stacked_below = reshape(all_grads_lev_split, number_states*(number_states - dim_invariant), number_measurements*number_controls);
 				all_grads_coupl_in_first_part = (kron(eye(number_states - dim_invariant), F1.'*B.')*conj(all_grads_lev_stacked_below)).';
-				all_grads_coupl_in_secnd_part = NaN((number_controls - number_couplingconditions)*(number_states - dim_invariant), number_controls*(number_controls - number_couplingconditions)) + 1i*NaN((number_controls - number_couplingconditions)*(number_states - dim_invariant), number_controls*(number_controls - number_couplingconditions));
-				for kk = 1:number_controls*(number_controls - number_couplingconditions)
-					all_grads_coupl_in_secnd_part(:, kk) = reshape(dF1dxi(:, :, kk).'*B.'*WR2.', (number_controls - number_couplingconditions)*(number_states - dim_invariant), 1); %#ok<PFBNS> dF1dxi is constant and calculated before loop
+				all_grads_coupl_in_secnd_part = NaN((number_references - number_couplingconditions)*(number_states - dim_invariant), number_controls*(number_references - number_couplingconditions)) + 1i*NaN((number_references - number_couplingconditions)*(number_states - dim_invariant), number_controls*(number_references - number_couplingconditions));
+				for kk = 1:number_controls*(number_references - number_couplingconditions)
+					all_grads_coupl_in_secnd_part(:, kk) = reshape(dF1dxi(:, :, kk).'*B.'*WR2.', (number_references - number_couplingconditions)*(number_states - dim_invariant), 1); %#ok<PFBNS> dF1dxi is constant and calculated before loop
 				end
 				all_grads_coupl_in = [
 					all_grads_coupl_in_first_part;
 					all_grads_coupl_in_secnd_part.';
-					zeros(number_controls*number_couplingconditions, (number_controls - number_couplingconditions)*(number_states - dim_invariant))
+					zeros(number_controls*number_couplingconditions, (number_references - number_couplingconditions)*(number_states - dim_invariant))
 				];
 			else
 				all_grads_coupl_in = zeros(n_xi, 0);
@@ -187,7 +187,7 @@ function [c, ceq, gradc, gradceq] = calculate_coupling_conditions(system, R, ~, 
 			if hasfeedthrough
 				ceq_in_grad(:, :, ii) = [
 					real(all_grads_coupl_in), imag(all_grads_coupl_in), [
-						zeros(number_couplingconditions*(number_controls - number_couplingconditions), number_controls*number_measurements), kron(eye(number_controls - number_couplingconditions), D2), zeros(number_couplingconditions*(number_controls - number_couplingconditions), number_controls*number_couplingconditions)
+						zeros(number_couplingconditions*(number_references - number_couplingconditions), number_controls*number_measurements), kron(eye(number_references - number_couplingconditions), D2), zeros(number_couplingconditions*(number_references - number_couplingconditions), number_controls*number_couplingconditions)
 					].'
 				];
 			else
@@ -244,7 +244,7 @@ function [c, ceq, gradc, gradceq] = calculate_coupling_conditions(system, R, ~, 
 		];
 
 		grad_F_pre = [
-			reshape(-2*F1, number_controls*(number_controls - number_couplingconditions), 1);
+			reshape(-2*F1, number_controls*(number_references - number_couplingconditions), 1);
 			zeros(number_controls*number_couplingconditions, 1)
 		];
 		if dimensions.F_fixed_has

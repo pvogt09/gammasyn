@@ -74,10 +74,7 @@ function [Ropt, Jopt, information] = gammasyn_couplingcontrol(systems, areafun, 
 	if any(number_states ~= number_states_all(:))
 		error('control:design:gamma:dimensions', 'For coupling controller design, all systems must have same number of states.');
 	end
-	if number_references ~= number_controls
-		error('control:design:gamma:dimensions', 'For coupling controller design, systems must have as many references as controls.');
-	end
-	if ~numeric || ~objectiveoptions.couplingcontrol.allowoutputcoupling
+	if ~numeric || ~objectiveoptions.couplingcontrol.allowoutputcoupling || descriptor
 		if number_states ~= number_measurements
 			error('control:design:gamma:dimensions', 'For coupling controller design, all states must be measured.');
 		end
