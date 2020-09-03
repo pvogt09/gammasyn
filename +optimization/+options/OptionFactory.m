@@ -46,6 +46,7 @@ classdef OptionFactory < handle
 			this.registerSolver(optimization.solver.Optimizer.SQPGS,			'optimization.options.sqpgs');
 			this.registerSolver(optimization.solver.Optimizer.SCBFGS,			'optimization.options.scbfgs');
 			this.registerSolver(optimization.solver.Optimizer.KSOPT,			'optimization.options.ksopt');
+			this.registerSolver(optimization.solver.Optimizer.SOLVOPT,			'optimization.options.solvopt');
 		end
 	end
 

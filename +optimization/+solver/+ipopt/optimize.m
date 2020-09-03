@@ -46,7 +46,7 @@ function [x, fval, exitflag, output, lambda, grad, hessian] = optimize(fun, x_0,
 	%end
 	isemptynonlcon = false;
 	usedefaultoption = false;
-	defaultsolver = optimization.solver.Optimizer.FMINCONGLOBAL;
+	defaultsolver = optimization.solver.Optimizer.IPOPT;
 	if nargin >= 10 && isa(options, 'optimization.solver.Optimizer')
 		defaultsolver = options;
 		usedefaultoption = true;
