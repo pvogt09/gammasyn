@@ -24,11 +24,11 @@ function [c, ceq, gradc, gradceq, hessc, hessceq] = ceval(R, systems, areafun, w
 	end
 	if nargin <= 4 || ~isstruct(options)
 		options = struct(...
-			'usecompiled',		false,...
-			'numthreads',		0,...
-			'type',				GammaJType.EXP,...
-			'couplingcontrol',	struct(...
-				'couplingstrategy',	GammaCouplingStrategy.NONE...
+			'usecompiled',			false,...
+			'numthreads',			0,...
+			'type',					GammaJType.EXP,...
+			'decouplingcontrol',	struct(...
+				'decouplingstrategy',	GammaDecouplingStrategy.NONE...
 			)...
 		);
 	end
@@ -49,15 +49,15 @@ function [c, ceq, gradc, gradceq, hessc, hessceq] = ceval(R, systems, areafun, w
 		allownegativeweight = false;
 	end
 	systemoptions = struct();
-	if isfield(options, 'couplingcontrol')
-		if ~isstruct(options.couplingcontrol)
-			error('control:design:gamma:input', 'Coupling control options must be of type struct.');
+	if isfield(options, 'decouplingcontrol')
+		if ~isstruct(options.decouplingcontrol)
+			error('control:design:gamma:input', 'Decoupling control options must be of type struct.');
 		end
-		couplingoptions = checkobjectiveoptions_coupling(options.couplingcontrol);
-		if couplingoptions.couplingstrategy ~= GammaCouplingStrategy.NONE
-			systemoptions.couplingcontrol = GammaCouplingStrategy_needscouplingconditions(options.couplingcontrol.couplingstrategy);
-			if systemoptions.couplingcontrol
-				systemoptions.couplingconditions = int32(couplingoptions.couplingconditions);
+		decouplingoptions = checkobjectiveoptions_decoupling(options.decouplingcontrol);
+		if decouplingoptions.decouplingstrategy ~= GammaDecouplingStrategy.NONE
+			systemoptions.decouplingcontrol = GammaDecouplingStrategy_needsdecouplingconditions(options.decouplingcontrol.decouplingstrategy);
+			if systemoptions.decouplingcontrol
+				systemoptions.decouplingconditions = int32(decouplingoptions.decouplingconditions);
 				systemoptions.usereferences = true;
 				options.system.usereferences = true;
 			end
@@ -98,26 +98,22 @@ function [c, ceq, gradc, gradceq, hessc, hessceq] = ceval(R, systems, areafun, w
 			[c, ceq] = c_mex(x, system, weight, areafun, dimensions, options);
 		end
 	end
-	if GammaCouplingStrategy_needscouplingconditions(options.couplingcontrol.couplingstrategy)
-		if dimensions.hasfeedthrough_coupling
-			number_inputconditions = (dimensions.references - dimensions.couplingconditions)*(2*(dimensions.states - dimensions.m_invariant) + dimensions.couplingconditions);
+	if GammaDecouplingStrategy_needsdecouplingconditions(options.decouplingcontrol.decouplingstrategy)
+		number_inputconditions = sum(2*(repmat(dimensions.states, dimensions.references, 1) - dimensions.m_invariant) + dimensions.number_decouplingconditions.*dimensions.hasfeedthrough_decoupling);
+		number_outputconditions = sum(2*(dimensions.number_decouplingconditions.*dimensions.m_invariant));
+		if options.decouplingcontrol.decouplingstrategy == GammaDecouplingStrategy.NUMERIC_NONLINEAR_EQUALITY
+			number_decouplingconstraints = 1;
+			number_decouplingconstraints_eq = dimensions.models*(number_outputconditions + number_inputconditions);
+		elseif options.decouplingcontrol.decouplingstrategy == GammaDecouplingStrategy.NUMERIC_NONLINEAR_INEQUALITY
+			number_decouplingconstraints = 2*dimensions.models*(number_outputconditions + number_inputconditions) + 1;
+			number_decouplingconstraints_eq = 0;
 		else
-			number_inputconditions = 2*(dimensions.references - dimensions.couplingconditions)*(dimensions.states - dimensions.m_invariant);
-		end
-		number_outputconditions = 2*dimensions.m_invariant*dimensions.couplingconditions;
-		if options.couplingcontrol.couplingstrategy == GammaCouplingStrategy.NUMERIC_NONLINEAR_EQUALITY
-			number_couplingconstraints = 1;
-			number_couplingconstraints_eq = dimensions.models*(number_outputconditions + number_inputconditions);
-		elseif options.couplingcontrol.couplingstrategy == GammaCouplingStrategy.NUMERIC_NONLINEAR_INEQUALITY
-			number_couplingconstraints = 2*dimensions.models*(number_outputconditions + number_inputconditions) + 1;
-			number_couplingconstraints_eq = 0;
-		else
-			number_couplingconstraints = 0;
-			number_couplingconstraints_eq = 0;
+			number_decouplingconstraints = 0;
+			number_decouplingconstraints_eq = 0;
 		end
 	else
-		number_couplingconstraints = 0;
-		number_couplingconstraints_eq = 0;
+		number_decouplingconstraints = 0;
+		number_decouplingconstraints_eq = 0;
 	end
 	switch derivativeval
 		case 'R'
@@ -134,17 +130,17 @@ function [c, ceq, gradc, gradceq, hessc, hessceq] = ceval(R, systems, areafun, w
 			dimension_measurement = dimensions.measurements;
 	end
 	if ~ismatrix(R_0)
-		c = NaN(dimensions.models*dimensions.areas_max*dimensions.states + number_couplingconstraints, size(R_0, 3));
+		c = NaN(dimensions.models*dimensions.areas_max*dimensions.states + number_decouplingconstraints, size(R_0, 3));
 		if nargout >= 2
-			ceq = NaN(number_couplingconstraints_eq, size(R_0, 3));
+			ceq = NaN(number_decouplingconstraints_eq, size(R_0, 3));
 			if nargout >= 3
-				gradc = NaN(dimensions.models*dimensions.areas_max*dimensions.states + number_couplingconstraints, dimensions.controls, dimension_measurement, size(R_0, 3));
+				gradc = NaN(dimensions.models*dimensions.areas_max*dimensions.states + number_decouplingconstraints, dimensions.controls, dimension_measurement, size(R_0, 3));
 				if nargout >= 4
-					gradceq = NaN(number_couplingconstraints_eq, dimensions.controls, dimension_measurement, size(R_0, 3));
+					gradceq = NaN(number_decouplingconstraints_eq, dimensions.controls, dimension_measurement, size(R_0, 3));
 					if nargout >= 5
-						hessc = NaN(dimensions.controls*dimension_measurement, dimensions.controls*dimension_measurement, dimensions.models*dimensions.areas_max*dimensions.states + number_couplingconstraints, size(R_0, 3));
+						hessc = NaN(dimensions.controls*dimension_measurement, dimensions.controls*dimension_measurement, dimensions.models*dimensions.areas_max*dimensions.states + number_decouplingconstraints, size(R_0, 3));
 						if nargout >= 6
-							hessceq = NaN(dimensions.controls*dimension_measurement, dimensions.controls*dimension_measurement, number_couplingconstraints_eq, size(R_0, 3));
+							hessceq = NaN(dimensions.controls*dimension_measurement, dimensions.controls*dimension_measurement, number_decouplingconstraints_eq, size(R_0, 3));
 						end
 					end
 				end

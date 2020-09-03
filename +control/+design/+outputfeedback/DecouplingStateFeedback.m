@@ -1,62 +1,33 @@
-classdef OutputCouplingOutputFeedback < control.design.outputfeedback.AbstractCouplingFeedback
-	%OUTPUTCOUPLINGOUTPUTFEEDBACK class for casting a control system in output feedback form ready for gammasyn_decouplingcontrol to perform a state coupling control design and specify the needed constraints on the resulting gain matrix
+classdef DecouplingStateFeedback < control.design.outputfeedback.AbstractDecouplingFeedback
+	%DECOUPLINGSTATEFEEDBACK class for casting a control system in state feedback form ready for gammasyn_decouplingcontrol to perform a diagonal decoupling control design and specify the needed constraints on the resulting gain matrix
 	%	For the control system
 	%		Ex' = Ax + Bu
 	%		y = Cx + Du
 	%		y' = C_dot x
 	%	the control law u = -Rx + Fw results in the output feedback form
-	%		Ex' = Ax - B R Cx + B Fw
+	%		Ex' = Ax - B R Ix + B Fw
 	%		y_ref = C_ref x + D_ref u
-
-	properties(SetAccess=protected)
-		% output transformation: y_tilde = T*y
-		transformation
-	end
 
 	methods(Static=true)
 		function [name] = SimulinkVariant()
 			%SIMULINKVARIANT return name of corresponding simulink variant for controller block in control_outputfeedback_lib
 			%	Output:
 			%		name:	name of the corresponding simulink variant
-			name = 'OutputCouplingOutputFeedback';
+			name = 'DecouplingStateFeedback';
 		end
 	end
 
 	methods
-		function [this] = OutputCouplingOutputFeedback(number_couplingconditions, number_references, transformation, varargin) %#ok<VANUS> varargin is not used but allowes to call the constructor with arguments
-			%OUTPUTCOUPLINGOUTPUTFEEDBACK create new output feedback coupling class
+		function [this] = DecouplingStateFeedback(number_references, varargin) %#ok<VANUS> varargin is not used but allowes to call the constructor with arguments
+			%DECOUPLINGSTATEFEEDBACK create new state feedback coupling class
 			%	Input:
-			%		number_couplingconditions:	number of coupling conditions in C_ref
 			%		number_references:			number of references
-			%		transformation:				transformation matrix containing parameters of outputs that shall be coupled.
 			%		varargin:					unused input arguments
 			%	Output:
 			%		this:						instance
-			narginchk(3, Inf);
-			this@control.design.outputfeedback.AbstractCouplingFeedback(number_couplingconditions, number_references);
-			this.transformation = transformation;
-		end
-
-		function [this] = set.transformation(this, transformation)
-			%TRANSFORMATION set output transformation matrix to choose outputs, that shall be coupled
-			%	Input:
-			%		this:			instance
-			%		transformation:	transformation matrix containing parameters of outputs that shall be coupled.
-			%	Output:
-			%		this:			instance
-			if ~isnumeric(transformation)
-				error('control:design:outputfeedback:input', 'Transformation matrix must be numeric.');
-			end
-			if any(any(isinf(transformation))) || any(any(isnan(transformation)))
-				error('control:design:outputfeedback:input', 'Transformation matrix must have finite elements.');
-			end
-			if size(transformation, 1) ~= size(transformation, 2)
-				error('control:design:outputfeedback:input', 'Transformation matrix must be square matrix.');
-			end
-			if rank(transformation) ~= size(transformation, 2)
-				error('control:design:outputfeedback:input', 'Transformation matrix must be regular.');
-			end
-			this.transformation = transformation;
+			narginchk(1, Inf);
+			this@control.design.outputfeedback.AbstractDecouplingFeedback();
+			this.tf_structure = diag(NaN(number_references, 1));
 		end
 	end
 
@@ -83,27 +54,20 @@ classdef OutputCouplingOutputFeedback < control.design.outputfeedback.AbstractCo
 			%		D:			throughput matrix of extended system
 			%		C_ref:		reference output matrix
 			%		D_ref:		reference throughput matrix
-			if isempty(this.transformation)
-				error('control:design:outputfeedback:input', 'No transformation matrix specified.');
-			end
 			if control.design.outputfeedback.OutputFeedback.isranksupported(E) && rank(E) < size(A, 1)
 				error('control:design:outputfeedback:input', 'Descriptor matrix must be regular for a state feedback controller.');
 			end
-			q = size(C, 1);
-			if size(this.transformation, 2) ~= q
-				error('control:design:outputfeedback:input', 'Transformation matrix must have %d columns.', q);
+			if size(C, 1) ~= size(this.tf_structure, 2)
+				error('control:design:outputfeedback:input', 'Number of references (%d) must match number of measurements (%d).', size(this.tf_structure, 2), size(C, 1));
 			end
-			nc = this.number_couplingconditions;
-			if q <= nc
-				error('control:design:outputfeedback:input', 'Number of coupling conditions (%d) must be smaller than number of measurements (%d).', nc, q);
-			end
-			C_ref = this.transformation*C;
-			D_ref = this.transformation*D;
+			C_ref = C;
+			D_ref = D;
+			C = eye(size(A, 1));
 			C_dot = zeros(0, size(A, 1));
-			D = zeros(q, size(B, 2));
+			D = zeros(size(A, 1), size(B, 2));
 		end
 
-		function [R_fixed, K_fixed, F_fixed, RKF_fixed, R_bounds, K_bounds, F_bounds, RKF_bounds, R_nonlin] = gainpattern_system(~, ~, ~, B, C, ~, ~, ~, ~, ~)
+		function [R_fixed, K_fixed, F_fixed, RKF_fixed, R_bounds, K_bounds, F_bounds, RKF_bounds, R_nonlin] = gainpattern_system(~, ~, A, B, C, ~, ~, ~, ~, ~)
 			%GAINPATTERN_SYSTEM return gain pattern constraint system for a state feedback gain matrix
 			%	Input:
 			%		this:		instance
@@ -126,7 +90,7 @@ classdef OutputCouplingOutputFeedback < control.design.outputfeedback.AbstractCo
 			%		F_bounds:	cell array with inequality constraint system for prefilter gain matrix
 			%		RKF_bounds:	cell array with inequality constraint system for combined gain matrix
 			%		R_nonlin:	function pointer to nonlinear constraints on proportional, derivative and prefilter gain matrix
-			R_fixed = {false(size(B, 2), size(C, 1)), NaN(size(B, 2), size(C, 1))};
+			R_fixed = {false(size(B, 2), size(A, 1)), NaN(size(B, 2), size(A, 1))};
 			if nargout >= 2
 				K_fixed = {true(size(B, 2), 0), zeros(size(B, 2), 0)};
 				if nargout >= 3
@@ -153,7 +117,7 @@ classdef OutputCouplingOutputFeedback < control.design.outputfeedback.AbstractCo
 			end
 		end
 
-		function [R_gain, K_gain, F_prefilter] = gainpattern_parametric_system(~, ~, ~, B, C, ~, ~, ~, ~, ~)
+		function [R_gain, K_gain, F_prefilter] = gainpattern_parametric_system(~, ~, A, B, C, ~, ~, ~, ~, ~)
 			%GAINPATTERN_PARAMETRIC_SYSTEM return parametric gain matrix for a state feedback gain matrix R = R, gain matrix K = [] and prefilter matrix F = F in continuous and discrete time
 			%	Input:
 			%		this:			instance
@@ -170,12 +134,12 @@ classdef OutputCouplingOutputFeedback < control.design.outputfeedback.AbstractCo
 			%		R_gain:			parametric proportional gain matrix
 			%		K_gain:			parametric derivative gain matrix
 			%		F_prefilter:	parametric prefilter matrix
-			%n = size(A, 1);
+			n = size(A, 1);
 			p = size(B, 2);
 			q = size(C, 1);
 			%q_dot = size(C_dot, 1);
 			F = realp('F', ones(p, q));
-			R = realp('R', ones(p, q));
+			R = realp('R', ones(p, n));
 			R_gain = R;
 			if nargout >= 2
 				K_gain = zeros(p, 0);
@@ -216,6 +180,7 @@ classdef OutputCouplingOutputFeedback < control.design.outputfeedback.AbstractCo
 			if isempty(T_w)
 				T_w = T_y;
 			end
+			T_y = T_x;
 		end
 
 		function [F, F_fixed] = prefilterpattern_system(~, ~, ~, ~, ~, B, C, ~, ~, ~, ~, ~)
@@ -325,25 +290,25 @@ classdef OutputCouplingOutputFeedback < control.design.outputfeedback.AbstractCo
 				end
 				E = zeros(0, 0);
 				A = zeros(0, 0);
-				B = zeros(0, 3*q);
+				B = zeros(0, n + 2*q);
 				C = zeros(p, 0);
 				C_dot = zeros(0, 0);
 				D = [
 					-partitionR.R,	partitionF.F,	zeros(p, q)
 				];
 				C_ref = zeros(0, 0);
-				D_ref = zeros(0, 3*q);
+				D_ref = zeros(0, n + 2*q);
 			else
 				E = zeros(0, 0);
 				A = zeros(0, 0);
-				B = zeros(0, 2*q + 2*q_dot);
+				B = zeros(0, n + q + 2*q_dot);
 				C = zeros(p, 0);
 				C_dot = zeros(0, 0);
 				D = [
 					-partitionR.R,	zeros(p, q_dot),	partitionF.F,	zeros(p, q_dot)
 				];
 				C_ref = zeros(0, 0);
-				D_ref = zeros(0, 2*q + 2*q_dot);
+				D_ref = zeros(0, n + q + 2*q_dot);
 			end
 		end
 

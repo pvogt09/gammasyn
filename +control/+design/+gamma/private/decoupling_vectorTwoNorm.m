@@ -1,5 +1,5 @@
-function [norms] = coupling_vectorTwoNorm(arr, dim)
-	%COUPLING_VECTORTWONORM calcualte vector-2 norm for dimension of a matrix
+function [norms] = decoupling_vectorTwoNorm(arr, dim)
+	%DECOUPLING_VECTORTWONORM calcualte vector-2 norm for dimension of a matrix
 	%	Input:
 	%		arr:	matrix to calulate norm for
 	%		dim:	dimension to operate along

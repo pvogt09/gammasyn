@@ -1983,9 +1983,9 @@ classdef SolutionSet < handle
 			isdiscrete = control.design.outputfeedback.OutputFeedback.isdiscreteT(T);
 			if isdiscrete
 				t = (0:T:5).';
-				if isa(this.controller, 'control.design.outputfeedback.AbstractCouplingFeedback')
+				if isa(this.controller, 'control.design.outputfeedback.AbstractDecouplingFeedback')
 					w = [
-						ones(length(t), size(F, 2) - this.controller.number_couplingconditions),	zeros(length(t), this.controller.number_couplingconditions)
+						ones(length(t), size(F, 2) - this.controller.number_decouplingconditions),	zeros(length(t), this.controller.number_decouplingconditions)
 					];
 				else
 					if size(F, 2) == 2
@@ -2006,9 +2006,9 @@ classdef SolutionSet < handle
 				end
 			else
 				t = linspace(0, 5, 200).';
-				if isa(this.controller, 'control.design.outputfeedback.AbstractCouplingFeedback')
+				if isa(this.controller, 'control.design.outputfeedback.AbstractDecouplingFeedback')
 					w = [
-						ones(length(t), size(F, 2) - this.controller.number_couplingconditions),	zeros(length(t), this.controller.number_couplingconditions)
+						ones(length(t), size(F, 2) - this.controller.number_decouplingconditions),	zeros(length(t), this.controller.number_decouplingconditions)
 					];
 				else
 					if size(F, 2) == 2
@@ -2805,9 +2805,9 @@ classdef SolutionSet < handle
 			end
 			if control.design.outputfeedback.OutputFeedback.isdiscreteT(T)
 				t = (0:T:5).';
-				if isa(this.controller, 'control.design.outputfeedback.AbstractCouplingFeedback')
+				if isa(this.controller, 'control.design.outputfeedback.AbstractDecouplingFeedback')
 					w = [
-						ones(length(t), size(F, 2) - this.controller.number_couplingconditions),	zeros(length(t), this.controller.number_couplingconditions)
+						ones(length(t), size(F, 2) - this.controller.number_decouplingconditions),	zeros(length(t), this.controller.number_decouplingconditions)
 					];
 				else
 					if size(F, 2) == 2
@@ -2828,9 +2828,9 @@ classdef SolutionSet < handle
 				end
 			else
 				t = linspace(0, 5, 200).';
-				if isa(this.controller, 'control.design.outputfeedback.AbstractCouplingFeedback')
+				if isa(this.controller, 'control.design.outputfeedback.AbstractDecouplingFeedback')
 					w = [
-						ones(length(t), size(F, 2) - this.controller.number_couplingconditions),	zeros(length(t), this.controller.number_couplingconditions)
+						ones(length(t), size(F, 2) - this.controller.number_decouplingconditions),	zeros(length(t), this.controller.number_decouplingconditions)
 					];
 				else
 					if size(F, 2) == 2

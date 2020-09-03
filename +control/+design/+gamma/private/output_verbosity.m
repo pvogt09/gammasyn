@@ -30,13 +30,13 @@ function [output] = output_verbosity(verbosity, level)
 			verbosity = verbosity.Display;
 		elseif isstruct(verbosity)
 			if isfield(verbosity, 'Display')
-				verbosity = verbosity.Dsiplay;
+				verbosity = verbosity.Display;
 			else
 				error('control:design:gamma', 'Verbosity level must have a field ''Display''.');
 			end
 		elseif isobject(verbosity)
 			if isprop(verbosity, 'Display')
-				verbosity = verbosity.Dsiplay;
+				verbosity = verbosity.Display;
 			else
 				error('control:design:gamma', 'Verbosity level must have a property ''Display''.');
 			end

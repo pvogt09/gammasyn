@@ -1,24 +1,24 @@
-function [has, margin] = hascouplingconditionfulfilled(systems, R, options, tolerance)
-	%HASCOUPLINGCONDITIONSFULFILLED return if system fulfills coupling conditions
+function [has, margin] = hasdecouplingconditionfulfilled(systems, R, options, tolerance)
+	%HASDECOUPLINGCONDITIONSFULFILLED return if system fulfills decoupling conditions
 	%	Input:
-	%		systems:	systems to check coupling conditions for
+	%		systems:	systems to check decoupling conditions for
 	%		R:			gain matrix for control of systems
-	%		options:	structure with coupling controller design opions
+	%		options:	structure with decoupling controller design opions
 	%		tolerance:	tolerance for checking
 	%	Output:
-	%		has:		true, when coupling conditions are fulfilled, else false
-	%		margin:		maximum distance to coupling condition fulfillment
+	%		has:		true, when decoupling conditions are fulfilled, else false
+	%		margin:		maximum distance to decoupling condition fulfillment
 	if nargin <= 3
 		tolerance = 0;
 	end
 	if ~isstruct(options)
-		error('control:design:gamma:couplingcondition', 'Coupling options must be a structure, not a ''%s''.', class(options));
+		error('control:design:gamma:decouplingcondition', 'Decoupling options must be a structure, not a ''%s''.', class(options));
 	end
-	options = checkobjectiveoptions_coupling(options);
-	options.couplingstrategy = GammaCouplingStrategy.NUMERIC_NONLINEAR_EQUALITY;
+	options = checkobjectiveoptions_decoupling(options);
+	options.decouplingstrategy = GammaDecouplingStrategy.NUMERIC_NONLINEAR_EQUALITY;
 	systemoptions = struct(...
-		'couplingcontrol',		true,...
-		'couplingconditions',	options.couplingconditions...
+		'decouplingcontrol',	true,...
+		'decouplingconditions',	options.decouplingconditions...
 	);
 	[system, ~, ~, ~, ~, dimensions, ~] = checkandtransformargs(systems, [], 1, systemoptions, [], [], [], [], true);
 	if iscell(R)
@@ -39,11 +39,11 @@ function [has, margin] = hascouplingconditionfulfilled(systems, R, options, tole
 		F = zeros(dimensions.controls, dimensions.references);
 	end
 	options = struct(...
-		'usecompiled',		configuration.control.design.gamma.hascompiled(),...
-		'numthreads',		configuration.matlab.numthreads(),...
-		'type',				GammaJType.EXP,...
-		'couplingcontrol',	options,...
-		'allowvarorder',	true...
+		'usecompiled',			configuration.control.design.gamma.hascompiled(),...
+		'numthreads',			configuration.matlab.numthreads(),...
+		'type',					GammaJType.EXP,...
+		'decouplingcontrol',	options,...
+		'allowvarorder',		true...
 	);
 	returnmargin = nargout >= 2;
 	if ~ismatrix(R) || ~ismatrix(K) || ~ismatrix(F)
@@ -58,7 +58,7 @@ function [has, margin] = hascouplingconditionfulfilled(systems, R, options, tole
 				K = repmat(K, [1, 1, prod(szR(3:end))]);
 				szK = size(K);
 			else
-				error('control:design:gamma:couplingcondition', 'Number of gain matrices must be equal.');
+				error('control:design:gamma:decouplingcondition', 'Number of gain matrices must be equal.');
 			end
 		end
 		if prod(szR(3:end)) ~= prod(szF(3:end))
@@ -69,7 +69,7 @@ function [has, margin] = hascouplingconditionfulfilled(systems, R, options, tole
 				F = repmat(F, [1, 1, prod(szR(3:end))]);
 				szF = size(F);
 			else
-				error('control:design:gamma:couplingcondition', 'Number of gain matrices must be equal.');
+				error('control:design:gamma:decouplingcondition', 'Number of gain matrices must be equal.');
 			end
 		end
 		if prod(szK(3:end)) ~= prod(szF(3:end))
@@ -80,7 +80,7 @@ function [has, margin] = hascouplingconditionfulfilled(systems, R, options, tole
 				F = repmat(F, [1, 1, prod(szK(3:end))]);
 				szF = size(F);
 			else
-				error('control:design:gamma:couplingcondition', 'Number of gain matrices must be equal.');
+				error('control:design:gamma:decouplingcondition', 'Number of gain matrices must be equal.');
 			end
 		end
 		Rtotest = reshape(R, [szR(1), szR(2), prod(szR(3:end))]);
@@ -92,8 +92,8 @@ function [has, margin] = hascouplingconditionfulfilled(systems, R, options, tole
 		end
 		usecompiled = options.usecompiled;
 		parfor ii = 1:size(Rtotest, 3)
-			[~, eigenvector_right, eigenvector_left] = calculate_eigenvalues(system, Rtotest(:, :, ii), Ktotest(:, :, ii), dimensions, usecompiled);
-			[~, ceq] = calculate_coupling_conditions(system, Rtotest(:, :, ii), Ktotest(:, :, ii), Ftotest(:, :, ii), dimensions, options, eigenvector_right, eigenvector_left);
+			[eigenvalues, eigenvector_right, eigenvector_left] = calculate_eigenvalues(system, Rtotest(:, :, ii), Ktotest(:, :, ii), dimensions, usecompiled);
+			[~, ceq] = calculate_decoupling_conditions(system, Rtotest(:, :, ii), Ktotest(:, :, ii), Ftotest(:, :, ii), dimensions, options, eigenvalues, eigenvector_right, eigenvector_left);
 			inareatest(ii, :) = all(abs(ceq(:)) <= tolerance);
 			if returnmargin
 				margintest(ii, :) = max(abs(ceq(:)));
@@ -108,8 +108,8 @@ function [has, margin] = hascouplingconditionfulfilled(systems, R, options, tole
 			margin = reshape(max(margintest, [], 2), szR(3:end));
 		end
 	else
-		[~, eigenvector_right, eigenvector_left] = calculate_eigenvalues(system, R, K, dimensions, options.usecompiled);
-		[~, ceq] = calculate_coupling_conditions(system, R, K, F, dimensions, options, eigenvector_right, eigenvector_left);
+		[eigenvalues, eigenvector_right, eigenvector_left] = calculate_eigenvalues(system, R, K, dimensions, options.usecompiled);
+		[~, ceq] = calculate_decoupling_conditions(system, R, K, F, dimensions, options, eigenvalues, eigenvector_right, eigenvector_left);
 		has = all(abs(ceq(:)) <= tolerance);
 		if returnmargin
 			margin = max(abs(ceq(:)));
