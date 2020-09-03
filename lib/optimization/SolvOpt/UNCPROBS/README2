@@ -1,0 +1,19 @@
+Remarks on the Matlab library of test functions 
+for unconstrained minimization made by A.Kuntsevich:
+
+1) The two original files WOOD.M and BAND.M contained errors 
+that have been corrected.
+ 
+ In BAND.M:
+    Line 40:   J(i,j)=1+2*x(j);
+    was changed to   
+    Line 40:   J(i,j)=-1-2*x(j);
+ In WOOD.M:
+    Line 33:             0             0    2*sqrt(90)*x(3)  sqrt(90)    
+    was changed to
+    Line 33:             0             0   -2*sqrt(90)*x(3)  sqrt(90)    
+
+2) Test functions #30 and #31 have some more local minima that
+never have been mentioned by anyone up to now. 
+See "http://bedvgm.kfunigraz.ac.at:8001/alex/solvopt/results.html" 
+(coming soon) for more information on these minima.
