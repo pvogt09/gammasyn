@@ -10,7 +10,7 @@ function out=unctest(appr,number,filename)
 % test functions. The valid numbers are in the range 1:26,28:34.
 % At number==0 (default value), the online dialog is invoked.
 % The input argument <filename> specifies the name of the two files with
-% extentions <.txt> and <.tbl> to write the results to.  
+% extentions <.txt> and <.tbl> to write the results to.
 % By default, the two files <unctest.tbl> and <unctest.txt> will be
 % created in the current Matlab working directory.
 
@@ -113,37 +113,37 @@ range=[1:26,28:34]; nt=34;
 
 if number==0
  default=1;
- 
+
   disp('###################  MOR`E SET OF TEST FUNCTIONS  ##################');
   disp(' ');
 
   % Dialog 1. Enter the number of a test function =========================
 
-  k=0; number=-1; 
+  k=0; number=-1;
   while number==-1
   disp('Enter the number of a test function from the list below or 0 to stop');
     if k>=nt, k=0; end
-    for  j=k+1:min(k+12,nt),  
+    for  j=k+1:min(k+12,nt),
          if j~=27, disp(function_strings(j,:));  end
-    end     
+    end
     k=k+12;  disp('Press Enter for more...');
-    s=input('>>> ','s'); 
+    s=input('>>> ','s');
     if s=='0',disp('Bye'); fclose(fd); fclose(ft); return, end
     if ~isempty(s)
        number=sscanf(s,'%i');
        if ~any(range==number),number=-1; disp('Not in the range!'); end
-    end  
+    end
   end
-  
+
   % Initialize a problem data ==============================================
-  
+
   NPROB=number;
   [NDIM,MDIM,x0]=initf(NPROB);
-  
+
   % Dialog 2. Enter a starting point =======================================
 
-   disp('The standard starting point is'); 
-   disp(sprintf(' %g;',x0)); 
+   disp('The standard starting point is');
+   disp(sprintf(' %g;',x0));
    disp('To accept it press Enter');
    disp(sprintf...
    ('To start at another one enter the %i coordinates separated by blanks',...
@@ -158,13 +158,13 @@ if number==0
 
   % Dialog 3. Enter a starting point =======================================
 
-   disp('Would you like to use analytically calculated gradients? [y]'); 
+   disp('Would you like to use analytically calculated gradients? [y]');
    while 1,
      s=input('>>> ','s');
      if isempty(s), appr=0, break
      elseif s=='y' | s=='Y', appr=0; break
-     elseif s=='n' | s=='N', appr=1; break 
-     else, disp('Please, enter "y" or "n"'); 
+     elseif s=='n' | s=='N', appr=1; break
+     else, disp('Please, enter "y" or "n"');
      end
    end
 
@@ -172,18 +172,18 @@ if number==0
 
 else,  default=0;
  nt=max(size(number)); if nt>1 & nt==size(number,1), number=number'; end
- i=1; while i<=nt, 
-        if ~any(range==number(i)),  
-           number=[number(1:i-1),number(i+1:nt)]; nt=nt-1; 
+ i=1; while i<=nt,
+        if ~any(range==number(i)),
+           number=[number(1:i-1),number(i+1:nt)]; nt=nt-1;
         else,  i=i+1;
         end
       end
- if nt==0, 
+ if nt==0,
   disp('Numbers out of the range'); fclose(fd); fclose(ft); return
  end
 end
 
-if  appr 
+if  appr
 fprintf(fd,'\n      FMinValue      FTrueMinValue  |f-f*|/|f|  FunEvaluatn');
 else
 fprintf(fd,'\n      FMinValue      FTrueMinValue  |f-f*|/|f|  Fnctn Grdnt');
@@ -193,7 +193,7 @@ end
 nnf=0; nng=0;
 
 for NPROB=number
-    
+
   if ~default, [NDIM,MDIM,x0]=initf(NPROB); end
   fun='testf';grad='testg';
   x=x0; options=soptions;
@@ -208,8 +208,8 @@ for NPROB=number
   end
 
   if options(9) < 0,  fprintf(ft,'\nABNORMAL TERMINATION. CODE = %i.',options(9));
-  else,               fprintf(ft,'\nNORMAL TERMINATION');    end    
-   
+  else,               fprintf(ft,'\nNORMAL TERMINATION');    end
+
    fprintf('\nValue of the function at the solution: %22.15g', f);
    fprintf(ft,'\nValue of the function at the solution: %22.15g', f);
    fprintf('\nNumber of function evaluations: %i', options(10));
@@ -227,54 +227,54 @@ for NPROB=number
 
 %  Special cases
    if     NPROB==2,
-       fmin02=0;         if abs(f-fmin)>abs(f-fmin02), fmin=fmin02;  end   
+       fmin02=0;         if abs(f-fmin)>abs(f-fmin02), fmin=fmin02;  end
    elseif NPROB==6,
-       fmin06=259.58019; if abs(f-fmin)>abs(f-fmin06), fmin=fmin06;  end   
+       fmin06=259.58019; if abs(f-fmin)>abs(f-fmin06), fmin=fmin06;  end
    elseif NPROB==11,
        fmin11=[.038,.038,.0385,fmin];
-       [df,index]=min(abs(fmin11-[f,f,f,f]));  
+       [df,index]=min(abs(fmin11-[f,f,f,f]));
        fmin=fmin11(index);
    elseif NPROB==15,
        fmin15=[0.00179453906640,fmin];
-       [df,index]=min(abs(fmin15-[f,f])); 
+       [df,index]=min(abs(fmin15-[f,f]));
        fmin=fmin15(index);
    elseif NPROB==18,
-       fmin18=[5.65565e-003,0.30636677262479,fmin]; 
-       [df,index]=min(abs(fmin18-[f,f,f]));  
+       fmin18=[5.65565e-003,0.30636677262479,fmin];
+       [df,index]=min(abs(fmin18-[f,f,f]));
        fmin=fmin18(index);
    elseif NPROB==19,
-       fmin19=[1.78981358688109,26.305657,fmin]; 
-       [df,index]=min(abs(fmin19-[f,f,f]));  
+       fmin19=[1.78981358688109,26.305657,fmin];
+       [df,index]=min(abs(fmin19-[f,f,f]));
        fmin=fmin19(index);
    elseif NPROB==26,
-       fmin26=0;          if abs(f-fmin)>abs(f-fmin26), fmin=fmin26;  end   
+       fmin26=0;          if abs(f-fmin)>abs(f-fmin26), fmin=fmin26;  end
    elseif NPROB==30,
        fmin30=[1.02865203567795,1.36025590473840,1.34953612374127,1.05122618838356,0.71260601731262,0.39737346895853,fmin];
-       [df,index]=min(abs(fmin30-[f,f,f,f,f,f,f]));  
+       [df,index]=min(abs(fmin30-[f,f,f,f,f,f,f]));
        fmin=fmin30(index);
    elseif NPROB==31,
        fmin31=[3.05727843,2.68021992072616,fmin];
-       [df,index]=min(abs(fmin31-[f,f,f]));  
+       [df,index]=min(abs(fmin31-[f,f,f]));
        fmin=fmin31(index);
    end
 
    if abs(fmin)<eps,  df=abs(f-fmin);
    else,              df=abs((f-fmin)/fmin);
    end
-   
-  
+
+
    nnf=nnf+options(10); nng=nng+options(11);
-   
+
    if     ~appr
     fprintf(fd,...
     '\n%2i:  %13.5e  %13.5e  %13.5e  %5i %5i',...
     NPROB,f,fmin,df,options(10),options(11));
-   
+
    else
     fprintf(fd,...
     '\n%2i:  %13.5e  %13.5e  %13.5e  %8i',...
     NPROB,f,fmin,df,options(10));
-   
+
    end
 
 end

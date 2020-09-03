@@ -6,4 +6,4 @@ function f=testf(x)
 % TESTF returns the function value <f> at a point <x>
 %
 global NDIM MDIM NPROB
-f=objfcn(NDIM,MDIM,x,NPROB); 
+f=objfcn(NDIM,MDIM,x,NPROB);

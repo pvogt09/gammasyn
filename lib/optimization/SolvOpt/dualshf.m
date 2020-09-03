@@ -1,6 +1,6 @@
 function f=dualshf(x)
 % Usage:
-% f=dualshf(x) 
+% f=dualshf(x)
 % Returns the value of the exact penalty function <f>
 % at a point <x> for the Shell Dual problem.
 global A B C D E Penalty_Coeff

@@ -6,7 +6,7 @@ echo on; clc
 %   This is a demonstration script-file for the SolvOpt
 %   It closely follows the Tutorial section of the users' guide
 %
-%   It consists of:   
+%   It consists of:
 %     (1) minimization of a sample nonsmooth function (Problem 1),
 %     (2) minimization of the user pre-defined penalty function
 %         for constrained sample problem 2,
@@ -21,7 +21,7 @@ clc
 %       DEMO 1: UNCONSTRAINED PROBLEM
 %---------------------------------------------------------------------------
 %
-% Consider the problem of finding the minimum to 
+% Consider the problem of finding the minimum to
 % Shor's piece-wise quadratic function:
 % f(x)=max{f (x): i=1,...,m}
 %           i
@@ -39,19 +39,19 @@ x=[-1;1;-1;1;-1];
 pause % Strike any key to start the optimization
 
 
-[x,f,options]=solvopt(x,'shorf'); 
+[x,f,options]=solvopt(x,'shorf');
 
 %  The solver has found a solution at:
 x
 %  The function value at the solution is:
 f
 pause % Strike any key to continue
-%  The total number of function evaluations was: 
+%  The total number of function evaluations was:
 options(10)
 pause % Strike any key for the next demo
 clc
 
-% Minimize Shor's function 
+% Minimize Shor's function
 % with user-supplied analytically calculated gradients
 
 pause % Strike any key to continue
@@ -69,16 +69,16 @@ x=[-1;1;-1;1;-1];
 pause % Strike any key to start minimization
 
 
-[x,f,options]=solvopt(x,'shorf','shorg'); 
+[x,f,options]=solvopt(x,'shorf','shorg');
 
 %  The solver has found a solution at:
 x
 %  The function value at the solution is:
 f
 pause % Strike any key to continue
-%  The total number of function evaluations was: 
+%  The total number of function evaluations was:
 options(10)
-%  The total number of gradient evaluations was: 
+%  The total number of gradient evaluations was:
 options(11)
 pause % Strike any key for the next demo
 clc
@@ -89,7 +89,7 @@ clc
 %
 %
 % Consider  the Ill-conditioned Linear Programming Problem
-% 
+%
 % minimize f(x)=C'x
 %
 % subject to
@@ -118,19 +118,19 @@ pause % Strike any key to continue
 
 %   Set the constant values and the starting point
 
-x=initill(15);  
+x=initill(15);
 
 pause % Strike any key to start the optimization
 
 
-[x,f,options]=solvopt(x,'illclinf'); 
+[x,f,options]=solvopt(x,'illclinf');
 
 %  The solver has found a solution at:
 x
 %  The function value at the solution is:
 f
 pause % Strike any key to continue
-%  The total number of function evaluations was: 
+%  The total number of function evaluations was:
 options(10)
 pause % Strike any key for the next demo
 clc
@@ -186,20 +186,20 @@ x=initdual;
 pause % Strike any key to start the optimization
 
 
-[x,f,options]=solvopt(x,'dsobjf','dsobjg',[],'dscntf','dscntg'); 
+[x,f,options]=solvopt(x,'dsobjf','dsobjg',[],'dscntf','dscntg');
 
 %  The solver has found a solution at:
 x
 %  The function value at the solution is:
 f
 pause % Strike any key to continue
-%  The total number of objective function evaluations was: 
+%  The total number of objective function evaluations was:
 options(10)
-%  The total number of objective function gradient evaluations was: 
+%  The total number of objective function gradient evaluations was:
 options(11)
-%  The total number of constraints evaluations was: 
+%  The total number of constraints evaluations was:
 options(12)
-%  The total number of constraint function gradient evaluations was: 
+%  The total number of constraint function gradient evaluations was:
 options(13)
 pause % Strike any key for the next demo
 clc
@@ -207,8 +207,8 @@ clc
 %###########################################################################
 %       DEMO 4: OPTIONAL PARAMETER SETTINGS
 %---------------------------------------------------------------------------
-%       Solve Problem 1 at 
-%       required relative error for the argument OPTIONS(2)=1e-6 
+%       Solve Problem 1 at
+%       required relative error for the argument OPTIONS(2)=1e-6
 %                                     (the default value is 1e-4) and
 %       required relative error for the function OPTIONS(3)=1e-8
 %                                     (the default value is 1e-6).
@@ -226,21 +226,21 @@ x=[-1;1;-1;1;-1];
 
 pause % Strike any key to start the optimization
 
-[x,f,options]=solvopt(x,'shorf','shorg',options); 
+[x,f,options]=solvopt(x,'shorf','shorg',options);
 
 %  The solver has found a solution at:
 x
 %  The function value at the solution is:
 f
 pause % Strike any key to continue
-%  The total number of function evaluations was: 
+%  The total number of function evaluations was:
 options(10)
-%  The total number of gradient evaluations was: 
+%  The total number of gradient evaluations was:
 options(11)
 
 pause % Strike any key to continue
 clc
-%       Solve Problem 3 at 
+%       Solve Problem 3 at
 %       the upper bound admissible maximal residual OPTIONS(2)=1e-12
 %                                        (the default value is 1e-8).
 %
@@ -253,20 +253,20 @@ pause % Strike any key to continue
 
 x=initdual;
 
-[x,f,options]=solvopt(x,'dsobjf','dsobjg',options,'dscntf','dscntg'); 
+[x,f,options]=solvopt(x,'dsobjf','dsobjg',options,'dscntf','dscntg');
 
 %  The solver has found a solution at:
 x
 %  The function value at the solution is:
 f
 pause % Strike any key to continue
-%  The total number of objective function evaluations was: 
+%  The total number of objective function evaluations was:
 options(10)
-%  The total number of objective function gradient evaluations was: 
+%  The total number of objective function gradient evaluations was:
 options(11)
-%  The total number of constraints evaluations was: 
+%  The total number of constraints evaluations was:
 options(12)
-%  The total number of constraint function gradient was: 
+%  The total number of constraint function gradient was:
 options(13)
 
 

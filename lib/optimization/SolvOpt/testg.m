@@ -6,4 +6,4 @@ function f=testg(x)
 % TESTG returns the gradient <g> at a point <x>
 %
 global NDIM MDIM NPROB
-f=grdfcn(NDIM,MDIM,x,NPROB); 
+f=grdfcn(NDIM,MDIM,x,NPROB);

@@ -8,5 +8,5 @@ if size(x,2)>1, x=x;end
 n=size(x,1);
 f=(matr_A(1:n,:)*x)'*x - matr_B(:,1)'*x;
 for l=2:mm
-  d=(matr_A((l-1)*n+1:l*n,:)*x)'*x - matr_B(:,l)'*x;  if d>f, f=d; end
+	d=(matr_A((l-1)*n+1:l*n,:)*x)'*x - matr_B(:,l)'*x;  if d>f, f=d; end
 end
