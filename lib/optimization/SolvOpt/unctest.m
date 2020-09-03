@@ -53,40 +53,40 @@ function_strings=[...
 '# 34.  LIN0    (10) (20)  Linear - Rank 1 with Zero Cols. & Rows ' ];
 
 function_min_values=[...
- 0           , ...%01
- 48.98425    , ...%02    2 local minima
- 0           , ...%03
- 0           , ...%04
- 0           , ...%05
- 124.36218   , ...%06
- 0           , ...%07
- 8.21487e-03 , ...%08
- 1.127932e-8 , ...%09
- 87.9458     , ...%10
- 0           , ...%11
- 0           , ...%12    a number of local minima
- 0           , ...%13
- 0           , ...%14
- 3.075055e-4 , ...%15    additionally takes local minima on a surface
- 85822.2     , ...%16
- 5.46489e-5  , ...%17    a number of areas of flatness, but the only one minimum
- 0           , ...%18    at least 3 local minima
- 4.01377e-2  , ...%19    a number of local minima /  f'(x(2:4,6:11))=0
- 1.39976e-6  , ...%20
- 0           , ...%21
- 0           , ...%22
- 2.249975e-5 , ...%23
- 9.376293e-6 , ...%24
- 0           , ...%25
- 2.79506e-5  , ...%26     +2 local minima
- 0           , ...%27
- 0           , ...%28
- 0           , ...%29
- 0           , ...%30     a number of local minima (essentially multiextr.)
- 0           , ...%31     at least 3 local minima
- 10          , ...%32
- 4.63415     , ...%33     additionally takes a minimum at a surface
- 6.13514     ];   %34     additionally takes a minimum at a surface
+	0           , ...%01
+	48.98425    , ...%02    2 local minima
+	0           , ...%03
+	0           , ...%04
+	0           , ...%05
+	124.36218   , ...%06
+	0           , ...%07
+	8.21487e-03 , ...%08
+	1.127932e-8 , ...%09
+	87.9458     , ...%10
+	0           , ...%11
+	0           , ...%12    a number of local minima
+	0           , ...%13
+	0           , ...%14
+	3.075055e-4 , ...%15    additionally takes local minima on a surface
+	85822.2     , ...%16
+	5.46489e-5  , ...%17    a number of areas of flatness, but the only one minimum
+	0           , ...%18    at least 3 local minima
+	4.01377e-2  , ...%19    a number of local minima /  f'(x(2:4,6:11))=0
+	1.39976e-6  , ...%20
+	0           , ...%21
+	0           , ...%22
+	2.249975e-5 , ...%23
+	9.376293e-6 , ...%24
+	0           , ...%25
+	2.79506e-5  , ...%26     +2 local minima
+	0           , ...%27
+	0           , ...%28
+	0           , ...%29
+	0           , ...%30     a number of local minima (essentially multiextr.)
+	0           , ...%31     at least 3 local minima
+	10          , ...%32
+	4.63415     , ...%33     additionally takes a minimum at a surface
+	6.13514     ];   %34     additionally takes a minimum at a surface
 
 format long;
 
@@ -96,15 +96,15 @@ elseif appr~=0 & appr~=1,    appr=0;
 end
 if nargin<2,    number=0;
 elseif isempty(number) | all(number>34) | number==27
-   disp('Numbers out of the range'); return
+	disp('Numbers out of the range'); return
 end
 
 if nargin<3
-   filename1='unctest.tbl';
-   filename2='unctest.txt';
+	filename1='unctest.tbl';
+	filename2='unctest.txt';
 else,
-   filename1=setstr([filename,'.tbl']);
-   filename2=setstr([filename,'.txt']);
+	filename1=setstr([filename,'.tbl']);
+	filename2=setstr([filename,'.txt']);
 end
 fd=fopen(filename1,'wt');
 ft=fopen(filename2,'wt');
@@ -112,75 +112,75 @@ ft=fopen(filename2,'wt');
 range=[1:26,28:34]; nt=34;
 
 if number==0
- default=1;
+	default=1;
 
-  disp('###################  MOR`E SET OF TEST FUNCTIONS  ##################');
-  disp(' ');
+	disp('###################  MOR`E SET OF TEST FUNCTIONS  ##################');
+	disp(' ');
 
-  % Dialog 1. Enter the number of a test function =========================
+	% Dialog 1. Enter the number of a test function =========================
 
-  k=0; number=-1;
-  while number==-1
-  disp('Enter the number of a test function from the list below or 0 to stop');
-    if k>=nt, k=0; end
-    for  j=k+1:min(k+12,nt),
-         if j~=27, disp(function_strings(j,:));  end
-    end
-    k=k+12;  disp('Press Enter for more...');
-    s=input('>>> ','s');
-    if s=='0',disp('Bye'); fclose(fd); fclose(ft); return, end
-    if ~isempty(s)
-       number=sscanf(s,'%i');
-       if ~any(range==number),number=-1; disp('Not in the range!'); end
-    end
-  end
+	k=0; number=-1;
+	while number==-1
+		disp('Enter the number of a test function from the list below or 0 to stop');
+			if k>=nt, k=0; end
+			for  j=k+1:min(k+12,nt),
+				if j~=27, disp(function_strings(j,:));  end
+			end
+			k=k+12;  disp('Press Enter for more...');
+			s=input('>>> ','s');
+			if s=='0',disp('Bye'); fclose(fd); fclose(ft); return, end
+			if ~isempty(s)
+				number=sscanf(s,'%i');
+			if ~any(range==number),number=-1; disp('Not in the range!'); end
+		end
+	end
 
-  % Initialize a problem data ==============================================
+	% Initialize a problem data ==============================================
 
-  NPROB=number;
-  [NDIM,MDIM,x0]=initf(NPROB);
+	NPROB=number;
+	[NDIM,MDIM,x0]=initf(NPROB);
 
-  % Dialog 2. Enter a starting point =======================================
+	% Dialog 2. Enter a starting point =======================================
 
-   disp('The standard starting point is');
-   disp(sprintf(' %g;',x0));
-   disp('To accept it press Enter');
-   disp(sprintf...
-   ('To start at another one enter the %i coordinates separated by blanks',...
-     NDIM));
-   while 1,
-     s=input('>>> ','s');
-     if isempty(s), break
-     elseif size(s,2)==NDIM, x0=sscanf(s,'%g'); break
-     else,  disp('Wrong number of coordinates. Repeat entering');
-     end
-   end
+	disp('The standard starting point is');
+	disp(sprintf(' %g;',x0));
+	disp('To accept it press Enter');
+	disp(sprintf...
+	('To start at another one enter the %i coordinates separated by blanks',...
+		NDIM));
+	while 1,
+		s=input('>>> ','s');
+		if isempty(s), break
+		elseif size(s,2)==NDIM, x0=sscanf(s,'%g'); break
+		else,  disp('Wrong number of coordinates. Repeat entering');
+		end
+	end
 
-  % Dialog 3. Enter a starting point =======================================
+	% Dialog 3. Enter a starting point =======================================
 
-   disp('Would you like to use analytically calculated gradients? [y]');
-   while 1,
-     s=input('>>> ','s');
-     if isempty(s), appr=0, break
-     elseif s=='y' | s=='Y', appr=0; break
-     elseif s=='n' | s=='N', appr=1; break
-     else, disp('Please, enter "y" or "n"');
-     end
-   end
+	disp('Would you like to use analytically calculated gradients? [y]');
+	while 1,
+		s=input('>>> ','s');
+		if isempty(s), appr=0, break
+		elseif s=='y' | s=='Y', appr=0; break
+		elseif s=='n' | s=='N', appr=1; break
+		else, disp('Please, enter "y" or "n"');
+		end
+	end
 
 %====================================================================
 
 else,  default=0;
- nt=max(size(number)); if nt>1 & nt==size(number,1), number=number'; end
- i=1; while i<=nt,
-        if ~any(range==number(i)),
-           number=[number(1:i-1),number(i+1:nt)]; nt=nt-1;
-        else,  i=i+1;
-        end
-      end
- if nt==0,
-  disp('Numbers out of the range'); fclose(fd); fclose(ft); return
- end
+	nt=max(size(number)); if nt>1 & nt==size(number,1), number=number'; end
+	i=1; while i<=nt,
+		if ~any(range==number(i)),
+			number=[number(1:i-1),number(i+1:nt)]; nt=nt-1;
+		else,  i=i+1;
+		end
+	end
+	if nt==0,
+		disp('Numbers out of the range'); fclose(fd); fclose(ft); return
+	end
 end
 
 if  appr
@@ -194,88 +194,88 @@ nnf=0; nng=0;
 
 for NPROB=number
 
-  if ~default, [NDIM,MDIM,x0]=initf(NPROB); end
-  fun='testf';grad='testg';
-  x=x0; options=soptions;
+	if ~default, [NDIM,MDIM,x0]=initf(NPROB); end
+	fun='testf';grad='testg';
+	x=x0; options=soptions;
 
-  disp(sprintf('\n\n') );          fprintf(ft,'\n\n');
-  disp(function_strings(NPROB,:)); fprintf(ft,'\n%s',function_strings(NPROB,:));
-  disp('Starting Point is:');      fprintf(ft,'\n Starting point:%a');
-  disp(sprintf('%g; ',x0) );       fprintf(ft,'%g; ',x0);
+	disp(sprintf('\n\n') );          fprintf(ft,'\n\n');
+	disp(function_strings(NPROB,:)); fprintf(ft,'\n%s',function_strings(NPROB,:));
+	disp('Starting Point is:');      fprintf(ft,'\n Starting point:%a');
+	disp(sprintf('%g; ',x0) );       fprintf(ft,'%g; ',x0);
 
-  if appr,       [x,f,options]=solvopt(x,fun,[],options);
-  else,          [x,f,options]=solvopt(x,fun,grad,options);
-  end
+	if appr,       [x,f,options]=solvopt(x,fun,[],options);
+	else,          [x,f,options]=solvopt(x,fun,grad,options);
+	end
 
-  if options(9) < 0,  fprintf(ft,'\nABNORMAL TERMINATION. CODE = %i.',options(9));
-  else,               fprintf(ft,'\nNORMAL TERMINATION');    end
+	if options(9) < 0,  fprintf(ft,'\nABNORMAL TERMINATION. CODE = %i.',options(9));
+	else,               fprintf(ft,'\nNORMAL TERMINATION');    end
 
-   fprintf('\nValue of the function at the solution: %22.15g', f);
-   fprintf(ft,'\nValue of the function at the solution: %22.15g', f);
-   fprintf('\nNumber of function evaluations: %i', options(10));
-   fprintf(ft,'\nNumber of function evaluations: %i', options(10));
-   if ~appr
-   fprintf('\nNumber of gradient evaluations: %i', options(11));
-   fprintf(ft,'\nNumber of gradient evaluations: %i', options(11));
-   end
-   fprintf('\nMinimum Point x:');
-   fprintf(ft,'\nMinimum Point x:');
-   fprintf('%22.15g;  ', x);
-   fprintf(ft,'%22.15g;  ', x);
+	fprintf('\nValue of the function at the solution: %22.15g', f);
+	fprintf(ft,'\nValue of the function at the solution: %22.15g', f);
+	fprintf('\nNumber of function evaluations: %i', options(10));
+	fprintf(ft,'\nNumber of function evaluations: %i', options(10));
+	if ~appr
+	fprintf('\nNumber of gradient evaluations: %i', options(11));
+	fprintf(ft,'\nNumber of gradient evaluations: %i', options(11));
+	end
+	fprintf('\nMinimum Point x:');
+	fprintf(ft,'\nMinimum Point x:');
+	fprintf('%22.15g;  ', x);
+	fprintf(ft,'%22.15g;  ', x);
 
-   fmin=function_min_values(NPROB);
+	fmin=function_min_values(NPROB);
 
 %  Special cases
-   if     NPROB==2,
-       fmin02=0;         if abs(f-fmin)>abs(f-fmin02), fmin=fmin02;  end
-   elseif NPROB==6,
-       fmin06=259.58019; if abs(f-fmin)>abs(f-fmin06), fmin=fmin06;  end
-   elseif NPROB==11,
-       fmin11=[.038,.038,.0385,fmin];
-       [df,index]=min(abs(fmin11-[f,f,f,f]));
-       fmin=fmin11(index);
-   elseif NPROB==15,
-       fmin15=[0.00179453906640,fmin];
-       [df,index]=min(abs(fmin15-[f,f]));
-       fmin=fmin15(index);
-   elseif NPROB==18,
-       fmin18=[5.65565e-003,0.30636677262479,fmin];
-       [df,index]=min(abs(fmin18-[f,f,f]));
-       fmin=fmin18(index);
-   elseif NPROB==19,
-       fmin19=[1.78981358688109,26.305657,fmin];
-       [df,index]=min(abs(fmin19-[f,f,f]));
-       fmin=fmin19(index);
-   elseif NPROB==26,
-       fmin26=0;          if abs(f-fmin)>abs(f-fmin26), fmin=fmin26;  end
-   elseif NPROB==30,
-       fmin30=[1.02865203567795,1.36025590473840,1.34953612374127,1.05122618838356,0.71260601731262,0.39737346895853,fmin];
-       [df,index]=min(abs(fmin30-[f,f,f,f,f,f,f]));
-       fmin=fmin30(index);
-   elseif NPROB==31,
-       fmin31=[3.05727843,2.68021992072616,fmin];
-       [df,index]=min(abs(fmin31-[f,f,f]));
-       fmin=fmin31(index);
-   end
+	if     NPROB==2,
+		fmin02=0;         if abs(f-fmin)>abs(f-fmin02), fmin=fmin02;  end
+	elseif NPROB==6,
+		fmin06=259.58019; if abs(f-fmin)>abs(f-fmin06), fmin=fmin06;  end
+	elseif NPROB==11,
+		fmin11=[.038,.038,.0385,fmin];
+		[df,index]=min(abs(fmin11-[f,f,f,f]));
+		fmin=fmin11(index);
+	elseif NPROB==15,
+		fmin15=[0.00179453906640,fmin];
+		[df,index]=min(abs(fmin15-[f,f]));
+		fmin=fmin15(index);
+	elseif NPROB==18,
+		fmin18=[5.65565e-003,0.30636677262479,fmin];
+		[df,index]=min(abs(fmin18-[f,f,f]));
+		fmin=fmin18(index);
+	elseif NPROB==19,
+		fmin19=[1.78981358688109,26.305657,fmin];
+		[df,index]=min(abs(fmin19-[f,f,f]));
+		fmin=fmin19(index);
+	elseif NPROB==26,
+		fmin26=0;          if abs(f-fmin)>abs(f-fmin26), fmin=fmin26;  end
+	elseif NPROB==30,
+		fmin30=[1.02865203567795,1.36025590473840,1.34953612374127,1.05122618838356,0.71260601731262,0.39737346895853,fmin];
+		[df,index]=min(abs(fmin30-[f,f,f,f,f,f,f]));
+		fmin=fmin30(index);
+	elseif NPROB==31,
+		fmin31=[3.05727843,2.68021992072616,fmin];
+		[df,index]=min(abs(fmin31-[f,f,f]));
+		fmin=fmin31(index);
+	end
 
-   if abs(fmin)<eps,  df=abs(f-fmin);
-   else,              df=abs((f-fmin)/fmin);
-   end
+	if abs(fmin)<eps,  df=abs(f-fmin);
+	else,              df=abs((f-fmin)/fmin);
+	end
 
 
-   nnf=nnf+options(10); nng=nng+options(11);
+	nnf=nnf+options(10); nng=nng+options(11);
 
-   if     ~appr
-    fprintf(fd,...
-    '\n%2i:  %13.5e  %13.5e  %13.5e  %5i %5i',...
-    NPROB,f,fmin,df,options(10),options(11));
+	if     ~appr
+		fprintf(fd,...
+		'\n%2i:  %13.5e  %13.5e  %13.5e  %5i %5i',...
+		NPROB,f,fmin,df,options(10),options(11));
 
-   else
-    fprintf(fd,...
-    '\n%2i:  %13.5e  %13.5e  %13.5e  %8i',...
-    NPROB,f,fmin,df,options(10));
+	else
+		fprintf(fd,...
+		'\n%2i:  %13.5e  %13.5e  %13.5e  %8i',...
+		NPROB,f,fmin,df,options(10));
 
-   end
+	end
 
 end
 
