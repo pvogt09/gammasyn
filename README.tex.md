@@ -1685,6 +1685,7 @@ Furthermore, the `objectiveoptions` structure has to be extended by the field `c
 * `round_equations_to_digits`: (`double`, whole number) only for `EXACT` and `APPROXIMATE`: decimal places to which linear equality constraints are rounded in case of numerical precision difficulties. Use `NaN` if no rounding is desired.
 * `weight_coupling`: (`double`, nonnegative) weighting factor for nonlinear coupling conditions to increase/decrease importance in comparison with pole region constraints
 * `weight_prefilter`: (`double`, nonnegative) weighting factor for prefilter regularity condition to increase/decrease importance in comparison with pole region constraints
+* `allowoutputcoupling`: (`logical`) allow output feedback form for coupling control
 
 `gammasyn_couplingcontrol` checks the descriptor matrix $`E`$ to choose between a regular coupling control design and DAE design.
 
