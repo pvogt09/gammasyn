@@ -100,9 +100,9 @@ function [c, ceq, gradc, gradceq, hessc, hessceq] = ceval(R, systems, areafun, w
 	end
 	if GammaCouplingStrategy_needscouplingconditions(options.couplingcontrol.couplingstrategy)
 		if dimensions.hasfeedthrough_coupling
-			number_inputconditions = (dimensions.controls - dimensions.couplingconditions)*(2*(dimensions.states - dimensions.m_invariant) + dimensions.couplingconditions);
+			number_inputconditions = (dimensions.references - dimensions.couplingconditions)*(2*(dimensions.states - dimensions.m_invariant) + dimensions.couplingconditions);
 		else
-			number_inputconditions  = 2*(dimensions.controls - dimensions.couplingconditions)*(dimensions.states - dimensions.m_invariant);
+			number_inputconditions = 2*(dimensions.references - dimensions.couplingconditions)*(dimensions.states - dimensions.m_invariant);
 		end
 		number_outputconditions = 2*dimensions.m_invariant*dimensions.couplingconditions;
 		if options.couplingcontrol.couplingstrategy == GammaCouplingStrategy.NUMERIC_NONLINEAR_EQUALITY
