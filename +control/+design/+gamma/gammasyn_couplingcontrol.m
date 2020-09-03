@@ -74,16 +74,17 @@ function [Ropt, Jopt, information] = gammasyn_couplingcontrol(systems, areafun, 
 	if any(number_states ~= number_states_all(:))
 		error('control:design:gamma:dimensions', 'For coupling controller design, all systems must have same number of states.');
 	end
-	if number_references ~= number_controls
-		error('control:design:gamma:dimensions', 'For coupling controller design, systems must have as many references as controls.');
-	end
-	if number_states ~= number_measurements
-		error('control:design:gamma:dimensions', 'For coupling controller design, all states must be measured.');
+	if ~numeric || ~objectiveoptions.couplingcontrol.allowoutputcoupling || descriptor
+		if number_states ~= number_measurements
+			error('control:design:gamma:dimensions', 'For coupling controller design, all states must be measured.');
+		end
 	end
 	C_dot = systems(1).C_dot;
-	parfor ii = 1:number_models
-		if any(any(systems(ii).C ~= eye(number_states)))
-			error('control:design:gamma:dimensions', 'For coupling controller design, a complete state feedback must be calculated. Matrix C must be eye(%d)', number_states);
+	for ii = 1:number_models %#ok<FORPF> no parfor because of error checking
+		if ~numeric || ~objectiveoptions.couplingcontrol.allowoutputcoupling
+			if any(any(systems(ii).C ~= eye(number_states)))
+				error('control:design:gamma:dimensions', 'For coupling controller design, a complete state feedback must be calculated. Matrix C must be eye(%d)', number_states);
+			end
 		end
 		if any(any(systems(ii).D ~= zeros(number_measurements, number_controls)))
 			error('control:design:gamma:dimensions', 'For coupling controller design, systems must not have measurement feedthrough.');
@@ -259,6 +260,7 @@ function [Ropt, Jopt, information] = gammasyn_couplingcontrol(systems, areafun, 
 
 		number_states_tilde =				number_states_tilde_vec(1);
 		number_controls_tilde =				number_controls_tilde_vec(1);
+		number_measurements_tilde =			number_states_tilde_vec(1);
 		number_references_tilde =			number_references_tilde_vec(1);
 		number_measurements_xdot_tilde =	0;
 
@@ -267,6 +269,7 @@ function [Ropt, Jopt, information] = gammasyn_couplingcontrol(systems, areafun, 
 		systems_tilde =						systems;
 		number_states_tilde =				number_states;
 		number_controls_tilde =				number_controls;
+		number_measurements_tilde =			number_measurements;
 		number_references_tilde =			number_references;
 		number_measurements_xdot_tilde =	0;
 	end
@@ -288,7 +291,7 @@ function [Ropt, Jopt, information] = gammasyn_couplingcontrol(systems, areafun, 
 	K_fixed_A_tilde = reshape(K_fixed_A_tilde, number_controls_tilde, number_measurements_xdot_tilde, number_controls_tilde*number_measurements_xdot_tilde);
 	K_fixed_b_tilde = zeros(number_controls_tilde*number_measurements_xdot_tilde, 1);
 	R_fixed_tilde = {
-		reshape(R_fixed_A_tilde.', number_controls_tilde, number_states_tilde, size(R_fixed_A_tilde, 1)), R_fixed_b_tilde
+		reshape(R_fixed_A_tilde.', number_controls_tilde, number_measurements_tilde, size(R_fixed_A_tilde, 1)), R_fixed_b_tilde
 	};
 	K_fixed_tilde = {
 		K_fixed_A_tilde, K_fixed_b_tilde
@@ -297,7 +300,7 @@ function [Ropt, Jopt, information] = gammasyn_couplingcontrol(systems, areafun, 
 		reshape(F_fixed_A_tilde.', number_controls_tilde, number_references, size(F_fixed_A_tilde, 1)), F_fixed_b_tilde
 	};
 	RKF_fixed_tilde = {
-		reshape(RKF_fixed_A_tilde.', number_controls_tilde, number_states_tilde + number_measurements_xdot_tilde + number_references, size(RKF_fixed_A_tilde, 1)), RKF_fixed_b_tilde
+		reshape(RKF_fixed_A_tilde.', number_controls_tilde, number_measurements_tilde + number_measurements_xdot_tilde + number_references, size(RKF_fixed_A_tilde, 1)), RKF_fixed_b_tilde
 	};
 
 	%% transform R_bounds, F_bounds
@@ -314,7 +317,7 @@ function [Ropt, Jopt, information] = gammasyn_couplingcontrol(systems, areafun, 
 		RKF_bounds_b_tilde = RKF_bounds_b;
 	end
 	R_bounds_tilde = {
-		reshape(R_bounds_A_tilde.', number_controls_tilde, number_states_tilde, size(R_bounds_A_tilde, 1)), R_bounds_b_tilde
+		reshape(R_bounds_A_tilde.', number_controls_tilde, number_measurements_tilde, size(R_bounds_A_tilde, 1)), R_bounds_b_tilde
 	};
 	K_bounds_tilde = { % K is fixed to 0 in any case
 		reshape(K_bounds_A_tilde.', number_controls_tilde, number_measurements_xdot_tilde, size(K_bounds_A_tilde, 1)), K_bounds_b_tilde
@@ -323,7 +326,7 @@ function [Ropt, Jopt, information] = gammasyn_couplingcontrol(systems, areafun, 
 		reshape(F_bounds_A_tilde.', number_controls_tilde, number_references_tilde, size(F_bounds_A_tilde, 1)), F_bounds_b_tilde
 	};
 	RKF_bounds_tilde = {
-		reshape(RKF_bounds_A_tilde.', number_controls_tilde, number_states_tilde + number_measurements_xdot_tilde + number_references_tilde, size(RKF_bounds_A_tilde, 1)), RKF_bounds_b_tilde
+		reshape(RKF_bounds_A_tilde.', number_controls_tilde, number_measurements_tilde + number_measurements_xdot_tilde + number_references_tilde, size(RKF_bounds_A_tilde, 1)), RKF_bounds_b_tilde
 	};
 
 	%% transform R_nonlin
@@ -344,7 +347,7 @@ function [Ropt, Jopt, information] = gammasyn_couplingcontrol(systems, areafun, 
 
 	%% check and transform R_0
 	if nargin <= 4
-		R_0 = zeros(number_controls, number_states);
+		R_0 = zeros(number_controls, number_measurements);
 	end
 	if isa(R_0, 'control.design.gamma.InitialValueElement')
 		R_0 = control.design.gamma.InitialValue(R_0);
@@ -363,15 +366,15 @@ function [Ropt, Jopt, information] = gammasyn_couplingcontrol(systems, areafun, 
 	else
 		number_initials = size(R_0, 3);
 	end
-	if size(R_0, 1) ~= number_controls || size(R_0, 2) ~= number_states
-		error('control:design:gamma:dimensions', 'Initial value for proportional gain must be a %dX%d matrix. Specify third dimension for multiple initial values.', number_controls, number_states);
+	if size(R_0, 1) ~= number_controls || size(R_0, 2) ~= number_measurements
+		error('control:design:gamma:dimensions', 'Initial value for proportional gain must be a %dX%d matrix. Specify third dimension for multiple initial values.', number_controls, number_measurements);
 	end
 	if ~isempty(K_0)
-		if size(K_0, 1) ~= number_states || size(K_0, 2) ~= number_states
-			error('control:design:gamma:dimensions', 'Initial value for differential gain must be a %dX%d matrix. Specify third dimension for multiple initial values.', number_states, number_states);
+		if size(K_0, 1) ~= number_controls || size(K_0, 2) ~= number_measurements_xdot
+			error('control:design:gamma:dimensions', 'Initial value for differential gain must be a %dX%d matrix. Specify third dimension for multiple initial values.', number_controls, number_measurements_xdot);
 		end
 		if any(K_0(:) ~= 0)
-			error('control:design:gamma:input', 'Initial value for differential gain must be empty or a zero %dX%d matrix. Specify third dimension for multiple initial values.', number_states, number_states);
+			error('control:design:gamma:input', 'Initial value for differential gain must be empty or a zero %dX%d matrix. Specify third dimension for multiple initial values.', number_controls, number_measurements_xdot);
 		end
 	end
 	if isempty(F_0)
@@ -424,7 +427,7 @@ function [Ropt, Jopt, information] = gammasyn_couplingcontrol(systems, areafun, 
 		[RF_fixed_tilde, RF_bounds_tilde, valid, message] = coupling_RKF_fixed(systems_tilde, objectiveoptions, solveroptions, descriptor);
 		if ~valid % then abort control design
 			Ropt = {
-				NaN(number_controls, number_states);
+				NaN(number_controls, number_measurements);
 				NaN(number_controls, number_measurements_xdot);
 				NaN(number_controls, number_controls);
 			};
@@ -433,13 +436,13 @@ function [Ropt, Jopt, information] = gammasyn_couplingcontrol(systems, areafun, 
 			information.message = message;
 			return;
 		end
-		R_fixed_tilde_all = cat_RKF_fixed(R_fixed_tilde, RF_fixed_tilde{1});
-		K_fixed_tilde_all = cat_RKF_fixed(K_fixed_tilde, RF_fixed_tilde{2});
-		F_fixed_tilde_all = cat_RKF_fixed(F_fixed_tilde, RF_fixed_tilde{3});
+		R_fixed_tilde_all = cat_RKF_fixed(R_fixed_tilde, RF_fixed_tilde{1}, true);
+		K_fixed_tilde_all = cat_RKF_fixed(K_fixed_tilde, RF_fixed_tilde{2}, true);
+		F_fixed_tilde_all = cat_RKF_fixed(F_fixed_tilde, RF_fixed_tilde{3}, true);
 
-		R_bounds_tilde_all = cat_RKF_fixed(R_bounds_tilde, RF_bounds_tilde{1});
-		K_bounds_tilde_all = cat_RKF_fixed(K_bounds_tilde, RF_bounds_tilde{2});
-		F_bounds_tilde_all = cat_RKF_fixed(F_bounds_tilde, RF_bounds_tilde{3});
+		R_bounds_tilde_all = cat_RKF_fixed(R_bounds_tilde, RF_bounds_tilde{1}, false);
+		K_bounds_tilde_all = cat_RKF_fixed(K_bounds_tilde, RF_bounds_tilde{2}, false);
+		F_bounds_tilde_all = cat_RKF_fixed(F_bounds_tilde, RF_bounds_tilde{3}, false);
 
 		R_fixed_tilde = {
 			R_fixed_tilde_all, K_fixed_tilde_all, F_fixed_tilde_all, RKF_fixed_tilde
@@ -462,7 +465,7 @@ function [Ropt, Jopt, information] = gammasyn_couplingcontrol(systems, areafun, 
 
 	%% transform result back into original coordinates
 	R_tilde = Ropt{1};
-	if size(Ropt, 1) == 3
+	if length(Ropt) == 3
 		K_tilde = Ropt{2};
 		if any(any(K_tilde ~= zeros(number_controls_tilde, number_measurements_xdot_tilde)))
 			error('control:design:gamma:derivative_gain', 'For coupling control design, derivative gain must be zero.');
@@ -712,13 +715,17 @@ function [R_A_tilde, R_b_tilde, K_A_tilde, K_b_tilde, F_A_tilde, F_b_tilde, RKF_
 	end
 end
 
-function [RKF_fixed_tilde_all] = cat_RKF_fixed(RKF_fixed_tilde, RKF_fixed_tilde_coupling)
+function [RKF_fixed_tilde_all] = cat_RKF_fixed(RKF_fixed_tilde, RKF_fixed_tilde_coupling, fixed)
 	%CAT_RKF_fixed concatenate constraint equation systems
 	%	Input:
 	%		RKF_fixed_tilde:			user defined equation system
 	%		RKF_fixed_tilde_coupling:	coupling condition equation system
+	%		fixed:						indicator if fixed constraints are to be handled
 	%	Output:
 	%		RKF_fixed_tilde_all:		combined equation system
+	if nargin <= 2
+		fixed = false;
+	end
 	if isempty(RKF_fixed_tilde)
 		RKF_fixed_tilde = {[], []};
 	end
@@ -730,6 +737,20 @@ function [RKF_fixed_tilde_all] = cat_RKF_fixed(RKF_fixed_tilde, RKF_fixed_tilde_
 			RKF_fixed_tilde{2};
 			RKF_fixed_tilde_coupling{2}
 		]};
+		if fixed
+			[A, b] = convert_hadamard2vectorized(RKF_fixed_tilde_all);
+			rg = rank(A);
+			if rg ~= size(A, 1)
+				if rg == rank([A, b])
+					% if equation system is solvable and has redundant equations, reduce to unique set of equations, else error handling is done later
+					A_rref = rref([A, b]);
+					A = A_rref(1:rg, :);
+					b = A(:, end);
+					A = A(:, 1:end - 1);
+					RKF_fixed_tilde_all = convert_vectorized2hadamard(A, b, [size(RKF_fixed_tilde_all{1}, 1), size(RKF_fixed_tilde_all{1}, 2)]);
+				end
+			end
+		end
 	elseif isempty(RKF_fixed_tilde{1}) && ~isempty(RKF_fixed_tilde_coupling{1})
 		RKF_fixed_tilde_all = RKF_fixed_tilde_coupling;
 	elseif isempty(RKF_fixed_tilde_coupling{1}) && ~isempty(RKF_fixed_tilde{1})

@@ -1,0 +1,87 @@
+    The Solver for Local Nonlinear Optimization Problems
+                   v.1.1, June, 1997
+                   For Use with Matlab
+
+          by Alexei Kuntsevich & Franz Kappel
+
+          Karl-Franzens University of Graz
+          Institute for Mathematics
+          Heinrichstr. 36
+          A-8010 Graz (Austria)
+
+          E-mail: alex@bedvgm.kfunigraz.ac.at
+                  franz.kappel@kfunigraz.ac.at
+
+
+I n s t a l l a t i o n
+
+Instructions for installing toolboxes are found in the section entitled
+"Installing Toolboxes" in the computer specific section of the MATLAB
+User's Guide.
+
+- Create the subdirectories
+ ...matlab\toolbox\solvopt
+ ...matlab\toolbox\solvopt\uncprobs
+- Copy the contents of the installation disk to your hard disk.
+- Add the respective Matlab pathes to the Matlab startup file.
+
+At the third installation step, one has to modify the file MATLABRC.M
+found in the Matlab root directory as follows:
+Find the section starting with
+
+matlabpath([...
+
+and add the following two lines
+
+'c:\matlab\toolbox\solvopt;'...
+'c:\matlab\toolbox\solvopt\uncprobs;'...
+
+The starting substring is to be substituted by the actual path (if it differs).
+
+
+C o n t e n t s   o f   t h e   d i s t r i b u t i o n   d i s k
+
+Programs:
+APPRGRDN.M    is the M-file for the forward difference approximation
+              of a gradient at a point,
+SOLVOPT.M     is the M-file for the optimization routine SolvOpt (SOLver
+              for local nonlinear OPTimization problems),
+SOLVDEMO.M    is a tutorial walk-through,
+SOLVTEST.M    allows minimization of Mor`e test functions,
+SOPTIONS.M    sets the default values for the optional parameters,
+
+Files for supplied test functions:
+INITDUAL.M    returns the standard starting point and sets the values for
+              constant vectors and matrices for the Shell Dual problem,
+INITILL.M     returns the standard starting point and sets the values for
+              constant vectors and matrices for the Ill-conditioned Linear
+              Programming problem,
+INITMAXQ.M    returns the standard starting point and sets the values for
+              constant vectors and matrices for Lemarechal's MaxQuad function,
+DSOBJF.M      returns the value of the objective function at a point for
+              the Shell Dual problem,
+DSOBJG.M      returns the gradient of the objective function at a point for
+              the Shell Dual problem,
+DSCNTF.M      returns the maximal residual of the set of constraints at a 
+              point for the Shell Dual problem,
+DSCNTG.M      returns the gradient of the constraint function with the
+              maximal residual at a point for the Shell Dual problem,
+DUALSHF.M     returns the value of the exact penalty function at a point for
+              the Shell Dual problem,
+DUALSHG.M     returns the gradient of the exact penalty function at a point
+              for the Shell Dual problem,
+ILLCLINF.M    returns the value of the exact penalty function at a point for
+              the Ill-conditioned Linear Programming problem,
+ILLCLING.M    returns the gradient of the exact penalty function at a point
+              for the Ill-conditioned Linear Programming problem,
+MAXQUADF.M    returns the value of Lemarechal's function at a point,
+MAXQUADG.M    returns the gradient of Lemarechal's function at a point,
+SHORF.M       returns the value of Shor's function at a point,
+SHORG.M       returns the gradient of Shor's function at a point,
+TESTF.M       returns the value of the functions at a point for specified
+              UNC-problems,
+TESTG.M       returns the gradient at a point of the functions for specified
+              UNC-problems,
+UNCPROBS      is the directory which contains the M-codes for the smooth
+              functions,
+README        is this file.

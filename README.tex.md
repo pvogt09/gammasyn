@@ -1389,27 +1389,28 @@ The optimizers marked with (*) are included in this repository.
 
 | Optimizer | Constr.  | Obj. | Origin           | Licence | Remark  |
 | ----------- | --- | --- |-------------| ----- | ----|
-| FMINCON        | * |   | Matlab, Optimization Toolbox                        | prop.      |  |
-| FMINCONGLOBAL  | * |   | Matlab, Global Optimization Toolbox                 | prop.      |  |
-| IPOPT          | * |   | https://github.com/coin-or/Ipopt                    | Eclipse Public License 1.0 |  |
-| FMINIMAX       | * | * | Matlab, Optimization Toolbox                        | prop.      |  |
-| FMINUNC        |   |   | Matlab, Optimization Toolbox                        | prop.      |  |
-| FMINUNCGLOBAL  |   |   | Matlab, Global Optimization Toolbox                 | prop.      |  |
-| FMINSEARCH     |   |   | Matlab                                              | prop.      |  |
-| GA             | * | * | Matlab, Global Optimization Toolbox                 | prop.      |  |
-| KSOPT          | * | * | https://github.com/madebr/pyOpt                     | LGPL       |  |
-| NLOPTUNC       |   |   | https://nlopt.readthedocs.io/en/latest/             | MIT Lizenz |  |
-| NLOPTCON       | * |   | https://nlopt.readthedocs.io/en/latest/             | MIT Lizenz |  |
-| NLOPTUNCGLOBAL |   |   | https://nlopt.readthedocs.io/en/latest/             | MIT Lizenz |  |
-| NLOPTCONGLOBAL | * |   | https://nlopt.readthedocs.io/en/latest/             | MIT Lizenz |  |
-| PARTICLESWARM  |   |   | Matlab, Global Optimization Toolbox                 | prop.      |  |
-| PATTERNSEARCH  | * |   | Matlab, Global Optimization Toolbox                 | prop.      |  |
-| SIMULANNEAL    |   |   | Matlab, Global Optimization Toolbox                 | prop.      |  |
-| PPPBOX         |   | * | ?                                                   |            |  |
-| SCBFGS         |   |   | https://coral.ise.lehigh.edu/frankecurtis/software/ | ?          |  |
-| SLPGS          |   |   | https://coral.ise.lehigh.edu/frankecurtis/software/ | ?          |  |
-| SNOPT          | * |   | http://ccom.ucsd.edu/~optimizers/solvers/snopt/     | prop.      |  |
-| SQPGS          |   |   | https://coral.ise.lehigh.edu/frankecurtis/software/ | ?          |  |
+| FMINCON        | * |   | Matlab, Optimization Toolbox                           | prop.      |  |
+| FMINCONGLOBAL  | * |   | Matlab, Global Optimization Toolbox                    | prop.      |  |
+| IPOPT          | * |   | https://github.com/coin-or/Ipopt                       | Eclipse Public License 1.0 |  |
+| FMINIMAX       | * | * | Matlab, Optimization Toolbox                           | prop.      |  |
+| FMINUNC        |   |   | Matlab, Optimization Toolbox                           | prop.      |  |
+| FMINUNCGLOBAL  |   |   | Matlab, Global Optimization Toolbox                    | prop.      |  |
+| FMINSEARCH     |   |   | Matlab                                                 | prop.      |  |
+| GA             | * | * | Matlab, Global Optimization Toolbox                    | prop.      |  |
+| KSOPT          | * | * | https://github.com/madebr/pyOpt                        | LGPL       |  |
+| NLOPTUNC       |   |   | https://nlopt.readthedocs.io/en/latest/                | MIT Lizenz |  |
+| NLOPTCON       | * |   | https://nlopt.readthedocs.io/en/latest/                | MIT Lizenz |  |
+| NLOPTUNCGLOBAL |   |   | https://nlopt.readthedocs.io/en/latest/                | MIT Lizenz |  |
+| NLOPTCONGLOBAL | * |   | https://nlopt.readthedocs.io/en/latest/                | MIT Lizenz |  |
+| PARTICLESWARM  |   |   | Matlab, Global Optimization Toolbox                    | prop.      |  |
+| PATTERNSEARCH  | * |   | Matlab, Global Optimization Toolbox                    | prop.      |  |
+| SIMULANNEAL    |   |   | Matlab, Global Optimization Toolbox                    | prop.      |  |
+| PPPBOX         |   | * | ?                                                      |            |  |
+| SCBFGS         |   |   | https://coral.ise.lehigh.edu/frankecurtis/software/    | ?          |  |
+| SLPGS          |   |   | https://coral.ise.lehigh.edu/frankecurtis/software/    | ?          |  |
+| SNOPT          | * |   | http://ccom.ucsd.edu/~optimizers/solvers/snopt/        | prop.      |  |
+| SOLVOPT        | * |   | https://imsc.uni-graz.at/kuntsevich/solvopt/index.html | freeware   |  |
+| SQPGS          |   |   | https://coral.ise.lehigh.edu/frankecurtis/software/    | ?          |  |
 
 Optimizers which are marked with an asterisk in the column "Constr." support constraint optimization directly.
 For these optimizers, the hard pole region is by default expressed as a constraint.
@@ -1685,6 +1686,7 @@ Furthermore, the `objectiveoptions` structure has to be extended by the field `c
 * `round_equations_to_digits`: (`double`, whole number) only for `EXACT` and `APPROXIMATE`: decimal places to which linear equality constraints are rounded in case of numerical precision difficulties. Use `NaN` if no rounding is desired.
 * `weight_coupling`: (`double`, nonnegative) weighting factor for nonlinear coupling conditions to increase/decrease importance in comparison with pole region constraints
 * `weight_prefilter`: (`double`, nonnegative) weighting factor for prefilter regularity condition to increase/decrease importance in comparison with pole region constraints
+* `allowoutputcoupling`: (`logical`) allow output feedback form for coupling control
 
 `gammasyn_couplingcontrol` checks the descriptor matrix $`E`$ to choose between a regular coupling control design and DAE design.
 

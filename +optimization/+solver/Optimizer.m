@@ -209,6 +209,14 @@ classdef(Enumeration) Optimizer < handle
 			optimization.options.ProblemType.UNCONSTRAINEDMULTI;
 			optimization.options.ProblemType.CONSTRAINEDMULTI
 		], optimization.options.ProblemType.CONSTRAINED, false(2, 1), '', false, 'MaxIter', 'MaxFunEvals', 'TolFun', 'TolCon', 'TolX', [0, 0, 1, 2, 0, 0, 0, 0], 'Display', struct());
+		% solvopt standard settings
+		SOLVOPT('solvopt', 'solvopt', [
+			true,	false,	false,	true;
+			true,	false,	false,	false
+		], 'Algorithm', {'solvopt'}, 'solvopt', [
+			optimization.options.ProblemType.CONSTRAINED;
+			optimization.options.ProblemType.UNCONSTRAINED
+		], optimization.options.ProblemType.CONSTRAINED, false(2, 1), '', false, 'MaxIter', 'MaxFunEvals', 'TolFun', 'TolCon', 'TolX', [0, 0, 1, 2, 0, 0, 0, 0], 'Display', struct());
 	end
 
 	properties(Access=private)

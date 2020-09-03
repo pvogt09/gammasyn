@@ -1,0 +1,121 @@
+A MATLAB Library of Test Functions for Unconstrained Optimization
+	Chaya Gurwitz, Livia Klein, and Madhu Lamba
+
+The More, Garbow and Hillstrom collection of test functions is widely used
+in testing unconstrained optimization software.  The code for these problems
+is available in Fortran from the netlib software archives.
+
+The Fortran routines can be accessed from MATLAB code.  However, we have found 
+debugging to be easier if the test functions are coded in MATLAB.  Accordingly,
+we have "translated" the collection of Fortran code into MATLAB.
+
+This work was done by two undergraduate students at Brooklyn College,
+Livia Klein and Madhu Lamba, under the supervision of Chaya Gurwitz.
+Reports of bugs, or comments, should be sent to gurwitz@sci.brooklyn.cuny.edu.
+
+Problem function files
+-----------------------
+The following files are available (note that the file names are the same as
+those used in the Fortran library, with the .m extension in place of .f):
+
+PROB 1 : ROSENBROCK                     [rosen.m]
+PROB 2 : FREUDENSTEIN AND ROTH          [froth.m]
+PROB 3 : POWELL BADLY SCALED            [badscp.m]
+PROB 4 : BROWN BADLY SCALED             [badscb.m]
+PROB 5 : BEALE                          [beale.m]
+PROB 6 : JENRICH AND SAMPSON            [jensam.m]
+PROB 7 : HELICAL VALLEY                 [helix.m] 
+PROB 8 : BARD                           [bard.m ]
+PROB 9 : GAUSSIAN                       [gauss.m]
+PROB 10: MEYER                          [meyer.m]
+PROB 11: GULF RESEARCH AND DEVELOPMENT  [gulf.m ]
+PROB 12: BOX 3- DIMENSIONAL             [box.m ]
+PROB 13: POWELL SINGULAR                [sing.m]
+PROB 14: WOOD                           [wood.m]
+PROB 15: KOWALIK AND OSBOME             [kowosb.m]
+PROB 16: BROWN AND DENNIS               [bd.m]
+PROB 17: OSBORNE 1                      [osb1.m]
+PROB 18: BIGGS                          [biggs.m]
+PROB 19: OSBORNE 2                      [osb2.m]
+PROB 20: WATSON                         [watson.m]
+PROB 21: EXTENDED RESENBROCK            [rosex.m]
+PROB 22: EXTENDED POWELL SINGULAR       [singx.m]
+PROB 23: PENALTY 1                      [pen1]
+PROB 24: PENALTY 2                      [pen2]
+PROB 25: VARIABLY DIMENSIONAL           [vardim.m] 
+PROB 26: TRIGONOMETRIC                  [trig.m]
+PROB 27: BROWN ALMOST LINEAR 
+PROB 28: DISCRETE BOUNDARY VALUE        [bv.m]
+PROB 29: DISCRETE INTEGRAL EQUATION     [ie.m]
+PROB 30: BROYDEN TRIDIAGONAL            [trid.m]
+PROB 31: BROYDEN BANDED                 [band.m]
+PROB 32: LINEAR - FULL RANK             [lin.m]
+PROB 33: LINEAR - RANK 1                [lin1.m]
+PROB 34: LINEAR - RANK 1 W/0 COL & ROWS [lin0.m]
+
+
+The MATLAB "help" command for each file supplies the calling sequence, 
+problem number, problem dimensions, standard starting point, and minimizer.
+
+The calling sequence differs from the Fortran calling sequence, since 
+parameter passing is different in MATLAB.  For a given function, the
+calling sequence is
+	[fvec, J] = func (n,m,x,option)
+where fvec is the vector (f1(x), f2(x), ... fm(x))T, and J is the Jacobian
+matrix  [ partial f1(x) ]
+        -----------------  i=1,..,m  , j=1, ..., n
+        [ partial xj    ]
+
+option =1  will set fvec only
+	2  will set J only
+	3  will set both fvec and J
+
+
+The function "problems" lists the name and some information associated with 
+the given problem number.  e.g. problems(1) displays
+
+No.	file	n	m	Name
+---	----	-	-	----
+# 1.	ROSE	2	2	Rosenbrock
+
+
+
+Interface files
+---------------
+
+The following files provide an interface from a test program to any of the
+problem files:
+
+1) initf.m
+	function [n,m,x0] = initf(nprob)
+returns the dimensions and standard starting point for the given problem number
+
+2) initpt.m
+	function [n,m,x] = initpt(nprob, factor)
+sets the dimensions and the starting point, by scaling the standard
+starting point by the factor supplied.  (This is analagous to the INITPT
+subroutine in the Fortran library)
+
+3) objfcn.m
+	function f = objfcn(n,m,x,nprob)
+analogous to the Fortran function OBJFCN; returns the objective function
+f(x) = sum from {i=1} to m ( fi (x) ^2 )
+
+3) grdfcn.m
+	function g = grdfcn(n,m,x,nprob)
+analogous to the Fortran GRDFCN; returns the gradient vector.
+
+4) vecfcn.m
+	function fvec = vecfcn(n,m,x,nprob)
+analogous to the Fortran VECFCN; returns the vector (f1(x), f2(x).... fm(x))T
+
+5) vecjac.m
+	function J = vecjac(n,m,x,nprob)
+analogous to the Fortran VECJAC; returns the Jacobian matrix.
+
+6) func.m
+	[fvec,J] = func(n,m,x,nprob,option)
+used internally by objfcn,grdfcn,vecfcn,vecjac to access the appropiate
+test function file with the appropriate option.
+
+

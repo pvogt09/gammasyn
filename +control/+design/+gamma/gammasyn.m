@@ -52,7 +52,7 @@ function [Ropt, Jopt, information] = gammasyn(systems, areafun, weights, R_fixed
 				%	NONE:							to switch the coupling design off (even if complete options are provided)
 				%	NUMERIC_NONLINEAR_EQUALITY:		triggers calculation of coupling conditions as constraints for optimization
 				%	NUMERIC_NONLINEAR_INEQUALITY:	triggers calculation of coupling conditions as constraints for optimization
-				%	all other strategies:			if they are chosen, the coupling problem is solved outside gammasyn. The results influence gammasyn through K_fixed. Thus, gammasyn is executed normally, just with constrained controller matrices.
+				%	all other strategies:			if they are chosen, the coupling problem is solved outside gammasyn. The results influence gammasyn through R_fixed. Thus, gammasyn is executed normally, just with constrained controller matrices.
 				% Number of coupling conditions must always fulfill 0 < number_couplingconditions <= number_references
 				if ~isstruct(objectiveoptions.couplingcontrol)
 					error('control:design:gamma:input', 'Coupling control options must be of type struct.');
@@ -176,8 +176,74 @@ function [Ropt, Jopt, information] = gammasyn(systems, areafun, weights, R_fixed
 		end
 		c = [];
 	elseif solveroptions.ProblemType == optimization.options.ProblemType.CONSTRAINEDMULTI
-		if dimensions_loose.areas_max ~= 0
-			if all(objective_options_loose.type == GammaJType.ZERO)
+		if GammaCouplingStrategy_needscouplingconditions(objective_options_strict.couplingcontrol.couplingstrategy)
+			areafun_coupling = GammaArea.empty();
+			dimensions_coupling = dimensions_strict;
+			dimensions_coupling.area_args = 2*ones(size(areafun_coupling, 1), 1, 'int32');
+			dimensions_coupling.area_parts = int32(size(areafun_coupling, 2));
+			dimensions_coupling.areas_max = int32(size(areafun_coupling, 2));
+			dimensions_coupling.area_hasgrad = true;
+			dimensions_coupling.area_hashess = true;
+			dimensions_coupling.area_parameters = control.design.gamma.area.GammaArea.PARAMETERPROTOTYPEEMPTY;
+			objective_options_coupling = objective_options_strict;
+			objective_options_coupling.couplingcontrol.couplingstrategy = GammaCouplingStrategy.NUMERIC_NONLINEAR_INEQUALITY;
+			remove = GammaJType_isareaobjective(objective_options_coupling.type);
+			objective_options_coupling.type(remove) = [];
+			objective_options_coupling.weight(remove) = [];
+			if all(remove(:)) || all(objective_options_coupling.type(:) == GammaJType.ZERO)
+				if objective_options_loose.usecompiled
+					J = J_dispatcher('constr_multi_mex', needshessian, system, weight_strict, areafun_coupling, dimensions_coupling, objective_options_coupling);
+				else
+					J = J_dispatcher('constr_multi_m', needshessian, system, weight_strict, areafun_coupling, dimensions_coupling, objective_options_coupling);
+				end
+			else
+				if objective_options_loose.usecompiled
+					J = J_dispatcher('constr_multi_gain_mex', needshessian, system, weight_strict, areafun_coupling, dimensions_coupling, objective_options_coupling);
+				else
+					J = J_dispatcher('constr_multi_gain_m', needshessian, system, weight_strict, areafun_coupling, dimensions_coupling, objective_options_coupling);
+				end
+			end
+			if solution_strategy == GammaSolutionStrategy.FEASIBILITYITERATION
+				J_feasibility = J_dispatcher('zero', needshessian, system, weight_strict, areafun_strict, dimensions_strict, objective_options_strict);
+			end
+			if solve_coupling_feasibility
+				J_coupling = J_dispatcher('zero', needshessian, system, weight_strict, areafun_strict, dimensions_strict, objective_options_strict);
+			end
+			dimensions_coupling = dimensions_strict;
+			dimensions_coupling.couplingconditions = int32(0);
+			dimensions_coupling.m_invariant = int32(0);
+			dimensions_coupling.hasfeedthrough_coupling = false;
+			objective_options_coupling = objective_options_strict;
+			objective_options_coupling.couplingcontrol.couplingstrategy = GammaCouplingStrategy.NONE;
+			if objective_options_strict.usecompiled
+				c = c_dispatcher('constr_multi_mex', needshessian, system, weight_strict, areafun_strict, dimensions_coupling, objective_options_coupling, nonlcon);
+			else
+				c = c_dispatcher('constr_multi_m', needshessian, system, weight_strict, areafun_strict, dimensions_coupling, objective_options_coupling, nonlcon);
+			end
+		else
+			if dimensions_loose.areas_max ~= 0
+				if all(objective_options_loose.type == GammaJType.ZERO)
+					J = J_dispatcher('zero', needshessian, system, weight_strict, areafun_strict, dimensions_strict, objective_options_strict);
+					if solution_strategy == GammaSolutionStrategy.FEASIBILITYITERATION
+						J_feasibility = J;
+					end
+					if solve_coupling_feasibility
+						J_coupling = J;
+					end
+				else
+					if isa(areafun_loose, 'GammaArea') && objective_options_loose.usecompiled
+						J = J_dispatcher('constr_multi_mex', needshessian, system, weight_loose, areafun_loose, dimensions_loose, objective_options_loose);
+					else
+						J = J_dispatcher('constr_multi_m', needshessian, system, weight_loose, areafun_loose, dimensions_loose, objective_options_loose);
+					end
+					if solution_strategy == GammaSolutionStrategy.FEASIBILITYITERATION
+						J_feasibility = J_dispatcher('zero', needshessian, system, weight_strict, areafun_strict, dimensions_strict, objective_options_strict);
+					end
+					if solve_coupling_feasibility
+						J_coupling = J_dispatcher('zero', needshessian, system, weight_strict, areafun_strict, dimensions_strict, objective_options_strict);
+					end
+				end
+			else
 				J = J_dispatcher('zero', needshessian, system, weight_strict, areafun_strict, dimensions_strict, objective_options_strict);
 				if solution_strategy == GammaSolutionStrategy.FEASIBILITYITERATION
 					J_feasibility = J;
@@ -185,46 +251,26 @@ function [Ropt, Jopt, information] = gammasyn(systems, areafun, weights, R_fixed
 				if solve_coupling_feasibility
 					J_coupling = J;
 				end
+			end
+			if isa(areafun_strict, 'GammaArea') && objective_options_strict.usecompiled
+				c = c_dispatcher('constr_multi_mex', needshessian, system, weight_strict, areafun_strict, dimensions_strict, objective_options_strict, nonlcon);
 			else
-				if isa(areafun_loose, 'GammaArea') && objective_options_loose.usecompiled
-					J = J_dispatcher('constr_multi_mex', needshessian, system, weight_loose, areafun_loose, dimensions_loose, objective_options_loose);
-				else
-					J = J_dispatcher('constr_multi_m', needshessian, system, weight_loose, areafun_loose, dimensions_loose, objective_options_loose);
-				end
-				if solution_strategy == GammaSolutionStrategy.FEASIBILITYITERATION
-					J_feasibility = J_dispatcher('zero', needshessian, system, weight_strict, areafun_strict, dimensions_strict, objective_options_strict);
-				end
-				if solve_coupling_feasibility
-					J_coupling = J_dispatcher('zero', needshessian, system, weight_strict, areafun_strict, dimensions_strict, objective_options_strict);
-				end
+				c = c_dispatcher('constr_multi_m', needshessian, system, weight_strict, areafun_strict, dimensions_strict, objective_options_strict, nonlcon);
 			end
-		else
-			J = J_dispatcher('zero', needshessian, system, weight_strict, areafun_strict, dimensions_strict, objective_options_strict);
-			if solution_strategy == GammaSolutionStrategy.FEASIBILITYITERATION
-				J_feasibility = J;
-			end
-			if solve_coupling_feasibility
-				J_coupling = J;
-			end
-		end
-		if isa(areafun_strict, 'GammaArea') && objective_options_strict.usecompiled
-			c = c_dispatcher('constr_multi_mex', needshessian, system, weight_strict, areafun_strict, dimensions_strict, objective_options_strict, nonlcon);
-		else
-			c = c_dispatcher('constr_multi_m', needshessian, system, weight_strict, areafun_strict, dimensions_strict, objective_options_strict, nonlcon);
 		end
 		if solve_coupling_feasibility
 			areafun_coupling = GammaArea.empty();
 			dimensions_coupling = dimensions_strict;
-			dimensions_coupling.area_args = 2*ones(size(areafun_coupling, 1), 1);
-			dimensions_coupling.area_parts = size(areafun_coupling, 2);
-			dimensions_coupling.areas_max = size(areafun_coupling, 2);
+			dimensions_coupling.area_args = 2*ones(size(areafun_coupling, 1), 1, 'int32');
+			dimensions_coupling.area_parts = int32(size(areafun_coupling, 2));
+			dimensions_coupling.areas_max = int32(size(areafun_coupling, 2));
 			dimensions_coupling.area_hasgrad = true;
 			dimensions_coupling.area_hashess = true;
 			dimensions_coupling.area_parameters = control.design.gamma.area.GammaArea.PARAMETERPROTOTYPEEMPTY;
 			if objective_options_strict.usecompiled
-				c_coupling = c_dispatcher('constr_mex', needshessian, system, zeros(size(system, 1), 0), areafun_coupling, dimensions_strict, objective_options_strict, nonlcon);
+				c_coupling = c_dispatcher('constr_mex', needshessian, system, zeros(size(system, 1), 0), areafun_coupling, dimensions_coupling, objective_options_strict, nonlcon);
 			else
-				c_coupling = c_dispatcher('constr_m', needshessian, system, zeros(size(system, 1), 0), areafun_coupling, dimensions_strict, objective_options_strict, nonlcon);
+				c_coupling = c_dispatcher('constr_m', needshessian, system, zeros(size(system, 1), 0), areafun_coupling, dimensions_coupling, objective_options_strict, nonlcon);
 			end
 		end
 	elseif solveroptions.ProblemType == optimization.options.ProblemType.UNCONSTRAINEDMULTI
@@ -636,6 +682,42 @@ function [handle] = J_dispatcher(fun, hessian, system, weight, areafun, dimensio
 			J = c_mex_fun_mex(x, system, weight, areafun, dimensions, objective_options);
 		end
 	end
+	function [J, gradJ] = J_constr_multi_gain_m(x)
+		if nargout >= 2
+			[J, ~, gradJ] = control.design.gamma.c(x, system, weight, areafun, dimensions, objective_options);
+			[J_gain, gradJ_gain] = control.design.gamma.J(x, system, weight, areafun, dimensions, objective_options);
+			J = [
+				J;
+				J_gain
+			];
+			gradJ = [
+				gradJ, gradJ_gain
+			];
+		else
+			J = [
+				control.design.gamma.c(x, system, weight, areafun, dimensions, objective_options);
+				control.design.gamma.J(x, system, weight, areafun, dimensions, objective_options)
+			];
+		end
+	end
+	function [J, gradJ] = J_constr_multi_gain_mex(x)
+		if nargout >= 2
+			[J, ~, gradJ] = c_mex_grad_mex(x, system, weight, areafun, dimensions, objective_options);
+			[J_gain, gradJ_gain] = J_mex_grad_mex(x, system, weight, areafun, dimensions, objective_options);
+			J = [
+				J;
+				J_gain
+			];
+			gradJ = [
+				gradJ, gradJ_gain
+			];
+		else
+			J = [
+				c_mex_fun_mex(x, system, weight, areafun, dimensions, objective_options);
+				J_mex_fun_mex(x, system, weight, areafun, dimensions, objective_options)
+			];
+		end
+	end
 	function [J, gradJ] = J_unconstr_multi_m(x)
 		if nargout >= 2
 			[J, ~, gradJ] = control.design.gamma.c(x, system, weight, areafun, dimensions, objective_options);
@@ -685,6 +767,10 @@ function [handle] = J_dispatcher(fun, hessian, system, weight, areafun, dimensio
 			handle = @J_constr_multi_m;
 		case {'constr_multi_mex'}
 			handle = @J_constr_multi_mex;
+		case {'constr_multi_gain_m'}
+			handle = @J_constr_multi_gain_m;
+		case {'constr_multi_gain_mex'}
+			handle = @J_constr_multi_gain_mex;
 		case {'unconstr_multi_m'}
 			handle = @J_unconstr_multi_m;
 		case {'unconstr_multi_mex'}
