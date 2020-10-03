@@ -14,6 +14,11 @@ It works with continuous time and discrete time systems.
 
 This documentation assumes a basic knowledge of control systems and the concept of pole placement.
 
+The accompanying publication can be found at https://doi.org/10.1515/auto-2020-0078 and can be cited as:
+```
+Vogt, P., Lenz, E., and Konigorski, U. (2020). gammasyn – eine Toolbox zur robusten Polbereichsvorgabe mittels beschränkter Optimierung und Straffunktionen, at - Automatisierungstechnik, 68(10), 893-904
+```
+
 
 
 ### Pole region assignment
@@ -1732,3 +1737,21 @@ For the exponential loss function the weights might be increased over multiple s
 GNU Lesser General Public License Version 3.0
 
 Patrick Vogt
+
+## Citation
+The toolbox can be cited with the following Bibtex entry:
+```
+@article{VOGT2020,
+	author		= {Vogt, Patrick and Lenz, Eric and Konigorski, Ulrich},
+	title		= {\texttt{gammasyn} – eine Toolbox zur robusten Polbereichsvorgabe mittels beschränkter Optimierung und Straf"|funktionen},
+	journal		= {at - Automatisierungstechnik},
+	year		= {2020},
+	publisher	= {De Gruyter},
+	address		= {Berlin, Boston},
+	volume		= {68},
+	number		= {10},
+	doi			= {10.1515/auto-2020-0078},
+	issn		= {0178-2312},
+	pages		= {893–-904}
+}
+```
