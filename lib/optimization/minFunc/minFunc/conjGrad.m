@@ -1,4 +1,4 @@
-function [x,k,res,negCurv] = cg(A,b,optTol,maxIter,verbose,precFunc,precArgs,matrixVectFunc,matrixVectArgs)
+function [x,k,res,negCurv] = conjGrad(A,b,optTol,maxIter,verbose,precFunc,precArgs,matrixVectFunc,matrixVectArgs)
 % [x,k,res,negCurv] =
 % cg(A,b,optTol,maxIter,verbose,precFunc,precArgs,matrixVectFunc,matrixVect
 % Args)

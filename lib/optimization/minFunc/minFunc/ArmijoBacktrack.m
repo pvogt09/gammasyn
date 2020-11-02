@@ -32,6 +32,8 @@ function [t,x_new,f_new,g_new,funEvals,H] = ArmijoBacktrack(...
 % Evaluate the Objective and Gradient at the Initial Step
 if nargout == 6
 	[f_new,g_new,H] = funObj(x + t*d,varargin{:});
+elseif LS_interp == 0
+	f_new = funObj(x+t*d,varargin{:});
 else
 	[f_new,g_new] = funObj(x+t*d,varargin{:});
 end
@@ -111,6 +113,8 @@ while f_new > fr + c1*t*gtd || ~isLegal(f_new)
 
 	if ~saveHessianComp && nargout == 6
 		[f_new,g_new,H] = funObj(x + t*d,varargin{:});
+	elseif LS_interp == 0
+		f_new = funObj(x+t*d,varargin{:});
 	else
 		[f_new,g_new] = funObj(x + t*d,varargin{:});
 	end
@@ -126,6 +130,11 @@ while f_new > fr + c1*t*gtd || ~isLegal(f_new)
 		g_new = g;
 		break;
 	end
+end
+
+if LS_interp == 0
+	[f_new,g_new] = funObj(x + t*d,varargin{:});
+	funEvals = funEvals+1;
 end
 
 % Evaluate Hessian at new point
