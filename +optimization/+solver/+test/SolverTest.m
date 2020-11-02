@@ -603,8 +603,16 @@ function [pass] = SolverTest(~)
 											if solvers(ii, 1) == optimization.solver.Optimizer.IPOPT && (~hasfungrad || ~hascongrad)
 												continue;
 											end
+											if solvers(ii, 1) == optimization.solver.Optimizer.MINFUNC && ~hasfungrad
+												continue;
+											end
+											if solvers(ii, 1) == optimization.solver.Optimizer.MINFUNC
+												if ~hasfunhess && any(strcmpi(algorithms{1, jj}, {'mnewton', 'newton'}))
+													continue;
+												end
+											end
 											if (hasfunhess || hasconhess) && ~solvers(ii, 1).getHessianSupport()
-												continue
+												continue;
 											end
 											if ~isfunctionhandle(J)
 												error('optimization:solver:test', 'Undefined objective function type.');
