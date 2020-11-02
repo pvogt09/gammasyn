@@ -15,7 +15,7 @@ function [d] = lbfgs(g,s,y,Hdiag)
 [p,k] = size(s);
 
 for i = 1:k
-    ro(i,1) = 1/(y(:,i)'*s(:,i));
+	ro(i,1) = 1/(y(:,i)'*s(:,i));
 end
 
 q = zeros(p,k+1);
@@ -26,15 +26,15 @@ be =zeros(k,1);
 q(:,k+1) = g;
 
 for i = k:-1:1
-    al(i) = ro(i)*s(:,i)'*q(:,i+1);
-    q(:,i) = q(:,i+1)-al(i)*y(:,i);
+	al(i) = ro(i)*s(:,i)'*q(:,i+1);
+	q(:,i) = q(:,i+1)-al(i)*y(:,i);
 end
 
 % Multiply by Initial Hessian
 r(:,1) = Hdiag*q(:,1);
 
 for i = 1:k
-    be(i) = ro(i)*y(:,i)'*r(:,i);
-    r(:,i+1) = r(:,i) + s(:,i)*(al(i)-be(i));
+	be(i) = ro(i)*y(:,i)'*r(:,i);
+	r(:,i+1) = r(:,i) + s(:,i)*(al(i)-be(i));
 end
 d=r(:,k+1);

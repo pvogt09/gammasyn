@@ -9,7 +9,7 @@ sig = 1./(1+exp(-y.*(X*w)));
 % Compute diagonals of Hessian
 sig = sig.*(1-sig);
 for i = 1:length(w)
-   h(i,1) = (sig.*X(:,i))'*X(:,i);
+	h(i,1) = (sig.*X(:,i))'*X(:,i);
 end
 
 % Apply preconditioner

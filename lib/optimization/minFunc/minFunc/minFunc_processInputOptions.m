@@ -1,11 +1,11 @@
 
 function [verbose,verboseI,debug,doPlot,maxFunEvals,maxIter,optTol,progTol,method,...
-    corrections,c1,c2,LS_init,cgSolve,qnUpdate,cgUpdate,initialHessType,...
-    HessianModify,Fref,useComplex,numDiff,LS_saveHessianComp,...
-    Damped,HvFunc,bbType,cycle,...
-    HessianIter,outputFcn,useMex,useNegCurv,precFunc,...
-    LS_type,LS_interp,LS_multi,DerivativeCheck] = ...
-    minFunc_processInputOptions(o)
+	corrections,c1,c2,LS_init,cgSolve,qnUpdate,cgUpdate,initialHessType,...
+	HessianModify,Fref,useComplex,numDiff,LS_saveHessianComp,...
+	Damped,HvFunc,bbType,cycle,...
+	HessianIter,outputFcn,useMex,useNegCurv,precFunc,...
+	LS_type,LS_interp,LS_multi,DerivativeCheck] = ...
+	minFunc_processInputOptions(o)
 
 % Constants
 SD = 0;
@@ -29,34 +29,34 @@ cgSolve = 0;
 o = toUpper(o);
 
 if isfield(o,'DISPLAY')
-    switch(upper(o.DISPLAY))
-        case 0
-            verbose = 0;
-            verboseI = 0;
-        case 'FINAL'
-            verboseI = 0;
-        case 'OFF'
-            verbose = 0;
-            verboseI = 0;
-        case 'NONE'
-            verbose = 0;
-            verboseI = 0;
-        case 'FULL'
-            debug = 1;
-        case 'EXCESSIVE'
-            debug = 1;
-            doPlot = 1;
-    end
+	switch(upper(o.DISPLAY))
+		case 0
+			verbose = 0;
+			verboseI = 0;
+		case 'FINAL'
+			verboseI = 0;
+		case 'OFF'
+			verbose = 0;
+			verboseI = 0;
+		case 'NONE'
+			verbose = 0;
+			verboseI = 0;
+		case 'FULL'
+			debug = 1;
+		case 'EXCESSIVE'
+			debug = 1;
+			doPlot = 1;
+	end
 end
 
 DerivativeCheck = 0;
 if isfield(o,'DERIVATIVECHECK')
-    switch(upper(o.DERIVATIVECHECK))
-        case 1
-            DerivativeCheck = 1;
-        case 'ON'
-            DerivativeCheck = 1;
-    end
+	switch(upper(o.DERIVATIVECHECK))
+		case 1
+			DerivativeCheck = 1;
+		case 'ON'
+			DerivativeCheck = 1;
+	end
 end
 
 LS_init = 0;
@@ -68,50 +68,50 @@ Damped = 0;
 HessianIter = 1;
 c2 = 0.9;
 if isfield(o,'METHOD')
-    m = upper(o.METHOD);
-    switch(m)
-        case 'TENSOR'
-            method = TENSOR;
-        case 'NEWTON'
-            method = NEWTON;
-        case 'MNEWTON'
-            method = NEWTON;
-            HessianIter = 5;
-        case 'PNEWTON0'
-            method = NEWTON0;
-            cgSolve = 1;
-        case 'NEWTON0'
-            method = NEWTON0;
-        case 'QNEWTON'
-            method = QNEWTON;
-            Damped = 1;
-        case 'LBFGS'
-            method = LBFGS;
-        case 'BB'
-            method = BB;
-            LS_type = 0;
-            Fref = 20;
-        case 'PCG'
-            method = PCG;
-            c2 = 0.2;
-            LS_init = 2;
-        case 'SCG'
-            method = CG;
-            c2 = 0.2;
-            LS_init = 4;
-        case 'CG'
-            method = CG;
-            c2 = 0.2;
-            LS_init = 2;
-        case 'CSD'
-            method = CSD;
-            c2 = 0.2;
-            Fref = 10;
-            LS_init = 2;
-        case 'SD'
-            method = SD;
-            LS_init = 2;
-    end
+	m = upper(o.METHOD);
+	switch(m)
+		case 'TENSOR'
+			method = TENSOR;
+		case 'NEWTON'
+			method = NEWTON;
+		case 'MNEWTON'
+			method = NEWTON;
+			HessianIter = 5;
+		case 'PNEWTON0'
+			method = NEWTON0;
+			cgSolve = 1;
+		case 'NEWTON0'
+			method = NEWTON0;
+		case 'QNEWTON'
+			method = QNEWTON;
+			Damped = 1;
+		case 'LBFGS'
+			method = LBFGS;
+		case 'BB'
+			method = BB;
+			LS_type = 0;
+			Fref = 20;
+		case 'PCG'
+			method = PCG;
+			c2 = 0.2;
+			LS_init = 2;
+		case 'SCG'
+			method = CG;
+			c2 = 0.2;
+			LS_init = 4;
+		case 'CG'
+			method = CG;
+			c2 = 0.2;
+			LS_init = 2;
+		case 'CSD'
+			method = CSD;
+			c2 = 0.2;
+			Fref = 10;
+			LS_init = 2;
+		case 'SD'
+			method = SD;
+			LS_init = 2;
+	end
 end
 
 maxFunEvals = getOpt(o,'MAXFUNEVALS',1000);
@@ -148,21 +148,21 @@ end
 
 function [v] = getOpt(options,opt,default)
 if isfield(options,opt)
-    if ~isempty(getfield(options,opt))
-        v = getfield(options,opt);
-    else
-        v = default;
-    end
+	if ~isempty(getfield(options,opt))
+		v = getfield(options,opt);
+	else
+		v = default;
+	end
 else
-    v = default;
+	v = default;
 end
 end
 
 function [o] = toUpper(o)
 if ~isempty(o)
-    fn = fieldnames(o);
-    for i = 1:length(fn)
-        o = setfield(o,upper(fn{i}),getfield(o,fn{i}));
-    end
+	fn = fieldnames(o);
+	for i = 1:length(fn)
+		o = setfield(o,upper(fn{i}),getfield(o,fn{i}));
+	end
 end
 end

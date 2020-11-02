@@ -6,9 +6,9 @@ Y = old_stps(:,2:end);
 k = size(Y,2);
 L = zeros(k);
 for j = 1:k
-    for i = j+1:k
-        L(i,j) = S(:,i)'*Y(:,j);
-    end
+	for i = j+1:k
+		L(i,j) = S(:,i)'*Y(:,j);
+	end
 end
 D = diag(diag(S'*Y));
 N = [S/Hdiag Y];
@@ -20,23 +20,23 @@ sBs = s'*Bs;
 
 eta = .02;
 if ys < eta*sBs
-    if debug
-        fprintf('Damped Update\n');
-    end
-    theta = min(max(0,((1-eta)*sBs)/(sBs - ys)),1);
-    y = theta*y + (1-theta)*Bs;
+	if debug
+		fprintf('Damped Update\n');
+	end
+	theta = min(max(0,((1-eta)*sBs)/(sBs - ys)),1);
+	y = theta*y + (1-theta)*Bs;
 end
 
 
 numCorrections = size(old_dirs,2);
 if numCorrections < corrections
-    % Full Update
-    old_dirs(:,numCorrections+1) = s;
-    old_stps(:,numCorrections+1) = y;
+	% Full Update
+	old_dirs(:,numCorrections+1) = s;
+	old_stps(:,numCorrections+1) = y;
 else
-    % Limited-Memory Update
-    old_dirs = [old_dirs(:,2:corrections) s];
-    old_stps = [old_stps(:,2:corrections) y];
+	% Limited-Memory Update
+	old_dirs = [old_dirs(:,2:corrections) s];
+	old_stps = [old_stps(:,2:corrections) y];
 end
 
 % Update scale of initial Hessian approximation

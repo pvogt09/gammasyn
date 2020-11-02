@@ -17,16 +17,16 @@ function [x,f,exitflag,output] = minFunc(funObj,x0,options,varargin)
 %   - 'cg': Non-Linear Conjugate Gradient
 %       (uses only previous step and a vector beta)
 %   - 'scg': Scaled Non-Linear Conjugate Gradient
-%       (uses previous step and a vector beta, 
+%       (uses previous step and a vector beta,
 %           and Hessian-vector products to initialize line search)
 %   - 'pcg': Preconditionined Non-Linear Conjugate Gradient
 %       (uses only previous step and a vector beta, preconditioned version)
 %   - 'lbfgs': Quasi-Newton with Limited-Memory BFGS Updating
-%       (default: uses a predetermined nunber of previous steps to form a 
+%       (default: uses a predetermined nunber of previous steps to form a
 %           low-rank Hessian approximation)
 %   - 'newton0': Hessian-Free Newton
 %       (numerically computes Hessian-Vector products)
-%   - 'pnewton0': Preconditioned Hessian-Free Newton 
+%   - 'pnewton0': Preconditioned Hessian-Free Newton
 %       (numerically computes Hessian-Vector products, preconditioned
 %       version)
 %   - 'qnewton': Quasi-Newton Hessian approximation
@@ -106,7 +106,7 @@ function [x,f,exitflag,output] = minFunc(funObj,x0,options,varargin)
 %       (20 for bb, 10 for csd, 1 for all others)
 %   numDiff - [ 0 | 1 | 2] compute derivatives using user-supplied function (0),
 %       numerically user forward-differencing (1), or numerically using central-differencing (2)
-%       (default: 0) 
+%       (default: 0)
 %       (this option has a different effect for 'newton', see below)
 %   useComplex - if 1, use complex differentials if computing numerical derivatives
 %       to get very accurate values (default: 0)
@@ -156,7 +156,7 @@ function [x,f,exitflag,output] = minFunc(funObj,x0,options,varargin)
 %           1: SR1 (when it is positive-definite, otherwise BFGS)
 %           2: Hoshino
 %           3: Self-Scaling BFGS
-%           4: Oren's Self-Scaling Variable Metric method 
+%           4: Oren's Self-Scaling Variable Metric method
 %           5: McCormick-Huang asymmetric update
 %       Damped - use damped BFGS update (default: 1)
 %   newton0/pnewton0:
@@ -184,7 +184,7 @@ function [x,f,exitflag,output] = minFunc(funObj,x0,options,varargin)
 %           1: Polak-Ribiere
 %           2: Hestenes-Stiefel (not supported for pcg)
 %           3: Gilbert-Nocedal
-%       HvFunc (for scg only)- user-supplied function that returns Hessian-vector 
+%       HvFunc (for scg only)- user-supplied function that returns Hessian-vector
 %           products
 %           (by default, these are computed numerically using autoHv)
 %           HvFunc should have the following interface:
@@ -232,17 +232,17 @@ function [x,f,exitflag,output] = minFunc(funObj,x0,options,varargin)
 %   Applied Mathematics.  SIAM.
 
 if nargin < 3
-    options = [];
+	options = [];
 end
 
 % Get Parameters
 [verbose,verboseI,debug,doPlot,maxFunEvals,maxIter,optTol,progTol,method,...
-    corrections,c1,c2,LS_init,cgSolve,qnUpdate,cgUpdate,initialHessType,...
-    HessianModify,Fref,useComplex,numDiff,LS_saveHessianComp,...
-    Damped,HvFunc,bbType,cycle,...
-    HessianIter,outputFcn,useMex,useNegCurv,precFunc,...
-    LS_type,LS_interp,LS_multi,checkGrad] = ...
-    minFunc_processInputOptions(options);
+	corrections,c1,c2,LS_init,cgSolve,qnUpdate,cgUpdate,initialHessType,...
+	HessianModify,Fref,useComplex,numDiff,LS_saveHessianComp,...
+	Damped,HvFunc,bbType,cycle,...
+	HessianIter,outputFcn,useMex,useNegCurv,precFunc,...
+	LS_type,LS_interp,LS_multi,checkGrad] = ...
+	minFunc_processInputOptions(options);
 
 % Constants
 SD = 0;
@@ -270,52 +270,52 @@ else
 	numDiffType = numDiff;
 end
 if numDiff && method ~= TENSOR
-    varargin(3:end+2) = varargin(1:end);
+	varargin(3:end+2) = varargin(1:end);
 	varargin{1} = numDiffType;
 	varargin{2} = funObj;
-    if method ~= NEWTON
-        if debug
-            if useComplex
-                fprintf('Using complex differentials for gradient computation\n');
+	if method ~= NEWTON
+		if debug
+			if useComplex
+				fprintf('Using complex differentials for gradient computation\n');
 			else
-                fprintf('Using finite differences for gradient computation\n');
-            end
-        end
-        funObj = @autoGrad;
-    else
-        if debug
-            if useComplex
-                fprintf('Using complex differentials for Hessian computation\n');
-            else
-                fprintf('Using finite differences for Hessian computation\n');
-            end
-        end
-        funObj = @autoHess;
-    end
+				fprintf('Using finite differences for gradient computation\n');
+			end
+		end
+		funObj = @autoGrad;
+	else
+		if debug
+			if useComplex
+				fprintf('Using complex differentials for Hessian computation\n');
+			else
+				fprintf('Using finite differences for Hessian computation\n');
+			end
+		end
+		funObj = @autoHess;
+	end
 
-    if method == NEWTON0 && useComplex == 1
-        if debug
-            fprintf('Turning off the use of complex differentials for Hessian-vector products\n');
-        end
-        useComplex = 0;
-    end
+	if method == NEWTON0 && useComplex == 1
+		if debug
+			fprintf('Turning off the use of complex differentials for Hessian-vector products\n');
+		end
+		useComplex = 0;
+	end
 
-    if useComplex
-        funEvalMultiplier = p;
+	if useComplex
+		funEvalMultiplier = p;
 	elseif numDiff == 2
 		funEvalMultiplier = 2*p;
 	else
-        funEvalMultiplier = p+1;
-    end
+		funEvalMultiplier = p+1;
+	end
 end
 
 % Evaluate Initial Point
 if method < NEWTON
-    [f,g] = funObj(x,varargin{:});
-    computeHessian = 0;
+	[f,g] = funObj(x,varargin{:});
+	computeHessian = 0;
 else
-    [f,g,H] = funObj(x,varargin{:});
-    computeHessian = 1;
+	[f,g,H] = funObj(x,varargin{:});
+	computeHessian = 1;
 end
 funEvals = 1;
 
@@ -333,7 +333,7 @@ end
 
 % Output Log
 if verboseI
-    fprintf('%10s %10s %15s %15s %15s\n','Iteration','FunEvals','Step Length','Function Val','Opt Cond');
+	fprintf('%10s %10s %15s %15s %15s\n','Iteration','FunEvals','Step Length','Function Val','Opt Cond');
 end
 
 % Compute optimality of initial point
@@ -348,21 +348,21 @@ end
 
 % Exit if initial point is optimal
 if optCond <= optTol
-    exitflag=1;
-    msg = 'Optimality Condition below optTol';
-    if verbose
-        fprintf('%s\n',msg);
-    end
-    if nargout > 3
-        output = struct('iterations',0,'funcCount',1,...
-            'algorithm',method,'firstorderopt',max(abs(g)),'message',msg,'trace',trace);
-    end
-    return;
+	exitflag=1;
+	msg = 'Optimality Condition below optTol';
+	if verbose
+		fprintf('%s\n',msg);
+	end
+	if nargout > 3
+		output = struct('iterations',0,'funcCount',1,...
+			'algorithm',method,'firstorderopt',max(abs(g)),'message',msg,'trace',trace);
+	end
+	return;
 end
 
 % Output Function
 if ~isempty(outputFcn)
-    stop = outputFcn(x,'init',0,funEvals,f,[],[],g,[],max(abs(g)),varargin{:});
+	stop = outputFcn(x,'init',0,funEvals,f,[],[],g,[],max(abs(g)),varargin{:});
 	if stop
 		exitflag=-1;
 		msg = 'Stopped by output function';
@@ -380,111 +380,111 @@ end
 % Perform up to a maximum of 'maxIter' descent steps:
 for i = 1:maxIter
 
-    % ****************** COMPUTE DESCENT DIRECTION *****************
+	% ****************** COMPUTE DESCENT DIRECTION *****************
 
-    switch method
-        case SD % Steepest Descent
-            d = -g;
+	switch method
+		case SD % Steepest Descent
+			d = -g;
 
-        case CSD % Cyclic Steepest Descent
+		case CSD % Cyclic Steepest Descent
 
-            if mod(i,cycle) == 1 % Use Steepest Descent
-                alpha = 1;
-                LS_init = 2;
-                LS_type = 1; % Wolfe line search
-            elseif mod(i,cycle) == mod(1+1,cycle) % Use Previous Step
-                alpha = t;
-                LS_init = 0;
-                LS_type = 0; % Armijo line search
-            end
-            d = -alpha*g;
+			if mod(i,cycle) == 1 % Use Steepest Descent
+				alpha = 1;
+				LS_init = 2;
+				LS_type = 1; % Wolfe line search
+			elseif mod(i,cycle) == mod(1+1,cycle) % Use Previous Step
+				alpha = t;
+				LS_init = 0;
+				LS_type = 0; % Armijo line search
+			end
+			d = -alpha*g;
 
-        case BB % Steepest Descent with Barzilai and Borwein Step Length
+		case BB % Steepest Descent with Barzilai and Borwein Step Length
 
-            if i == 1
-                d = -g;
-            else
-                y = g-g_old;
-                s = t*d;
-                if bbType == 0
-                    yy = y'*y;
-                    alpha = (s'*y)/(yy);
-                    if alpha <= 1e-10 || alpha > 1e10
-                        alpha = 1;
-                    end
-                elseif bbType == 1
-                    sy = s'*y;
-                    alpha = (s'*s)/sy;
-                    if alpha <= 1e-10 || alpha > 1e10
-                        alpha = 1;
-                    end
-                elseif bbType == 2 % Conic Interpolation ('Modified BB')
-                    sy = s'*y;
-                    ss = s'*s;
-                    alpha = ss/sy;
-                    if alpha <= 1e-10 || alpha > 1e10
-                        alpha = 1;
-                    end
-                    alphaConic = ss/(6*(myF_old - f) + 4*g'*s + 2*g_old'*s);
-                    if alphaConic > .001*alpha && alphaConic < 1000*alpha
-                        alpha = alphaConic;
-                    end
-                elseif bbType == 3 % Gradient Method with retards (bb type 1, random selection of previous step)
-                    sy = s'*y;
-                    alpha = (s'*s)/sy;
-                    if alpha <= 1e-10 || alpha > 1e10
-                        alpha = 1;
-                    end
-                    v(1+mod(i-2,5)) = alpha;
-                    alpha = v(ceil(rand*length(v)));
-                end
-                d = -alpha*g;
-            end
-            g_old = g;
-            myF_old = f;
+			if i == 1
+				d = -g;
+			else
+				y = g-g_old;
+				s = t*d;
+				if bbType == 0
+					yy = y'*y;
+					alpha = (s'*y)/(yy);
+					if alpha <= 1e-10 || alpha > 1e10
+						alpha = 1;
+					end
+				elseif bbType == 1
+					sy = s'*y;
+					alpha = (s'*s)/sy;
+					if alpha <= 1e-10 || alpha > 1e10
+						alpha = 1;
+					end
+				elseif bbType == 2 % Conic Interpolation ('Modified BB')
+					sy = s'*y;
+					ss = s'*s;
+					alpha = ss/sy;
+					if alpha <= 1e-10 || alpha > 1e10
+						alpha = 1;
+					end
+					alphaConic = ss/(6*(myF_old - f) + 4*g'*s + 2*g_old'*s);
+					if alphaConic > .001*alpha && alphaConic < 1000*alpha
+						alpha = alphaConic;
+					end
+				elseif bbType == 3 % Gradient Method with retards (bb type 1, random selection of previous step)
+					sy = s'*y;
+					alpha = (s'*s)/sy;
+					if alpha <= 1e-10 || alpha > 1e10
+						alpha = 1;
+					end
+					v(1+mod(i-2,5)) = alpha;
+					alpha = v(ceil(rand*length(v)));
+				end
+				d = -alpha*g;
+			end
+			g_old = g;
+			myF_old = f;
 
 
-        case CG % Non-Linear Conjugate Gradient
+		case CG % Non-Linear Conjugate Gradient
 
-            if i == 1
-                d = -g; % Initially use steepest descent direction
-            else
-                gotgo = g_old'*g_old;
+			if i == 1
+				d = -g; % Initially use steepest descent direction
+			else
+				gotgo = g_old'*g_old;
 
-                if cgUpdate == 0
-                    % Fletcher-Reeves
-                    beta = (g'*g)/(gotgo);
-                elseif cgUpdate == 1
-                    % Polak-Ribiere
-                    beta = (g'*(g-g_old)) /(gotgo);
-                elseif cgUpdate == 2
-                    % Hestenes-Stiefel
-                    beta = (g'*(g-g_old))/((g-g_old)'*d);
-                else
-                    % Gilbert-Nocedal
-                    beta_FR = (g'*(g-g_old)) /(gotgo);
-                    beta_PR = (g'*g-g'*g_old)/(gotgo);
-                    beta = max(-beta_FR,min(beta_PR,beta_FR));
-                end
+				if cgUpdate == 0
+					% Fletcher-Reeves
+					beta = (g'*g)/(gotgo);
+				elseif cgUpdate == 1
+					% Polak-Ribiere
+					beta = (g'*(g-g_old)) /(gotgo);
+				elseif cgUpdate == 2
+					% Hestenes-Stiefel
+					beta = (g'*(g-g_old))/((g-g_old)'*d);
+				else
+					% Gilbert-Nocedal
+					beta_FR = (g'*(g-g_old)) /(gotgo);
+					beta_PR = (g'*g-g'*g_old)/(gotgo);
+					beta = max(-beta_FR,min(beta_PR,beta_FR));
+				end
 
-                d = -g + beta*d;
+				d = -g + beta*d;
 
-                % Restart if not a direction of sufficient descent
-                if g'*d > -progTol
-                    if debug
-                        fprintf('Restarting CG\n');
-                    end
-                    beta = 0;
-                    d = -g;
-                end
+				% Restart if not a direction of sufficient descent
+				if g'*d > -progTol
+					if debug
+						fprintf('Restarting CG\n');
+					end
+					beta = 0;
+					d = -g;
+				end
 
-                % Old restart rule:
-                %if beta < 0 || abs(gtgo)/(gotgo) >= 0.1 || g'*d >= 0
+				% Old restart rule:
+				%if beta < 0 || abs(gtgo)/(gotgo) >= 0.1 || g'*d >= 0
 
-            end
-            g_old = g;
+			end
+			g_old = g;
 
-        case PCG % Preconditioned Non-Linear Conjugate Gradient
+		case PCG % Preconditioned Non-Linear Conjugate Gradient
 
 			% Apply preconditioner to negative gradient
 			if isempty(precFunc)
@@ -511,11 +511,11 @@ for i = 1:maxIter
 			else % User-supplied preconditioner
 				s = precFunc(-g,x,varargin{:});
 			end
-			
+
 			if i == 1
 				d = s;
 			else
-				
+
 				if cgUpdate == 0
 					% Preconditioned Fletcher-Reeves
 					beta = (g'*s)/(g_old'*s_old);
@@ -523,27 +523,27 @@ for i = 1:maxIter
 					% Preconditioned Polak-Ribiere
 					beta = (g'*(s-s_old))/(g_old'*s_old);
 				else
-                    % Preconditioned Gilbert-Nocedal
-                    beta_FR = (g'*s)/(g_old'*s_old);
-                    beta_PR = (g'*(s-s_old))/(g_old'*s_old);
-                    beta = max(-beta_FR,min(beta_PR,beta_FR));
-                end
-                d = s + beta*d;
+					% Preconditioned Gilbert-Nocedal
+					beta_FR = (g'*s)/(g_old'*s_old);
+					beta_PR = (g'*(s-s_old))/(g_old'*s_old);
+					beta = max(-beta_FR,min(beta_PR,beta_FR));
+				end
+				d = s + beta*d;
 
-                if g'*d > -progTol
-                    if debug
-                        fprintf('Restarting CG\n');
-                    end
-                    beta = 0;
-                    d = s;
-                end
+				if g'*d > -progTol
+					if debug
+						fprintf('Restarting CG\n');
+					end
+					beta = 0;
+					d = s;
+				end
 
-            end
-            g_old = g;
-            s_old = s;
-        case LBFGS % L-BFGS
+			end
+			g_old = g;
+			s_old = s;
+		case LBFGS % L-BFGS
 
-            % Update the direction and step sizes
+			% Update the direction and step sizes
 			if Damped
 				if i == 1
 					d = -g; % Initially use steepest descent direction
@@ -581,149 +581,149 @@ for i = 1:maxIter
 			end
 			g_old = g;
 
-        case QNEWTON % Use quasi-Newton Hessian approximation
+		case QNEWTON % Use quasi-Newton Hessian approximation
 
-            if i == 1
-                d = -g;
-            else
-                % Compute difference vectors
-                y = g-g_old;
-                s = t*d;
+			if i == 1
+				d = -g;
+			else
+				% Compute difference vectors
+				y = g-g_old;
+				s = t*d;
 
-                if i == 2
-                    % Make initial Hessian approximation
-                    if initialHessType == 0
-                        % Identity
-                        if qnUpdate <= 1
-                            R = eye(length(g));
-                        else
-                            H = eye(length(g));
-                        end
-                    else
-                        % Scaled Identity
-                        if debug
-                            fprintf('Scaling Initial Hessian Approximation\n');
-                        end
-                        if qnUpdate <= 1
-                            % Use Cholesky of Hessian approximation
-                            R = sqrt((y'*y)/(y'*s))*eye(length(g));
-                        else
-                            % Use Inverse of Hessian approximation
-                            H = eye(length(g))*(y'*s)/(y'*y);
-                        end
-                    end
-                end
+				if i == 2
+					% Make initial Hessian approximation
+					if initialHessType == 0
+						% Identity
+						if qnUpdate <= 1
+							R = eye(length(g));
+						else
+							H = eye(length(g));
+						end
+					else
+						% Scaled Identity
+						if debug
+							fprintf('Scaling Initial Hessian Approximation\n');
+						end
+						if qnUpdate <= 1
+							% Use Cholesky of Hessian approximation
+							R = sqrt((y'*y)/(y'*s))*eye(length(g));
+						else
+							% Use Inverse of Hessian approximation
+							H = eye(length(g))*(y'*s)/(y'*y);
+						end
+					end
+				end
 
-                if qnUpdate == 0 % Use BFGS updates
-                    Bs = R'*(R*s);
-                    if Damped
-                        eta = .02;
-                        if y'*s < eta*s'*Bs
-                            if debug
-                                fprintf('Damped Update\n');
-                            end
-                            theta = min(max(0,((1-eta)*s'*Bs)/(s'*Bs - y'*s)),1);
-                            y = theta*y + (1-theta)*Bs;
-                        end
-                        R = cholupdate(cholupdate(R,y/sqrt(y'*s)),Bs/sqrt(s'*Bs),'-');
-                    else
-                        if y'*s > 1e-10
-                            R = cholupdate(cholupdate(R,y/sqrt(y'*s)),Bs/sqrt(s'*Bs),'-');
-                        else
-                            if debug
-                                fprintf('Skipping Update\n');
-                            end
-                        end
-                    end
-                elseif qnUpdate == 1 % Perform SR1 Update if it maintains positive-definiteness
+				if qnUpdate == 0 % Use BFGS updates
+					Bs = R'*(R*s);
+					if Damped
+						eta = .02;
+						if y'*s < eta*s'*Bs
+							if debug
+								fprintf('Damped Update\n');
+							end
+							theta = min(max(0,((1-eta)*s'*Bs)/(s'*Bs - y'*s)),1);
+							y = theta*y + (1-theta)*Bs;
+						end
+						R = cholupdate(cholupdate(R,y/sqrt(y'*s)),Bs/sqrt(s'*Bs),'-');
+					else
+						if y'*s > 1e-10
+							R = cholupdate(cholupdate(R,y/sqrt(y'*s)),Bs/sqrt(s'*Bs),'-');
+						else
+							if debug
+								fprintf('Skipping Update\n');
+							end
+						end
+					end
+				elseif qnUpdate == 1 % Perform SR1 Update if it maintains positive-definiteness
 
-                    Bs = R'*(R*s);
-                    ymBs = y-Bs;
-                    if abs(s'*ymBs) >= norm(s)*norm(ymBs)*1e-8 && (s-((R\(R'\y))))'*y > 1e-10
-                        R = cholupdate(R,-ymBs/sqrt(ymBs'*s),'-');
-                    else
-                        if debug
-                            fprintf('SR1 not positive-definite, doing BFGS Update\n');
-                        end
-                        if Damped
-                            eta = .02;
-                            if y'*s < eta*s'*Bs
-                                if debug
-                                    fprintf('Damped Update\n');
-                                end
-                                theta = min(max(0,((1-eta)*s'*Bs)/(s'*Bs - y'*s)),1);
-                                y = theta*y + (1-theta)*Bs;
-                            end
-                            R = cholupdate(cholupdate(R,y/sqrt(y'*s)),Bs/sqrt(s'*Bs),'-');
-                        else
-                            if y'*s > 1e-10
-                                R = cholupdate(cholupdate(R,y/sqrt(y'*s)),Bs/sqrt(s'*Bs),'-');
-                            else
-                                if debug
-                                    fprintf('Skipping Update\n');
-                                end
-                            end
-                        end
-                    end
-                elseif qnUpdate == 2 % Use Hoshino update
-                    v = sqrt(y'*H*y)*(s/(s'*y) - (H*y)/(y'*H*y));
-                    phi = 1/(1 + (y'*H*y)/(s'*y));
-                    H = H + (s*s')/(s'*y) - (H*y*y'*H)/(y'*H*y) + phi*v*v';
+					Bs = R'*(R*s);
+					ymBs = y-Bs;
+					if abs(s'*ymBs) >= norm(s)*norm(ymBs)*1e-8 && (s-((R\(R'\y))))'*y > 1e-10
+						R = cholupdate(R,-ymBs/sqrt(ymBs'*s),'-');
+					else
+						if debug
+							fprintf('SR1 not positive-definite, doing BFGS Update\n');
+						end
+						if Damped
+							eta = .02;
+							if y'*s < eta*s'*Bs
+								if debug
+									fprintf('Damped Update\n');
+								end
+								theta = min(max(0,((1-eta)*s'*Bs)/(s'*Bs - y'*s)),1);
+								y = theta*y + (1-theta)*Bs;
+							end
+							R = cholupdate(cholupdate(R,y/sqrt(y'*s)),Bs/sqrt(s'*Bs),'-');
+						else
+							if y'*s > 1e-10
+								R = cholupdate(cholupdate(R,y/sqrt(y'*s)),Bs/sqrt(s'*Bs),'-');
+							else
+								if debug
+									fprintf('Skipping Update\n');
+								end
+							end
+						end
+					end
+				elseif qnUpdate == 2 % Use Hoshino update
+					v = sqrt(y'*H*y)*(s/(s'*y) - (H*y)/(y'*H*y));
+					phi = 1/(1 + (y'*H*y)/(s'*y));
+					H = H + (s*s')/(s'*y) - (H*y*y'*H)/(y'*H*y) + phi*v*v';
 
-                elseif qnUpdate == 3 % Self-Scaling BFGS update
-                    ys = y'*s;
-                    Hy = H*y;
-                    yHy = y'*Hy;
-                    gamma = ys/yHy;
-                    v = sqrt(yHy)*(s/ys - Hy/yHy);
-                    H = gamma*(H - Hy*Hy'/yHy + v*v') + (s*s')/ys;
-                elseif qnUpdate == 4 % Oren's Self-Scaling Variable Metric update
+				elseif qnUpdate == 3 % Self-Scaling BFGS update
+					ys = y'*s;
+					Hy = H*y;
+					yHy = y'*Hy;
+					gamma = ys/yHy;
+					v = sqrt(yHy)*(s/ys - Hy/yHy);
+					H = gamma*(H - Hy*Hy'/yHy + v*v') + (s*s')/ys;
+				elseif qnUpdate == 4 % Oren's Self-Scaling Variable Metric update
 
-                    % Oren's method
-                    if (s'*y)/(y'*H*y) > 1
-                        phi = 1; % BFGS
-                        omega = 0;
-                    elseif (s'*(H\s))/(s'*y) < 1
-                        phi = 0; % DFP
-                        omega = 1;
-                    else
-                        phi = (s'*y)*(y'*H*y-s'*y)/((s'*(H\s))*(y'*H*y)-(s'*y)^2);
-                        omega = phi;
-                    end
+					% Oren's method
+					if (s'*y)/(y'*H*y) > 1
+						phi = 1; % BFGS
+						omega = 0;
+					elseif (s'*(H\s))/(s'*y) < 1
+						phi = 0; % DFP
+						omega = 1;
+					else
+						phi = (s'*y)*(y'*H*y-s'*y)/((s'*(H\s))*(y'*H*y)-(s'*y)^2);
+						omega = phi;
+					end
 
-                    gamma = (1-omega)*(s'*y)/(y'*H*y) + omega*(s'*(H\s))/(s'*y);
-                    v = sqrt(y'*H*y)*(s/(s'*y) - (H*y)/(y'*H*y));
-                    H = gamma*(H - (H*y*y'*H)/(y'*H*y) + phi*v*v') + (s*s')/(s'*y);
+					gamma = (1-omega)*(s'*y)/(y'*H*y) + omega*(s'*(H\s))/(s'*y);
+					v = sqrt(y'*H*y)*(s/(s'*y) - (H*y)/(y'*H*y));
+					H = gamma*(H - (H*y*y'*H)/(y'*H*y) + phi*v*v') + (s*s')/(s'*y);
 
-                elseif qnUpdate == 5 % McCormick-Huang asymmetric update
-                    theta = 1;
-                    phi = 0;
-                    psi = 1;
-                    omega = 0;
-                    t1 = s*(theta*s + phi*H'*y)';
-                    t2 = (theta*s + phi*H'*y)'*y;
-                    t3 = H*y*(psi*s + omega*H'*y)';
-                    t4 = (psi*s + omega*H'*y)'*y;
-                    H = H + t1/t2 - t3/t4;
-                end
+				elseif qnUpdate == 5 % McCormick-Huang asymmetric update
+					theta = 1;
+					phi = 0;
+					psi = 1;
+					omega = 0;
+					t1 = s*(theta*s + phi*H'*y)';
+					t2 = (theta*s + phi*H'*y)'*y;
+					t3 = H*y*(psi*s + omega*H'*y)';
+					t4 = (psi*s + omega*H'*y)'*y;
+					H = H + t1/t2 - t3/t4;
+				end
 
-                if qnUpdate <= 1
-                    d = -R\(R'\g);
-                else
-                    d = -H*g;
-                end
+				if qnUpdate <= 1
+					d = -R\(R'\g);
+				else
+					d = -H*g;
+				end
 
-            end
-            g_old = g;
+			end
+			g_old = g;
 
-        case NEWTON0 % Hessian-Free Newton
+		case NEWTON0 % Hessian-Free Newton
 
-            cgMaxIter = min(p,maxFunEvals-funEvals);
-            cgForce = min(0.5,sqrt(norm(g)))*norm(g);
+			cgMaxIter = min(p,maxFunEvals-funEvals);
+			cgForce = min(0.5,sqrt(norm(g)))*norm(g);
 
-            % Set-up preconditioner
-            precondFunc = [];
-            precondArgs = [];
+			% Set-up preconditioner
+			precondFunc = [];
+			precondArgs = [];
 			if cgSolve == 1
 				if isempty(precFunc) % Apply L-BFGS preconditioner
 					if i == 1
@@ -753,355 +753,355 @@ for i = 1:maxIter
 				end
 			end
 
-            % Solve Newton system using cg and hessian-vector products
-            if isempty(HvFunc)
-                % No user-supplied Hessian-vector function,
-                % use automatic differentiation
-                HvFun = @autoHv;
-                HvArgs = {x,g,useComplex,funObj,varargin{:}};
-            else
-                % Use user-supplid Hessian-vector function
-                HvFun = HvFunc;
-                HvArgs = {x,varargin{:}};
-            end
-            
-            if useNegCurv
-                [d,cgIter,cgRes,negCurv] = conjGrad([],-g,cgForce,cgMaxIter,debug,precondFunc,precondArgs,HvFun,HvArgs);
-            else
-                [d,cgIter,cgRes] = conjGrad([],-g,cgForce,cgMaxIter,debug,precondFunc,precondArgs,HvFun,HvArgs);
-            end
+			% Solve Newton system using cg and hessian-vector products
+			if isempty(HvFunc)
+				% No user-supplied Hessian-vector function,
+				% use automatic differentiation
+				HvFun = @autoHv;
+				HvArgs = {x,g,useComplex,funObj,varargin{:}};
+			else
+				% Use user-supplid Hessian-vector function
+				HvFun = HvFunc;
+				HvArgs = {x,varargin{:}};
+			end
 
-            funEvals = funEvals+cgIter;
-            if debug
-                fprintf('newtonCG stopped on iteration %d w/ residual %.5e\n',cgIter,cgRes);
+			if useNegCurv
+				[d,cgIter,cgRes,negCurv] = conjGrad([],-g,cgForce,cgMaxIter,debug,precondFunc,precondArgs,HvFun,HvArgs);
+			else
+				[d,cgIter,cgRes] = conjGrad([],-g,cgForce,cgMaxIter,debug,precondFunc,precondArgs,HvFun,HvArgs);
+			end
 
-            end
+			funEvals = funEvals+cgIter;
+			if debug
+				fprintf('newtonCG stopped on iteration %d w/ residual %.5e\n',cgIter,cgRes);
 
-            if useNegCurv
-                if ~isempty(negCurv)
-                    %if debug
-                    fprintf('Using negative curvature direction\n');
-                    %end
-                    d = negCurv/norm(negCurv);
-                    d = d/sum(abs(g));
-                end
-            end
+			end
 
-        case NEWTON % Newton search direction
+			if useNegCurv
+				if ~isempty(negCurv)
+					%if debug
+					fprintf('Using negative curvature direction\n');
+					%end
+					d = negCurv/norm(negCurv);
+					d = d/sum(abs(g));
+				end
+			end
 
-            if cgSolve == 0
-                if HessianModify == 0
-                    % Attempt to perform a Cholesky factorization of the Hessian
-                    [R,posDef] = chol(H);
+		case NEWTON % Newton search direction
 
-                    % If the Cholesky factorization was successful, then the Hessian is
-                    % positive definite, solve the system
-                    if posDef == 0
-                        d = -R\(R'\g);
+			if cgSolve == 0
+				if HessianModify == 0
+					% Attempt to perform a Cholesky factorization of the Hessian
+					[R,posDef] = chol(H);
 
-                    else
-                        % otherwise, adjust the Hessian to be positive definite based on the
-                        % minimum eigenvalue, and solve with QR
-                        % (expensive, we don't want to do this very much)
-                        if debug
-                            fprintf('Adjusting Hessian\n');
-                        end
-                        H = H + eye(length(g)) * max(0,1e-12 - min(real(eig(H))));
-                        d = -H\g;
-                    end
-                elseif HessianModify == 1
-                    % Modified Incomplete Cholesky
-                    R = mcholinc(H,debug);
-                    d = -R\(R'\g);
-                elseif HessianModify == 2
-                    % Modified Generalized Cholesky
-                    if useMex
-                        [L D perm] = mcholC(H);
-                    else
-                        [L D perm] = mchol(H);
-                    end
-                    d(perm) = -L' \ ((D.^-1).*(L \ g(perm)));
+					% If the Cholesky factorization was successful, then the Hessian is
+					% positive definite, solve the system
+					if posDef == 0
+						d = -R\(R'\g);
 
-                elseif HessianModify == 3
-                    % Modified Spectral Decomposition
-                    [V,D] = eig((H+H')/2);
-                    D = diag(D);
-                    D = max(abs(D),max(max(abs(D)),1)*1e-12);
-                    d = -V*((V'*g)./D);
-                elseif HessianModify == 4
-                    % Modified Symmetric Indefinite Factorization
-                    [L,D,perm] = ldl(H,'vector');
-                    [blockPos junk] = find(triu(D,1));
-                    for diagInd = setdiff(setdiff(1:p,blockPos),blockPos+1)
-                        if D(diagInd,diagInd) < 1e-12
-                            D(diagInd,diagInd) = 1e-12;
-                        end
-                    end
-                    for blockInd = blockPos'
-                        block = D(blockInd:blockInd+1,blockInd:blockInd+1);
-                        block_a = block(1);
-                        block_b = block(2);
-                        block_d = block(4);
-                        lambda = (block_a+block_d)/2 - sqrt(4*block_b^2 + (block_a - block_d)^2)/2;
-                        D(blockInd:blockInd+1,blockInd:blockInd+1) = block+eye(2)*(lambda+1e-12);
-                    end
-                    d(perm) = -L' \ (D \ (L \ g(perm)));
-                else
-                    % Take Newton step if Hessian is pd,
-                    % otherwise take a step with negative curvature
-                    [R,posDef] = chol(H);
-                    if posDef == 0
-                        d = -R\(R'\g);
-                    else
-                        if debug
-                            fprintf('Taking Direction of Negative Curvature\n');
-                        end
-                        [V,D] = eig(H);
-                        u = V(:,1);
-                        d = -sign(u'*g)*u;
-                    end
-                end
+					else
+						% otherwise, adjust the Hessian to be positive definite based on the
+						% minimum eigenvalue, and solve with QR
+						% (expensive, we don't want to do this very much)
+						if debug
+							fprintf('Adjusting Hessian\n');
+						end
+						H = H + eye(length(g)) * max(0,1e-12 - min(real(eig(H))));
+						d = -H\g;
+					end
+				elseif HessianModify == 1
+					% Modified Incomplete Cholesky
+					R = mcholinc(H,debug);
+					d = -R\(R'\g);
+				elseif HessianModify == 2
+					% Modified Generalized Cholesky
+					if useMex
+						[L D perm] = mcholC(H);
+					else
+						[L D perm] = mchol(H);
+					end
+					d(perm) = -L' \ ((D.^-1).*(L \ g(perm)));
 
-            else
-                % Solve with Conjugate Gradient
-                cgMaxIter = p;
-                cgForce = min(0.5,sqrt(norm(g)))*norm(g);
+				elseif HessianModify == 3
+					% Modified Spectral Decomposition
+					[V,D] = eig((H+H')/2);
+					D = diag(D);
+					D = max(abs(D),max(max(abs(D)),1)*1e-12);
+					d = -V*((V'*g)./D);
+				elseif HessianModify == 4
+					% Modified Symmetric Indefinite Factorization
+					[L,D,perm] = ldl(H,'vector');
+					[blockPos junk] = find(triu(D,1));
+					for diagInd = setdiff(setdiff(1:p,blockPos),blockPos+1)
+						if D(diagInd,diagInd) < 1e-12
+							D(diagInd,diagInd) = 1e-12;
+						end
+					end
+					for blockInd = blockPos'
+						block = D(blockInd:blockInd+1,blockInd:blockInd+1);
+						block_a = block(1);
+						block_b = block(2);
+						block_d = block(4);
+						lambda = (block_a+block_d)/2 - sqrt(4*block_b^2 + (block_a - block_d)^2)/2;
+						D(blockInd:blockInd+1,blockInd:blockInd+1) = block+eye(2)*(lambda+1e-12);
+					end
+					d(perm) = -L' \ (D \ (L \ g(perm)));
+				else
+					% Take Newton step if Hessian is pd,
+					% otherwise take a step with negative curvature
+					[R,posDef] = chol(H);
+					if posDef == 0
+						d = -R\(R'\g);
+					else
+						if debug
+							fprintf('Taking Direction of Negative Curvature\n');
+						end
+						[V,D] = eig(H);
+						u = V(:,1);
+						d = -sign(u'*g)*u;
+					end
+				end
 
-                % Select Preconditioner
-                if cgSolve == 1
-                    % No preconditioner
-                    precondFunc = [];
-                    precondArgs = [];
-                elseif cgSolve == 2
-                    % Diagonal preconditioner
-                    precDiag = diag(H);
-                    precDiag(precDiag < 1e-12) = 1e-12 - min(precDiag);
-                    precondFunc = @precondDiag;
-                    precondArgs = {precDiag.^-1};
-                elseif cgSolve == 3
-                    % L-BFGS preconditioner
-                    if i == 1
-                        old_dirs = zeros(length(g),0);
-                        old_stps = zeros(length(g),0);
-                        Hdiag = 1;
-                    else
-                        [old_dirs,old_stps,Hdiag] = lbfgsUpdate(g-g_old,t*d,corrections,debug,old_dirs,old_stps,Hdiag);
-                    end
-                    g_old = g;
-                    if useMex
-                        precondFunc = @lbfgsC;
-                    else
-                        precondFunc = @lbfgs;
-                    end
-                    precondArgs = {old_dirs,old_stps,Hdiag};
-                elseif cgSolve > 0
-                    % Symmetric Successive Overelaxation Preconditioner
-                    omega = cgSolve;
-                    D = diag(H);
-                    D(D < 1e-12) = 1e-12 - min(D);
-                    precDiag = (omega/(2-omega))*D.^-1;
-                    precTriu = diag(D/omega) + triu(H,1);
-                    precondFunc = @precondTriuDiag;
-                    precondArgs = {precTriu,precDiag.^-1};
-                else
-                    % Incomplete Cholesky Preconditioner
-                    opts.droptol = -cgSolve;
-                    opts.rdiag = 1;
-                    R = cholinc(sparse(H),opts);
-                    if min(diag(R)) < 1e-12
-                        R = cholinc(sparse(H + eye*(1e-12 - min(diag(R)))),opts);
-                    end
-                    precondFunc = @precondTriu;
-                    precondArgs = {R};
-                end
+			else
+				% Solve with Conjugate Gradient
+				cgMaxIter = p;
+				cgForce = min(0.5,sqrt(norm(g)))*norm(g);
 
-                % Run cg with the appropriate preconditioner
-                if isempty(HvFunc)
-                    % No user-supplied Hessian-vector function
-                    [d,cgIter,cgRes] = conjGrad(H,-g,cgForce,cgMaxIter,debug,precondFunc,precondArgs);
-                else
-                    % Use user-supplied Hessian-vector function
-                    [d,cgIter,cgRes] = conjGrad(H,-g,cgForce,cgMaxIter,debug,precondFunc,precondArgs,HvFunc,{x,varargin{:}});
-                end
-                if debug
-                    fprintf('CG stopped after %d iterations w/ residual %.5e\n',cgIter,cgRes);
-                    %funEvals = funEvals + cgIter;
-                end
-            end
+				% Select Preconditioner
+				if cgSolve == 1
+					% No preconditioner
+					precondFunc = [];
+					precondArgs = [];
+				elseif cgSolve == 2
+					% Diagonal preconditioner
+					precDiag = diag(H);
+					precDiag(precDiag < 1e-12) = 1e-12 - min(precDiag);
+					precondFunc = @precondDiag;
+					precondArgs = {precDiag.^-1};
+				elseif cgSolve == 3
+					% L-BFGS preconditioner
+					if i == 1
+						old_dirs = zeros(length(g),0);
+						old_stps = zeros(length(g),0);
+						Hdiag = 1;
+					else
+						[old_dirs,old_stps,Hdiag] = lbfgsUpdate(g-g_old,t*d,corrections,debug,old_dirs,old_stps,Hdiag);
+					end
+					g_old = g;
+					if useMex
+						precondFunc = @lbfgsC;
+					else
+						precondFunc = @lbfgs;
+					end
+					precondArgs = {old_dirs,old_stps,Hdiag};
+				elseif cgSolve > 0
+					% Symmetric Successive Overelaxation Preconditioner
+					omega = cgSolve;
+					D = diag(H);
+					D(D < 1e-12) = 1e-12 - min(D);
+					precDiag = (omega/(2-omega))*D.^-1;
+					precTriu = diag(D/omega) + triu(H,1);
+					precondFunc = @precondTriuDiag;
+					precondArgs = {precTriu,precDiag.^-1};
+				else
+					% Incomplete Cholesky Preconditioner
+					opts.droptol = -cgSolve;
+					opts.rdiag = 1;
+					R = cholinc(sparse(H),opts);
+					if min(diag(R)) < 1e-12
+						R = cholinc(sparse(H + eye*(1e-12 - min(diag(R)))),opts);
+					end
+					precondFunc = @precondTriu;
+					precondArgs = {R};
+				end
 
-        case TENSOR % Tensor Method
+				% Run cg with the appropriate preconditioner
+				if isempty(HvFunc)
+					% No user-supplied Hessian-vector function
+					[d,cgIter,cgRes] = conjGrad(H,-g,cgForce,cgMaxIter,debug,precondFunc,precondArgs);
+				else
+					% Use user-supplied Hessian-vector function
+					[d,cgIter,cgRes] = conjGrad(H,-g,cgForce,cgMaxIter,debug,precondFunc,precondArgs,HvFunc,{x,varargin{:}});
+				end
+				if debug
+					fprintf('CG stopped after %d iterations w/ residual %.5e\n',cgIter,cgRes);
+					%funEvals = funEvals + cgIter;
+				end
+			end
 
-            if numDiff
-                % Compute 3rd-order Tensor Numerically
-                [junk1 junk2 junk3 T] = autoTensor(x,numDiffType,funObj,varargin{:});
-            else
-                % Use user-supplied 3rd-derivative Tensor
-                [junk1 junk2 junk3 T] = funObj(x,varargin{:});
-            end
-            options_sub.Method = 'newton';
-            options_sub.Display = 'none';
-            options_sub.progTol = progTol;
-            options_sub.optTol = optTol;
-            d = minFunc(@taylorModel,zeros(p,1),options_sub,f,g,H,T);
+		case TENSOR % Tensor Method
 
-            if any(abs(d) > 1e5) || all(abs(d) < 1e-5) || g'*d > -progTol
-                if debug
-                    fprintf('Using 2nd-Order Step\n');
-                end
-                [V,D] = eig((H+H')/2);
-                D = diag(D);
-                D = max(abs(D),max(max(abs(D)),1)*1e-12);
-                d = -V*((V'*g)./D);
-            else
-                if debug
-                    fprintf('Using 3rd-Order Step\n');
-                end
-            end
-    end
+			if numDiff
+				% Compute 3rd-order Tensor Numerically
+				[junk1 junk2 junk3 T] = autoTensor(x,numDiffType,funObj,varargin{:});
+			else
+				% Use user-supplied 3rd-derivative Tensor
+				[junk1 junk2 junk3 T] = funObj(x,varargin{:});
+			end
+			options_sub.Method = 'newton';
+			options_sub.Display = 'none';
+			options_sub.progTol = progTol;
+			options_sub.optTol = optTol;
+			d = minFunc(@taylorModel,zeros(p,1),options_sub,f,g,H,T);
 
-    if ~isLegal(d)
-        fprintf('Step direction is illegal!\n');
-        pause;
-        return
-    end
+			if any(abs(d) > 1e5) || all(abs(d) < 1e-5) || g'*d > -progTol
+				if debug
+					fprintf('Using 2nd-Order Step\n');
+				end
+				[V,D] = eig((H+H')/2);
+				D = diag(D);
+				D = max(abs(D),max(max(abs(D)),1)*1e-12);
+				d = -V*((V'*g)./D);
+			else
+				if debug
+					fprintf('Using 3rd-Order Step\n');
+				end
+			end
+	end
 
-    % ****************** COMPUTE STEP LENGTH ************************
+	if ~isLegal(d)
+		fprintf('Step direction is illegal!\n');
+		pause;
+		return
+	end
 
-    % Directional Derivative
-    gtd = g'*d;
+	% ****************** COMPUTE STEP LENGTH ************************
 
-    % Check that progress can be made along direction
-    if gtd > -progTol
-        exitflag=2;
-        msg = 'Directional Derivative below progTol';
-        break;
-    end
+	% Directional Derivative
+	gtd = g'*d;
 
-    % Select Initial Guess
-    if i == 1
-        if method < NEWTON0
-            t = min(1,1/sum(abs(g)));
-        else
-            t = 1;
-        end
-    else
-        if LS_init == 0
-            % Newton step
-            t = 1;
-        elseif LS_init == 1
-            % Close to previous step length
-            t = t*min(2,(gtd_old)/(gtd));
-        elseif LS_init == 2
-            % Quadratic Initialization based on {f,g} and previous f
-            t = min(1,2*(f-f_old)/(gtd));
-        elseif LS_init == 3
-            % Double previous step length
-            t = min(1,t*2);
-        elseif LS_init == 4
-            % Scaled step length if possible
-            if isempty(HvFunc)
-                % No user-supplied Hessian-vector function,
-                % use automatic differentiation
-                dHd = d'*autoHv(d,x,g,0,funObj,varargin{:});
-            else
-                % Use user-supplid Hessian-vector function
-                dHd = d'*HvFunc(d,x,varargin{:});
-            end
+	% Check that progress can be made along direction
+	if gtd > -progTol
+		exitflag=2;
+		msg = 'Directional Derivative below progTol';
+		break;
+	end
 
-            funEvals = funEvals + 1;
-            if dHd > 0
-                t = -gtd/(dHd);
-            else
-                t = min(1,2*(f-f_old)/(gtd));
-            end
-        end
+	% Select Initial Guess
+	if i == 1
+		if method < NEWTON0
+			t = min(1,1/sum(abs(g)));
+		else
+			t = 1;
+		end
+	else
+		if LS_init == 0
+			% Newton step
+			t = 1;
+		elseif LS_init == 1
+			% Close to previous step length
+			t = t*min(2,(gtd_old)/(gtd));
+		elseif LS_init == 2
+			% Quadratic Initialization based on {f,g} and previous f
+			t = min(1,2*(f-f_old)/(gtd));
+		elseif LS_init == 3
+			% Double previous step length
+			t = min(1,t*2);
+		elseif LS_init == 4
+			% Scaled step length if possible
+			if isempty(HvFunc)
+				% No user-supplied Hessian-vector function,
+				% use automatic differentiation
+				dHd = d'*autoHv(d,x,g,0,funObj,varargin{:});
+			else
+				% Use user-supplid Hessian-vector function
+				dHd = d'*HvFunc(d,x,varargin{:});
+			end
 
-        if t <= 0
-            t = 1;
-        end
-    end
-    f_old = f;
-    gtd_old = gtd;
+			funEvals = funEvals + 1;
+			if dHd > 0
+				t = -gtd/(dHd);
+			else
+				t = min(1,2*(f-f_old)/(gtd));
+			end
+		end
 
-    % Compute reference fr if using non-monotone objective
-    if Fref == 1
-        fr = f;
-    else
-        if i == 1
-            old_fvals = repmat(-inf,[Fref 1]);
-        end
+		if t <= 0
+			t = 1;
+		end
+	end
+	f_old = f;
+	gtd_old = gtd;
 
-        if i <= Fref
-            old_fvals(i) = f;
-        else
-            old_fvals = [old_fvals(2:end);f];
-        end
-        fr = max(old_fvals);
-    end
+	% Compute reference fr if using non-monotone objective
+	if Fref == 1
+		fr = f;
+	else
+		if i == 1
+			old_fvals = repmat(-inf,[Fref 1]);
+		end
 
-    computeHessian = 0;
-    if method >= NEWTON
-        if HessianIter == 1
-            computeHessian = 1;
-        elseif i > 1 && mod(i-1,HessianIter) == 0
-            computeHessian = 1;
-        end
-    end
+		if i <= Fref
+			old_fvals(i) = f;
+		else
+			old_fvals = [old_fvals(2:end);f];
+		end
+		fr = max(old_fvals);
+	end
 
-    % Line Search
-    f_old = f;
-    if LS_type == 0 % Use Armijo Bactracking
-        % Perform Backtracking line search
-        if computeHessian
-            [t,x,f,g,LSfunEvals,H] = ArmijoBacktrack(x,t,d,f,fr,g,gtd,c1,LS_interp,LS_multi,progTol,debug,doPlot,LS_saveHessianComp,funObj,varargin{:});
-        else
-            [t,x,f,g,LSfunEvals] = ArmijoBacktrack(x,t,d,f,fr,g,gtd,c1,LS_interp,LS_multi,progTol,debug,doPlot,1,funObj,varargin{:});
-        end
-        funEvals = funEvals + LSfunEvals;
+	computeHessian = 0;
+	if method >= NEWTON
+		if HessianIter == 1
+			computeHessian = 1;
+		elseif i > 1 && mod(i-1,HessianIter) == 0
+			computeHessian = 1;
+		end
+	end
 
-    elseif LS_type == 1 % Find Point satisfying Wolfe conditions
+	% Line Search
+	f_old = f;
+	if LS_type == 0 % Use Armijo Bactracking
+		% Perform Backtracking line search
+		if computeHessian
+			[t,x,f,g,LSfunEvals,H] = ArmijoBacktrack(x,t,d,f,fr,g,gtd,c1,LS_interp,LS_multi,progTol,debug,doPlot,LS_saveHessianComp,funObj,varargin{:});
+		else
+			[t,x,f,g,LSfunEvals] = ArmijoBacktrack(x,t,d,f,fr,g,gtd,c1,LS_interp,LS_multi,progTol,debug,doPlot,1,funObj,varargin{:});
+		end
+		funEvals = funEvals + LSfunEvals;
 
-        if computeHessian
-            [t,f,g,LSfunEvals,H] = WolfeLineSearch(x,t,d,f,g,gtd,c1,c2,LS_interp,LS_multi,25,progTol,debug,doPlot,LS_saveHessianComp,funObj,varargin{:});
-        else
-            [t,f,g,LSfunEvals] = WolfeLineSearch(x,t,d,f,g,gtd,c1,c2,LS_interp,LS_multi,25,progTol,debug,doPlot,1,funObj,varargin{:});
-        end
-        funEvals = funEvals + LSfunEvals;
-        x = x + t*d;
+	elseif LS_type == 1 % Find Point satisfying Wolfe conditions
 
-    else
-        % Use Matlab optim toolbox line search
-        [t,f_new,fPrime_new,g_new,LSexitFlag,LSiter]=...
-            lineSearch({'fungrad',[],funObj},x,p,1,p,d,f,gtd,t,c1,c2,-inf,maxFunEvals-funEvals,...
-            progTol,[],[],[],varargin{:});
-        funEvals = funEvals + LSiter;
-        if isempty(t)
-            exitflag = -2;
-            msg = 'Matlab LineSearch failed';
-            break;
-        end
+		if computeHessian
+			[t,f,g,LSfunEvals,H] = WolfeLineSearch(x,t,d,f,g,gtd,c1,c2,LS_interp,LS_multi,25,progTol,debug,doPlot,LS_saveHessianComp,funObj,varargin{:});
+		else
+			[t,f,g,LSfunEvals] = WolfeLineSearch(x,t,d,f,g,gtd,c1,c2,LS_interp,LS_multi,25,progTol,debug,doPlot,1,funObj,varargin{:});
+		end
+		funEvals = funEvals + LSfunEvals;
+		x = x + t*d;
 
-        if method >= NEWTON
-            [f_new,g_new,H] = funObj(x + t*d,varargin{:});
-            funEvals = funEvals + 1;
-        end
-        x = x + t*d;
-        f = f_new;
-        g = g_new;
+	else
+		% Use Matlab optim toolbox line search
+		[t,f_new,fPrime_new,g_new,LSexitFlag,LSiter]=...
+			lineSearch({'fungrad',[],funObj},x,p,1,p,d,f,gtd,t,c1,c2,-inf,maxFunEvals-funEvals,...
+			progTol,[],[],[],varargin{:});
+		funEvals = funEvals + LSiter;
+		if isempty(t)
+			exitflag = -2;
+			msg = 'Matlab LineSearch failed';
+			break;
+		end
+
+		if method >= NEWTON
+			[f_new,g_new,H] = funObj(x + t*d,varargin{:});
+			funEvals = funEvals + 1;
+		end
+		x = x + t*d;
+		f = f_new;
+		g = g_new;
 	end
 
 	% Compute Optimality Condition
 	optCond = max(abs(g));
-	
-    % Output iteration information
-    if verboseI
-        fprintf('%10d %10d %15.5e %15.5e %15.5e\n',i,funEvals*funEvalMultiplier,t,f,optCond);
-    end
 
-    if nargout > 3
-    % Update Trace
-    trace.fval(end+1,1) = f;
-    trace.funcCount(end+1,1) = funEvals;
+	% Output iteration information
+	if verboseI
+		fprintf('%10d %10d %15.5e %15.5e %15.5e\n',i,funEvals*funEvalMultiplier,t,f,optCond);
+	end
+
+	if nargout > 3
+	% Update Trace
+	trace.fval(end+1,1) = f;
+	trace.funcCount(end+1,1) = funEvals;
 	trace.optCond(end+1,1) = optCond;
 	end
 
@@ -1114,57 +1114,56 @@ for i = 1:maxIter
 			break;
 		end
 	end
-	
-    % Check Optimality Condition
-    if optCond <= optTol
-        exitflag=1;
-        msg = 'Optimality Condition below optTol';
-        break;
-    end
 
-    % ******************* Check for lack of progress *******************
+	% Check Optimality Condition
+	if optCond <= optTol
+		exitflag=1;
+		msg = 'Optimality Condition below optTol';
+		break;
+	end
 
-    if max(abs(t*d)) <= progTol
-        exitflag=2;
-        msg = 'Step Size below progTol';
-        break;
-    end
+	% ******************* Check for lack of progress *******************
+
+	if max(abs(t*d)) <= progTol
+		exitflag=2;
+		msg = 'Step Size below progTol';
+		break;
+	end
 
 
-    if abs(f-f_old) < progTol
-        exitflag=2;
-        msg = 'Function Value changing by less than progTol';
-        break;
-    end
+	if abs(f-f_old) < progTol
+		exitflag=2;
+		msg = 'Function Value changing by less than progTol';
+		break;
+	end
 
-    % ******** Check for going over iteration/evaluation limit *******************
+	% ******** Check for going over iteration/evaluation limit *******************
 
-    if funEvals*funEvalMultiplier >= maxFunEvals
-        exitflag = 0;
-        msg = 'Reached Maximum Number of Function Evaluations';
-        break;
-    end
+	if funEvals*funEvalMultiplier >= maxFunEvals
+		exitflag = 0;
+		msg = 'Reached Maximum Number of Function Evaluations';
+		break;
+	end
 
-    if i == maxIter
-        exitflag = 0;
-        msg='Reached Maximum Number of Iterations';
-        break;
-    end
+	if i == maxIter
+		exitflag = 0;
+		msg='Reached Maximum Number of Iterations';
+		break;
+	end
 
 end
 
 if verbose
-    fprintf('%s\n',msg);
+	fprintf('%s\n',msg);
 end
 if nargout > 3
-    output = struct('iterations',i,'funcCount',funEvals*funEvalMultiplier,...
-        'algorithm',method,'firstorderopt',max(abs(g)),'message',msg,'trace',trace);
+	output = struct('iterations',i,'funcCount',funEvals*funEvalMultiplier,...
+		'algorithm',method,'firstorderopt',max(abs(g)),'message',msg,'trace',trace);
 end
 
 % Output Function
 if ~isempty(outputFcn)
-     outputFcn(x,'done',i,funEvals,f,t,gtd,g,d,max(abs(g)),varargin{:});
- end
-
+	outputFcn(x,'done',i,funEvals,f,t,gtd,g,d,max(abs(g)),varargin{:});
 end
 
+end

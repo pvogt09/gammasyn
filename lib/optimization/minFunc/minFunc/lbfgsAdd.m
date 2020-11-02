@@ -16,7 +16,7 @@ if ys > 1e-10
 		lbfgs_start = min(2,corrections);
 		lbfgs_end = 1;
 	end
-	
+
 	if useMex
 		lbfgsAddC(y,s,Y,S,ys,int32(lbfgs_end));
 	else
@@ -24,7 +24,7 @@ if ys > 1e-10
 		Y(:,lbfgs_end) = y;
 	end
 	YS(lbfgs_end) = ys;
-	
+
 	% Update scale of initial Hessian approximation
 	Hdiag = ys/(y'*y);
 else

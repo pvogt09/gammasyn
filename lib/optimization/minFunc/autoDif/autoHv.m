@@ -5,9 +5,9 @@ function [Hv] = autoHv(v,x,g,useComplex,funObj,varargin)
 %  based on gradient values
 
 if useComplex
-    mu = 1e-150i;
+	mu = 1e-150i;
 else
-    mu = 2*sqrt(1e-12)*(1+norm(x))/norm(v);
+	mu = 2*sqrt(1e-12)*(1+norm(x))/norm(v);
 end
 [f,finDif] = funObj(x + v*mu,varargin{:});
 Hv = (finDif-g)/mu;
