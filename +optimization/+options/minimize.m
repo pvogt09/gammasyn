@@ -1,5 +1,5 @@
-classdef minfunc < optimization.options.Options
-	%MINFUNC solver options for minfunc
+classdef minimize < optimization.options.Options
+	%MINIMIZE solver options for minimize
 
 	methods(Access=protected)
 		function [names] = optimoptionsnames(~)
@@ -172,15 +172,15 @@ classdef minfunc < optimization.options.Options
 	end
 
 	methods
-		function [this] = minfunc(varargin)
-			%MINFUNC create new optimization option set
+		function [this] = minimize(varargin)
+			%MINIMIZE create new optimization option set
 			%	Input:
 			%		varargin:	options to set
 			%	Output:
 			%		this:		instance
 			preferredtype = optimization.options.OptionType.STRUCT;
 			supportedtype = optimization.options.OptionType.STRUCT;
-			this@optimization.options.Options(optimization.solver.Optimizer.MINFUNC, supportedtype, preferredtype, false, optimization.options.ProblemType.UNCONSTRAINED, optimization.options.ProblemType.UNCONSTRAINED);
+			this@optimization.options.Options(optimization.solver.Optimizer.MINIMIZE, supportedtype, preferredtype, false, optimization.options.ProblemType.UNCONSTRAINED, optimization.options.ProblemType.UNCONSTRAINED);
 			if nargin >= 1
 				this.useoptions(varargin{:});
 			end
@@ -193,18 +193,7 @@ classdef minfunc < optimization.options.Options
 			%	Output:
 			%		algorithms:	possible algorithms
 			algorithms = {
-				'sd';
-				'csd';
-				'bb';
-				'cg';
-				'scg';
-				'pcg';
-				'lbfgs';
-				'newton0';
-				'pnewton0';
-				'qnewton';
-				'mnewton';
-				'newton'
+				'minimize'
 			};
 		end
 

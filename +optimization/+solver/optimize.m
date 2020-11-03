@@ -353,6 +353,25 @@ function [x, fval, exitflag, output, lambda, grad, hessian] = optimize(fun, x_0,
 			else
 				x = optimization.solver.minfunc.optimize(fun, x_0, A, b, Aeq, beq, lb, ub, nonlcon, options, varargin{:});
 			end
+		case optimization.solver.Optimizer.MINIMIZE
+			if usedefaultoption
+				options = [];
+			end
+			if nargout >= 7
+				[x, fval, exitflag, output, lambda, grad, hessian] = optimization.solver.minimize.optimize(fun, x_0, A, b, Aeq, beq, lb, ub, nonlcon, options, varargin{:});
+			elseif nargout >= 6
+				[x, fval, exitflag, output, lambda, grad] = optimization.solver.minimize.optimize(fun, x_0, A, b, Aeq, beq, lb, ub, nonlcon, options, varargin{:});
+			elseif nargout >= 5
+				[x, fval, exitflag, output, lambda] = optimization.solver.minimize.optimize(fun, x_0, A, b, Aeq, beq, lb, ub, nonlcon, options, varargin{:});
+			elseif nargout >= 4
+				[x, fval, exitflag, output] = optimization.solver.minimize.optimize(fun, x_0, A, b, Aeq, beq, lb, ub, nonlcon, options, varargin{:});
+			elseif nargout >= 3
+				[x, fval, exitflag] = optimization.solver.minimize.optimize(fun, x_0, A, b, Aeq, beq, lb, ub, nonlcon, options, varargin{:});
+			elseif nargout >= 2
+				[x, fval] = optimization.solver.minimize.optimize(fun, x_0, A, b, Aeq, beq, lb, ub, nonlcon, options, varargin{:});
+			else
+				x = optimization.solver.minimize.optimize(fun, x_0, A, b, Aeq, beq, lb, ub, nonlcon, options, varargin{:});
+			end
 		case optimization.solver.Optimizer.NLOPTCON
 			if usedefaultoption
 				options = [];

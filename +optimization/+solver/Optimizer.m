@@ -224,6 +224,11 @@ classdef(Enumeration) Optimizer < handle
 		], 'Algorithm', {
 			'sd', 'csd', 'bb', 'cg', 'scg', 'pcg', 'lbfgs', 'newton0', 'pnewton0', 'qnewton', 'mnewton', 'newton'
 		}, 'lbfgs', optimization.options.ProblemType.UNCONSTRAINED, optimization.options.ProblemType.UNCONSTRAINED, false(2, 1), '', false, 'MaxIter', 'MaxFunEvals', 'TolFun', '', 'TolX', [0, 0, 1, 2, 0, 0, 0, 0], 'Display', struct());
+		% minimize standard settings
+		MINIMIZE('minimize', 'minimize', [
+			true,	false,	false,	true;
+			true,	false,	false,	false
+		], 'Algorithm', {'minimize'}, 'minimize', optimization.options.ProblemType.UNCONSTRAINED, optimization.options.ProblemType.UNCONSTRAINED, false(2, 1), '', false, 'MaxIter', 'MaxFunEvals', 'TolFun', '', 'TolX', [0, 0, 1, 2, 0, 0, 0, 0], 'Display', struct());
 	end
 
 	properties(Access=private)

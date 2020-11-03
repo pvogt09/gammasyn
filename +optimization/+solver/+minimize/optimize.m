@@ -1,5 +1,5 @@
 function [x, fval, exitflag, output, lambda, grad, hessian] = optimize(fun, x_0, A, b, Aeq, beq, lb, ub, ~, options, varargin)
-	%OPTIMIZE call minfunc to solve optimization problem
+	%OPTIMIZE call minimize to solve optimization problem
 	%	Input:
 	%		fun:		objective function to minimize
 	%		x_0:		initial value or matrix of initial values or StartPointSet of initial values to start optimization from
@@ -21,31 +21,31 @@ function [x, fval, exitflag, output, lambda, grad, hessian] = optimize(fun, x_0,
 	%		grad:		objective function gradient at optimal solution
 	%		hessian:	objective function hessian at optimal solution
 	if isempty(fun)
-		error('optimization:solver:minfunc:input', 'Objective function must not be empty.');
+		error('optimization:solver:minimize:input', 'Objective function must not be empty.');
 	end
 	if ischar(fun)
 		fun = str2func(fun);
 	end
 	if ~isfunctionhandle(fun)
-		error('optimization:solver:minfunc:input', 'Objective function must be a function handle.');
+		error('optimization:solver:minimize:input', 'Objective function must be a function handle.');
 	end
 	if isempty(x_0)
-		error('optimization:solver:minfunc:input', 'Initial point must not be empty.');
+		error('optimization:solver:minimize:input', 'Initial point must not be empty.');
 	end
 	if isa(x_0, 'AbstractStartPointSet')
 		x_0 = x_0.list().';
 	end
 	if ~isreal(x_0) || any(isinf(x_0(:))) || any(isnan(x_0(:)))
-		error('optimization:solver:minfunc:input', 'Initial point must be a finite real value.');
+		error('optimization:solver:minimize:input', 'Initial point must be a finite real value.');
 	end
 	if ~ismatrix(x_0)
-		error('optimization:solver:minfunc:input', 'Initial point must be a column vector or a matrix of column vectors.');
+		error('optimization:solver:minimize:input', 'Initial point must be a column vector or a matrix of column vectors.');
 	end
 	%if size(x_0, 2) > 1
-	%	error('optimization:solver:minfunc:input', 'Initial point must be a column vector.');
+	%	error('optimization:solver:minimize:input', 'Initial point must be a column vector.');
 	%end
 	usedefaultoption = false;
-	defaultsolver = optimization.solver.Optimizer.MINFUNC;
+	defaultsolver = optimization.solver.Optimizer.MINIMIZE;
 	if nargin >= 10 && isa(options, 'optimization.solver.Optimizer')
 		defaultsolver = options;
 		usedefaultoption = true;
@@ -103,121 +103,86 @@ function [x, fval, exitflag, output, lambda, grad, hessian] = optimize(fun, x_0,
 		ub = Inf(size(x_0, 1), 1);
 	end
 	if ~isreal(A) || any(isnan(A(:)))
-		error('optimization:solver:minfunc:input', 'Inequality matrix must be real.');
+		error('optimization:solver:minimize:input', 'Inequality matrix must be real.');
 	end
 	if ~ismatrix(A)
-		error('optimization:solver:minfunc:input', 'Inequality matrix must be a matrix.');
+		error('optimization:solver:minimize:input', 'Inequality matrix must be a matrix.');
 	end
 	if size(A, 2) ~= size(x_0, 1)
-		error('optimization:solver:minfunc:input', 'Inequality matrix must have %d columns, not %d.', size(x_0, 1), size(A, 2));
+		error('optimization:solver:minimize:input', 'Inequality matrix must have %d columns, not %d.', size(x_0, 1), size(A, 2));
 	end
 	if ~isreal(b) || any(isnan(b(:)))
-		error('optimization:solver:minfunc:input', 'Inequality bounds must be real.');
+		error('optimization:solver:minimize:input', 'Inequality bounds must be real.');
 	end
 	if ~ismatrix(b)
-		error('optimization:solver:minfunc:input', 'Inequality bounds must be a vector.');
+		error('optimization:solver:minimize:input', 'Inequality bounds must be a vector.');
 	end
 	if size(b, 1) ~= size(A, 1)
-		error('optimization:solver:minfunc:input', 'Inequality bounds must have %d rows, not %d.', size(A, 1), size(b, 1));
+		error('optimization:solver:minimize:input', 'Inequality bounds must have %d rows, not %d.', size(A, 1), size(b, 1));
 	end
 	if ~isreal(Aeq) || any(isnan(Aeq(:)))
-		error('optimization:solver:minfunc:input', 'Equality matrix must be real.');
+		error('optimization:solver:minimize:input', 'Equality matrix must be real.');
 	end
 	if ~ismatrix(Aeq)
-		error('optimization:solver:minfunc:input', 'Equality matrix must be a matrix.');
+		error('optimization:solver:minimize:input', 'Equality matrix must be a matrix.');
 	end
 	if size(Aeq, 2) ~= size(x_0, 1)
-		error('optimization:solver:minfunc:input', 'Equality matrix must have %d columns, not %d.', size(x_0, 1), size(Aeq, 2));
+		error('optimization:solver:minimize:input', 'Equality matrix must have %d columns, not %d.', size(x_0, 1), size(Aeq, 2));
 	end
 	if ~isreal(beq) || any(isnan(beq(:)))
-		error('optimization:solver:minfunc:input', 'Equality bounds must be real.');
+		error('optimization:solver:minimize:input', 'Equality bounds must be real.');
 	end
 	if ~ismatrix(beq)
-		error('optimization:solver:minfunc:input', 'Equality bounds must be a vector.');
+		error('optimization:solver:minimize:input', 'Equality bounds must be a vector.');
 	end
 	if size(beq, 1) ~= size(Aeq, 1)
-		error('optimization:solver:minfunc:input', 'Equality bounds must have %d rows, not %d.', size(Aeq, 1), size(beq, 1));
+		error('optimization:solver:minimize:input', 'Equality bounds must have %d rows, not %d.', size(Aeq, 1), size(beq, 1));
 	end
 	if ~isreal(lb) || any(isnan(lb(:)))
-		error('optimization:solver:minfunc:input', 'Lower bounds must be real.');
+		error('optimization:solver:minimize:input', 'Lower bounds must be real.');
 	end
 	if ~ismatrix(lb)
-		error('optimization:solver:minfunc:input', 'Lower bounds must be a vector.');
+		error('optimization:solver:minimize:input', 'Lower bounds must be a vector.');
 	end
 	if size(lb, 1) ~= size(x_0, 1)
-		error('optimization:solver:minfunc:input', 'Lower bounds must have %d rows, not %d.', size(x_0, 1), size(lb, 1));
+		error('optimization:solver:minimize:input', 'Lower bounds must have %d rows, not %d.', size(x_0, 1), size(lb, 1));
 	end
 	if ~isreal(ub) || any(isnan(ub(:)))
-		error('optimization:solver:minfunc:input', 'Upper bounds must be real.');
+		error('optimization:solver:minimize:input', 'Upper bounds must be real.');
 	end
 	if ~ismatrix(ub)
-		error('optimization:solver:minfunc:input', 'Upper bounds must be a vector.');
+		error('optimization:solver:minimize:input', 'Upper bounds must be a vector.');
 	end
 	if size(ub, 1) ~= size(x_0, 1)
-		error('optimization:solver:minfunc:input', 'Upper bounds must have %d rows, not %d.', size(x_0, 1), size(ub, 1));
+		error('optimization:solver:minimize:input', 'Upper bounds must have %d rows, not %d.', size(x_0, 1), size(ub, 1));
 	end
 	if ~isa(options, 'optimization.options.Options')
 		if isstruct(options)
-			options = optimization.options.OptionFactory.instance.options(optimization.solver.Optimizer.MINFUNC, options);
+			options = optimization.options.OptionFactory.instance.options(optimization.solver.Optimizer.MINIMIZE, options);
 		elseif isa(options, 'optim.options.SolverOptions')
-			options = optimization.options.OptionFactory.instance.options(optimization.solver.Optimizer.MINFUNC, options);
+			options = optimization.options.OptionFactory.instance.options(optimization.solver.Optimizer.MINIMIZE, options);
 		else
-			error('optimization:solver:minfunc:input', 'Options must be of type optimization.options.Options or optimoptions or optimset.');
+			error('optimization:solver:minimize:input', 'Options must be of type optimization.options.Options or optimoptions or optimset.');
 		end
 	end
-	if ~isa(options, 'optimization.options.minfunc')
-		options = optimization.options.OptionFactory.instance.options(optimization.solver.Optimizer.MINFUNC, options);
-	end
-	function [f, grad, hessian] = objectivehessian(x, varargin) %#ok<VANUS> varargin is only defined for compatibility with an objective function with additional arguments
-		[f, grad, hessian] = fun(x);
+	if ~isa(options, 'optimization.options.minimize')
+		options = optimization.options.OptionFactory.instance.options(optimization.solver.Optimizer.MINIMIZE, options);
 	end
 	function [f, grad] = objectivegradient(x, varargin) %#ok<VANUS> varargin is only defined for compatibility with an objective function with additional arguments
 		[f, grad] = fun(x);
 	end
 	hasgradient = false;
-	needshessian = options.supportsHessian() && options.SpecifyObjectiveHessian;
-	hashessian = false;
 	if nargin >= 11
 		if nargout(fun) == -1
 			try
-				if needshessian
-					try
-						if nargin(fun) == 1
-							[~, tempgrad, temphessian] = fun(x_0(:, 1)); %#ok<ASGLU> call with three output arguments to check if the third one is present and catch error if not
-							Jfun = @objectivehessian;
-							hasgradient = true;
-							hashessian = true;
-						else
-							[~, tempgrad, temphessian] = fun(x_0(:, 1), varargin{:}); %#ok<ASGLU> call with three output arguments to check if the third one is present and catch error if not
-							Jfun = fun;
-							hasgradient = true;
-							hashessian = true;
-						end
-					catch e
-						if strcmpi(e.identifier, 'MATLAB:maxlhs') || strcmpi(e.identifier, 'MATLAB:TooManyOutputs') || strcmpi(e.identifier, 'MATLAB:unassignedOutputs')
-							if nargin(fun) == 1
-								[~, tempgrad] = fun(x_0(:, 1)); %#ok<ASGLU> call with two output arguments to check if the second one is present and catch error if not
-								Jfun = @objectivegradient;
-								hasgradient = true;
-							else
-								[~, tempgrad] = fun(x_0(:, 1), varargin{:}); %#ok<ASGLU> call with two output arguments to check if the second one is present and catch error if not
-								Jfun = fun;
-								hasgradient = true;
-							end
-						else
-							rethrow(e);
-						end
-					end
+				if nargin(fun) == 1
+					[~, tempgrad] = fun(x_0(:, 1)); %#ok<ASGLU> call with two output arguments to check if the second one is present and catch error if not
+					Jfun = @objectivegradient;
+					hasgradient = true;
 				else
-					if nargin(fun) == 1
-						[~, tempgrad] = fun(x_0(:, 1)); %#ok<ASGLU> call with two output arguments to check if the second one is present and catch error if not
-						Jfun = @objectivegradient;
-						hasgradient = true;
-					else
-						[~, tempgrad] = fun(x_0(:, 1), varargin{:}); %#ok<ASGLU> call with two output arguments to check if the second one is present and catch error if not
-						Jfun = fun;
-						hasgradient = true;
-					end
+					[~, tempgrad] = fun(x_0(:, 1), varargin{:}); %#ok<ASGLU> call with two output arguments to check if the second one is present and catch error if not
+					Jfun = fun;
+					hasgradient = true;
 				end
 			catch e
 				if strcmpi(e.identifier, 'MATLAB:maxlhs') || strcmpi(e.identifier, 'MATLAB:TooManyOutputs') || strcmpi(e.identifier, 'MATLAB:unassignedOutputs')
@@ -235,27 +200,17 @@ function [x, fval, exitflag, output, lambda, grad, hessian] = optimize(fun, x_0,
 			end
 		else
 			if nargin(fun) == 1
-				if nargout(fun) >= 3
-					Jfun = @objectivehessian;
-					hasgradient = true;
-					hashessian = true;
-				elseif nargout(fun) >= 2
+				if nargout(fun) >= 2
 					Jfun = @objectivegradient;
 					hasgradient = true;
 				else
 					Jfun = @(x, varargin) fun(x);
 				end
 			else
-				if nargout(fun) >= 3
-					hasgradient = true;
-					hashessian = true;
-				elseif nargout(fun) >= 2
+				if nargout(fun) >= 2
 					hasgradient = true;
 				end
 				Jfun = fun;
-			end
-			if nargout(fun) < 3 && usedefaultoption
-				options.SpecifyObjectiveHessian = false;
 			end
 			if nargout(fun) < 2 && usedefaultoption
 				options.SpecifyObjectiveGradient = false;
@@ -263,50 +218,18 @@ function [x, fval, exitflag, output, lambda, grad, hessian] = optimize(fun, x_0,
 		end
 	else
 		Jfun = fun;
-		if nargout(fun) >= 3
-			hashessian = true;
-			hasgradient = true;
-		elseif nargout(fun) >= 2
+		if nargout(fun) >= 2
 			hasgradient = true;
 		end
 		if nargout(fun) < 3
 			if nargout(fun) == -1
 				try
-					if needshessian
-						try
-							if nargin(fun) == 1
-								[~, tempgrad, temphessian] = fun(x_0(:, 1)); %#ok<ASGLU> call with three output arguments to check if the third one is present and catch error if not
-							else
-								[~, tempgrad, temphessian] = fun(x_0(:, 1), varargin{:}); %#ok<ASGLU> call with three output arguments to check if the third one is present and catch error if not
-							end
-							hasgradient = true;
-							hashessian = true;
-						catch e
-							if strcmpi(e.identifier, 'MATLAB:maxlhs') || strcmpi(e.identifier, 'MATLAB:TooManyOutputs') || strcmpi(e.identifier, 'MATLAB:unassignedOutputs')
-								if usedefaultoption
-									options.SpecifyObjectiveHessian = false;
-								end
-								if nargin(fun) == 1
-									[~, tempgrad] = fun(x_0(:, 1)); %#ok<ASGLU> call with two output arguments to check if the second one is present and catch error if not
-								else
-									[~, tempgrad] = fun(x_0(:, 1), varargin{:}); %#ok<ASGLU> call with two output arguments to check if the second one is present and catch error if not
-								end
-								hasgradient = true;
-							else
-								if usedefaultoption
-									options.SpecifyObjectiveHessian = false;
-								end
-								rethrow(e);
-							end
-						end
+					if nargin(fun) == 1
+						[~, tempgrad] = fun(x_0(:, 1)); %#ok<ASGLU> call with two output arguments to check if the second one is present and catch error if not
 					else
-						if nargin(fun) == 1
-							[~, tempgrad] = fun(x_0(:, 1)); %#ok<ASGLU> call with two output arguments to check if the second one is present and catch error if not
-						else
-							[~, tempgrad] = fun(x_0(:, 1), varargin{:}); %#ok<ASGLU> call with two output arguments to check if the second one is present and catch error if not
-						end
-						hasgradient = true;
+						[~, tempgrad] = fun(x_0(:, 1), varargin{:}); %#ok<ASGLU> call with two output arguments to check if the second one is present and catch error if not
 					end
+					hasgradient = true;
 				catch e
 					if strcmpi(e.identifier, 'MATLAB:maxlhs') || strcmpi(e.identifier, 'MATLAB:TooManyOutputs') || strcmpi(e.identifier, 'MATLAB:unassignedOutputs')
 						if usedefaultoption
@@ -321,7 +244,6 @@ function [x, fval, exitflag, output, lambda, grad, hessian] = optimize(fun, x_0,
 					hasgradient = true;
 				end
 				if usedefaultoption
-					options.SpecifyObjectiveHessian = false;
 					if nargout(fun) < 2
 						options.SpecifyObjectiveGradient = false;
 					end
@@ -330,28 +252,13 @@ function [x, fval, exitflag, output, lambda, grad, hessian] = optimize(fun, x_0,
 		end
 	end
 	if ~hasgradient
-		error('optimization:solver:minfunc:input', 'Current algorithm needs gradient information.');
-	end
-	if needshessian && ~hashessian
-		error('optimization:solver:minfunc:input', 'User supplied objective function does not return hessian, but calculation of hessian matrix is requested.');
-	end
-	if any(strcmpi(options.Algorithm, {'mnewton', 'newton'})) && ~hashessian
-		error('optimization:solver:minfunc:input', 'User supplied objective function does not return hessian, but calculation of hessian matrix is required by algorithm.');
+		error('optimization:solver:minimize:input', 'Current algorithm needs gradient information.');
 	end
 	options.NumberVariables = size(x_0, 1);
 	options.NumberConstraintsInequality = 0;
 	options.NumberConstraintsEquality = 0;
 	options.NumberConstraintsBounds = sum(~isinf(lb)) + sum(~isinf(ub));
 	solveroptions = options.getpreferred();
-	if options.SpecifyObjectiveHessian && hashessian
-		if options.SpecifyObjectiveGradient% hessian only works if gradient information is also provided (checked in fminunc)
-			if matlab.Version.CURRENT >= matlab.Version.R2016A
-				solveroptions.HessianFcn = 'objective';
-			else
-				solveroptions.Hessian = 'user-supplied';
-			end
-		end
-	end
 	solvertime = tic;
 	retry = 0;
 	retryiterations = 0;
@@ -360,6 +267,7 @@ function [x, fval, exitflag, output, lambda, grad, hessian] = optimize(fun, x_0,
 	if isempty(maxTime) || isnan(maxTime) || maxTime <= 0
 		maxTime = Inf;
 	end
+	maxFunEvals = solveroptions.MaxFunctionEvaluations;
 	initialvalues = size(x_0, 2);
 	useparallel = options.UseParallel;
 	nargout3 = nargout >= 3;
@@ -392,11 +300,27 @@ function [x, fval, exitflag, output, lambda, grad, hessian] = optimize(fun, x_0,
 			parfor ii = 1:initialvalues
 				try
 					if nargout4
-						[x_opt(:, ii), f_opt(1, ii), exitflag(1, ii), output{1, ii}] = minFunc(Jfun, x_0(:, ii), solveroptions, varargin{:}); %#ok<PFBNS> varargin is a constant broadcast variable
-					elseif nargout3
-						[x_opt(:, ii), f_opt(1, ii), exitflag(1, ii)] = minFunc(Jfun, x_0(:, ii), solveroptions, varargin{:});
+						output{1, ii} = struct(...
+							'iterations',	NaN,...
+							'funcCount',	NaN...
+						);
+						if nargin(Jfun) == 1
+							[x_opt(:, ii), fval, output{1, ii}.funcCount] = minimize(x_0(:, ii), Jfun, -maxFunEvals);
+						else
+							[x_opt(:, ii), fval, output{1, ii}.funcCount] = minimize(x_0(:, ii), Jfun, -maxFunEvals, varargin{:}); %#ok<PFBNS> varargin is a constant broadcast variable
+						end
 					else
-						[x_opt(:, ii), f_opt(1, ii)] = minFunc(Jfun, x_0(:, ii), solveroptions, varargin{:});
+						if nargin(Jfun) == 1
+							[x_opt(:, ii), fval] = minimize(x_0(:, ii), Jfun, -maxFunEvals);
+						else
+							[x_opt(:, ii), fval] = minimize(x_0(:, ii), Jfun, -maxFunEvals, varargin{:});
+						end
+					end
+					if ~isempty(fval)
+						f_opt(1, ii) = fval(1, 1);
+						exitflag(1, ii) = 0;
+					else
+						exitflag(1, ii) = -1;
 					end
 				catch e
 					rethrow(e);
@@ -412,11 +336,27 @@ function [x, fval, exitflag, output, lambda, grad, hessian] = optimize(fun, x_0,
 				solvertimes(1, ii) = tic;
 				try
 					if nargout4
-						[x_opt(:, ii), f_opt(1, ii), exitflag(1, ii), output{1, ii}] = minFunc(Jfun, x_0(:, ii), solveroptions, varargin{:});
-					elseif nargout3
-						[x_opt(:, ii), f_opt(1, ii), exitflag(1, ii)] = minFunc(Jfun, x_0(:, ii), solveroptions, varargin{:});
+						output{1, ii} = struct(...
+							'iterations',	NaN,...
+							'funcCount',	NaN...
+						);
+						if nargin(Jfun) == 1
+							[x_opt(:, ii), fval, output{1, ii}.funcCount] = minimize(x_0(:, ii), Jfun, -maxFunEvals);
+						else
+							[x_opt(:, ii), fval, output{1, ii}.funcCount] = minimize(x_0(:, ii), Jfun, -maxFunEvals, varargin{:});
+						end
 					else
-						[x_opt(:, ii), f_opt(1, ii)] = minFunc(Jfun, x_0(:, ii), solveroptions, varargin{:});
+						if nargin(Jfun) == 1
+							[x_opt(:, ii), fval] = minimize(x_0(:, ii), Jfun, -maxFunEvals);
+						else
+							[x_opt(:, ii), fval] = minimize(x_0(:, ii), Jfun, -maxFunEvals, varargin{:});
+						end
+					end
+					if ~isempty(fval)
+						f_opt(1, ii) = fval(1, 1);
+						exitflag(1, ii) = 0;
+					else
+						exitflag(1, ii) = -1;
 					end
 				catch e
 					rethrow(e);
@@ -446,7 +386,7 @@ function [x, fval, exitflag, output, lambda, grad, hessian] = optimize(fun, x_0,
 		[fval, idx] = min(f_opt, [], 2);
 	end
 	if isempty(idx)
-		error('optimization:solver:minfunc:solution', 'No solution could be found for any initial value.');
+		error('optimization:solver:minimize:solution', 'No solution could be found for any initial value.');
 	end
 	x = x_opt(:, idx);
 	if nargout3

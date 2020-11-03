@@ -1298,6 +1298,7 @@ The optimizers marked with (*) are included in this repository.
 | GA             | * | * | Matlab, Global Optimization Toolbox                    | prop.      |  |
 | KSOPT          | * | * | https://github.com/madebr/pyOpt                        | LGPL       |  |
 | MINFUNC        |   |   | https://www.cs.ubc.ca/~schmidtm/Software/minFunc.html  | ?          |  |
+| MINIMIZE       |   |   | http://www.gatsby.ucl.ac.uk/~edward/code/minimize/     | MIT Lizenz |  |
 | NLOPTUNC       |   |   | https://nlopt.readthedocs.io/en/latest/                | MIT Lizenz |  |
 | NLOPTCON       | * |   | https://nlopt.readthedocs.io/en/latest/                | MIT Lizenz |  |
 | NLOPTUNCGLOBAL |   |   | https://nlopt.readthedocs.io/en/latest/                | MIT Lizenz |  |

@@ -611,6 +611,9 @@ function [pass] = SolverTest(~)
 													continue;
 												end
 											end
+											if solvers(ii, 1) == optimization.solver.Optimizer.MINIMIZE && ~hasfungrad
+												continue;
+											end
 											if (hasfunhess || hasconhess) && ~solvers(ii, 1).getHessianSupport()
 												continue;
 											end
