@@ -1,4 +1,4 @@
-function d = check(f, X, e, P1, P2, P3, P4, P5);
+function d = checkgrad(f, X, e, varargin)
 
 % checkgrad checks the derivatives in a function, by comparing them to finite
 % differences approximations. The partial derivatives and the approximation
@@ -17,24 +17,24 @@ function d = check(f, X, e, P1, P2, P3, P4, P5);
 %
 % Carl Edward Rasmussen, 2001-08-01.
 
-argstr = [f, '(X'];                            % assemble function call strings
-argstrd = [f, '(X+dx'];
-for i = 1:(nargin - 3)
-	argstr = [argstr, ',P', int2str(i)];
-	argstrd = [argstrd, ',P', int2str(i)];
-end
-argstr = [argstr, ')'];
-argstrd = [argstrd, ')'];
+% argstr = [f, '(X'];                          % assemble function call strings
+% argstrd = [f, '(X+dx'];
+% for i = 1:(nargin - 3)
+% 	argstr = [argstr, ',P', int2str(i)];
+% 	argstrd = [argstrd, ',P', int2str(i)];
+% end
+% argstr = [argstr, ')'];
+% argstrd = [argstrd, ')'];
 
-[y dy] = eval(argstr);                         % get the partial derivatives dy
+[y, dy] = feval(f, X, varargin{:});               % get the partial derivatives dy
 
 dh = zeros(length(X),1) ;
 for j = 1:length(X)
 	dx = zeros(length(X),1);
 	dx(j) = dx(j) + e;                               % perturb a single dimension
-	y2 = eval(argstrd);
+	y2 = feval(f, X + dx, varargin{:});
 	dx = -dx ;
-	y1 = eval(argstrd);
+	y1 = feval(f, X + dx, varargin{:});
 	dh(j) = (y2 - y1)/(2*e);
 end
 
