@@ -12,17 +12,17 @@ classdef GammasynOptions < handle
 			'eigenvaluederivative',	GammaEigenvalueDerivativeType.getDefaultValue(),...
 			'eigenvaluefilter',		GammaEigenvalueFilterType.getDefaultValue(),...
 			'eigenvalueignoreinf',	false,...
-			'couplingcontrol',		struct(...
-				'couplingconditions',			uint32(0),...
-				'couplingstrategy',				GammaCouplingStrategy.getDefaultValue(),...
-				'sortingstrategy_coupling',		GammaCouplingconditionSortingStrategy.getDefaultValue(),...
-				'weight_coupling',				1,...
+			'decouplingcontrol',	struct(...
+				'tf_structure',					[],...
+				'decouplingstrategy',			GammaDecouplingStrategy.getDefaultValue(),...
+				'sortingstrategy_decoupling',	GammaDecouplingconditionSortingStrategy.getDefaultValue(),...
+				'weight_decoupling',			1,...
 				'weight_prefilter',				1,...
-				'tolerance_coupling',			0,...
+				'tolerance_decoupling',			0,...
 				'tolerance_prefilter',			0,...
 				'solvesymbolic',				true,...
 				'round_equations_to_digits',	NaN,...
-				'allowoutputcoupling',			false...
+				'allowoutputdecoupling',		false...
 			),...
 			'objective',			struct(...
 				'preventNaN',		false,...
@@ -56,17 +56,17 @@ classdef GammasynOptions < handle
 			'eigenvaluederivative',	GammaEigenvalueDerivativeType.getDefaultValue(),...
 			'eigenvaluefilter',		GammaEigenvalueFilterType.getDefaultValue(),...
 			'eigenvalueignoreinf',	false,...
-			'couplingcontrol',		struct(...
-				'couplingconditions',			uint32(0),...
-				'couplingstrategy',				GammaCouplingStrategy.getDefaultValue(),...
-				'sortingstrategy_coupling',		GammaCouplingconditionSortingStrategy.getDefaultValue(),...
-				'weight_coupling',				1,...
+			'decouplingcontrol',	struct(...
+				'tf_structure',					[],...
+				'decouplingstrategy',			GammaDecouplingStrategy.getDefaultValue(),...
+				'sortingstrategy_decoupling',	GammaDecouplingconditionSortingStrategy.getDefaultValue(),...
+				'weight_decoupling',			1,...
 				'weight_prefilter',				1,...
-				'tolerance_coupling',			NaN,...
+				'tolerance_decoupling',			NaN,...
 				'tolerance_prefilter',			NaN,...
 				'solvesymbolic',				false,...
 				'round_equations_to_digits',	NaN,...
-				'allowoutputcoupling',			false...
+				'allowoutputdecoupling',		false...
 			),...
 			'objective',			struct(...
 				'preventNaN',		false,...
@@ -116,8 +116,8 @@ classdef GammasynOptions < handle
 		eigenvaluefilter = [];
 		% indicator for ignoring infinte eigenvalues to use
 		eigenvalueignoreinf = [];
-		% options for coupling controller design
-		couplingcontrol = [];
+		% options for decoupling controller design
+		decouplingcontrol = [];
 		% options for objective functions
 		objective = [];
 		% indicator if negative weights are allowed
@@ -141,26 +141,26 @@ classdef GammasynOptions < handle
 		samples = [];
 		% structure with number of samples for genmat system blocks
 		Blocks = [];
-		% number of coupling conditions
-		couplingconditions = [];
-		% strategy for coupling controller design
-		couplingstrategy = [];
-		% strategy for sorting coupling conditions
-		sortingstrategy_coupling = [];
-		% weight for coupling controller design constraints
-		weight_coupling = [];
-		% weight for prefilter coupling controller design constraints
+		% structure of transfer matrix
+		tf_structure = [];
+		% strategy for decoupling controller design
+		decouplingstrategy = [];
+		% strategy for sorting decoupling conditions
+		sortingstrategy_decoupling = [];
+		% weight for decoupling controller design constraints
+		weight_decoupling = [];
+		% weight for prefilter decoupling controller design constraints
 		weight_prefilter = [];
-		% tolerance for coupling controller design constraints
-		tolerance_coupling = [];
-		% tolerance for regularization of prefilter in coupling controller design
+		% tolerance for decoupling controller design constraints
+		tolerance_decoupling = [];
+		% tolerance for regularization of prefilter in decoupling controller design
 		tolerance_prefilter = [];
-		% setting to perform calculations for coupling constraints symbolically
+		% setting to perform calculations for decoupling constraints symbolically
 		solvesymbolic = [];
 		% setting to how many decimal places systems of equations that have to be solved are rounded in case of numerical difficulties
 		round_equations_to_digits = [];
-		% indicator wheter ouput feedback is allowed for coupling controller design
-		allowoutputcoupling = [];
+		% indicator wheter ouput feedback is allowed for decoupling controller design
+		allowoutputdecoupling = [];
 		% indicator if NaN should be prevented in objective functions
 		preventNaN = [];
 		% kreisselmeier objective parameter rho
@@ -200,8 +200,8 @@ classdef GammasynOptions < handle
 		eigenvaluefilter_internal = [];
 		% indicator for ignoring infinite eigenvalues to use (internal)
 		eigenvalueignoreinf_internal = [];
-		% options for coupling controller design (internal)
-		couplingcontrol_internal = [];
+		% options for decoupling controller design (internal)
+		decouplingcontrol_internal = [];
 		% options for objective functions (internal)
 		objective_internal = [];
 		% indicator if negative weights are allowed (internal)
@@ -233,18 +233,18 @@ classdef GammasynOptions < handle
 		eigenvaluefilter_user = false;
 		% indicator if user set 'eigenvalueignoreinf' option
 		eigenvalueignoreinf_user = false;
-		% indicator if user set 'couplingcontrol' option
-		couplingcontrol_user = struct(...
-			'couplingconditions',			false,...
-			'couplingstrategy',				false,...
-			'sortingstrategy_coupling',		false,...
-			'weight_coupling',				false,...
+		% indicator if user set 'decouplingcontrol' option
+		decouplingcontrol_user = struct(...
+			'tf_structure',					false,...
+			'decouplingstrategy',			false,...
+			'sortingstrategy_decoupling',	false,...
+			'weight_decoupling',			false,...
 			'weight_prefilter',				false,...
-			'tolerance_coupling',			false,...
+			'tolerance_decoupling',			false,...
 			'tolerance_prefilter',			false,...
 			'solvesymbolic',				false,...
 			'round_equations_to_digits',	false,...
-			'allowoutputcoupling',			false...
+			'allowoutputdecoupling',			false...
 		);
 		% indicator if user set 'objective' option
 		objective_user = struct(...
@@ -379,94 +379,94 @@ classdef GammasynOptions < handle
 			eigenvalueignoreinf = this.eigenvalueignoreinf_internal;
 		end
 
-		function [couplingcontrol] = get.couplingcontrol(this)
-			%COUPLINGCONTROL getter for coupling controller design settings
+		function [decouplingcontrol] = get.decouplingcontrol(this)
+			%DECOUPLINGCONTROL getter for decoupling controller design settings
 			%	Input:
 			%		this:				instance
 			%	Output:
-			%		couplingcontrol:	structure with coupling controller design settings
-			if isstruct(this.couplingcontrol_internal)
-				couplingcontrol = this.couplingcontrol_internal;
+			%		decouplingcontrol:	structure with decoupling controller design settings
+			if isstruct(this.decouplingcontrol_internal)
+				decouplingcontrol = this.decouplingcontrol_internal;
 			else
-				couplingcontrol = struct();
+				decouplingcontrol = struct();
 			end
 		end
 
-		function [couplingconditions] = get.couplingconditions(this)
-			%COUPLINGCONDITIONS getter for number of coupling conditions
+		function [tf_structure] = get.tf_structure(this)
+			%TF_STRUCTURE getter for structure of the transfer matrix
+			%	Input:
+			%		this:			instance
+			%	Output:
+			%		tf_structure:	structure of the transfer matrix
+			if isstruct(this.decouplingcontrol_internal) && isfield(this.decouplingcontrol_internal, 'tf_structure')
+				tf_structure = this.decouplingcontrol_internal.tf_structure;
+			else
+				tf_structure = [];
+			end
+		end
+
+		function [decouplingstrategy] = get.decouplingstrategy(this)
+			%DECOUPLINGSTRATEGY getter for decoupling controller design strategy
 			%	Input:
 			%		this:				instance
 			%	Output:
-			%		couplingconditions:	number of couplingconditions
-			if isstruct(this.couplingcontrol_internal) && isfield(this.couplingcontrol_internal, 'couplingconditions')
-				couplingconditions = this.couplingcontrol_internal.couplingconditions;
+			%		decouplingstrategy:	decoupling controller design strategy
+			if isstruct(this.decouplingcontrol_internal) && isfield(this.decouplingcontrol_internal, 'decouplingstrategy')
+				decouplingstrategy = this.decouplingcontrol_internal.decouplingstrategy;
 			else
-				couplingconditions = [];
+				decouplingstrategy = [];
 			end
 		end
 
-		function [couplingstrategy] = get.couplingstrategy(this)
-			%COUPLINGSTRATEGY getter for coupling controller design strategy
-			%	Input:
-			%		this:				instance
-			%	Output:
-			%		couplingstrategy:	coupling controller design strategy
-			if isstruct(this.couplingcontrol_internal) && isfield(this.couplingcontrol_internal, 'couplingstrategy')
-				couplingstrategy = this.couplingcontrol_internal.couplingstrategy;
-			else
-				couplingstrategy = [];
-			end
-		end
-
-		function [sortingstrategy_coupling] = get.sortingstrategy_coupling(this)
-			%SORTINGSTRATEGY_COUPLING getter for sorting strategy for coupling conditions
+		function [sortingstrategy_decoupling] = get.sortingstrategy_decoupling(this)
+			%SORTINGSTRATEGY_DECOUPLING getter for sorting strategy for decoupling conditions
 			%	Input:
 			%		this:						instance
 			%	Output:
-			%		sortingstrategy_coupling:	coupling controller design strategy
-			if isstruct(this.couplingcontrol_internal) && isfield(this.couplingcontrol_internal, 'sortingstrategy_coupling')
-				sortingstrategy_coupling = this.couplingcontrol_internal.sortingstrategy_coupling;
+			%		sortingstrategy_decoupling:	decoupling controller design strategy
+			if isstruct(this.decouplingcontrol_internal) && isfield(this.decouplingcontrol_internal, 'sortingstrategy_decoupling')
+				sortingstrategy_decoupling = this.decouplingcontrol_internal.sortingstrategy_decoupling;
 			else
-				sortingstrategy_coupling = [];
+				sortingstrategy_decoupling = [];
 			end
 		end
 
-		function [weight_coupling] = get.weight_coupling(this)
-			%WEIGHT_COUPLING getter for weight of coupling controller design constraints
+		function [weight_decoupling] = get.weight_decoupling(this)
+			%WEIGHT_DECOUPLING getter for weight of decoupling controller design constraints
 			%	Input:
 			%		this:				instance
 			%	Output:
-			%		weight_coupling:	weight for coupling controller design constraints
-			if isstruct(this.couplingcontrol_internal) && isfield(this.couplingcontrol_internal, 'weight_coupling')
-				weight_coupling = this.couplingcontrol_internal.weight_coupling;
+			%		weight_decoupling:	weight for decoupling controller design constraints
+			if isstruct(this.decouplingcontrol_internal) && isfield(this.decouplingcontrol_internal, 'weight_decoupling')
+				weight_decoupling = this.decouplingcontrol_internal.weight_decoupling;
 			else
-				weight_coupling = [];
+				weight_decoupling = [];
 			end
 		end
 
 		function [weight_prefilter] = get.weight_prefilter(this)
-			%WEIGHT_PREFILTER getter for weight of prefilter coupling controller design constraints
+			%WEIGHT_PREFILTER getter for weight of prefilter decoupling controller design constraints
 			%	Input:
 			%		this:				instance
 			%	Output:
-			%		weight_prefilter:	weight for prefilter coupling controller design constraints
-			if isstruct(this.couplingcontrol_internal) && isfield(this.couplingcontrol_internal, 'weight_prefilter')
-				weight_prefilter = this.couplingcontrol_internal.weight_prefilter;
+			%		weight_prefilter:	weight for prefilter decoupling controller design constraints
+			if isstruct(this.decouplingcontrol_internal) && isfield(this.decouplingcontrol_internal, 'weight_prefilter')
+				weight_prefilter = this.decouplingcontrol_internal.weight_prefilter;
 			else
 				weight_prefilter = [];
 			end
 		end
 
-		function [tolerance_coupling] = get.tolerance_coupling(this)
-			%TOLERANCE_COUPLING getter for tolerance of coupling controller design constraints
+		function [tolerance_decoupling] = get.tolerance_decoupling(this)
+			%TOLERANCE_DECOUPLING getter for tolerance of decoupling controller design constraints
 			%	Input:
 			%		this:				instance
 			%	Output:
-			%		tolerance_coupling:	tolerance for coupling controller design constraints
-			if isstruct(this.couplingcontrol_internal) && isfield(this.couplingcontrol_internal, 'tolerance_coupling')
-				tolerance_coupling = this.couplingcontrol_internal.tolerance_coupling;
+			%		tolerance_decoupling:	tolerance for decoupling controller design constraints
+			if isstruct(this.decouplingcontrol_internal) && isfield(this.decouplingcontrol_internal, 'tolerance_decoupling')
+				tolerance_decoupling = this.decouplingcontrol_internal.tolerance_decoupling;
 			else
-				tolerance_coupling = [];
+				tolerance_decoupling = [];
 			end
 		end
 
@@ -475,22 +475,22 @@ classdef GammasynOptions < handle
 			%	Input:
 			%		this:				instance
 			%	Output:
-			%		tolerance_prefilter:	tolerance for coupling controller design constraints
-			if isstruct(this.couplingcontrol_internal) && isfield(this.couplingcontrol_internal, 'tolerance_prefilter')
-				tolerance_prefilter = this.couplingcontrol_internal.tolerance_prefilter;
+			%		tolerance_prefilter:	tolerance for decoupling controller design constraints
+			if isstruct(this.decouplingcontrol_internal) && isfield(this.decouplingcontrol_internal, 'tolerance_prefilter')
+				tolerance_prefilter = this.decouplingcontrol_internal.tolerance_prefilter;
 			else
 				tolerance_prefilter = [];
 			end
 		end
 
 		function [solvesymbolic] = get.solvesymbolic(this)
-			%SOLVESYMBOLIC getter for setting to perform calculations for coupling constraints symbolically
+			%SOLVESYMBOLIC getter for setting to perform calculations for decoupling constraints symbolically
 			%	Input:
 			%		this:			instance
 			%	Output:
-			%		solvesymbolic:	setting to perform calculations for coupling constraints symbolically
-			if isstruct(this.couplingcontrol_internal) && isfield(this.couplingcontrol_internal, 'solvesymbolic')
-				solvesymbolic = this.couplingcontrol_internal.solvesymbolic;
+			%		solvesymbolic:	setting to perform calculations for decoupling constraints symbolically
+			if isstruct(this.decouplingcontrol_internal) && isfield(this.decouplingcontrol_internal, 'solvesymbolic')
+				solvesymbolic = this.decouplingcontrol_internal.solvesymbolic;
 			else
 				solvesymbolic = [];
 			end
@@ -502,23 +502,23 @@ classdef GammasynOptions < handle
 			%		this:						instance
 			%	Output:
 			%		round_equations_to_digits:	setting for rounding to number of decimal places
-			if isstruct(this.couplingcontrol_internal) && isfield(this.couplingcontrol_internal, 'round_equations_to_digits')
-				round_equations_to_digits = this.couplingcontrol_internal.round_equations_to_digits;
+			if isstruct(this.decouplingcontrol_internal) && isfield(this.decouplingcontrol_internal, 'round_equations_to_digits')
+				round_equations_to_digits = this.decouplingcontrol_internal.round_equations_to_digits;
 			else
 				round_equations_to_digits = [];
 			end
 		end
 
-		function [allowoutputcoupling] = get.allowoutputcoupling(this)
-			%ALLOWOUPUTCOUPLING getter for indicator whether ouput feedback is allowed for coupling control
+		function [allowoutputdecoupling] = get.allowoutputdecoupling(this)
+			%ALLOWOUPUTDECOUPLING getter for indicator whether ouput feedback is allowed for decoupling control
 			%	Input:
 			%		this:					instance
 			%	Output:
-			%		allowoutputcoupling:	indicator whether output feedback is allowed for coupling control
-			if isstruct(this.couplingcontrol_internal) && isfield(this.couplingcontrol_internal, 'allowoutputcoupling')
-				allowoutputcoupling = this.couplingcontrol_internal.allowoutputcoupling;
+			%		allowoutputdecoupling:	indicator whether output feedback is allowed for decoupling control
+			if isstruct(this.decouplingcontrol_internal) && isfield(this.decouplingcontrol_internal, 'allowoutputdecoupling')
+				allowoutputdecoupling = this.decouplingcontrol_internal.allowoutputdecoupling;
 			else
-				allowoutputcoupling = [];
+				allowoutputdecoupling = [];
 			end
 		end
 
@@ -870,66 +870,66 @@ classdef GammasynOptions < handle
 			this.eigenvalueignoreinf_user = true;
 		end
 
-		function [] = set.couplingcontrol(this, couplingcontrol)
-			%OBJECTIVE setter for coupling controller design options
+		function [] = set.decouplingcontrol(this, decouplingcontrol)
+			%OBJECTIVE setter for decoupling controller design options
 			%	Input:
 			%		this:				instance
-			%		couplingcontrol:	structure with coupling controller design options
-			this.useoptions(struct('couplingcontrol', couplingcontrol));
+			%		decouplingcontrol:	structure with decoupling controller design options
+			this.useoptions(struct('decouplingcontrol', decouplingcontrol));
 		end
 
-		function [] = set.couplingconditions(this, couplingconditions)
-			%COUPLINGCONDITIONS setter for number of couplingconditions
+		function [] = set.tf_structure(this, tf_structure)
+			%TF_STRUCTURE setter for the structure of the transfer matrix
 			%	Input:
-			%		this:				instance
-			%		couplingconditions:	number of couplingconditions
-			this.couplingcontrol_internal.couplingconditions = this.checkProperty('couplingconditions', couplingconditions);
-			this.couplingcontrol_user.couplingconditions = true;
+			%		this:			instance
+			%		tf_structure:	structure of the transfer matrix
+			this.decouplingcontrol_internal.tf_structure = this.checkProperty('tf_structure', tf_structure);
+			this.decouplingcontrol_user.tf_structure = true;
 		end
 
-		function [] = set.couplingstrategy(this, strategy)
-			%COUPLINGSTRATEGY setter for coupling controller design strategy
+		function [] = set.decouplingstrategy(this, strategy)
+			%DECOUPLINGSTRATEGY setter for decoupling controller design strategy
 			%	Input:
 			%		this:		instance
-			%		strategy:	coupling controller design strategy
-			this.couplingcontrol_internal.couplingstrategy = this.checkProperty('couplingstrategy', strategy);
-			this.couplingcontrol_user.couplingstrategy = true;
+			%		strategy:	decoupling controller design strategy
+			this.decouplingcontrol_internal.decouplingstrategy = this.checkProperty('decouplingstrategy', strategy);
+			this.decouplingcontrol_user.decouplingstrategy = true;
 		end
 
-		function [] = set.sortingstrategy_coupling(this, strategy)
-			%SORTINGSTRATEGY_COUPLING setter for coupling condition sorting strategy
+		function [] = set.sortingstrategy_decoupling(this, strategy)
+			%SORTINGSTRATEGY_DECOUPLING setter for decoupling condition sorting strategy
 			%	Input:
 			%		this:		instance
-			%		strategy:	coupling condition sorting strategy
-			this.couplingcontrol_internal.sortingstrategy_coupling = this.checkProperty('sortingstrategy_coupling', strategy);
-			this.couplingcontrol_user.sortingstrategy_coupling = true;
+			%		strategy:	decoupling condition sorting strategy
+			this.decouplingcontrol_internal.sortingstrategy_decoupling = this.checkProperty('sortingstrategy_decoupling', strategy);
+			this.decouplingcontrol_user.sortingstrategy_decoupling = true;
 		end
 
-		function [] = set.weight_coupling(this, weight_coupling)
-			%WEIGHT_COUPLING setter for weight of coupling condition constraints
+		function [] = set.weight_decoupling(this, weight_decoupling)
+			%WEIGHT_DECOUPLING setter for weight of decoupling condition constraints
 			%	Input:
 			%		this:				instance
-			%		weight_coupling:	weight of coupling condition constraints
-			this.couplingcontrol_internal.weight_coupling = this.checkProperty('weight_coupling', weight_coupling);
-			this.couplingcontrol_user.weight_coupling = true;
+			%		weight_decoupling:	weight of decoupling condition constraints
+			this.decouplingcontrol_internal.weight_decoupling = this.checkProperty('weight_decoupling', weight_decoupling);
+			this.decouplingcontrol_user.weight_decoupling = true;
 		end
 
 		function [] = set.weight_prefilter(this, weight_prefilter)
-			%WEIGHT_PREFILTER setter for weight of prefilter coupling condition constraints
+			%WEIGHT_PREFILTER setter for weight of prefilter decoupling condition constraints
 			%	Input:
 			%		this:				instance
-			%		weight_prefilter:	weight of prefilter coupling condition constraints
-			this.couplingcontrol_internal.weight_prefilter = this.checkProperty('weight_prefilter', weight_prefilter);
-			this.couplingcontrol_user.weight_prefilter = true;
+			%		weight_prefilter:	weight of prefilter decoupling condition constraints
+			this.decouplingcontrol_internal.weight_prefilter = this.checkProperty('weight_prefilter', weight_prefilter);
+			this.decouplingcontrol_user.weight_prefilter = true;
 		end
 
-		function [] = set.tolerance_coupling(this, tolerance_coupling)
-			%TOLERNACE_COUPLING setter for tolerance of coupling condition constraints
+		function [] = set.tolerance_decoupling(this, tolerance_decoupling)
+			%TOLERNACE_DECOUPLING setter for tolerance of decoupling condition constraints
 			%	Input:
 			%		this:				instance
-			%		tolerance_coupling:	tolerance of coupling condition constraints
-			this.couplingcontrol_internal.tolerance_coupling = this.checkProperty('tolerance_coupling', tolerance_coupling);
-			this.couplingcontrol_user.tolerance_coupling = true;
+			%		tolerance_decoupling:	tolerance of decoupling condition constraints
+			this.decouplingcontrol_internal.tolerance_decoupling = this.checkProperty('tolerance_decoupling', tolerance_decoupling);
+			this.decouplingcontrol_user.tolerance_decoupling = true;
 		end
 
 		function [] = set.tolerance_prefilter(this, tolerance_prefilter)
@@ -937,8 +937,8 @@ classdef GammasynOptions < handle
 			%	Input:
 			%		this:				instance
 			%		tolerance_prefilter:	tolerance of prefilter regularization constraint
-			this.couplingcontrol_internal.tolerance_prefilter = this.checkProperty('tolerance_prefilter', tolerance_prefilter);
-			this.couplingcontrol_user.tolerance_prefilter = true;
+			this.decouplingcontrol_internal.tolerance_prefilter = this.checkProperty('tolerance_prefilter', tolerance_prefilter);
+			this.decouplingcontrol_user.tolerance_prefilter = true;
 		end
 
 		function [] = set.solvesymbolic(this, solvesymbolic)
@@ -946,8 +946,8 @@ classdef GammasynOptions < handle
 			%	Input:
 			%		this:			instance
 			%		solvesymbolic:	indicator if symbolic calculations should be used
-			this.couplingcontrol_internal.solvesymbolic = this.checkProperty('solvesymbolic', solvesymbolic);
-			this.couplingcontrol_user.solvesymbolic = true;
+			this.decouplingcontrol_internal.solvesymbolic = this.checkProperty('solvesymbolic', solvesymbolic);
+			this.decouplingcontrol_user.solvesymbolic = true;
 		end
 
 		function [] = set.round_equations_to_digits(this, round_equations_to_digits)
@@ -955,17 +955,17 @@ classdef GammasynOptions < handle
 			%	Input:
 			%		this:						instance
 			%		round_equations_to_digits:	indicator to how many decimal places systems of equations should be rounded in case of numerical difficulties
-			this.couplingcontrol_internal.round_equations_to_digits = this.checkProperty('round_equations_to_digits', round_equations_to_digits);
-			this.couplingcontrol_user.round_equations_to_digits = true;
+			this.decouplingcontrol_internal.round_equations_to_digits = this.checkProperty('round_equations_to_digits', round_equations_to_digits);
+			this.decouplingcontrol_user.round_equations_to_digits = true;
 		end
 
-		function [] = set.allowoutputcoupling(this, allowoutputcoupling)
-			%ALLOWOUPUTCOUPLING setter for indicator whether output feedback is allowed for coupling control
+		function [] = set.allowoutputdecoupling(this, allowoutputdecoupling)
+			%ALLOWOUPUTDECOUPLING setter for indicator whether output feedback is allowed for decoupling control
 			%	Input:
 			%		this:					instance
-			%		allowoutputcoupling:	indicator whether output feedback is allowed for coupling control
-			this.couplingcontrol_internal.allowoutputcoupling = this.checkProperty('allowoutputcoupling', allowoutputcoupling);
-			this.couplingcontrol_user.allowoutputcoupling = true;
+			%		allowoutputdecoupling:	indicator whether output feedback is allowed for decoupling control
+			this.decouplingcontrol_internal.allowoutputdecoupling = this.checkProperty('allowoutputdecoupling', allowoutputdecoupling);
+			this.decouplingcontrol_user.allowoutputdecoupling = true;
 		end
 
 		function [] = set.objective(this, objective)
@@ -1212,16 +1212,16 @@ classdef GammasynOptions < handle
 				'eigenvaluederivative',			true,	true,		{},									false;
 				'eigenvaluefilter',				true,	true,		{},									false;
 				'eigenvalueignoreinf',			true,	true,		{},									false;
-				'couplingconditions',			false,	true,		{'couplingcontrol'},				false;
-				'couplingstrategy',				false,	true,		{'couplingcontrol'},				false;
-				'sortingstrategy_coupling',		false,	true,		{'couplingcontrol'},				false;
-				'weight_coupling',				false,	true,		{'couplingcontrol'},				false;
-				'weight_prefilter',				false,	true,		{'couplingcontrol'},				false;
-				'tolerance_coupling',			false,	true,		{'couplingcontrol'},				false;
-				'tolerance_prefilter',			false,	true,		{'couplingcontrol'},				false;
-				'solvesymbolic',				false,	true,		{'couplingcontrol'},				false;
-				'round_equations_to_digits',	false,	true,		{'couplingcontrol'},				false;
-				'allowoutputcoupling',			false,	true,		{'couplingcontrol'},				false;
+				'tf_structure',					false,	true,		{'decouplingcontrol'},				false;
+				'decouplingstrategy',			false,	true,		{'decouplingcontrol'},				false;
+				'sortingstrategy_decoupling',	false,	true,		{'decouplingcontrol'},				false;
+				'weight_decoupling',			false,	true,		{'decouplingcontrol'},				false;
+				'weight_prefilter',				false,	true,		{'decouplingcontrol'},				false;
+				'tolerance_decoupling',			false,	true,		{'decouplingcontrol'},				false;
+				'tolerance_prefilter',			false,	true,		{'decouplingcontrol'},				false;
+				'solvesymbolic',				false,	true,		{'decouplingcontrol'},				false;
+				'round_equations_to_digits',	false,	true,		{'decouplingcontrol'},				false;
+				'allowoutputdecoupling',		false,	true,		{'decouplingcontrol'},				false;
 				'preventNaN',					false,	true,		{'objective'},						false;
 				'rho',							false,	true,		{'objective', 'kreisselmeier'},		false;
 				'max',							false,	true,		{'objective', 'kreisselmeier'},		false;
@@ -1257,17 +1257,17 @@ classdef GammasynOptions < handle
 			this.eigenvaluederivative_user = false;
 			this.eigenvaluefilter_user = false;
 			this.eigenvalueignoreinf_user = false;
-			this.couplingcontrol_user = struct(...
-				'couplingconditions',			false,...
-				'couplingstrategy',				false,...
-				'sortingstrategy_coupling',		false,...
-				'weight_coupling',				false,...
+			this.decouplingcontrol_user = struct(...
+				'tf_structure',					false,...
+				'decouplingstrategy',			false,...
+				'sortingstrategy_decoupling',	false,...
+				'weight_decoupling',			false,...
 				'weight_prefilter',				false,...
-				'tolerance_coupling',			false,...
+				'tolerance_decoupling',			false,...
 				'tolerance_prefilter',			false,...
 				'solvesymbolic',				false,...
 				'round_equations_to_digits',	false,...
-				'allowoutputcoupling',			false...
+				'allowoutputdecoupling',		false...
 			);
 			this.objective_user = struct(...
 				'preventNaN',		false,...
@@ -1312,17 +1312,17 @@ classdef GammasynOptions < handle
 			this.eigenvaluederivative_internal = proto.eigenvaluederivative;
 			this.eigenvaluefilter_internal = proto.eigenvaluefilter;
 			this.eigenvalueignoreinf_internal = proto.eigenvalueignoreinf;
-			this.couplingcontrol_internal = struct(...
-				'couplingconditions',			proto.couplingcontrol.couplingconditions,...
-				'couplingstrategy',				proto.couplingcontrol.couplingstrategy,...
-				'sortingstrategy_coupling',		proto.couplingcontrol.sortingstrategy_coupling,...
-				'weight_coupling',				proto.couplingcontrol.weight_coupling,...
-				'weight_prefilter',				proto.couplingcontrol.weight_prefilter,...
-				'tolerance_coupling',			proto.couplingcontrol.tolerance_coupling,...
-				'tolerance_prefilter',			proto.couplingcontrol.tolerance_prefilter,...
-				'solvesymbolic',				proto.couplingcontrol.solvesymbolic,...
-				'round_equations_to_digits',	proto.couplingcontrol.round_equations_to_digits,...
-				'allowoutputcoupling',			proto.couplingcontrol.allowoutputcoupling...
+			this.decouplingcontrol_internal = struct(...
+				'tf_structure',					proto.decouplingcontrol.tf_structure,...
+				'decouplingstrategy',			proto.decouplingcontrol.decouplingstrategy,...
+				'sortingstrategy_decoupling',	proto.decouplingcontrol.sortingstrategy_decoupling,...
+				'weight_decoupling',			proto.decouplingcontrol.weight_decoupling,...
+				'weight_prefilter',				proto.decouplingcontrol.weight_prefilter,...
+				'tolerance_decoupling',			proto.decouplingcontrol.tolerance_decoupling,...
+				'tolerance_prefilter',			proto.decouplingcontrol.tolerance_prefilter,...
+				'solvesymbolic',				proto.decouplingcontrol.solvesymbolic,...
+				'round_equations_to_digits',	proto.decouplingcontrol.round_equations_to_digits,...
+				'allowoutputdecoupling',		proto.decouplingcontrol.allowoutputdecoupling...
 			);
 			this.objective_internal = struct(...
 				'preventNaN',		proto.objective.preventNaN,...
@@ -1798,19 +1798,19 @@ classdef GammasynOptions < handle
 								error('control:design:gamma:GammasynOptions:input', 'Option ''system'' does not have field%s ''%s''.', iftern(length(names) > 1, 's', ''), strjoin(names, ''', '''));
 							end
 						end
-					elseif strcmpi(sub(1).subs, 'couplingcontrol')
+					elseif strcmpi(sub(1).subs, 'decouplingcontrol')
 						% 'system' property requested
-						couplingcontrolnames = {
-							'couplingconditions';
-							'couplingstrategy';
-							'sortingstrategy_coupling';
-							'weight_coupling';
+						decouplingcontrolnames = {
+							'tf_structure';
+							'decouplingstrategy';
+							'sortingstrategy_decoupling';
+							'weight_decoupling';
 							'weight_prefilter';
-							'tolerance_coupling';
+							'tolerance_decoupling';
 							'tolerance_prefilter';
 							'solvesymbolic';
 							'round_equations_to_digits';
-							'allowoutputcoupling'
+							'allowoutputdecoupling'
 						};
 						if length(sub) > 1
 							% deeper indexing requested
@@ -1824,11 +1824,11 @@ classdef GammasynOptions < handle
 										sub(2) = [];
 									else
 										try
-											subsref(instance(ii).couplingcontrol_internal, sub(2:end));
+											subsref(instance(ii).decouplingcontrol_internal, sub(2:end));
 										catch e
 											error(e.identifier, e.message);
 										end
-										error('control:design:gamma:GammasynOptions:input', 'Undefined indexing type for Option ''couplingcontrol''.');
+										error('control:design:gamma:GammasynOptions:input', 'Undefined indexing type for Option ''decouplingcontrol''.');
 									end
 								else
 									% this.system(:, :, ...) and this.system(1, 1, ....) are ok, others are converted to error by call to subsref
@@ -1840,24 +1840,24 @@ classdef GammasynOptions < handle
 										sub(2) = [];
 									else
 										try
-											subsref(instance(ii).couplingcontrol_internal, sub(2:end));
+											subsref(instance(ii).decouplingcontrol_internal, sub(2:end));
 										catch e
 											error(e.identifier, e.message);
 										end
-										error('control:design:gamma:GammasynOptions:input', 'Undefined indexing type for Option ''couplingcontrol''.');
+										error('control:design:gamma:GammasynOptions:input', 'Undefined indexing type for Option ''decouplingcontrol''.');
 									end
 								end
 							end
 						end
 						if length(sub) > 1
 							% setting options under this.system requested
-							if strcmp(sub(2).type, '.') && any(strcmpi(sub(2).subs, couplingcontrolnames))
+							if strcmp(sub(2).type, '.') && any(strcmpi(sub(2).subs, decouplingcontrolnames))
 								% setting this.system.option
 								names = {sub(2).subs};
-								if strcmp(sub(2).subs, 'couplingconditions')
+								if strcmp(sub(2).subs, 'tf_structure')
 									if length(sub) > 2
 										% further indexing into option
-										tmp = instance(ii).couplingcontrol_internal.couplingconditions;
+										tmp = instance(ii).decouplingcontrol_internal.tf_structure;
 										if ~iscell(tmp) && strcmpi(sub(3).type, '{}')
 											% matlab R2015B crashes if cell index assignment is used for numerical values
 											error('control:design:gamma:GammasynOptions:input', 'Cell contents assignment to a non-cell array object. ');
@@ -1868,14 +1868,14 @@ classdef GammasynOptions < handle
 										% setting option directly
 										prop = varargin{ii};
 									end
-									instance(ii).couplingcontrol_internal.couplingconditions = instance(ii).checkProperty('couplingconditions', prop);
-									instance(ii).couplingcontrol_user.couplingconditions = true;
-									names(strcmp('couplingconditions', names)) = [];
+									instance(ii).decouplingcontrol_internal.tf_structure = instance(ii).checkProperty('tf_structure', prop);
+									instance(ii).decouplingcontrol_user.tf_structure = true;
+									names(strcmp('tf_structure', names)) = [];
 								end
-								if strcmp(sub(2).subs, 'couplingstrategy')
+								if strcmp(sub(2).subs, 'decouplingstrategy')
 									if length(sub) > 2
 										% further indexing into option
-										tmp = instance(ii).couplingcontrol_internal.couplingstrategy;
+										tmp = instance(ii).decouplingcontrol_internal.decouplingstrategy;
 										if ~iscell(tmp) && strcmpi(sub(3).type, '{}')
 											% matlab R2015B crashes if cell index assignment is used for numerical values
 											error('control:design:gamma:GammasynOptions:input', 'Cell contents assignment to a non-cell array object. ');
@@ -1886,14 +1886,14 @@ classdef GammasynOptions < handle
 										% setting option directly
 										prop = varargin{ii};
 									end
-									instance(ii).couplingcontrol_internal.couplingstrategy = instance(ii).checkProperty('couplingstrategy', prop);
-									instance(ii).couplingcontrol_user.couplingstrategy = true;
-									names(strcmp('couplingstrategy', names)) = [];
+									instance(ii).decouplingcontrol_internal.decouplingstrategy = instance(ii).checkProperty('decouplingstrategy', prop);
+									instance(ii).decouplingcontrol_user.decouplingstrategy = true;
+									names(strcmp('decouplingstrategy', names)) = [];
 								end
-								if strcmp(sub(2).subs, 'sortingstrategy_coupling')
+								if strcmp(sub(2).subs, 'sortingstrategy_decoupling')
 									if length(sub) > 2
 										% further indexing into option
-										tmp = instance(ii).couplingcontrol_internal.sortingstrategy_coupling;
+										tmp = instance(ii).decouplingcontrol_internal.sortingstrategy_decoupling;
 										if ~iscell(tmp) && strcmpi(sub(3).type, '{}')
 											% matlab R2015B crashes if cell index assignment is used for numerical values
 											error('control:design:gamma:GammasynOptions:input', 'Cell contents assignment to a non-cell array object. ');
@@ -1904,14 +1904,14 @@ classdef GammasynOptions < handle
 										% setting option directly
 										prop = varargin{ii};
 									end
-									instance(ii).couplingcontrol_internal.sortingstrategy_coupling = instance(ii).checkProperty('sortingstrategy_coupling', prop);
-									instance(ii).couplingcontrol_user.sortingstrategy_coupling = true;
-									names(strcmp('sortingstrategy_coupling', names)) = [];
+									instance(ii).decouplingcontrol_internal.sortingstrategy_decoupling = instance(ii).checkProperty('sortingstrategy_decoupling', prop);
+									instance(ii).decouplingcontrol_user.sortingstrategy_decoupling = true;
+									names(strcmp('sortingstrategy_decoupling', names)) = [];
 								end
-								if strcmp(sub(2).subs, 'weight_coupling')
+								if strcmp(sub(2).subs, 'weight_decoupling')
 									if length(sub) > 2
 										% further indexing into option
-										tmp = instance(ii).couplingcontrol_internal.weight_coupling;
+										tmp = instance(ii).decouplingcontrol_internal.weight_decoupling;
 										if ~iscell(tmp) && strcmpi(sub(3).type, '{}')
 											% matlab R2015B crashes if cell index assignment is used for numerical values
 											error('control:design:gamma:GammasynOptions:input', 'Cell contents assignment to a non-cell array object. ');
@@ -1922,14 +1922,14 @@ classdef GammasynOptions < handle
 										% setting option directly
 										prop = varargin{ii};
 									end
-									instance(ii).couplingcontrol_internal.weight_coupling = instance(ii).checkProperty('weight_coupling', prop);
-									instance(ii).couplingcontrol_user.weight_coupling = true;
-									names(strcmp('weight_coupling', names)) = [];
+									instance(ii).decouplingcontrol_internal.weight_decoupling = instance(ii).checkProperty('weight_decoupling', prop);
+									instance(ii).decouplingcontrol_user.weight_decoupling = true;
+									names(strcmp('weight_decoupling', names)) = [];
 								end
 								if strcmp(sub(2).subs, 'weight_prefilter')
 									if length(sub) > 2
 										% further indexing into option
-										tmp = instance(ii).couplingcontrol_internal.weight_prefilter;
+										tmp = instance(ii).decouplingcontrol_internal.weight_prefilter;
 										if ~iscell(tmp) && strcmpi(sub(3).type, '{}')
 											% matlab R2015B crashes if cell index assignment is used for numerical values
 											error('control:design:gamma:GammasynOptions:input', 'Cell contents assignment to a non-cell array object. ');
@@ -1940,14 +1940,14 @@ classdef GammasynOptions < handle
 										% setting option directly
 										prop = varargin{ii};
 									end
-									instance(ii).couplingcontrol_internal.weight_prefilter = instance(ii).checkProperty('weight_prefilter', prop);
-									instance(ii).couplingcontrol_user.weight_prefilter = true;
+									instance(ii).decouplingcontrol_internal.weight_prefilter = instance(ii).checkProperty('weight_prefilter', prop);
+									instance(ii).decouplingcontrol_user.weight_prefilter = true;
 									names(strcmp('weight_prefilter', names)) = [];
 								end
-								if strcmp(sub(2).subs, 'tolerance_coupling')
+								if strcmp(sub(2).subs, 'tolerance_decoupling')
 									if length(sub) > 2
 										% further indexing into option
-										tmp = instance(ii).couplingcontrol_internal.tolerance_coupling;
+										tmp = instance(ii).decouplingcontrol_internal.tolerance_decoupling;
 										if ~iscell(tmp) && strcmpi(sub(3).type, '{}')
 											% matlab R2015B crashes if cell index assignment is used for numerical values
 											error('control:design:gamma:GammasynOptions:input', 'Cell contents assignment to a non-cell array object. ');
@@ -1958,14 +1958,14 @@ classdef GammasynOptions < handle
 										% setting option directly
 										prop = varargin{ii};
 									end
-									instance(ii).couplingcontrol_internal.tolerance_coupling = instance(ii).checkProperty('tolerance_coupling', prop);
-									instance(ii).couplingcontrol_user.tolerance_coupling = true;
-									names(strcmp('tolerance_coupling', names)) = [];
+									instance(ii).decouplingcontrol_internal.tolerance_decoupling = instance(ii).checkProperty('tolerance_decoupling', prop);
+									instance(ii).decouplingcontrol_user.tolerance_decoupling = true;
+									names(strcmp('tolerance_decoupling', names)) = [];
 								end
 								if strcmp(sub(2).subs, 'tolerance_prefilter')
 									if length(sub) > 2
 										% further indexing into option
-										tmp = instance(ii).couplingcontrol_internal.tolerance_prefilter;
+										tmp = instance(ii).decouplingcontrol_internal.tolerance_prefilter;
 										if ~iscell(tmp) && strcmpi(sub(3).type, '{}')
 											% matlab R2015B crashes if cell index assignment is used for numerical values
 											error('control:design:gamma:GammasynOptions:input', 'Cell contents assignment to a non-cell array object. ');
@@ -1976,14 +1976,14 @@ classdef GammasynOptions < handle
 										% setting option directly
 										prop = varargin{ii};
 									end
-									instance(ii).couplingcontrol_internal.tolerance_prefilter = instance(ii).checkProperty('tolerance_prefilter', prop);
-									instance(ii).couplingcontrol_user.tolerance_prefilter = true;
+									instance(ii).decouplingcontrol_internal.tolerance_prefilter = instance(ii).checkProperty('tolerance_prefilter', prop);
+									instance(ii).decouplingcontrol_user.tolerance_prefilter = true;
 									names(strcmp('tolerance_prefilter', names)) = [];
 								end
 								if strcmp(sub(2).subs, 'solvesymbolic')
 									if length(sub) > 2
 										% further indexing into option
-										tmp = instance(ii).couplingcontrol_internal.solvesymbolic;
+										tmp = instance(ii).decouplingcontrol_internal.solvesymbolic;
 										if ~iscell(tmp) && strcmpi(sub(3).type, '{}')
 											% matlab R2015B crashes if cell index assignment is used for numerical values
 											error('control:design:gamma:GammasynOptions:input', 'Cell contents assignment to a non-cell array object. ');
@@ -1994,14 +1994,14 @@ classdef GammasynOptions < handle
 										% setting option directly
 										prop = varargin{ii};
 									end
-									instance(ii).couplingcontrol_internal.solvesymbolic = instance(ii).checkProperty('solvesymbolic', prop);
-									instance(ii).couplingcontrol_user.solvesymbolic = true;
+									instance(ii).decouplingcontrol_internal.solvesymbolic = instance(ii).checkProperty('solvesymbolic', prop);
+									instance(ii).decouplingcontrol_user.solvesymbolic = true;
 									names(strcmp('solvesymbolic', names)) = [];
 								end
 								if strcmp(sub(2).subs, 'round_equations_to_digits')
 									if length(sub) > 2
 										% further indexing into option
-										tmp = instance(ii).couplingcontrol_internal.round_equations_to_digits;
+										tmp = instance(ii).decouplingcontrol_internal.round_equations_to_digits;
 										if ~iscell(tmp) && strcmpi(sub(3).type, '{}')
 											% matlab R2015B crashes if cell index assignment is used for numerical values
 											error('control:design:gamma:GammasynOptions:input', 'Cell contents assignment to a non-cell array object. ');
@@ -2012,14 +2012,14 @@ classdef GammasynOptions < handle
 										% setting option directly
 										prop = varargin{ii};
 									end
-									instance(ii).couplingcontrol_internal.round_equations_to_digits = instance(ii).checkProperty('round_equations_to_digits', prop);
-									instance(ii).couplingcontrol_user.round_equations_to_digits = true;
+									instance(ii).decouplingcontrol_internal.round_equations_to_digits = instance(ii).checkProperty('round_equations_to_digits', prop);
+									instance(ii).decouplingcontrol_user.round_equations_to_digits = true;
 									names(strcmp('round_equations_to_digits', names)) = [];
 								end
-								if strcmp(sub(2).subs, 'allowoutputcoupling')
+								if strcmp(sub(2).subs, 'allowoutputdecoupling')
 									if length(sub) > 2
 										% further indexing into option
-										tmp = instance(ii).couplingcontrol_internal.allowoutputcoupling;
+										tmp = instance(ii).decouplingcontrol_internal.allowoutputdecoupling;
 										if ~iscell(tmp) && strcmpi(sub(3).type, '{}')
 											% matlab R2015B crashes if cell index assignment is used for numerical values
 											error('control:design:gamma:GammasynOptions:input', 'Cell contents assignment to a non-cell array object. ');
@@ -2030,107 +2030,107 @@ classdef GammasynOptions < handle
 										% setting option directly
 										prop = varargin{ii};
 									end
-									instance(ii).couplingcontrol_internal.allowoutputcoupling = instance(ii).checkProperty('allowoutputcoupling', prop);
-									instance(ii).couplingcontrol_user.allowoutputcoupling = true;
-									names(strcmp('allowoutputcoupling', names)) = [];
+									instance(ii).decouplingcontrol_internal.allowoutputdecoupling = instance(ii).checkProperty('allowoutputdecoupling', prop);
+									instance(ii).decouplingcontrol_user.allowoutputdecoupling = true;
+									names(strcmp('allowoutputdecoupling', names)) = [];
 								end
 								if ~isempty(names)
-									error('control:design:gamma:GammasynOptions:input', 'Option ''couplingcontrol'' does not have field%s ''%s''.', iftern(length(names) > 1, 's', ''), strjoin(names, ''', '''));
+									error('control:design:gamma:GammasynOptions:input', 'Option ''decouplingcontrol'' does not have field%s ''%s''.', iftern(length(names) > 1, 's', ''), strjoin(names, ''', '''));
 								end
 							else
-								% indexing into this.couplingcontrol with {} or ()
+								% indexing into this.decouplingcontrol with {} or ()
 								try
-									subsref(instance(ii).couplingcontrol_internal, sub(2:end));
+									subsref(instance(ii).decouplingcontrol_internal, sub(2:end));
 								catch e
 									error(e.identifier, e.message);
 								end
-								error('control:design:gamma:GammasynOptions:input', 'Undefined indexing type for Option ''couplingcontrol''.');
+								error('control:design:gamma:GammasynOptions:input', 'Undefined indexing type for Option ''decouplingcontrol''.');
 							end
 						else
 							% assigning to whole this.system structure (partially)
 							if isempty(varargin{ii})
-								instance(ii).couplingcontrol_internal = struct(...
-									'couplingconditions',			proto.couplingcontrol.couplingconditions,...
-									'couplingstrategy',				proto.couplingcontrol.couplingstrategy,...
-									'sortingstrategy_coupling',		proto.couplingcontrol.sortingstrategy_coupling,...
-									'weight_coupling',				proto.couplingcontrol.weight_coupling,...
-									'weight_prefilter',				proto.couplingcontrol.weight_prefilter,...
-									'tolerance_coupling',			proto.couplingcontrol.tolerance_coupling,...
-									'tolerance_prefilter',			proto.couplingcontrol.tolerance_prefilter,...
-									'solvesymbolic',				proto.couplingcontrol.solvesymbolic,...
-									'round_equations_to_digits',	proto.couplingcontrol.round_equations_to_digits,...
-									'allowoutputcoupling',			proto.couplingcontrol.allowoutputcoupling...
+								instance(ii).decouplingcontrol_internal = struct(...
+									'tf_structure',					proto.decouplingcontrol.tf_structure,...
+									'decouplingstrategy',			proto.decouplingcontrol.decouplingstrategy,...
+									'sortingstrategy_decoupling',	proto.decouplingcontrol.sortingstrategy_decoupling,...
+									'weight_decoupling',			proto.decouplingcontrol.weight_decoupling,...
+									'weight_prefilter',				proto.decouplingcontrol.weight_prefilter,...
+									'tolerance_decoupling',			proto.decouplingcontrol.tolerance_decoupling,...
+									'tolerance_prefilter',			proto.decouplingcontrol.tolerance_prefilter,...
+									'solvesymbolic',				proto.decouplingcontrol.solvesymbolic,...
+									'round_equations_to_digits',	proto.decouplingcontrol.round_equations_to_digits,...
+									'allowoutputdecoupling',		proto.decouplingcontrol.allowoutputdecoupling...
 								);
-								instance(ii).couplingcontrol_user = struct(...
-									'couplingconditions',			false,...
-									'couplingstrategy',				false,...
-									'sortingstrategy_coupling',		false,...
-									'weight_coupling',				false,...
+								instance(ii).decouplingcontrol_user = struct(...
+									'tf_structure',					false,...
+									'decouplingstrategy',			false,...
+									'sortingstrategy_decoupling',	false,...
+									'weight_decoupling',			false,...
 									'weight_prefilter',				false,...
-									'tolerance_coupling',			false,...
+									'tolerance_decoupling',			false,...
 									'tolerance_prefilter',			false,...
 									'solvesymbolic',				false,...
 									'round_equations_to_digits',	false,...
-									'allowoutputcoupling',			false...
+									'allowoutputdecoupling',		false...
 								);
 								return;
 							end
 							if ~isstruct(varargin{ii}) || ~isscalar(varargin{ii})
-								error('control:design:gamma:GammasynOptions:input', 'Option ''couplingcontrol'' must be a scalar structure.');
+								error('control:design:gamma:GammasynOptions:input', 'Option ''decouplingcontrol'' must be a scalar structure.');
 							end
 							names = fieldnames(varargin{ii});
-							if isfield(varargin{ii}, 'couplingconditions')
-								instance(ii).couplingcontrol_internal.couplingconditions = instance(ii).checkProperty('couplingconditions', varargin{ii}.couplingconditions);
-								instance(ii).couplingcontrol_user.couplingconditions = true;
-								names(strcmp('couplingconditions', names)) = [];
+							if isfield(varargin{ii}, 'tf_structure')
+								instance(ii).decouplingcontrol_internal.tf_structure = instance(ii).checkProperty('tf_structure', varargin{ii}.tf_structure);
+								instance(ii).decouplingcontrol_user.tf_structure = true;
+								names(strcmp('tf_structure', names)) = [];
 							end
-							if isfield(varargin{ii}, 'couplingstrategy')
-								instance(ii).scouplingcontrol_internal.couplingstrategy = instance(ii).checkProperty('couplingstrategy', varargin{ii}.couplingstrategy);
-								instance(ii).couplingcontrol_user.couplingstrategy = true;
-								names(strcmp('couplingstrategy', names)) = [];
+							if isfield(varargin{ii}, 'decouplingstrategy')
+								instance(ii).sdecouplingcontrol_internal.decouplingstrategy = instance(ii).checkProperty('decouplingstrategy', varargin{ii}.decouplingstrategy);
+								instance(ii).decouplingcontrol_user.decouplingstrategy = true;
+								names(strcmp('decouplingstrategy', names)) = [];
 							end
-							if isfield(varargin{ii}, 'sortingstrategy_coupling')
-								instance(ii).scouplingcontrol_internal.sortingstrategy_coupling = instance(ii).checkProperty('sortingstrategy_coupling', varargin{ii}.sortingstrategy_coupling);
-								instance(ii).couplingcontrol_user.sortingstrategy_coupling = true;
-								names(strcmp('sortingstrategy_coupling', names)) = [];
+							if isfield(varargin{ii}, 'sortingstrategy_decoupling')
+								instance(ii).sdecouplingcontrol_internal.sortingstrategy_decoupling = instance(ii).checkProperty('sortingstrategy_decoupling', varargin{ii}.sortingstrategy_decoupling);
+								instance(ii).decouplingcontrol_user.sortingstrategy_decoupling = true;
+								names(strcmp('sortingstrategy_decoupling', names)) = [];
 							end
-							if isfield(varargin{ii}, 'weight_coupling')
-								instance(ii).couplingcontrol_internal.weight_coupling = instance(ii).checkProperty('weight_coupling', varargin{ii}.weight_coupling);
-								instance(ii).couplingcontrol_user.weight_coupling = true;
-								names(strcmp('weight_coupling', names)) = [];
+							if isfield(varargin{ii}, 'weight_decoupling')
+								instance(ii).decouplingcontrol_internal.weight_decoupling = instance(ii).checkProperty('weight_decoupling', varargin{ii}.weight_decoupling);
+								instance(ii).decouplingcontrol_user.weight_decoupling = true;
+								names(strcmp('weight_decoupling', names)) = [];
 							end
 							if isfield(varargin{ii}, 'weight_prefilter')
-								instance(ii).couplingcontrol_internal.weight_prefilter = instance(ii).checkProperty('weight_prefilter', varargin{ii}.weight_prefilter);
-								instance(ii).couplingcontrol_user.weight_prefilter = true;
+								instance(ii).decouplingcontrol_internal.weight_prefilter = instance(ii).checkProperty('weight_prefilter', varargin{ii}.weight_prefilter);
+								instance(ii).decouplingcontrol_user.weight_prefilter = true;
 								names(strcmp('weight_prefilter', names)) = [];
 							end
-							if isfield(varargin{ii}, 'tolerance_coupling')
-								instance(ii).couplingcontrol_internal.tolerance_coupling = instance(ii).checkProperty('tolerance_coupling', varargin{ii}.tolerance_coupling);
-								instance(ii).couplingcontrol_user.tolerance_coupling = true;
-								names(strcmp('tolerance_coupling', names)) = [];
+							if isfield(varargin{ii}, 'tolerance_decoupling')
+								instance(ii).decouplingcontrol_internal.tolerance_decoupling = instance(ii).checkProperty('tolerance_decoupling', varargin{ii}.tolerance_decoupling);
+								instance(ii).decouplingcontrol_user.tolerance_decoupling = true;
+								names(strcmp('tolerance_decoupling', names)) = [];
 							end
 							if isfield(varargin{ii}, 'tolerance_prefilter')
-								instance(ii).couplingcontrol_internal.tolerance_prefilter = instance(ii).checkProperty('tolerance_prefilter', varargin{ii}.tolerance_prefilter);
-								instance(ii).couplingcontrol_user.tolerance_prefilter = true;
+								instance(ii).decouplingcontrol_internal.tolerance_prefilter = instance(ii).checkProperty('tolerance_prefilter', varargin{ii}.tolerance_prefilter);
+								instance(ii).decouplingcontrol_user.tolerance_prefilter = true;
 								names(strcmp('tolerance_prefilter', names)) = [];
 							end
 							if isfield(varargin{ii}, 'solvesymbolic')
-								instance(ii).couplingcontrol_internal.solvesymbolic = instance(ii).checkProperty('solvesymbolic', varargin{ii}.solvesymbolic);
-								instance(ii).couplingcontrol_user.solvesymbolic = true;
+								instance(ii).decouplingcontrol_internal.solvesymbolic = instance(ii).checkProperty('solvesymbolic', varargin{ii}.solvesymbolic);
+								instance(ii).decouplingcontrol_user.solvesymbolic = true;
 								names(strcmp('solvesymbolic', names)) = [];
 							end
 							if isfield(varargin{ii}, 'round_equations_to_digits')
-								instance(ii).couplingcontrol_internal.round_equations_to_digits = instance(ii).checkProperty('round_equations_to_digits', varargin{ii}.round_equations_to_digits);
-								instance(ii).couplingcontrol_user.round_equations_to_digits = true;
+								instance(ii).decouplingcontrol_internal.round_equations_to_digits = instance(ii).checkProperty('round_equations_to_digits', varargin{ii}.round_equations_to_digits);
+								instance(ii).decouplingcontrol_user.round_equations_to_digits = true;
 								names(strcmp('round_equations_to_digits', names)) = [];
 							end
-							if isfield(varargin{ii}, 'allowoutputcoupling')
-								instance(ii).couplingcontrol_internal.allowoutputcoupling = instance(ii).checkProperty('allowoutputcoupling', varargin{ii}.allowoutputcoupling);
-								instance(ii).couplingcontrol_user.allowoutputcoupling = true;
-								names(strcmp('allowoutputcoupling', names)) = [];
+							if isfield(varargin{ii}, 'allowoutputdecoupling')
+								instance(ii).decouplingcontrol_internal.allowoutputdecoupling = instance(ii).checkProperty('allowoutputdecoupling', varargin{ii}.allowoutputdecoupling);
+								instance(ii).decouplingcontrol_user.allowoutputdecoupling = true;
+								names(strcmp('allowoutputdecoupling', names)) = [];
 							end
 							if ~isempty(names)
-								error('control:design:gamma:GammasynOptions:input', 'Option ''couplingcontrol'' does not have field%s ''%s''.', iftern(length(names) > 1, 's', ''), strjoin(names, ''', '''));
+								error('control:design:gamma:GammasynOptions:input', 'Option ''decouplingcontrol'' does not have field%s ''%s''.', iftern(length(names) > 1, 's', ''), strjoin(names, ''', '''));
 							end
 						end
 					elseif strcmpi(sub(1).subs, 'objective')

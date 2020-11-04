@@ -45,10 +45,10 @@ function [c, ceq, gradc, gradceq, hessc, hessceq] = c(x, system, weight, areafun
 	eigenvaluederivativetype = options.eigenvaluederivative;
 	eigenvalueignoreinf = options.eigenvalueignoreinf;
 	[R, K, F] = x2R(x, dimensions);
-	needscouplingconditions = GammaCouplingStrategy_needscouplingconditions(options.couplingcontrol.couplingstrategy);
+	needsdecouplingconditions = GammaDecouplingStrategy_needsdecouplingconditions(options.decouplingcontrol.decouplingstrategy);
 	if nargout >= 5
-		if needscouplingconditions
-			error('control:design:gamma:hessian', 'No Hessians of coupling conditions available.');
+		if needsdecouplingconditions
+			error('control:design:gamma:hessian', 'No Hessians of decoupling conditions available.');
 		end
 		if ~isempty(areafun)
 			if derivative_feedback
@@ -90,7 +90,7 @@ function [c, ceq, gradc, gradceq, hessc, hessceq] = c(x, system, weight, areafun
 		end
 		hessc = permute(hessc, [2, 3, 1]);% TODO: can this be combined with reshape?
 	elseif nargout >= 3
-		if ~isempty(areafun) || needscouplingconditions
+		if ~isempty(areafun) || needsdecouplingconditions
 			if derivative_feedback
 				[eigenvalues, ~, ~, eigenvalue_derivative, eigenvalue_derivative_xdot] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads, options.eigenvaluefilter);
 				[eigenvalues, ~, ~, eigenvalue_derivative, eigenvalue_derivative_xdot] = calculate_eigenvalue_filter(options.eigenvaluefilter, eigenvalues, [], [], eigenvalue_derivative, eigenvalue_derivative_xdot);
@@ -109,13 +109,13 @@ function [c, ceq, gradc, gradceq, hessc, hessceq] = c(x, system, weight, areafun
 					c = zeros(0, 1);
 					gradc = zeros(number_coefficients, 0);
 				end
-				if needscouplingconditions
-					error('control:design:gamma:derivative_feedback', 'Coupling controller design not implemented for derivative feedback.');
+				if needsdecouplingconditions
+					error('control:design:gamma:derivative_feedback', 'Decoupling controller design not implemented for derivative feedback.');
 				else
-					c_coupling = zeros(0, 1);
-					ceq_coupling = zeros(0, 1);
-					gradc_coupling = zeros(number_coefficients, 0);
-					gradceq_coupling = zeros(number_coefficients, 0);
+					c_decoupling = zeros(0, 1);
+					ceq_decoupling = zeros(0, 1);
+					gradc_decoupling = zeros(number_coefficients, 0);
+					gradceq_decoupling = zeros(number_coefficients, 0);
 				end
 			else
 				[eigenvalues, eigenvector_right, eigenvector_left, eigenvalue_derivative, ~, eigenvector_right_derivative, ~, eigenvector_left_derivative] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads, options.eigenvaluefilter);
@@ -135,32 +135,32 @@ function [c, ceq, gradc, gradceq, hessc, hessceq] = c(x, system, weight, areafun
 					c = zeros(0, 1);
 					gradc = zeros(number_coefficients, 0);
 				end
-				if needscouplingconditions
-					[c_coupling, ceq_coupling, gradc_coupling, gradceq_coupling] = calculate_coupling_conditions(system, R, K, F, dimensions, options, eigenvector_right, eigenvector_left, eigenvector_right_derivative, eigenvector_left_derivative);
+				if needsdecouplingconditions
+					[c_decoupling, ceq_decoupling, gradc_decoupling, gradceq_decoupling] = calculate_decoupling_conditions(system, R, K, F, dimensions, options, eigenvalues, eigenvector_right, eigenvector_left, eigenvector_right_derivative, eigenvector_left_derivative);
 				else
-					c_coupling = zeros(0, 1);
-					ceq_coupling = zeros(0, 1);
-					gradc_coupling = zeros(number_coefficients, 0);
-					gradceq_coupling = zeros(number_coefficients, 0);
+					c_decoupling = zeros(0, 1);
+					ceq_decoupling = zeros(0, 1);
+					gradc_decoupling = zeros(number_coefficients, 0);
+					gradceq_decoupling = zeros(number_coefficients, 0);
 				end
 			end
 		else
 			c = zeros(0, 1);
 			gradc = zeros(number_coefficients, 0);
-			c_coupling = zeros(0, 1);
-			ceq_coupling = zeros(0, 1);
-			gradc_coupling = zeros(number_coefficients, 0);
-			gradceq_coupling = zeros(number_coefficients, 0);
+			c_decoupling = zeros(0, 1);
+			ceq_decoupling = zeros(0, 1);
+			gradc_decoupling = zeros(number_coefficients, 0);
+			gradceq_decoupling = zeros(number_coefficients, 0);
 		end
 		c = [
 			c;
-			c_coupling
+			c_decoupling
 		];
-		ceq = ceq_coupling;
+		ceq = ceq_decoupling;
 		gradc = [
-			gradc,	gradc_coupling
+			gradc,	gradc_decoupling
 		];
-		gradceq = gradceq_coupling;
+		gradceq = gradceq_decoupling;
 		if RKF_fixed_has
 			gradc = dimensions.RKF_fixed_T_inv'*gradc;% transformed here to avoid another loop in calculate_constraint_gradient
 			gradc = gradc(dimensions.index_RKF_free, :);
@@ -169,7 +169,7 @@ function [c, ceq, gradc, gradceq, hessc, hessceq] = c(x, system, weight, areafun
 			gradceq = gradceq(dimensions.index_all_free, :);
 		end
 	else
-		if ~isempty(areafun) || needscouplingconditions
+		if ~isempty(areafun) || needsdecouplingconditions
 			[eigenvalues, eigenvector_right, eigenvector_left] = calculate_eigenvalues_m(system, R, K, dimensions, eigenvaluederivativetype, numthreads, options.eigenvaluefilter);
 			[eigenvalues, eigenvector_right, eigenvector_left] = calculate_eigenvalue_filter(options.eigenvaluefilter, eigenvalues, eigenvector_right, eigenvector_left);
 			if ~isempty(areafun)
@@ -182,17 +182,17 @@ function [c, ceq, gradc, gradceq, hessc, hessceq] = c(x, system, weight, areafun
 			else
 				c = zeros(0, 1);
 			end
-			if needscouplingconditions
-				[c_coupling, ceq_coupling] = calculate_coupling_conditions(system, R, K, F, dimensions, options, eigenvector_right, eigenvector_left);
+			if needsdecouplingconditions
+				[c_decoupling, ceq_decoupling] = calculate_decoupling_conditions(system, R, K, F, dimensions, options, eigenvalues, eigenvector_right, eigenvector_left);
 			else
-				c_coupling = zeros(0, 1);
-				ceq_coupling = zeros(0, 1);
+				c_decoupling = zeros(0, 1);
+				ceq_decoupling = zeros(0, 1);
 			end
 			c = [
 				c;
-				c_coupling
+				c_decoupling
 			];
-			ceq = ceq_coupling;
+			ceq = ceq_decoupling;
 		else
 			c = zeros(0, 1);
 			ceq = zeros(0, 1);

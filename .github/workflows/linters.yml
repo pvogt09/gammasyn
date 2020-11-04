@@ -22,6 +22,16 @@ jobs:
           EC_FIX_ERROR: false
           ALWAYS_LINT_ALL_FILES: false
         uses: zbeekman/EditorConfig-Action@master
+      - name: Set up Python environment
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+      - name: Setup flake8 annotations
+        uses: rbialon/flake8-annotations@v1
+      - name: flake8 Lint
+        uses: py-actions/flake8@v1.0.1
+        with:
+          exclude: ".svn,CVS,.bzr,.hg,.git,lib/optimization/NLOPT/interface/NLOPT/*"
       - name: Update status
         if: ${{ github.event_name == 'pull_request' }}
         uses: ouzi-dev/commit-status-updater@v1.0.4

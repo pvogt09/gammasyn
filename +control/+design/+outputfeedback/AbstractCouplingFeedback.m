@@ -1,30 +1,38 @@
-classdef(Abstract) AbstractCouplingFeedback < control.design.outputfeedback.OutputFeedback
+classdef(Abstract) AbstractCouplingFeedback < control.design.outputfeedback.AbstractDecouplingFeedback
 	%ABSTRACTCOUPLINGFEEDBACK abstract class for casting a control system in output feedback form and specify the needed constraints on the resulting gain matrix, when a coupling controller feedback is needed
 
 	properties(SetAccess=protected)
 		% number of coupling conditions
 		number_couplingconditions
+		% number of references
+		number_references
 	end
 
 	methods
-		function [this] = AbstractCouplingFeedback(number_couplingconditions)
+		function [this] = AbstractCouplingFeedback(number_couplingconditions, number_references)
 			%ABSTRACTCOUPLINGFEEDBACK create new coupling feedback
 			%	Input:
 			%		number_couplingconditions:	number of coupling conditions in C_ref
+			%		number_references:			number of references
 			%	Output:
 			%		this:						instance
-			this@control.design.outputfeedback.OutputFeedback();
-			narginchk(1, 1);
+			this@control.design.outputfeedback.AbstractDecouplingFeedback();
+			narginchk(2, 2);
 			this.number_couplingconditions = number_couplingconditions;
+			this.number_references = number_references;
+			if number_couplingconditions >=	number_references
+				error('control:design:outputfeedback:input', 'Number of coupling conditions (%d) must be smaller than number of references (%d).', number_couplingconditions, number_references);
+			end
+			tf_structure = NaN(number_references, number_references);
+			tf_structure(end - number_couplingconditions + 1:end, 1:number_references - number_couplingconditions) = 0;
+			this.tf_structure = tf_structure;
 		end
 
-		function [this] = set.number_couplingconditions(this, number_couplingconditions)
+		function set.number_couplingconditions(this, number_couplingconditions)
 			%NUMBER_COUPLINGCONDITIONS set number of coupling conditions in C_ref
 			%	Input:
 			%		this:						instance
 			%		number_couplingconditions:	number of coupling conditions in C_ref
-			%	Output:
-			%		this:						instance
 			if ~isnumeric(number_couplingconditions) || ~isscalar(number_couplingconditions)
 				error('control:design:outputfeedback:input', 'Number of coupling conditions must be a numeric scalar.');
 			end
@@ -40,35 +48,24 @@ classdef(Abstract) AbstractCouplingFeedback < control.design.outputfeedback.Outp
 			this.number_couplingconditions = uint32(number_couplingconditions);
 		end
 
-		function [couplingoptions] = get_couplingoptions(this, couplingoptions)
-			%GET_COUPLINGOPTIONS return structure with options for coupling controller design
+		function set.number_references(this, number_references)
+			%NUMBER_REFERENCES set number of references
 			%	Input:
 			%		this:				instance
-			%		options:			structure with options to append to
-			%	Output:
-			%		couplingoptions:	structure with appended coupling options
-			if nargin <= 1
-				couplingoptions = struct();
+			%		number_references:	number of reference signals
+			if ~isnumeric(number_references) || ~isscalar(number_references)
+				error('control:design:outputfeedback:input', 'Number of references must be a numeric scalar.');
 			end
-			if ~isstruct(couplingoptions)
-				error('control:design:outputfeedback:input', 'Coupling options must be a structure.');
+			if isinf(number_references) || isnan(number_references)
+				error('control:design:outputfeedback:input', 'Number of references must be finite.');
 			end
-			if ~isfield(couplingoptions, 'couplingcontrol')
-				couplingstruct = control.design.gamma.objectiveoptions_prototype_coupling();
-			else
-				couplingstruct = mergestruct(couplingoptions.couplingcontrol, control.design.gamma.objectiveoptions_prototype_coupling());
+			if floor(number_references) ~= ceil(number_references)
+				error('control:design:outputfeedback:input', 'Number of references must be an integer.');
 			end
-			couplingoptions.couplingcontrol = this.get_couplingoptions_system(couplingstruct);
+			if number_references <= 0
+				error('control:design:outputfeedback:input', 'Number of references must be greater than 0.');
+			end
+			this.number_references = uint32(number_references);
 		end
-	end
-
-	methods(Abstract=true, Access=protected)
-		%GET_COUPLINGOPTIONS_SYSTEM return structure with options for coupling controller design
-		%	Input:
-		%		this:				instance
-		%		options:			structure with options to append to
-		%	Output:
-		%		couplingoptions:	structure with appended coupling options
-		[couplingoptions] = get_couplingoptions_system(this, couplingoptions);
 	end
 end

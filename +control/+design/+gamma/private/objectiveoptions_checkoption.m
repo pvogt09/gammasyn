@@ -214,7 +214,7 @@ function [value, validvalue, errmsg, errid, validfield] = objectiveoptions_check
 			if ~validvalue
 				errid = 'control:design:gamma:input';
 			end
-		case {'usecompiled', 'allowvarorder', 'allownegativeweight', 'usereferences', 'usemeasurements_xdot', 'preventNaN', 'eigenvalueignoreinf', 'solvesymbolic', 'allowoutputcoupling'}
+		case {'usecompiled', 'allowvarorder', 'allownegativeweight', 'usereferences', 'usemeasurements_xdot', 'preventNaN', 'eigenvalueignoreinf', 'solvesymbolic', 'allowoutputdecoupling'}
 			if ~isscalar(value)
 				validvalue = false;
 				errmsg = sprintf('Value for option ''%s'' must be scalar.', field);
@@ -307,16 +307,16 @@ function [value, validvalue, errmsg, errid, validfield] = objectiveoptions_check
 			if ~validvalue
 				errid = 'control:design:gamma:input';
 			end
-		case {'couplingconditions'}
-			% non-negative integer excluding inf or -1
-			[validvalue, errmsg, errid] = nonNegInteger(field, value);
+		case {'tf_structure'}
+			% two dimensional nan or 0 array
+			[validvalue, errmsg, errid] = twoDimensionalMatrixOnlyNanOrZeroType(field, value);
 			if ~validvalue
 				errid = 'control:design:gamma:input';
 			end
-		case {'couplingstrategy'}
-			if ~isa(value, 'GammaCouplingStrategy')
+		case {'decouplingstrategy'}
+			if ~isa(value, 'GammaDecouplingStrategy')
 				try
-					value = GammaCouplingStrategy.fromchar(value);
+					value = GammaDecouplingStrategy.fromchar(value);
 					validvalue = true;
 					errid = '';
 					errmsg = '';
@@ -333,12 +333,12 @@ function [value, validvalue, errmsg, errid, validfield] = objectiveoptions_check
 			if ~isscalar(value)
 				validvalue = false;
 				errid = 'control:design:gamma:input';
-				errmsg = 'Coupling option ''couplingstrategy'' must be scalar.';
+				errmsg = 'Decoupling option ''decouplingstrategy'' must be scalar.';
 			end
-		case {'sortingstrategy_coupling'}
-			if ~isa(value, 'GammaCouplingconditionSortingStrategy')
+		case {'sortingstrategy_decoupling'}
+			if ~isa(value, 'GammaDecouplingconditionSortingStrategy')
 				try
-					value = GammaCouplingconditionSortingStrategy.fromchar(value);
+					value = GammaDecouplingconditionSortingStrategy.fromchar(value);
 					validvalue = true;
 					errid = '';
 					errmsg = '';
@@ -355,9 +355,9 @@ function [value, validvalue, errmsg, errid, validfield] = objectiveoptions_check
 			if ~isscalar(value)
 				validvalue = false;
 				errid = 'control:design:gamma:input';
-				errmsg = 'Coupling option ''sortingstrategy_coupling'' must be scalar.';
+				errmsg = 'Decoupling option ''sortingstrategy_decoupling'' must be scalar.';
 			end
-		case {'tolerance_coupling', 'tolerance_prefilter'}
+		case {'tolerance_decoupling', 'tolerance_prefilter'}
 			% non-negative real or empty or NaN
 			if isempty(value)
 				value = NaN;
@@ -374,7 +374,7 @@ function [value, validvalue, errmsg, errid, validfield] = objectiveoptions_check
 			if ~validvalue
 				errid = 'control:design:gamma:input';
 			end
-		case {'weight_coupling', 'weight_prefilter'}
+		case {'weight_decoupling', 'weight_prefilter'}
 			% non-negative real or empty
 			oldvalue = value;
 			if isempty(value)
@@ -533,6 +533,31 @@ end
 function [valid, errmsg, errid] = twoDimensionalMatrixType(field,value,strings)
 	% Any matrix
 	valid =  isa(value,'double') && ismatrix(value);
+	if nargin > 2
+		valid = valid || any(strcmp(value,strings));
+	end
+	if ~valid
+		if ischar(value)
+			errid = 'optimlib:options:checkfield:twoDimTypeStringType';
+		else
+			errid = 'optimlib:options:checkfield:notATwoDimMatrix';
+		end
+		errmsg = getString(message(errid, field));
+		errid = 'control:design:gamma:input';
+	else
+		errid = '';
+		errmsg = '';
+	end
+end
+%-----------------------------------------------------------------------------------------
+
+function [valid, errmsg, errid] = twoDimensionalMatrixOnlyNanOrZeroType(field,value,strings)
+	% Any matrix
+	valid = isa(value,'double') && ismatrix(value);
+	value_tmp = value(:);
+	value_tmp(isnan(value_tmp)) = [];
+	value_tmp(value_tmp == 0) = [];
+	valid = valid && isempty(value_tmp);
 	if nargin > 2
 		valid = valid || any(strcmp(value,strings));
 	end

@@ -1607,9 +1607,15 @@ controllerdata.save();
 after a call to `gammasyn` and expects the controller type used as `OutputFeedback` and the arguments passed to and returned by `gammasyn`.
 It has the ability to plot the closed loop eigenvalues and pole regions with the `plot` method, plot step responses with the `step` method and solve the problem again with possibly different initial values or different optimizers with the `rerun` method.
 
-## Robust Coupling Control
-`gammasyn` is prepared for the synthesis of coupling controllers and will be extended to handle decoupling controllers as well.
-For archieving this a specialized wrapper function named `gammasyn_couplingcontrol` is used that converts the supplied system to the needed description for coupling controller design.
+## Robust Coupling and Decoupling Control
+`gammasyn` is prepared for the synthesis of coupling and decoupling controllers. It is also possible to specify any arbitrary structure that the closed-loop transfer matrices should have. This way, a customized decoupling structure can be applied.
+
+The synthesis of coupling controllers is also known as triangular decoupling and is a weaker form of the well-known diagonal decoupling, which has, e.g., been approached by Falb-Wolovich.
+
+For the purpose of (de)coupling, we use a specialized wrapper function named `gammasyn_couplingcontrol`.
+
+We demonstrate the used methodology in a brief form for the example of a coupling controller. Decoupling controllers or controllers realizing arbitrary transfer structures are synthesized analogously.
+
 The task of a coupling controller is to ensure
 ```math
 	\begin{aligned}
@@ -1685,7 +1691,7 @@ Furthermore, the `objectiveoptions` structure has to be extended by the field `c
 	* `GammaCouplingStrategy.APPROXIMATE_INEQUALITY`: Use geometric method but also allow $`G_{21}(s) \approx 0`$ if $`G_{21}(s) = 0`$ is not solvable and formulate inequality constraint system with tolerance.
 	* `GammaCouplingStrategy.NUMERIC_NONLINEAR_EQUALITY`: directly use coupling conditions as non-linear equality constraints of the form `ceq(x) = 0` with `x` denoting the vector of optimization variables
 	* `GammaCouplingStrategy.NUMERIC_NONLINEAR_INEQUALITY`: directly use coupling conditions as non-linear inequality constraints of the form `c(x) < tolerance_coupling` and `-c(x) < tolerance_coupling` with `x` denoting the vector of optimization variables
-* `couplingconditions`: (`uint32`) the number of coupling conditions specified in $`C_\mathrm{ref}`$
+* `tf_structure`: (`double`) array that indicates the desired closed-loop transfer matrix structure. `0` indicates a zero element, `NaN` indicates an unconstrained element.
 * `tolerance_coupling`: (`double`) the tolerance when using `GammaCouplingStrategy.NUMERIC_NONLINEAR_INEQUALITY`
 * `solvesymbolic`: (`logical`) only for `EXACT` and `APPROXIMATE`: use symbolic toolbox if available to increase precision of obtained equality constraints.
 * `round_equations_to_digits`: (`double`, whole number) only for `EXACT` and `APPROXIMATE`: decimal places to which linear equality constraints are rounded in case of numerical precision difficulties. Use `NaN` if no rounding is desired.

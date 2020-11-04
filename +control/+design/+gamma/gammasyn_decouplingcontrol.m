@@ -1,5 +1,5 @@
-function [Ropt, Jopt, information] = gammasyn_couplingcontrol(systems, areafun, weights, R_fixed, R_0, solveroptions, objectiveoptions, R_bounds, R_nonlin)
-	%GAMMASYN_COUPLINGCONTROL robust coupling control design and pole placement for multi-models including models in DAE form
+function [Ropt, Jopt, information] = gammasyn_decouplingcontrol(systems, areafun, weights, R_fixed, R_0, solveroptions, objectiveoptions, R_bounds, R_nonlin)
+	%GAMMASYN_DECOUPLINGCONTROL robust decoupling control design and pole placement for multi-models including models in DAE form
 	%	Input:
 	%		systems:			structure with dynamic systems to take into consideration. Systems must only have matrices E, A, B, C = eye(n).
 	%		areafun:			area border functions and gradients as cell array with number of system entries, each function returns a row vector with as much elements as area border functions are defined for the corresponding system
@@ -30,64 +30,80 @@ function [Ropt, Jopt, information] = gammasyn_couplingcontrol(systems, areafun, 
 	if ~isstruct(objectiveoptions)
 		error('control:design:gamma:input', 'Objectiveoptions must be a structure, not a ''%s''.', class(objectiveoptions));
 	end
-	if isfield(objectiveoptions, 'couplingcontrol')
-		objectiveoptions.couplingcontrol = checkobjectiveoptions_coupling(objectiveoptions.couplingcontrol);
+	[systems, number_states, number_states_all, number_controls, number_measurements, number_measurements_xdot, number_references, descriptor] = checkandtransformsystems(systems, objectiveoptions);
+	if isfield(objectiveoptions, 'decouplingcontrol')
+		objectiveoptions.decouplingcontrol = checkobjectiveoptions_decoupling(number_references, objectiveoptions.decouplingcontrol);
 	else
-		objectiveoptions.couplingcontrol = checkobjectiveoptions_coupling();
+		objectiveoptions.decouplingcontrol = checkobjectiveoptions_decoupling(number_references);
 	end
 
 	%% check Geomteric Approach Toolbox
 	if ~configuration.control.design.hasGeometricApproachToolbox()
 		% VSTAR function needs "Geometric Approach Toolbox" installed
 		% http://www3.deis.unibo.it/Staff/FullProf/GiovanniMarro/geometric.htm
-		error('control:design:gamma:GeomtricApproachToolboxMissing', 'Coupling controller synthesis needs ''Geometric Approach Toolbox'' installed. See http://www3.deis.unibo.it/Staff/FullProf/GiovanniMarro/geometric.htm');
+		error('control:design:gamma:GeomtricApproachToolboxMissing', 'Decoupling controller synthesis needs ''Geometric Approach Toolbox'' installed. See http://www3.deis.unibo.it/Staff/FullProf/GiovanniMarro/geometric.htm');
 	end
 
-	%% inspect coupling options
-	control_design_type = objectiveoptions.couplingcontrol.couplingstrategy;
+	%% inspect decoupling options
+	control_design_type = objectiveoptions.decouplingcontrol.decouplingstrategy;
 	if ~isscalar(control_design_type)
-		error('control:design:gamma:input', 'Coupling controller design type must be scalar.');
+		error('control:design:gamma:input', 'Decoupling controller design type must be scalar.');
 	end
-	if ~isa(control_design_type, 'GammaCouplingStrategy')
-		error('control:design:gamma:input', 'Coupling controller design type must be of type ''GammaCouplingStrategy''.');
+	if ~isa(control_design_type, 'GammaDecouplingStrategy')
+		error('control:design:gamma:input', 'Decoupling controller design type must be of type ''GammaDecouplingStrategy''.');
 	end
-	if control_design_type == GammaCouplingStrategy.EXACT
-		numeric = false;
-	elseif any(control_design_type == [
-		GammaCouplingStrategy.APPROXIMATE;
-		GammaCouplingStrategy.APPROXIMATE_INEQUALITY
+	if any(control_design_type == [
+		GammaDecouplingStrategy.EXACT;
+		GammaDecouplingStrategy.APPROXIMATE;
+		GammaDecouplingStrategy.APPROXIMATE_INEQUALITY
 	])
 		numeric = false;
-	elseif control_design_type == GammaCouplingStrategy.NUMERIC_NONLINEAR_EQUALITY
+	elseif any(control_design_type == [
+		GammaDecouplingStrategy.NUMERIC_NONLINEAR_EQUALITY;
+		GammaDecouplingStrategy.NUMERIC_NONLINEAR_INEQUALITY
+	])
 		numeric = true;
-	elseif control_design_type == GammaCouplingStrategy.NUMERIC_NONLINEAR_INEQUALITY
-		numeric = true;
-	elseif control_design_type == GammaCouplingStrategy.NONE
-		error('control:design:gamma:input', 'Coupling controller shall be designed but is turned off explicitly.');
+	elseif control_design_type == GammaDecouplingStrategy.NONE
+		error('control:design:gamma:input', 'Decoupling controller shall be designed but is turned off explicitly.');
 	else
-		error('control:design:gamma:input', 'Wrong coupling controller option.');
+		error('control:design:gamma:input', 'Wrong decoupling controller option.');
+	end
+	if numeric && objectiveoptions.decouplingcontrol.sortingstrategy_decoupling == GammaDecouplingconditionSortingStrategy.EIGENVALUETRACKING
+		warning(' Option GammaDecouplingconditionSortingStrategy.EIGENVALUETRACKING is beta.');
+		if solveroptions.UseParallel && ~isempty(gcp('nocreate'))
+			pctRunOnAll clear calculate_decoupling_conditions; % clear persistent variables in calculate_decoupling_conditions() and local functions on every parpool-worker
+			if objectiveoptions.usecompiled
+				pctRunOnAll clear +control/+design/+gamma/private/c_mex_fun_mex;
+				pctRunOnAll clear +control/+design/+gamma/private/c_mex_grad_mex;
+			end
+		else
+			clear calculate_decoupling_conditions; % clear persistent variables in calculate_decoupling_conditions() and local functions
+			if objectiveoptions.usecompiled
+				clear +control/+design/+gamma/private/c_mex_fun_mex;
+				clear +control/+design/+gamma/private/c_mex_grad_mex;
+			end
+		end
 	end
 
-	%% check and transform systems
+	%% inspect systems
 	number_models = size(systems, 1);
-	[systems, number_states, number_states_all, number_controls, number_measurements, number_measurements_xdot, number_references, descriptor] = checkandtransformsystems(systems, objectiveoptions);
 	if any(number_states ~= number_states_all(:))
-		error('control:design:gamma:dimensions', 'For coupling controller design, all systems must have same number of states.');
+		error('control:design:gamma:dimensions', 'For decoupling controller design, all systems must have same number of states.');
 	end
-	if ~numeric || ~objectiveoptions.couplingcontrol.allowoutputcoupling || descriptor
+	if ~objectiveoptions.decouplingcontrol.allowoutputdecoupling || descriptor
 		if number_states ~= number_measurements
-			error('control:design:gamma:dimensions', 'For coupling controller design, all states must be measured.');
+			error('control:design:gamma:dimensions', 'For decoupling controller design, all states must be measured.');
 		end
 	end
 	C_dot = systems(1).C_dot;
 	for ii = 1:number_models %#ok<FORPF> no parfor because of error checking
-		if ~numeric || ~objectiveoptions.couplingcontrol.allowoutputcoupling
+		if ~objectiveoptions.decouplingcontrol.allowoutputdecoupling
 			if any(any(systems(ii).C ~= eye(number_states)))
-				error('control:design:gamma:dimensions', 'For coupling controller design, a complete state feedback must be calculated. Matrix C must be eye(%d)', number_states);
+				error('control:design:gamma:dimensions', 'For decoupling controller design, a complete state feedback must be calculated. Matrix C must be eye(%d)', number_states);
 			end
 		end
 		if any(any(systems(ii).D ~= zeros(number_measurements, number_controls)))
-			error('control:design:gamma:dimensions', 'For coupling controller design, systems must not have measurement feedthrough.');
+			error('control:design:gamma:dimensions', 'For decoupling controller design, systems must not have measurement feedthrough.');
 		end
 		if any(any(systems(ii).C_dot ~= C_dot)) && descriptor
 			error('control:design:gamma:input', 'For DAE design, systems must have equal differential output.');
@@ -150,7 +166,7 @@ function [Ropt, Jopt, information] = gammasyn_couplingcontrol(systems, areafun, 
 	[F_bounds_A, F_bounds_b] = convert_hadamard2vectorized(bound_system_hadamard_F);
 	[RKF_bounds_A, RKF_bounds_b] = convert_hadamard2vectorized(bound_system_hadamard_RKF);
 	if ~isforced2zero_K && ~isforced2zero_RKF_K
-		error('control:design:gamma:input', 'Differential output must be forced to zero for coupling controller design.');
+		error('control:design:gamma:input', 'Differential output must be forced to zero for decoupling controller design.');
 	end
 	% R_nonlin
 	if nargin <= 8
@@ -173,7 +189,7 @@ function [Ropt, Jopt, information] = gammasyn_couplingcontrol(systems, areafun, 
 
 		number_states_tilde_vec =		NaN(number_models, 1);
 		number_controls_tilde_vec =		NaN(number_models, 1);
-		number_couplingconditions_vec =	NaN(number_models, 1);
+		number_decouplingconditions_vec =	NaN(number_models, 1);
 		number_references_tilde_vec =	NaN(number_models, 1);
 
 		% create systems_tilde
@@ -229,7 +245,7 @@ function [Ropt, Jopt, information] = gammasyn_couplingcontrol(systems, areafun, 
 			% store data
 			number_states_tilde_vec(ii) =			number_states_tilde;
 			number_controls_tilde_vec(ii) =			number_controls + number_states - number_states_tilde;
-			number_couplingconditions_vec(ii) =		number_states - number_states_tilde;
+			number_decouplingconditions_vec(ii) =	number_states - number_states_tilde;
 			number_references_tilde_vec(ii) =		number_references + number_states - number_states_tilde;
 
 			systems_tilde(ii).E =					eye(number_states_tilde);
@@ -250,11 +266,11 @@ function [Ropt, Jopt, information] = gammasyn_couplingcontrol(systems, areafun, 
 		if (any(number_controls_tilde_vec(:) ~= number_controls_tilde_vec(1))) || any(isnan(number_controls_tilde_vec(:)))
 			error('control:design:gamma:dimensions', 'For DAE controller design, all transformed systems must have same number of controls.');
 		end
-		if (any(number_couplingconditions_vec(:) ~= number_couplingconditions_vec(1))) || any(isnan(number_couplingconditions_vec(:)))
-			error('control:design:gamma:dimensions', 'For DAE controller design, all transformed systems must have the same number of coupling conditions.');
+		if (any(number_decouplingconditions_vec(:) ~= number_decouplingconditions_vec(1))) || any(isnan(number_decouplingconditions_vec(:)))
+			error('control:design:gamma:dimensions', 'For DAE controller design, all transformed systems must have the same number of decoupling conditions.');
 		end
 		if any(any([N_E_cell{:}] ~= repmat(N_E_cell{1}, 1, number_models)))
-			warning('control:design:gamma:couplingcontrol', 'Backtransformation not equal for every system. Poles may vary after transformation.')
+			warning('control:design:gamma:decouplingcontrol', 'Backtransformation not equal for every system. Poles may vary after transformation.')
 		end
 		N_E = N_E_cell{1};
 
@@ -264,7 +280,9 @@ function [Ropt, Jopt, information] = gammasyn_couplingcontrol(systems, areafun, 
 		number_references_tilde =			number_references_tilde_vec(1);
 		number_measurements_xdot_tilde =	0;
 
-		objectiveoptions.couplingcontrol.couplingconditions = uint32(number_couplingconditions_vec(1));
+		tf_structure = NaN(number_references_tilde, number_references_tilde);
+		tf_structure(number_references + 1:end, 1:number_references_tilde - number_decouplingconditions_vec(1)) = 0;
+		objectiveoptions.decouplingcontrol.tf_structure = tf_structure;
 	else
 		systems_tilde =						systems;
 		number_states_tilde =				number_states;
@@ -333,7 +351,7 @@ function [Ropt, Jopt, information] = gammasyn_couplingcontrol(systems, areafun, 
 	if descriptor
 		T_nonlin = struct(...% r = R_A*r_tilde + R_b, k = K_A*k_tilde + K_b, f = F_A*f_tilde + F_b
 			'R_A',						T_R,...
-			'R_b',						zeros(number_controls*number_states),...
+			'R_b',						zeros(number_controls*number_states, 1),...
 			'K_A',						T_K,...
 			'K_b',						zeros(number_controls*number_measurements_xdot, 1),...
 			'F_A',						T_F,...
@@ -414,7 +432,7 @@ function [Ropt, Jopt, information] = gammasyn_couplingcontrol(systems, areafun, 
 			optimization.options.ProblemType.CONSTRAINEDMULTI
 		])
 			% TODO: allow unconstrained by transforming to objective function?
-			error('control:design:gamma:input', 'For numeric coupling controller design, ''ProblemType'' must be CONSTRAINED or CONSTRAINEDMULTI.');
+			error('control:design:gamma:input', 'For numeric decoupling controller design, ''ProblemType'' must be CONSTRAINED or CONSTRAINEDMULTI.');
 		end
 		R_fixed_tilde = {
 			R_fixed_tilde, K_fixed_tilde, F_fixed_tilde, RKF_fixed_tilde
@@ -424,8 +442,8 @@ function [Ropt, Jopt, information] = gammasyn_couplingcontrol(systems, areafun, 
 		};
 	else
 		% calculate structural constraints
-		[RF_fixed_tilde, RF_bounds_tilde, valid, message] = coupling_RKF_fixed(systems_tilde, objectiveoptions, solveroptions, descriptor);
-		if ~valid % then abort control design
+		[RF_fixed_tilde, RF_bounds_tilde, successful, message] = decoupling_RKF_fixed(systems_tilde, objectiveoptions, solveroptions, descriptor);
+		if ~successful % then abort control design
 			Ropt = {
 				NaN(number_controls, number_measurements);
 				NaN(number_controls, number_measurements_xdot);
@@ -468,7 +486,7 @@ function [Ropt, Jopt, information] = gammasyn_couplingcontrol(systems, areafun, 
 	if length(Ropt) == 3
 		K_tilde = Ropt{2};
 		if any(any(K_tilde ~= zeros(number_controls_tilde, number_measurements_xdot_tilde)))
-			error('control:design:gamma:derivative_gain', 'For coupling control design, derivative gain must be zero.');
+			error('control:design:gamma:derivative_gain', 'For decoupling control design, derivative gain must be zero.');
 		end
 		F_tilde = Ropt{3};
 	else
@@ -715,11 +733,11 @@ function [R_A_tilde, R_b_tilde, K_A_tilde, K_b_tilde, F_A_tilde, F_b_tilde, RKF_
 	end
 end
 
-function [RKF_fixed_tilde_all] = cat_RKF_fixed(RKF_fixed_tilde, RKF_fixed_tilde_coupling, fixed)
+function [RKF_fixed_tilde_all] = cat_RKF_fixed(RKF_fixed_tilde, RKF_fixed_tilde_decoupling, fixed)
 	%CAT_RKF_fixed concatenate constraint equation systems
 	%	Input:
 	%		RKF_fixed_tilde:			user defined equation system
-	%		RKF_fixed_tilde_coupling:	coupling condition equation system
+	%		RKF_fixed_tilde_decoupling:	decoupling condition equation system
 	%		fixed:						indicator if fixed constraints are to be handled
 	%	Output:
 	%		RKF_fixed_tilde_all:		combined equation system
@@ -729,13 +747,13 @@ function [RKF_fixed_tilde_all] = cat_RKF_fixed(RKF_fixed_tilde, RKF_fixed_tilde_
 	if isempty(RKF_fixed_tilde)
 		RKF_fixed_tilde = {[], []};
 	end
-	if isempty(RKF_fixed_tilde_coupling)
-		RKF_fixed_tilde_coupling = {[], []};
+	if isempty(RKF_fixed_tilde_decoupling)
+		RKF_fixed_tilde_decoupling = {[], []};
 	end
-	if ~isempty(RKF_fixed_tilde{1}) && ~isempty(RKF_fixed_tilde_coupling{1})
-		RKF_fixed_tilde_all = {cat(3, RKF_fixed_tilde{1}, RKF_fixed_tilde_coupling{1}), [
+	if ~isempty(RKF_fixed_tilde{1}) && ~isempty(RKF_fixed_tilde_decoupling{1})
+		RKF_fixed_tilde_all = {cat(3, RKF_fixed_tilde{1}, RKF_fixed_tilde_decoupling{1}), [
 			RKF_fixed_tilde{2};
-			RKF_fixed_tilde_coupling{2}
+			RKF_fixed_tilde_decoupling{2}
 		]};
 		if fixed
 			[A, b] = convert_hadamard2vectorized(RKF_fixed_tilde_all);
@@ -751,11 +769,11 @@ function [RKF_fixed_tilde_all] = cat_RKF_fixed(RKF_fixed_tilde, RKF_fixed_tilde_
 				end
 			end
 		end
-	elseif isempty(RKF_fixed_tilde{1}) && ~isempty(RKF_fixed_tilde_coupling{1})
-		RKF_fixed_tilde_all = RKF_fixed_tilde_coupling;
-	elseif isempty(RKF_fixed_tilde_coupling{1}) && ~isempty(RKF_fixed_tilde{1})
+	elseif isempty(RKF_fixed_tilde{1}) && ~isempty(RKF_fixed_tilde_decoupling{1})
+		RKF_fixed_tilde_all = RKF_fixed_tilde_decoupling;
+	elseif isempty(RKF_fixed_tilde_decoupling{1}) && ~isempty(RKF_fixed_tilde{1})
 		RKF_fixed_tilde_all = RKF_fixed_tilde;
 	else
-		RKF_fixed_tilde_all = RKF_fixed_tilde_coupling;
+		RKF_fixed_tilde_all = RKF_fixed_tilde_decoupling;
 	end
 end

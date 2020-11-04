@@ -1,5 +1,5 @@
 classdef OutputCouplingStateFeedback < control.design.outputfeedback.AbstractCouplingFeedback
-	%OUTPUTCOUPLINGSTATEFEEDBACK class for casting a control system in state feedback form ready for gammasyn_couplingcontrol to perform a state coupling control design and specify the needed constraints on the resulting gain matrix
+	%OUTPUTCOUPLINGSTATEFEEDBACK class for casting a control system in state feedback form ready for gammasyn_decouplingcontrol to perform a state coupling control design and specify the needed constraints on the resulting gain matrix
 	%	For the control system
 	%		Ex' = Ax + Bu
 	%		y = Cx + Du
@@ -23,16 +23,17 @@ classdef OutputCouplingStateFeedback < control.design.outputfeedback.AbstractCou
 	end
 
 	methods
-		function [this] = OutputCouplingStateFeedback(number_couplingconditions, transformation, varargin) %#ok<VANUS> varargin is not used but allowes to call the constructor with arguments
+		function [this] = OutputCouplingStateFeedback(number_couplingconditions, number_references, transformation, varargin) %#ok<VANUS> varargin is not used but allowes to call the constructor with arguments
 			%OUTPUTCOUPLINGSTATEFEEDBACK create new state feedback coupling class
 			%	Input:
 			%		number_couplingconditions:	number of coupling conditions in C_ref
+			%		number_references:			number of references
 			%		transformation:				transformation matrix containing parameters of outputs that shall be coupled.
 			%		varargin:					unused input arguments
 			%	Output:
 			%		this:						instance
-			narginchk(2, Inf);
-			this@control.design.outputfeedback.AbstractCouplingFeedback(number_couplingconditions);
+			narginchk(3, Inf);
+			this@control.design.outputfeedback.AbstractCouplingFeedback(number_couplingconditions, number_references);
 			this.transformation = transformation;
 		end
 
@@ -348,15 +349,14 @@ classdef OutputCouplingStateFeedback < control.design.outputfeedback.AbstractCou
 			end
 		end
 
-		function [couplingoptions] = get_couplingoptions_system(this, couplingoptions)
-			%GET_COUPLINGOPTIONS_SYSTEM return structure with options for coupling controller design
+		function [decouplingoptions] = get_decouplingoptions_system(this, decouplingoptions)
+			%GET_DECOUPLINGOPTIONS_SYSTEM return structure with options for decoupling controller design
 			%	Input:
 			%		this:				instance
 			%		options:			structure with options to append to
 			%	Output:
-			%		couplingoptions:	structure with appended coupling options
-			couplingoptions.couplingconditions = this.number_couplingconditions;% number of coupling conditions
-			couplingoptions.couplingstrategy = GammaCouplingStrategy.EXACT;% method chosen to solve coupling design
+			%		decouplingoptions:	structure with appended decoupling options
+			decouplingoptions.decouplingstrategy = GammaDecouplingStrategy.EXACT;% method chosen to solve decoupling design
 		end
 	end
 

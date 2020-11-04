@@ -1,6 +1,0 @@
-linters:
-  shellcheck:
-    shell: bash
-  flake8:
-    python: 3
-    exclude: .svn,CVS,.bzr,.hg,.git,lib/optimization/NLOPT/interface/NLOPT/*

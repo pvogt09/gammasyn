@@ -1,29 +1,29 @@
-classdef(Enumeration) GammaCouplingStrategy < Simulink.IntEnumType
-	%GAMMACOUPLINGSTRATEGY enumeration for characterization of different coupling strategies in gamma pole placement for use with codegen
+classdef(Enumeration) GammaDecouplingStrategy < Simulink.IntEnumType
+	%GAMMADECOUPLINGSTRATEGY enumeration for characterization of different decoupling strategies in gamma pole placement for use with codegen
 	%#codegen
 
 
 	enumeration
-		% no coupling control design
+		% no decoupling control design
 		NONE(0);
-		% coupling controller design via structural constrained controller. Only exact coupling allowed.
+		% decoupling controller design via structural constrained controller. Only exact decoupling allowed.
 		EXACT(1);
-		% coupling controller design via structural constrained controller. Approximate coupling allowed.
+		% decoupling controller design via structural constrained controller. Approximate decoupling allowed.
 		APPROXIMATE(2);
-		% coupling controller design via structural constrained controller. Approximate coupling allowed.
+		% decoupling controller design via structural constrained controller. Approximate decoupling allowed. Formulate decoupling constraints as bounds.
 		APPROXIMATE_INEQUALITY(3);
-		% fully numeric coupling controller design with nonlinear equality constraints.
+		% fully numeric decoupling controller design with nonlinear equality constraints.
 		NUMERIC_NONLINEAR_EQUALITY(4);
-		% fully numeric coupling controller design with nonlinear inequality constraints.
+		% fully numeric decoupling controller design with nonlinear inequality constraints.
 		NUMERIC_NONLINEAR_INEQUALITY(5);
 	end
 
-% must not be private to allow for type cast to GammaCouplingStrategy, types are automatically restricted to the defined ones internally
+% must not be private to allow for type cast to GammaDecouplingStrategy, types are automatically restricted to the defined ones internally
 % 	methods(Access=private)
-% 		function [this] = GammaCouplingStrategy(type)
-% 			%GAMMACOUPLINGSTRATEGY create new Gamma coupling strategy
+% 		function [this] = GammaDecouplingStrategy(type)
+% 			%GAMMADECOUPLINGSTRATEGY create new Gamma decoupling strategy
 % 			%	Input:
-% 			%		type:	number for coupling strategy
+% 			%		type:	number for decoupling strategy
 % 			%	Output:
 % 			%		this:	instance of class
 % 			this@Simulink.IntEnumType(type);
@@ -32,17 +32,17 @@ classdef(Enumeration) GammaCouplingStrategy < Simulink.IntEnumType
 
 	methods(Static=true)
 		function [default] = getDefaultValue()
-			%GETDEFAULTVALUE return default coupling design strategy
+			%GETDEFAULTVALUE return default decoupling design strategy
 			%	Output:
-			%		default:	default default coupling design strategy
-			default = GammaCouplingStrategy.NONE;
+			%		default:	default default decoupling design strategy
+			default = GammaDecouplingStrategy.NONE;
 		end
 
 		function [description] = getDescription()
 			%GETDESCRIPTION	String to describe the class in Simulink Coder
 			%	Output:
 			%		description:	description of the class
-			description = 'enumeration for characterization of different strategies for coupling controller design with gammasyn';
+			description = 'enumeration for characterization of different strategies for decoupling controller design with gammasyn';
 		end
 
 		function [addname] = addClassNameToEnumNames()
@@ -53,16 +53,16 @@ classdef(Enumeration) GammaCouplingStrategy < Simulink.IntEnumType
 		end
 
 		function [strategy] = fromname(name)
-			%FROMNAME create GammaCouplingStrategy from name
+			%FROMNAME create GammaDecouplingStrategy from name
 			%	Input:
-			%		name:		name of a defined GammaCouplingStrategy
+			%		name:		name of a defined GammaDecouplingStrategy
 			%	Output:
-			%		strategy:	GammaCouplingStrategy, if one of the specified name exists
-			if isa(name, 'GammaCouplingStrategy')
+			%		strategy:	GammaDecouplingStrategy, if one of the specified name exists
+			if isa(name, 'GammaDecouplingStrategy')
 				strategy = name;
 				return;
 			end
-			enum = enumeration('GammaCouplingStrategy');
+			enum = enumeration('GammaDecouplingStrategy');
 			maxvaluechar = length(sprintf('%d', max(enum)));
 			if ischar(name)
 				strategy = [];
@@ -80,12 +80,12 @@ classdef(Enumeration) GammaCouplingStrategy < Simulink.IntEnumType
 						return;
 					end
 					if ischar(name) && length(name) <= maxvaluechar
-						strategy = GammaCouplingStrategy.fromDCM(str2double(name));
+						strategy = GammaDecouplingStrategy.fromDCM(str2double(name));
 						return;
 					end
 				end
 			else
-				strategy = repmat(GammaCouplingStrategy.getDefaultValue(), length(name), 1);
+				strategy = repmat(GammaDecouplingStrategy.getDefaultValue(), length(name), 1);
 				hasStrategy = false(length(name), 1);
 				for jj = 1:length(name)
 					for ii = 1:length(enum)
@@ -108,18 +108,18 @@ classdef(Enumeration) GammaCouplingStrategy < Simulink.IntEnumType
 				end
 			end
 			if isempty(strategy)
-				error('control:design:gamma:type:name', 'No GammaCouplingStrategy of specified name exists.');
+				error('control:design:gamma:type:name', 'No GammaDecouplingStrategy of specified name exists.');
 			end
 		end
 
 		function [fromDCM] = fromDCM(DCMstring, ~)
-			%FROMDCM convert string from DCM file to object of GammaCouplingStrategy class
+			%FROMDCM convert string from DCM file to object of GammaDecouplingStrategy class
 			%	Input:
 			%		DCMstring:	string to convert from
 			%		name:		optional name of parameter
 			%	Output:
-			%		fromDCM:	GammaCouplingStrategy, if one of the specified name exists
-			fromDCM = GammaCouplingStrategy.fromname(DCMstring);
+			%		fromDCM:	GammaDecouplingStrategy, if one of the specified name exists
+			fromDCM = GammaDecouplingStrategy.fromname(DCMstring);
 		end
 	end
 

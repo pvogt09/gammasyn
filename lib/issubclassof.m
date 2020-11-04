@@ -32,6 +32,9 @@ function [is] = issubclassof(subclass, parentclass)
 		if ~isa(parentclass, 'meta.class')
 			error('meta:class:subclass', 'class must be of type ''meta.class''.');
 		end
+		if isempty(parentclass)
+			error('meta:class:subclass', 'class must not be empty.');
+		end
 	end
 	ischild = subclass == parentclass;
 	parfor ii = 1:size(subclass, 1)
