@@ -128,8 +128,8 @@ function [system, areafun_strict, areafun_loose, weight_strict, weight_loose, di
 		if any(hasfeedthrough_decoupling) && systemoptions.allowoutputdecoupling && number_measurements < number_states
 			warning('control:design:gamma:decoupling', 'Using feedthrough decoupling and outputfeedback is "beta" since in this case, controlled invariant subspace is not properly checked for being conditioned invariant.');
 		end
-		if not_con_invariant_mat
-			warning('control:design:gamma:decoupling', 'At least one controlled invariant subspace is not conditioned invariant. Use different measurement configuration.');
+		if any(any(not_con_invariant_mat))
+			warning('control:design:gamma:decoupling', 'No suitable output feedback exists because at least one controlled invariant subspace is not conditioned invariant. Use different measurement configuration.');
 		end
 	else
 		tf_structure = NaN(number_references, number_references);

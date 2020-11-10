@@ -177,7 +177,7 @@ function [RKF_fixed, RKF_bounds, valid, message] = decoupling_RKF_fixed(systems,
 	end
 	not_con_invariant = any(any(not_con_invariant_mat));
 	if not_con_invariant
-		warning('control:design:gamma:decoupling', 'At least one controlled invariant subspace is not conditioned invariant. Use different measurement configuration.');
+		warning('control:design:gamma:decoupling', 'No suitable output feedback exists because at least one controlled invariant subspace is not conditioned invariant. Use different measurement configuration.');
 	end
 
 	X_R = cat(1, X_R_cell{:});
