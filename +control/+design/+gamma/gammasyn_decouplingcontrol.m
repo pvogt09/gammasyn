@@ -441,8 +441,11 @@ function [Ropt, Jopt, information] = gammasyn_decouplingcontrol(systems, areafun
 			R_bounds_tilde, K_bounds_tilde, F_bounds_tilde, RKF_bounds_tilde
 		};
 	else
+		R_fixed_tilde_external = {
+			R_fixed_tilde, K_fixed_tilde, F_fixed_tilde, RKF_fixed_tilde
+		};
 		% calculate structural constraints
-		[RF_fixed_tilde, RF_bounds_tilde, successful, message] = decoupling_RKF_fixed(systems_tilde, objectiveoptions, solveroptions, descriptor);
+		[RF_fixed_tilde, RF_bounds_tilde, successful, message] = decoupling_RKF_fixed(systems_tilde, R_fixed_tilde_external, objectiveoptions, solveroptions, descriptor);
 		if ~successful % then abort control design
 			Ropt = {
 				NaN(number_controls, number_measurements);
@@ -454,16 +457,14 @@ function [Ropt, Jopt, information] = gammasyn_decouplingcontrol(systems, areafun
 			information.message = message;
 			return;
 		end
-		R_fixed_tilde_all = cat_RKF_fixed(R_fixed_tilde, RF_fixed_tilde{1}, true);
 		K_fixed_tilde_all = cat_RKF_fixed(K_fixed_tilde, RF_fixed_tilde{2}, true);
-		F_fixed_tilde_all = cat_RKF_fixed(F_fixed_tilde, RF_fixed_tilde{3}, true);
 
 		R_bounds_tilde_all = cat_RKF_fixed(R_bounds_tilde, RF_bounds_tilde{1}, false);
 		K_bounds_tilde_all = cat_RKF_fixed(K_bounds_tilde, RF_bounds_tilde{2}, false);
 		F_bounds_tilde_all = cat_RKF_fixed(F_bounds_tilde, RF_bounds_tilde{3}, false);
 
 		R_fixed_tilde = {
-			R_fixed_tilde_all, K_fixed_tilde_all, F_fixed_tilde_all, RKF_fixed_tilde
+			RF_fixed_tilde{1}, K_fixed_tilde_all, RF_fixed_tilde{3}, RF_fixed_tilde{4}
 		};
 		R_bounds_tilde = {
 			R_bounds_tilde_all, K_bounds_tilde_all, F_bounds_tilde_all, RKF_bounds_tilde
@@ -757,17 +758,11 @@ function [RKF_fixed_tilde_all] = cat_RKF_fixed(RKF_fixed_tilde, RKF_fixed_tilde_
 		]};
 		if fixed
 			[A, b] = convert_hadamard2vectorized(RKF_fixed_tilde_all);
-			rg = rank(A);
-			if rg ~= size(A, 1)
-				if rg == rank([A, b])
-					% if equation system is solvable and has redundant equations, reduce to unique set of equations, else error handling is done later
-					A_rref = rref([A, b]);
-					A = A_rref(1:rg, :);
-					b = A(:, end);
-					A = A(:, 1:end - 1);
-					RKF_fixed_tilde_all = convert_vectorized2hadamard(A, b, [size(RKF_fixed_tilde_all{1}, 1), size(RKF_fixed_tilde_all{1}, 2)]);
-				end
-			end
+			Ab_rref = rref([A, b]);
+			Ab_rref(all(Ab_rref == 0, 2), :) = [];
+			A_rref = Ab_rref(:, 1:end - 1);
+			b_rref = Ab_rref(:, end);
+			RKF_fixed_tilde_all = convert_vectorized2hadamard(A_rref, b_rref, [size(RKF_fixed_tilde_all{1}, 1), size(RKF_fixed_tilde_all{1}, 2)]);
 		end
 	elseif isempty(RKF_fixed_tilde{1}) && ~isempty(RKF_fixed_tilde_decoupling{1})
 		RKF_fixed_tilde_all = RKF_fixed_tilde_decoupling;

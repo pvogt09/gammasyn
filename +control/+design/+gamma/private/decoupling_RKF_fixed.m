@@ -1,7 +1,8 @@
-function [RKF_fixed, RKF_bounds, valid, message] = decoupling_RKF_fixed(systems, objectiveoptions, solveroptions, descriptor)
+function [RKF_fixed, RKF_bounds, valid, message] = decoupling_RKF_fixed(systems, R_fixed_ext, objectiveoptions, solveroptions, descriptor)
 	%DECOUPLING_RKF_FIXED calculates structural constraints for proportional controller and prefilter coefficients, that are necessary for decoupling control
 	%	Input:
 	%		systems:					structure with dynamic systems to take into consideration
+	%		R_fixed_ext:				cell array with controller constraints given externally
 	%		objectiveoptions:			structure with objective options
 	%		solveroptions:				options for optimization algorithm to use
 	%		descriptor:					indicator if design should be performed for a DAE system
@@ -14,9 +15,13 @@ function [RKF_fixed, RKF_bounds, valid, message] = decoupling_RKF_fixed(systems,
 		descriptor = false;
 	end
 	RKF_fixed = [];
+	R_fixed = {[], []};
+	F_fixed = {[], []};
+	RF_fixed = {[], []};
 	RKF_bounds = [];
 	R_bounds = {[], []};
 	F_bounds = {[], []};
+	RF_bounds = {[], []};
 	valid = true;
 	message = '';
 	hassymbolic = configuration.matlab.hassymbolictoolbox();
@@ -29,6 +34,7 @@ function [RKF_fixed, RKF_bounds, valid, message] = decoupling_RKF_fixed(systems,
 	number_controls = size(systems(1).B, 2);
 	number_references = size(systems(1).C_ref, 1);
 	number_measurements = size(systems(1).C, 1);
+	number_measurements_xdot = size(systems(1).C_dot, 1);
 	number_models = size(systems, 1);
 
 	if solvesymbolic && ~hassymbolic
@@ -56,21 +62,23 @@ function [RKF_fixed, RKF_bounds, valid, message] = decoupling_RKF_fixed(systems,
 
 	%% Constraint equations for controller and prefilter
 	%  Equations have the form X_R*r = z_R and X_F*f = z_F
-	dim_F_1 = number_controls;		% number of rows of prefilter F1
-	dim_F_2 = number_references;	% number of columns of prefilter F1
 
 	if solvesymbolic
 		R = sym('r%d%d', [number_controls, number_measurements]);
 		assume(R, 'real');
 		r = reshape(R, number_controls*number_measurements, 1);
-		F = sym('f%d%d', [dim_F_1, dim_F_2]);
+		F = sym('f%d%d', [number_controls, number_references]);
 		assume(F, 'real');
-		f = reshape(F, dim_F_1*dim_F_2, 1);
+		f = reshape(F, number_controls*number_references, 1);
 	else
 		R = [];
 		r = [];
 		f = [];
 	end
+	rf = [
+		r;
+		f
+	];
 
 	Q_orth_T_B_cell = cell(number_models, 1);
 	Q_orth_jj_T_B_cell = cell(number_models, number_references);
@@ -180,20 +188,235 @@ function [RKF_fixed, RKF_bounds, valid, message] = decoupling_RKF_fixed(systems,
 		warning('control:design:gamma:decoupling', 'No suitable output feedback exists because at least one controlled invariant subspace is not conditioned invariant. Use different measurement configuration.');
 	end
 
-	X_R = cat(1, X_R_cell{:});
-	z_R = cat(1, z_R_cell{:});
-	X_F = cat(1, Q_orth_T_B_cell{:});
-	z_F = zeros(size(X_F, 1), 1);
+	[R_fixed_X, R_fixed_z] = convert_hadamard2vectorized(R_fixed_ext{1}); % include constraints given by user
+	[F_fixed_X, F_fixed_z] = convert_hadamard2vectorized(R_fixed_ext{3});
+	[RKF_fixed_X, RKF_fixed_z] = convert_hadamard2vectorized(R_fixed_ext{4});
+	RKF_fixed_X(:, number_controls*number_measurements + (1:number_controls*number_measurements_xdot)) = []; % differential feedback is forced to zero anyway
+	combined_constraints = ~isempty(RKF_fixed_X);
+	
+	if control_design_type == GammaDecouplingStrategy.APPROXIMATE_INEQUALITY
+		X_R = cat(1, X_R_cell{:});
+		z_R = cat(1, z_R_cell{:});
+		X_F = cat(1, Q_orth_T_B_cell{:});
+		z_F = zeros(size(X_F, 1));
+		X_comb = [];
+		z_comb = [];
+	else
+		X_R = [
+			cat(1, X_R_cell{:});
+			R_fixed_X
+		];
+		z_R = [
+			cat(1, z_R_cell{:});
+			R_fixed_z
+		];
+		X_F = [
+			cat(1, Q_orth_T_B_cell{:});
+			F_fixed_X
+		];
+		z_F = [
+			zeros(size(X_F, 1) - size(F_fixed_X, 1), 1);
+			F_fixed_z
+		];
+		if combined_constraints
+			X_comb = [
+				blkdiag(cat(1, X_R_cell{:}), cat(1, Q_orth_T_B_cell{:}));
+				RKF_fixed_X
+			];
+			z_comb = [
+				cat(1, z_R_cell{:});
+				zeros(size(X_F, 1) - size(F_fixed_X, 1), 1);
+				RKF_fixed_z
+			];
+		else
+			X_comb = [
+				blkdiag(cat(1, X_R_cell{:}), cat(1, Q_orth_T_B_cell{:}));
+				blkdiag(R_fixed_X, F_fixed_X)
+			];
+			z_comb = [
+				cat(1, z_R_cell{:});
+				zeros(size(X_F, 1) - size(F_fixed_X, 1), 1);
+				R_fixed_z;
+				F_fixed_z
+			];
+		end
+	end
 
 	X_R(abs(X_R) < eps) = 0; % avoid basic numerical difficulties
 	z_R(abs(z_R) < eps) = 0;
 	X_F(abs(X_F) < eps) = 0;
+	X_comb(abs(X_comb) < eps) = 0;
+	z_comb(abs(z_comb) < eps) = 0;
 
-
-	%% Choose constrained parameters
 	if any(any((dim_invariant_mat == number_states) & ~sys_feedthrough_mat))
 		error('RBABS:control:design:gamma:dimensions', 'Dimension m of controlled invariant subspace is equal to the system dimension %d, while there is no feedthrough in the decoupling condition. Specify non-trivial decoupling conditions.', number_states)
 	end
+
+	%% Calculate controller constraints
+% 	if ~combined_constraints
+% 		if control_design_type == GammaDecouplingStrategy.APPROXIMATE_INEQUALITY
+% 			R_bounds = convert_vectorized2hadamard([
+% 				X_R;
+% 				-X_R
+% 			], [
+% 				z_R + objectiveoptions.decouplingcontrol.tolerance_decoupling;
+% 				-z_R - objectiveoptions.decouplingcontrol.tolerance_decoupling
+% 			], [number_controls, number_measurements]);
+% 			R_fixed = R_fixed_ext{1};
+% 		else
+% 			if ~isempty(X_R)
+% 				[Xz_R, r_sol, r_free_params_raw, r_sol_empty] = solveandcheck(X_R, r, z_R);
+% 				if r_sol_empty
+% 					if output_verbosity(solveroptions, 'notify')
+% 						disp('------------------X_R*r=z_R has no solution.------------------');
+% 					end
+% 					if allowApproxSol
+% 						if output_verbosity(solveroptions)
+% 							disp('----------------Calculate approximate solution.---------------');
+% 						end
+% 						[Xz_R, r_sol, r_free_params_raw, r_sol_empty_approx] = solveandcheck(X_R.'*X_R, r, X_R.'*z_R);
+% 						if r_sol_empty_approx
+% 							if ~isnan(round_to)
+% 								[Xz_R, r_sol, r_free_params_raw, r_sol_empty_round] = solveandcheck(round(X_R.'*X_R, round_to), r, round(X_R.'*z_R, round_to));
+% 							else
+% 								r_sol_empty_round = true;
+% 							end
+% 							if r_sol_empty_round
+% 								error('control:design:gamma:decoupling', 'Calculation of controller constraints failed due to numerical difficulties.');
+% 							end
+% 						end
+% 					else
+% 						message = 'X_R*r=z_R has no solution. Allow calculation of approximate solution, using GammaDecouplingStrategy.APPROXIMATE.';
+% 						valid = false;
+% 						return;
+% 					end
+% 				end
+% 
+% 				% Show results
+% 				if output_verbosity(solveroptions) && solvesymbolic
+% 					showresults(R, r_sol, r_free_params_raw, 'controller');
+% 				end
+% 
+% 				% controller constraints for gammasyn					
+% 				Xz_R_fixed = rref([
+% 					Xz_R{1}, Xz_R{2}
+% 				]);
+% 				Xz_R_fixed(all(Xz_R_fixed.' == 0), :) = [];
+% 				R_fixed = convert_vectorized2hadamard(Xz_R_fixed(:, 1:end - 1), Xz_R_fixed(:, end), [number_controls, number_measurements]);
+% 			end
+% 			if isempty(R_fixed{1})
+% 				disp('-------------There are no controller constraints.-------------');
+% 			end
+% 		end
+% 	end
+	%% Calculate prefilter constraints
+	c_f = objectiveoptions.decouplingcontrol.tolerance_prefilter;% parameter to avoid trivial solution for prefilter
+% 	if ~combined_constraints
+% 		if control_design_type == GammaDecouplingStrategy.APPROXIMATE_INEQUALITY
+% 			F_bounds = convert_vectorized2hadamard([
+% 				X_F;
+% 				-X_F
+% 			], [
+% 				z_F + objectiveoptions.decouplingcontrol.tolerance_prefilter;
+% 				-z_F - objectiveoptions.decouplingcontrol.tolerance_prefilter
+% 			], [number_controls, number_references]);
+% 			F_fixed = R_fixed_ext{3};
+% 		else
+% 			if ~isempty(X_F)
+% 				alreadydisplayed = false;
+% 				gototilde = false;
+% 				[Xz_F, f_sol, f_free_params_raw, f_sol_empty, f_sol_zero] = solveandcheck(X_F, f, z_F, [number_controls, number_references]);
+% 				if f_sol_empty
+% 					if output_verbosity(solveroptions, 'notify')
+% 						disp('------------------X_F*f=z_F has no solution.------------------');
+% 					end
+% 					if allowApproxSol
+% 						if output_verbosity(solveroptions)
+% 						disp('----------------Calculate approximate solution.---------------');
+% 							alreadydisplayed = true;
+% 						end
+% 						[Xz_F, f_sol, f_free_params_raw, f_sol_empty_approx, f_sol_zero] = solveandcheck(X_F.'*X_F, f, X_F.'*z_F, [number_controls, number_references]);
+% 						if f_sol_empty_approx
+% 							if ~isnan(round_to)
+% 								[Xz_F, f_sol, f_free_params_raw, f_sol_empty_round, f_sol_zero] = solveandcheck(round(X_F.'*X_F, round_to), f, round(X_F.'*z_F, round_to), [number_controls, number_references]);
+% 							else
+% 								f_sol_empty_round = true;
+% 							end
+% 							if f_sol_empty_round
+% 								error('control:design:gamma:decoupling', 'Calculation of controller constraints failed due to numerical difficulties.');
+% 							elseif any(f_sol_zero)
+% 								gototilde = true;
+% 							end
+% 						elseif any(f_sol_zero)
+% 							gototilde = true;
+% 						end
+% 					else
+% 						message = 'X_F*f=z_F has no solution. Allow calculation of approximate solution, using GammaDecouplingStrategy.APPROXIMATE.';
+% 						valid = false;
+% 						return;
+% 					end
+% 				elseif any(f_sol_zero)
+% 					if allowApproxSol
+% 						gototilde = true;
+% 					else
+% 						message = 'At least one prefilter column is forced to zero. Allow calculation of approximate solution, using GammaDecouplingStrategy.APPROXIMATE.';
+% 						valid = false;
+% 						return;
+% 					end
+% 				end
+% 				if gototilde
+% 					if output_verbosity(solveroptions)
+% 						disp('------At least one prefilter column is forced to zero.--------');
+% 					end
+% 					if output_verbosity(solveroptions) && ~alreadydisplayed
+% 						disp('----------------Calculate approximate solution.---------------');
+% 					end
+% 					add_ones = kron(eye(number_references, number_references), ones(1, number_controls));
+% 					add_ones(~f_sol_zero, :) = [];
+% 					add_c_f = c_f*ones(size(add_ones, 1), 1);
+% 
+% 					X_F_tilde = [
+% 						X_F;
+% 						add_ones
+% 					];
+% 					z_F_tilde = [
+% 						z_F;
+% 						add_c_f
+% 					];
+% 					[Xz_F, f_sol, f_free_params_raw, f_sol_empty_tilde, f_sol_zero] = solveandcheck(X_F_tilde.'*X_F_tilde, f, X_F_tilde.'*z_F_tilde, [number_controls, number_references]);
+% 					if f_sol_empty_tilde
+% 						if ~isnan(round_to)
+% 							[Xz_F, f_sol, f_free_params_raw, f_sol_empty_tilde_round, f_sol_zero] = solveandcheck(round(X_F.'*X_F, round_to), f, round(X_F.'*z_F, round_to), [number_controls, number_references]);
+% 						else
+% 							f_sol_empty_tilde_round = true;
+% 						end
+% 						if f_sol_empty_tilde_round
+% 							error('control:design:gamma:decoupling', 'Calculation of controller constraints failed due to numerical difficulties.');
+% 						end
+% 					end
+% 					if any(f_sol_zero)
+% 						warning('control:design:gamma:decoupling', 'Some prefilter columns are forced to zero due to external prefilter constraints.');
+% 					end
+% 				end
+% 
+% 				% Show results
+% 				if output_verbosity(solveroptions) && solvesymbolic
+% 					showresults(F, f_sol, f_free_params_raw, 'prefilter');
+% 				end
+% 				
+% 				% Structural constraints of controller for gammasyn					
+% 				Xz_F_fixed = rref([
+% 					Xz_F{1}, Xz_F{2}
+% 				]);
+% 				Xz_F_fixed(all(Xz_F_fixed.' == 0), :) = [];
+% 				F_fixed = convert_vectorized2hadamard(Xz_F_fixed(:, 1:end - 1), Xz_F_fixed(:, end), [number_controls, number_references]);
+% 			end
+% 			if isempty(F_fixed{1})
+% 				disp('--------------There are no prefilter constraints.-------------');
+% 			end
+% 		end
+% 	end
+	%% Handle combined constraints
 	if control_design_type == GammaDecouplingStrategy.APPROXIMATE_INEQUALITY
 		R_bounds = convert_vectorized2hadamard([
 			X_R;
@@ -202,372 +425,288 @@ function [RKF_fixed, RKF_bounds, valid, message] = decoupling_RKF_fixed(systems,
 			z_R + objectiveoptions.decouplingcontrol.tolerance_decoupling;
 			-z_R - objectiveoptions.decouplingcontrol.tolerance_decoupling
 		], [number_controls, number_measurements]);
-		R_fixed = {[], []};
-	else
-		if ~isempty(X_R)
-			if solvesymbolic
-				r_sol = solve(X_R*r == z_R, r, 'ReturnConditions', true);
-				r_sol_fields = struct2cell(r_sol);
-				r_sol_fields = r_sol_fields(1:number_measurements*number_controls);
-				r_sol_empty = cellfun(@isempty, r_sol_fields, 'UniformOutput', true);
-				r_sol_empty = any(r_sol_empty(:));
-
-				if r_sol_empty
-					if output_verbosity(solveroptions, 'notify')
-						disp('------------X_R*r=z_R has no solution.------------------');
-					end
-					if allowApproxSol
-						if output_verbosity(solveroptions)
-							disp('------------Calculate approximate solution.-----------');
-						end
-						r_sol = solve(X_R.'*X_R*r == X_R.'*z_R, r, 'ReturnConditions', true);
-						r_sol_fields = struct2cell(r_sol);
-						r_sol_fields = r_sol_fields(1:number_measurements*number_controls);
-						r_sol_empty_approx = cellfun(@isempty, r_sol_fields, 'UniformOutput', true);
-						r_sol_empty_approx = any(r_sol_empty_approx(:));
-						if r_sol_empty_approx
-							if isnan(round_to)
-								r_sol = solve(X_R.'*X_R*r == X_R.'*z_R, r, 'ReturnConditions', true);
-							else
-								r_sol = solve(round(X_R.'*X_R, round_to)*r == round(X_R.'*z_R, round_to), r, 'ReturnConditions', true);
-							end
-							r_sol_fields = struct2cell(r_sol);
-							r_sol_fields = r_sol_fields(1:number_measurements*number_controls);
-							r_sol_empty_approx_round = cellfun(@isempty, r_sol_fields, 'UniformOutput', true);
-							r_sol_empty_approx_round = any(r_sol_empty_approx_round(:));
-							if r_sol_empty_approx_round
-								error('control:design:gamma:decoupling', 'Calculation of controller constraints failed due to numerical difficulties.');
-							end
-						end
-					else
-						message = 'X_R*r=z_R has no solution. Allow calculation of approximate solution, using GammaDecouplingStrategy.APPROXIMATE.';
-						valid = false;
-						return;
-					end
-				end
-				r_sol_array = [r_sol_fields{:}].';
-				free_params = r_sol.parameters;
-				[~, idx_intersect_r] = intersect(r_sol_array, free_params);
-				idx_constr_params_r = setdiff(1:number_measurements*number_controls, idx_intersect_r);
-				no_constr_params_r = length(idx_constr_params_r);
-
-				R = reshape(r_sol_array(1:number_measurements*number_controls), number_controls, number_measurements);
-				if ~isempty(free_params)
-					z_rij = free_params.';
-					z_rij = [
-						z_rij, r(idx_intersect_r)
-					];
-					free_params_r = z_rij(:, 2).';
-					if size(free_params, 1) ~= size(free_params_r, 1)
-						free_params_r = transpose(free_params_r);
-					end
-					R = subs(R, free_params, free_params_r);
-				else
-					if output_verbosity(solveroptions)
-						disp('Only one controller can fulfill the decoupling conditions.');
-					end
-				end
-
-				% Structural constraints of controller for gammasyn
-				R_fixed_A = zeros(number_controls, number_measurements, no_constr_params_r);
-				R_fixed_B = zeros(1, 1, no_constr_params_r);
-				parfor cnt = 1:no_constr_params_r
-					ii = idx_constr_params_r(cnt);
-					[eqA, eqB] = equationsToMatrix(r(ii) == R(ii), r); %#ok<PFBNS>
-					R_fixed_A(:, :, cnt) = double(reshape(eqA, number_controls, number_measurements));
-					R_fixed_B(:, :, cnt) = double(eqB);
-				end
-				R_fixed_B = reshape(R_fixed_B, no_constr_params_r, 1);
-				R_fixed = {
-					R_fixed_A, R_fixed_B
-				};
-
-				if output_verbosity(solveroptions)
-					disp('------------The structure of the controller is:-------');
-					fprintf('\n');
-					disp(vpa(R, 4));
-				end
-			else
-				equation_system_aug = [
-					X_R, z_R
-				];
-				equation_system_reduced = rref(equation_system_aug);
-				equation_system_reduced(all(equation_system_reduced == 0, 2), :) = [];
-				allzero = all(equation_system_reduced(:, 1:end - 1) == 0, 2);
-				if any(allzero & equation_system_reduced(:, end) == 1)
-					% try solution with parametric solution returned by \
-					if rank(X_R) == rank(equation_system_aug)% TODO: use tolerance to allow for solution?
-						% TODO: No, but round equation systems if approximate system also does not have solution?
-						% TODO: another possibility would be to define a tube of inequalities around the equation system and solve with linprog
-						r_0 = X_R\z_R;
-						r_0_ker = null(X_R, 'r');
-						A = null(r_0_ker.', 'r').';
-						equation_system_reduced = [
-							A,	A*r_0
-						];
-					else
-						if output_verbosity(solveroptions, 'notify')
-							disp('------------X_R*r=z_R has no solution.------------------');
-						end
-						if allowApproxSol
-							if output_verbosity(solveroptions)
-								disp('------------Calculate approximate solution.-----------');
-							end
-							equation_system_aug = [
-								X_R.'*X_R, X_R.'*z_R
-							];
-							equation_system_reduced = rref(equation_system_aug);
-							equation_system_reduced(all(equation_system_reduced == 0, 2), :) = [];
-						else
-							message = 'X_R*r=z_R has no solution. Allow calculation of approximate solution, using GammaDecouplingStrategy.APPROXIMATE.';
-							valid = false;
-							return;
-						end
-					end
-				end
-				no_constr_params_r = size(equation_system_reduced, 1);
-				R_fixed_A = zeros(number_controls, number_measurements, no_constr_params_r);
-				R_fixed_B = zeros(1, 1, no_constr_params_r);
-				parfor cnt = 1:no_constr_params_r
-					equation_system_reduced_cnt = equation_system_reduced(cnt, :);
-					R_fixed_A(:, :, cnt) = double(reshape(equation_system_reduced_cnt(1, 1:end - 1), number_controls, number_measurements));
-					R_fixed_B(:, :, cnt) = double(equation_system_reduced_cnt(1, end));
-				end
-				R_fixed_B = reshape(R_fixed_B, no_constr_params_r, 1);
-				R_fixed = {
-					R_fixed_A, R_fixed_B
-				};
-			end
-		else
-			R_fixed = {[], []};
-			disp('------------There are no controller constraints.------');
-		end
-	end
-	%% Prefilter
-	c_f = objectiveoptions.decouplingcontrol.tolerance_prefilter;% parameter to avoid trivial solution for prefilter
-	if control_design_type == GammaDecouplingStrategy.APPROXIMATE_INEQUALITY
 		F_bounds = convert_vectorized2hadamard([
 			X_F;
 			-X_F
 		], [
 			z_F + objectiveoptions.decouplingcontrol.tolerance_prefilter;
 			-z_F - objectiveoptions.decouplingcontrol.tolerance_prefilter
-		], [number_controls, dim_F_2]);
-		F_fixed_A = [];
-		F_fixed_B = [];
+		], [number_controls, number_references]);
+	
+		R_fixed = R_fixed_ext{1};
+		F_fixed = R_fixed_ext{3};
+		RF_fixed = R_fixed_ext{4};
 	else
-		if ~isempty(X_F)
-			if solvesymbolic
-				f_sol_zero = NaN(1, dim_F_2);
-				already_displayed = false;
-				prefilter_sym = false;
-				idx_constr_params_f_cell = cell(1, dim_F_2);
-				for ii = 1:dim_F_2
-					X_F_temp = X_F(:, (ii - 1)*dim_F_1 + (1:dim_F_1));
-					if all(X_F_temp(:) == 0)
-						prefilter_sym = true;
-						f_sol_zero(ii) = false;
-						continue;
-					end
-					% Kann man das hier abbrechen, falls X_F_temp == 0 ist?
-					f_temp = f((ii - 1)*dim_F_1 + (1:dim_F_1));
-					f_sol = solve(X_F_temp*f_temp == z_F, f_temp, 'ReturnConditions', true);
-					f_sol_fields = struct2cell(f_sol);
-					f_sol_fields = f_sol_fields(1:dim_F_1);
-					f_sol_zero(ii) = all(logical([f_sol_fields{:}] == 0));
-
-					if f_sol_zero(ii)
-						if output_verbosity(solveroptions, 'notify') && ~already_displayed
-							disp('------------There is no non-zero prefilter.-----------');
-						end
-						if allowApproxSol
-							if output_verbosity(solveroptions, 'notify') && ~already_displayed
-								already_displayed = true;
-								disp('------------Calculate approximate solution.-----------');
-							end
-							X_F_tilde = [
-								X_F_temp;
-								ones(1, dim_F_1)
-							];
-							z_F_tilde = [
-								z_F;
-								c_f
-							];
-							f_sol = solve(X_F_tilde.'*X_F_tilde*f_temp == X_F_tilde.'*z_F_tilde, f_temp, 'ReturnConditions', true);
-							f_sol_fields = struct2cell(f_sol);
-							f_sol_fields = f_sol_fields(1:dim_F_1);
-							f_sol_empty_approx = cellfun(@isempty, f_sol_fields, 'UniformOutput', true);
-							f_sol_empty_approx = any(f_sol_empty_approx(:));
-							if f_sol_empty_approx
-								if isnan(round_to)
-									f_sol = solve(X_F_tilde.'*X_F_tilde*f_temp == X_F_tilde.'*z_F_tilde, f_temp, 'ReturnConditions', true);
-								else
-									f_sol = solve(round(X_F_tilde.'*X_F_tilde, round_to)*f_temp == round(X_F_tilde.'*z_F_tilde, round_to), f_temp, 'ReturnConditions', true);
-								end
-								f_sol_fields = struct2cell(f_sol);
-								f_sol_fields = f_sol_fields(1:dim_F_1);
-								f_sol_empty_approx_round = cellfun(@isempty, f_sol_fields, 'UniformOutput', true);
-								f_sol_empty_approx_round = any(f_sol_empty_approx_round(:));
-								if f_sol_empty_approx_round
-									error('control:design:gamma:decoupling', 'Calculation of prefilter constraints failed due to numerical difficulties.');
-								end
-							end
-						else
-							message = 'There is no non-zero prefilter. Allow calculation of approximate solution, using GammaDecouplingStrategy.APPROXIMATE.';
-							valid = false;
-							return;
-						end
-					end
-					f_sol_array = cat(1, f_sol_fields{:});
-					free_params_zf = f_sol.parameters;
-					[~, idx_intersect_f] = intersect(f_sol_array, free_params_zf);
-					idx_constr_params_f_cell{ii} = setdiff(1:dim_F_1, idx_intersect_f) + (ii - 1)*dim_F_1;
-
-					F(:, ii) = f_sol_array;
-
-					if ~isempty(free_params_zf)
-						f_intersect = f_temp(idx_intersect_f);
-						if size(f_intersect, 1) ~= size(free_params_zf, 1)
-							f_intersect = transpose(f_intersect);
-						end
-						F = subs(F, free_params_zf, f_intersect);
-						prefilter_sym = true;
-					end
-				end
-				idx_constr_params_f = [idx_constr_params_f_cell{:}].';
-				no_constr_params_f = length(idx_constr_params_f);
-
-				% Structural constraints of prefilter for gammasyn
-				if ~all(f_sol_zero)
-					cols_force_zeros = find(any(tf_structure == 0, 1) & ~f_sol_zero); % those columns are not ensured to be non-zero yet
-					% TODO: in the line above, either check every element of tf_structure or only allow one element in tf_structure
-					num_cols_force_zeros = length(cols_force_zeros);
-					size_F_fixed = no_constr_params_f + num_cols_force_zeros;
-					F_fixed_A = zeros(dim_F_1, dim_F_2, size_F_fixed);
-					F_fixed_B = zeros(1, 1, size_F_fixed);
-					for ii = 1:num_cols_force_zeros
-						F_fixed_A_tmp = zeros(dim_F_1, dim_F_2);
-						F_fixed_A_tmp(:, cols_force_zeros(ii)) = ones(dim_F_1, 1);
-						F_fixed_A(:, :, size_F_fixed - ii + 1) = F_fixed_A_tmp;
-						F_fixed_B(:, :, size_F_fixed - ii + 1) = c_f;
-					end
-				else
-					size_F_fixed = no_constr_params_f;
-					F_fixed_A = zeros(dim_F_1, dim_F_2, no_constr_params_f);
-					F_fixed_B = zeros(1, 1, no_constr_params_f);
-				end
-				for cnt = 1:no_constr_params_f %#ok<FORPF> no parfor because of non linear indexing
-					ii = idx_constr_params_f(cnt);
-					[eqA, eqB] = equationsToMatrix(f(ii) == F(ii), f);
-					F_fixed_A(:, :, cnt) = double(reshape(eqA, dim_F_1, dim_F_2));
-					F_fixed_B(:, :, cnt) = double(eqB);
-				end
-				F_fixed_B = reshape(F_fixed_B, size_F_fixed, 1);
-			else
-				prefilter_sym = true;
-				equation_system_aug = [
-					X_F, z_F
-				];
-				equation_system_reduced = rref(equation_system_aug);
-				equation_system_reduced(all(equation_system_reduced == 0, 2), :) = [];
-				allzero = all(equation_system_reduced(:, 1:end - 1) == 0, 2);
-				if any(allzero & equation_system_reduced(:, end) == 1)
-					% try solution with parametric solution returned by \
-					if rank(X_F) == rank(equation_system_aug)% TODO: use tolerance to allow for solution?
-						% TODO: No, but round equation systems if approximate system also does not have solution?
-						% TODO: another possibility would be to define a tube of inequalities around the equation system and solve with linprog
-						f_0 = X_F\z_F;
-						f_0_ker = null(X_F, 'r');
-						A = null(f_0_ker.', 'r').';
-						equation_system_reduced = [
-							A,	A*f_0
-						];
+		if ~isempty(X_comb)
+			alreadydisplayed = false;
+			gototilde = false;
+			[Xz_comb, rf_sol, rf_free_params_raw, rf_sol_empty, rf_sol_zero] = solveandcheck(X_comb, rf, z_comb, [number_controls, number_measurements + number_references]);
+			if rf_sol_empty
+				if output_verbosity(solveroptions, 'notify')
+					if combined_constraints
+						disp('---------------X_comb*rf=z_comb has no solution.--------------');
 					else
-						if output_verbosity(solveroptions, 'notify')
-							disp('------------There is no non-zero prefilter.-----------');
-						end
-						if allowApproxSol
-							if output_verbosity(solveroptions)
-								disp('------------Calculate approximate solution.-----------');
-							end
-							X_F_tilde = [
-								X_F;
-								ones(1, size(X_F, 2))
-							];
-							z_F_tilde = [
-								z_F;
-								c_f
-							];
-							equation_system_aug = [
-								X_F_tilde.'*X_F_tilde, X_F_tilde.'*z_F_tilde
-							];
-							equation_system_reduced = rref(equation_system_aug);
-							equation_system_reduced(all(equation_system_reduced == 0, 2), :) = [];
+						disp('------------------X_R*r=z_R has no solution.------------------');
+					end
+				end
+				if allowApproxSol
+					if output_verbosity(solveroptions)
+					disp('----------------Calculate approximate solution.---------------');
+						alreadydisplayed = true;
+					end
+					[Xz_comb, rf_sol, rf_free_params_raw, rf_sol_empty_approx, rf_sol_zero] = solveandcheck(X_comb.'*X_comb, rf, X_comb.'*z_comb, [number_controls, number_measurements + number_references]);
+					if rf_sol_empty_approx
+						if ~isnan(round_to)
+							[Xz_comb, rf_sol, rf_free_params_raw, rf_sol_empty_round, rf_sol_zero] = solveandcheck(round(X_comb.'*X_comb, round_to), rf, round(X_comb.'*z_comb, round_to), [number_controls, number_measurements + number_references]);
 						else
-							message = 'There is no non-zero prefilter. Allow calculation of approximate solution, using GammaDecouplingStrategy.APPROXIMATE.';
-							valid = false;
-							return;
+							rf_sol_empty_round = true;
 						end
+						if rf_sol_empty_round
+							error('control:design:gamma:decoupling', 'Calculation of combined constraints failed due to numerical difficulties.');
+						elseif any(rf_sol_zero(:, number_measurements + 1:end))
+							gototilde = true;
+						end
+					elseif any(rf_sol_zero(:, number_measurements + 1:end))
+						gototilde = true;
 					end
-					cols_force_zeros = find(any(G_structure == 0, 1)); % TODO: either check every element of tf_structure or only allow one element in tf_structure
-					num_cols_force_zeros = length(cols_force_zeros);
-					size_F_fixed = size(equation_system_reduced, 1) + num_cols_force_zeros;
-					F_fixed_A = NaN(dim_F_1, dim_F_2, size_F_fixed);
-					F_fixed_B = NaN(1, 1, size_F_fixed);
-					for ii = 1:num_cols_force_zeros
-						F_fixed_A_tmp = zeros(dim_F_1, dim_F_2);
-						F_fixed_A_tmp(:, cols_force_zeros(ii)) = ones(dim_F_1, 1);
-						F_fixed_A(:, :, size_F_fixed - ii + 1) = F_fixed_A_tmp;
-						F_fixed_B(:, :, size_F_fixed - ii + 1) = c_f;
-					end
-					F_fixed_B(:, :, size_F_fixed) = c_f;
 				else
-					size_F_fixed = size(equation_system_reduced, 1);
-					F_fixed_A = NaN(dim_F_1, dim_F_2, size(equation_system_reduced, 1));
-					F_fixed_B = NaN(1, 1, size(equation_system_reduced, 1));
+					if combined_constraints
+						message = 'X_comb*rf=z_comb has no solution. Allow calculation of approximate solution, using GammaDecouplingStrategy.APPROXIMATE.';
+					else
+						message = 'X_R*r=z_R has no solution. Allow calculation of approximate solution, using GammaDecouplingStrategy.APPROXIMATE.';
+					end
+					valid = false;
+					return;
 				end
-				parfor cnt = 1:size(equation_system_reduced, 1)
-					equation_system_reduced_cnt = equation_system_reduced(cnt, :);
-					F_fixed_A(:, :, cnt) = reshape(equation_system_reduced_cnt(1, 1:end - 1), dim_F_1, dim_F_2);
-					F_fixed_B(:, :, cnt) = equation_system_reduced_cnt(1, end);
+			elseif any(rf_sol_zero(:, number_measurements + 1:end))
+				if allowApproxSol
+					gototilde = true;
+				else
+					message = 'At least one prefilter column is forced to zero. Allow calculation of approximate solution, using GammaDecouplingStrategy.APPROXIMATE.';
+					valid = false;
+					return;
 				end
-				F_fixed_B = reshape(F_fixed_B, size_F_fixed, 1);
 			end
-		else
-			F_fixed_A = [];
-			F_fixed_B = [];
-			prefilter_sym = true;
-			disp('------------There are no prefilter constraints.-------');
+			if gototilde
+				if output_verbosity(solveroptions)
+					disp('------At least one prefilter column is forced to zero.--------');
+				end
+				if output_verbosity(solveroptions) && ~alreadydisplayed
+					disp('----------------Calculate approximate solution.---------------');
+				end
+				add_ones = [
+					zeros(number_references, number_controls*number_measurements), kron(eye(number_references, number_references), ones(1, number_controls))
+				];
+				add_ones(~rf_sol_zero(:, number_measurements + 1:end), :) = [];
+				add_c_f = c_f*ones(size(add_ones, 1), 1);
+
+				X_comb_tilde = [
+					X_comb;
+					add_ones
+				];
+				z_F_tilde = [
+					z_comb;
+					add_c_f
+				];
+				[Xz_comb, rf_sol, rf_free_params_raw, rf_sol_empty_tilde, rf_sol_zero] = solveandcheck(X_comb_tilde.'*X_comb_tilde, rf, X_comb_tilde.'*z_F_tilde, [number_controls, number_measurements + number_references]);
+				if rf_sol_empty_tilde
+					if ~isnan(round_to)
+						[Xz_comb, rf_sol, rf_free_params_raw, rf_sol_empty_tilde_round, rf_sol_zero] = solveandcheck(round(X_comb.'*X_comb, round_to), rf, round(X_comb.'*z_comb, round_to), [number_controls, number_measurements + number_references]);
+					else
+						rf_sol_empty_tilde_round = true;
+					end
+					if rf_sol_empty_tilde_round
+						error('control:design:gamma:decoupling', 'Calculation of combined constraints failed due to numerical difficulties.');
+					end
+				end
+				if any(rf_sol_zero)
+					warning('control:design:gamma:decoupling', 'Some prefilter columns are forced to zero due to external prefilter constraints.');
+				end
+			end
+
+			% Show results
+			if output_verbosity(solveroptions) && solvesymbolic
+				RF = [
+					R, F
+				];
+				showresults(RF, rf_sol, rf_free_params_raw, 'combined', number_measurements);
+			end
+
+			% Structural constraints of controller for gammasyn
+			Xz_comb_fixed = rref([
+				Xz_comb{1}, Xz_comb{2}
+			]);
+			Xz_comb_fixed(all(Xz_comb_fixed.' == 0), :) = [];
+			RF_fixed = convert_vectorized2hadamard(Xz_comb_fixed(:, 1:end - 1), Xz_comb_fixed(:, end), [number_controls, number_measurements + number_references]);
 		end
-		if solvesymbolic
-			if ~prefilter_sym
-				F = double(F);
-				normF1 = norm(F);
-				if normF1 ~= 0
-					F = F/normF1;
-				end
-			end
-			if output_verbosity(solveroptions) && dim_F_2 > 0
-				disp('------------A possible prefilter is:------------------');
-				fprintf('\n');
-				disp(vpa(F, 4));
-			end
+		if isempty(RF_fixed{1})
+			disp('----There are no controller and prefilter constraints.--------');
 		end
 	end
+	%% finalize
 	RKF_fixed = {
 		R_fixed;
 		{
 			[], []
 		};
-		{
-			F_fixed_A, F_fixed_B
-		}
+		F_fixed;
+		RF_fixed
 	};
 	RKF_bounds = {
 		R_bounds;
 		{
 			[], []
 		};
-		F_bounds
+		F_bounds;
+		RF_bounds
 	};
+end
+
+function [Ab, sol, parameters, sol_empty, sol_zero] = solveandcheck(A, x, b, sz)
+	%SOLVEANDCHECK solves A*x = b and checks if the solution set is empty and/or zero
+	%	Input:
+	%		A:				coefficient matrix for A*x = b
+	%		x:				symbolic vector for A*x = b or [] if no symbolic calculations should be done
+	%		b:				vector for A*x = b
+	%		sz:				optional: 2D-array with size in which solution vector is reshaped before performing zero check column wise
+	%	Output:
+	%		Ab:				cell array containing A and b
+	%		sol:			vector with symbolic results for x, empty if no symbolic calculations performed
+	%		parameters:		vector of free parameters, empty if no symbolic calculations performed
+	%		sol_empty:		indicator if any solution field is empty. True if A*x = b has no solution.
+	%		sol_zero:		indicator if all solution fields are empty. NaN if no solution exists or checkzero is false.
+	if nargin <= 3
+		sz = [
+			size(A, 2), 1
+		];
+	else
+		if prod(sz) ~= size(A, 2)
+			error('control:design:gamma:decoupling', 'Wrong size for reshape.');
+		end
+	end
+	if isa(x, 'double')
+		solvesymbolic = false;
+	else
+		solvesymbolic = true;
+	end
+	Ab = {
+		A, b
+	};
+	if solvesymbolic
+		sol_raw = solve(A*x == b, x, 'ReturnConditions', true);
+		parameters = sol_raw.parameters.';
+		sol_fields = struct2cell(sol_raw);
+		sol_fields = sol_fields(1:size(x, 1));
+		sol_empty = cellfun(@isempty, sol_fields, 'UniformOutput', true);
+		sol_empty = any(sol_empty(:));
+		sol = [sol_fields{:}].';
+		if nargout >= 5
+			if ~sol_empty
+				sol_fields_mat = reshape(sol, sz);
+				sol_zero = all(logical(sol_fields_mat == 0), 1);
+			else
+				sol_zero = false(1, sz(2));
+			end
+		end
+	else
+		sol = [];
+		parameters = [];
+		Ab_mat = [
+			A, b
+		];
+		[A_rref, b_rref, sol_empty] = checkempty(Ab_mat);
+		if sol_empty && rank(A) == rank(Ab_mat)
+			% TODO: use tolerance to allow for solution?
+			% TODO: No, but round equation systems if approximate system also does not have solution?
+			% TODO: another possibility would be to define a tube of inequalities around the equation system and solve with linprog
+			% try solution with parametric solution returned by \
+			f_0 = A\b;
+			f_0_ker = null(A, 'r');
+			A_null = null(f_0_ker.', 'r').';
+			Ab_mat = [
+				A_null,	A_null*f_0
+			];
+			[A_rref, b_rref, sol_empty] = checkempty(Ab_mat);
+		end
+		pinv_Ab = pinv(A_rref)*b_rref;
+		null_A = null(A_rref);
+		comb = [
+			pinv_Ab, null_A
+		];
+		zero_params = all(comb == 0, 2);
+		zero_reshape = reshape(zero_params, sz);
+		sol_zero = all(zero_reshape, 1);		
+	end
+	
+	function [A_rref, b_rref, sol_empty] = checkempty(Ab_mat)
+		Ab_rref = rref(Ab_mat);
+		Ab_rref(all(Ab_rref == 0, 2), :) = [];
+		A_rref = Ab_rref(:, 1:end - 1);
+		b_rref = Ab_rref(:, end);
+		rows_zero = all(A_rref == 0, 2);
+		sol_empty = any(rows_zero & b_rref == 1);
+	end
+end
+
+function showresults(RF, sol, free_params_raw, type, number_measurements)
+	%SHOWRESULTS displays constrained controller or prefilter matrix
+	%	Input:
+	%		RF:						symbolic controller or prefilter matrix
+	%		sol:					symbolic solution with constraints
+	%		free_params_raw:		free parameters in sol
+	%		type:					string specifying type of RF: 'controller', 'prefilter', 'combined'
+	%		number_measurements:	optional: number of measurements
+	iscontroller = false;
+	display_dim = size(RF, 2);
+	if strcmp(type, 'controller')
+		msg1 = '--Only one controller can fulfill the decoupling conditions--.';
+		msg2 = '---------------The structure of the controller is:------------';
+		iscontroller = true;
+	elseif strcmp(type, 'prefilter')
+		msg1 = '---------There are no free parameters in the prefilter--------';
+		msg2 = '-------------------A possible prefilter is:-------------------';
+	elseif strcmp(type, 'combined')
+		if nargin <= 4
+			error('number_measurements needed.')
+		else
+			display_dim = number_measurements;
+		end
+		msg1 = '--There are no free parameters for controller and prefilter.--';
+		msg2 = '-----Possible controller and prefilter matrices are:----------';
+	else
+		error('Wrong type string.')
+	end
+
+	sz = size(RF);
+	rf = reshape(RF, numel(RF), 1);
+
+	[~, idx_intersect] = intersect(sol, free_params_raw);
+	RF = reshape(sol, sz);
+	if ~isempty(free_params_raw)
+		z_ij = [
+			free_params_raw, rf(idx_intersect)
+		];
+		free_params = z_ij(:, 2);
+		if size(free_params_raw, 1) ~= size(free_params, 1)
+			free_params = transpose(free_params);
+		end
+		RF = subs(RF, free_params_raw, free_params);
+	else
+		disp(msg1);
+		if ~iscontroller
+			RF = double(RF);
+			minRF = min(RF(:));
+			if minRF ~= 0
+				RF = RF/minRF;
+			end
+		end
+	end
+
+	disp(msg2);
+	fprintf('\n');
+	disp(vpa(RF(:, 1:display_dim), 4));
+	if strcmp(type, 'combined')
+		fprintf('\n');
+		disp(vpa(RF(:, display_dim + 1:end), 4));
+	end
 end
