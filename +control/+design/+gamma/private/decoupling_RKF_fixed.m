@@ -195,11 +195,16 @@ function [RKF_fixed, RKF_bounds, valid, message] = decoupling_RKF_fixed(systems,
 	RKF_fixed_X(:, number_controls*number_measurements + (1:number_controls*number_measurements_xdot)) = []; % differential feedback is forced to zero anyway
 	combined_constraints = ~isempty(RKF_fixed_X);
 	
+	X_R_cell_cat = cat(1, X_R_cell{:});
+	z_R_cell_cat = cat(1, z_R_cell{:});
+	X_F_cell_cat = cat(1, Q_orth_T_B_cell{:});
+	rows_X_F = size(X_F_cell_cat, 1);
+	
 	if control_design_type == GammaDecouplingStrategy.APPROXIMATE_INEQUALITY
-		X_R = cat(1, X_R_cell{:});
-		z_R = cat(1, z_R_cell{:});
-		X_F = cat(1, Q_orth_T_B_cell{:});
-		z_F = zeros(size(X_F, 1), 1);
+		X_R = X_R_cell_cat;
+		z_R = z_R_cell_cat;
+		X_F = X_F_cell_cat;
+		z_F = zeros(rows_X_F, 1);
 		X_comb = [];
 		z_comb = [];
 	else
@@ -207,24 +212,23 @@ function [RKF_fixed, RKF_bounds, valid, message] = decoupling_RKF_fixed(systems,
 		z_R = [];
 		X_F = [];
 		z_F = [];
-		rows_X_F = size(cat(1, Q_orth_T_B_cell{:}), 1);
 		if combined_constraints
 			X_comb = [
-				blkdiag(cat(1, X_R_cell{:}), cat(1, Q_orth_T_B_cell{:}));
+				blkdiag(X_R_cell_cat, X_F_cell_cat);
 				RKF_fixed_X
 			];
 			z_comb = [
-				cat(1, z_R_cell{:});
+				X_R_cell_cat;
 				zeros(rows_X_F, 1);
 				RKF_fixed_z
 			];
 		else
 			X_comb = [
-				blkdiag(cat(1, X_R_cell{:}), cat(1, Q_orth_T_B_cell{:}));
+				blkdiag(X_R_cell_cat, X_F_cell_cat);
 				blkdiag(R_fixed_X, F_fixed_X)
 			];
 			z_comb = [
-				cat(1, z_R_cell{:});
+				z_R_cell_cat;
 				zeros(rows_X_F, 1);
 				R_fixed_z;
 				F_fixed_z
@@ -420,10 +424,10 @@ function [Ab, sol, parameters, sol_empty, sol_zero] = solveandcheck(A, x, b, sz)
 			error('control:design:gamma:decoupling', 'Wrong size for reshape.');
 		end
 	end
-	if isa(x, 'double')
-		solvesymbolic = false;
-	else
+	if isa(x, 'sym')
 		solvesymbolic = true;
+	else
+		solvesymbolic = false;
 	end
 	Ab = {
 		A, b
