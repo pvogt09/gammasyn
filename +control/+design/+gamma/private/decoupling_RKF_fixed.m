@@ -244,19 +244,29 @@ function [RKF_fixed, RKF_bounds, valid, message] = decoupling_RKF_fixed(systems,
 
 	%% Calculate controller and prefilter constraints
 	if control_design_type == GammaDecouplingStrategy.APPROXIMATE_INEQUALITY
+		Xz_R = [
+			X_R, z_R
+		];
+		Xz_F = [
+			X_F, z_F
+		];
+		Xz_R_rref = rref(Xz_R);
+		Xz_R_rref(all(Xz_R_rref == 0, 2), :) = [];
+		Xz_F_rref = rref(Xz_F);
+		Xz_F_rref(all(Xz_F_rref == 0, 2), :) = [];
 		R_bounds = convert_vectorized2hadamard([
-			X_R;
-			-X_R
+			Xz_R_rref(:, 1:end - 1);
+			-Xz_R_rref(:, 1:end - 1)
 		], [
-			z_R + objectiveoptions.decouplingcontrol.tolerance_decoupling;
-			-z_R - objectiveoptions.decouplingcontrol.tolerance_decoupling
+			Xz_R_rref(:, end) + objectiveoptions.decouplingcontrol.tolerance_decoupling;
+			-Xz_R_rref(:, end) + objectiveoptions.decouplingcontrol.tolerance_decoupling
 		], [number_controls, number_measurements]);
 		F_bounds = convert_vectorized2hadamard([
-			X_F;
-			-X_F
+			Xz_F_rref(:, 1:end - 1);
+			-Xz_F_rref(:, 1:end - 1)
 		], [
-			z_F + objectiveoptions.decouplingcontrol.tolerance_prefilter;
-			-z_F - objectiveoptions.decouplingcontrol.tolerance_prefilter
+			Xz_F_rref(:, end) + objectiveoptions.decouplingcontrol.tolerance_prefilter;
+			-Xz_F_rref(:, end) + objectiveoptions.decouplingcontrol.tolerance_prefilter
 		], [number_controls, number_references]);
 	
 		R_fixed = R_fixed_ext{1};

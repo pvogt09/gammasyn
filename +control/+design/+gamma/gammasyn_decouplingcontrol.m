@@ -474,7 +474,7 @@ function [Ropt, Jopt, information] = gammasyn_decouplingcontrol(systems, areafun
 	%% gammasyn
 	if nargin == 9
 		[Ropt, Jopt, information] = control.design.gamma.gammasyn(systems_tilde, areafun, weights, R_fixed_tilde, RKF_0_tilde, solveroptions, objectiveoptions, R_bounds_tilde, R_nonlin);
-	elseif nargin == 8
+	elseif nargin == 8 || control_design_type == GammaDecouplingStrategy.APPROXIMATE_INEQUALITY
 		[Ropt, Jopt, information] = control.design.gamma.gammasyn(systems_tilde, areafun, weights, R_fixed_tilde, RKF_0_tilde, solveroptions, objectiveoptions, R_bounds_tilde);
 	elseif nargin >= 6
 		[Ropt, Jopt, information] = control.design.gamma.gammasyn(systems_tilde, areafun, weights, R_fixed_tilde, RKF_0_tilde, solveroptions, objectiveoptions);
