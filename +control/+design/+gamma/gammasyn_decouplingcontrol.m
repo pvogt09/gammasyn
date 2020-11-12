@@ -279,6 +279,7 @@ function [Ropt, Jopt, information] = gammasyn_decouplingcontrol(systems, areafun
 		number_measurements_tilde =			number_states_tilde_vec(1);
 		number_references_tilde =			number_references_tilde_vec(1);
 		number_measurements_xdot_tilde =	0;
+		% TODO: also transform C_dot
 
 		tf_structure = NaN(number_references_tilde, number_references_tilde);
 		tf_structure(number_references + 1:end, 1:number_references_tilde - number_decouplingconditions_vec(1)) = 0;
@@ -289,7 +290,7 @@ function [Ropt, Jopt, information] = gammasyn_decouplingcontrol(systems, areafun
 		number_controls_tilde =				number_controls;
 		number_measurements_tilde =			number_measurements;
 		number_references_tilde =			number_references;
-		number_measurements_xdot_tilde =	0;
+		number_measurements_xdot_tilde =	number_measurements_xdot;
 	end
 	C_dot_tilde = zeros(0, number_states_tilde);
 
@@ -457,14 +458,13 @@ function [Ropt, Jopt, information] = gammasyn_decouplingcontrol(systems, areafun
 			information.message = message;
 			return;
 		end
-		K_fixed_tilde_all = cat_RKF_fixed(K_fixed_tilde, RF_fixed_tilde{2}, true);
 
 		R_bounds_tilde_all = cat_RKF_fixed(R_bounds_tilde, RF_bounds_tilde{1}, false);
 		K_bounds_tilde_all = cat_RKF_fixed(K_bounds_tilde, RF_bounds_tilde{2}, false);
 		F_bounds_tilde_all = cat_RKF_fixed(F_bounds_tilde, RF_bounds_tilde{3}, false);
 
 		R_fixed_tilde = {
-			RF_fixed_tilde{1}, K_fixed_tilde_all, RF_fixed_tilde{3}, RF_fixed_tilde{4}
+			RF_fixed_tilde{1}, RF_fixed_tilde{2}, RF_fixed_tilde{3}, RF_fixed_tilde{4}
 		};
 		R_bounds_tilde = {
 			R_bounds_tilde_all, K_bounds_tilde_all, F_bounds_tilde_all, RKF_bounds_tilde

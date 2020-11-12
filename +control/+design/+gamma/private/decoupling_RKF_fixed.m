@@ -1,4 +1,4 @@
-function [RKF_fixed, RKF_bounds, valid, message] = decoupling_RKF_fixed(systems, R_fixed_ext, objectiveoptions, solveroptions, descriptor)
+function [RKF_fixed_out, RKF_bounds_out, valid, message] = decoupling_RKF_fixed(systems, R_fixed_ext, objectiveoptions, solveroptions, descriptor)
 	%DECOUPLING_RKF_FIXED calculates structural constraints for proportional controller and prefilter coefficients, that are necessary for decoupling control
 	%	Input:
 	%		systems:					structure with dynamic systems to take into consideration
@@ -7,21 +7,22 @@ function [RKF_fixed, RKF_bounds, valid, message] = decoupling_RKF_fixed(systems,
 	%		solveroptions:				options for optimization algorithm to use
 	%		descriptor:					indicator if design should be performed for a DAE system
 	%	Output:
-	%		RKF_fixed:					cell array of three cell arrays providing the structural constraints of proportional, derivative and prefilter gain compatible with gammasyn
-	%		RKF_bounds:					cell array of three cell arrays providing the structural inequality constraints of proportional, derivative and prefilter gain compatible with gammasyn
+	%		RKF_fixed_out:				cell array of three cell arrays providing the structural constraints of proportional, derivative and prefilter gain compatible with gammasyn
+	%		RKF_bounds_out:				cell array of three cell arrays providing the structural inequality constraints of proportional, derivative and prefilter gain compatible with gammasyn
 	%		valid:						indicator of failure
 	%		message:					failure message
 	if nargin <= 3
 		descriptor = false;
 	end
-	RKF_fixed = [];
+	RKF_fixed_out = [];
 	R_fixed = {[], []};
+	K_fixed = {[], []};
 	F_fixed = {[], []};
-	RF_fixed = {[], []};
-	RKF_bounds = [];
+	RKF_fixed = {[], []};
+	RKF_bounds_out = [];
 	R_bounds = {[], []};
 	F_bounds = {[], []};
-	RF_bounds = {[], []};
+	RKF_bounds = {[], []};
 	valid = true;
 	message = '';
 	hassymbolic = configuration.matlab.hassymbolictoolbox();
@@ -67,16 +68,21 @@ function [RKF_fixed, RKF_bounds, valid, message] = decoupling_RKF_fixed(systems,
 		R = sym('r%d%d', [number_controls, number_measurements]);
 		assume(R, 'real');
 		r = reshape(R, number_controls*number_measurements, 1);
+		K = sym('k%d%d', [number_controls, number_measurements_xdot]);
+		assume(K, 'real');
+		k = reshape(K, number_controls*number_measurements_xdot, 1);
 		F = sym('f%d%d', [number_controls, number_references]);
 		assume(F, 'real');
 		f = reshape(F, number_controls*number_references, 1);
 	else
 		R = [];
 		r = [];
+		k = [];
 		f = [];
 	end
-	rf = [
+	rkf = [
 		r;
+		k;
 		f
 	];
 
@@ -190,9 +196,9 @@ function [RKF_fixed, RKF_bounds, valid, message] = decoupling_RKF_fixed(systems,
 
 	% include constraints given by user
 	[R_fixed_X, R_fixed_z] = convert_hadamard2vectorized(R_fixed_ext{1});
+	[K_fixed_X, K_fixed_z] = convert_hadamard2vectorized(R_fixed_ext{2});
 	[F_fixed_X, F_fixed_z] = convert_hadamard2vectorized(R_fixed_ext{3});
 	[RKF_fixed_X, RKF_fixed_z] = convert_hadamard2vectorized(R_fixed_ext{4});
-	RKF_fixed_X(:, number_controls*number_measurements + (1:number_controls*number_measurements_xdot)) = []; % differential feedback is forced to zero anyway
 	combined_constraints = ~isempty(RKF_fixed_X);
 	
 	X_R_cell_cat = cat(1, X_R_cell{:});
@@ -212,28 +218,19 @@ function [RKF_fixed, RKF_bounds, valid, message] = decoupling_RKF_fixed(systems,
 		z_R = [];
 		X_F = [];
 		z_F = [];
-		if combined_constraints
-			X_comb = [
-				blkdiag(X_R_cell_cat, X_F_cell_cat);
-				RKF_fixed_X
-			];
-			z_comb = [
-				X_R_cell_cat;
-				zeros(rows_X_F, 1);
-				RKF_fixed_z
-			];
-		else
-			X_comb = [
-				blkdiag(X_R_cell_cat, X_F_cell_cat);
-				blkdiag(R_fixed_X, F_fixed_X)
-			];
-			z_comb = [
-				z_R_cell_cat;
-				zeros(rows_X_F, 1);
-				R_fixed_z;
-				F_fixed_z
-			];
-		end
+		X_comb = [
+			blkdiag(X_R_cell_cat, zeros(0, number_controls*number_measurements_xdot), X_F_cell_cat);
+			blkdiag(R_fixed_X, K_fixed_X, F_fixed_X);
+			RKF_fixed_X
+		];
+		z_comb = [
+			z_R_cell_cat;
+			zeros(rows_X_F, 1);
+			R_fixed_z;
+			K_fixed_z;
+			F_fixed_z;
+			RKF_fixed_z
+		];
 	end
 
 	X_R(abs(X_R) < eps) = 0; % avoid basic numerical difficulties
@@ -241,6 +238,10 @@ function [RKF_fixed, RKF_bounds, valid, message] = decoupling_RKF_fixed(systems,
 	X_F(abs(X_F) < eps) = 0;
 	X_comb(abs(X_comb) < eps) = 0;
 	z_comb(abs(z_comb) < eps) = 0;
+	
+	[X_R, z_R] = reducedecolon(X_R, z_R);
+	[X_F, z_F] = reducedecolon(X_F, z_F);
+	[X_comb, z_comb] = reducedecolon(X_comb, z_comb);
 
 	if any(any((dim_invariant_mat == number_states) & ~sys_feedthrough_mat))
 		error('RBABS:control:design:gamma:dimensions', 'Dimension m of controlled invariant subspace is equal to the system dimension %d, while there is no feedthrough in the decoupling condition. Specify non-trivial decoupling conditions.', number_states)
@@ -248,45 +249,37 @@ function [RKF_fixed, RKF_bounds, valid, message] = decoupling_RKF_fixed(systems,
 
 	%% Calculate controller and prefilter constraints
 	if control_design_type == GammaDecouplingStrategy.APPROXIMATE_INEQUALITY
-		Xz_R = [
-			X_R, z_R
-		];
-		Xz_F = [
-			X_F, z_F
-		];
-		Xz_R_rref = rref(Xz_R);
-		Xz_R_rref(all(Xz_R_rref == 0, 2), :) = [];
-		Xz_F_rref = rref(Xz_F);
-		Xz_F_rref(all(Xz_F_rref == 0, 2), :) = [];
 		R_bounds = convert_vectorized2hadamard([
-			Xz_R_rref(:, 1:end - 1);
-			-Xz_R_rref(:, 1:end - 1)
+			X_R;
+			-X_R
 		], [
-			Xz_R_rref(:, end) + objectiveoptions.decouplingcontrol.tolerance_decoupling;
-			-Xz_R_rref(:, end) + objectiveoptions.decouplingcontrol.tolerance_decoupling
+			z_R + objectiveoptions.decouplingcontrol.tolerance_decoupling;
+			-z_R + objectiveoptions.decouplingcontrol.tolerance_decoupling
 		], [number_controls, number_measurements]);
 		F_bounds = convert_vectorized2hadamard([
-			Xz_F_rref(:, 1:end - 1);
-			-Xz_F_rref(:, 1:end - 1)
+			X_F;
+			-X_F
 		], [
-			Xz_F_rref(:, end) + objectiveoptions.decouplingcontrol.tolerance_prefilter;
-			-Xz_F_rref(:, end) + objectiveoptions.decouplingcontrol.tolerance_prefilter
+			z_F + objectiveoptions.decouplingcontrol.tolerance_prefilter;
+			-z_F + objectiveoptions.decouplingcontrol.tolerance_prefilter
 		], [number_controls, number_references]);
 	
 		R_fixed = R_fixed_ext{1};
+		K_fixed = R_fixed_ext{2};
 		F_fixed = R_fixed_ext{3};
-		RF_fixed = R_fixed_ext{4};
+		RKF_fixed = R_fixed_ext{4};
 	else
-		rf_sol = [];
-		rf_free_params_raw = [];
+		sol = [];
+		free_params_raw = [];
+		size_RKF = [number_controls, number_measurements + number_measurements_xdot + number_references];
 		if ~isempty(X_comb)
 			alreadydisplayed = false;
 			gototilde = false;
-			[Xz_comb, rf_sol, rf_free_params_raw, rf_sol_empty, rf_sol_zero] = solveandcheck(X_comb, rf, z_comb, [number_controls, number_measurements + number_references]);
-			if rf_sol_empty
+			[Xz_comb, sol, free_params_raw, sol_empty, sol_zero] = solveandcheck(X_comb, rkf, z_comb, size_RKF);
+			if sol_empty
 				if output_verbosity(solveroptions, 'notify')
 					if combined_constraints
-						disp('---------------X_comb*rf=z_comb has no solution.--------------');
+						disp('---------------X_comb*rkf=z_comb has no solution.--------------');
 					else
 						disp('------------------X_R*r=z_R has no solution.------------------');
 					end
@@ -296,31 +289,31 @@ function [RKF_fixed, RKF_bounds, valid, message] = decoupling_RKF_fixed(systems,
 					disp('----------------Calculate approximate solution.---------------');
 						alreadydisplayed = true;
 					end
-					[Xz_comb, rf_sol, rf_free_params_raw, rf_sol_empty_approx, rf_sol_zero] = solveandcheck(X_comb.'*X_comb, rf, X_comb.'*z_comb, [number_controls, number_measurements + number_references]);
-					if rf_sol_empty_approx
+					[Xz_comb, sol, free_params_raw, sol_empty_approx, sol_zero] = solveandcheck(X_comb.'*X_comb, rkf, X_comb.'*z_comb, size_RKF);
+					if sol_empty_approx
 						if ~isnan(round_to)
-							[Xz_comb, rf_sol, rf_free_params_raw, rf_sol_empty_round, rf_sol_zero] = solveandcheck(round(X_comb.'*X_comb, round_to), rf, round(X_comb.'*z_comb, round_to), [number_controls, number_measurements + number_references]);
+							[Xz_comb, sol, free_params_raw, sol_empty_round, sol_zero] = solveandcheck(round(X_comb.'*X_comb, round_to), rkf, round(X_comb.'*z_comb, round_to), size_RKF);
 						else
-							rf_sol_empty_round = true;
+							sol_empty_round = true;
 						end
-						if rf_sol_empty_round
+						if sol_empty_round
 							error('control:design:gamma:decoupling', 'Calculation of combined constraints failed due to numerical difficulties.');
-						elseif any(rf_sol_zero(:, number_measurements + 1:end))
+						elseif any(sol_zero(:, number_measurements + number_measurements_xdot + 1:end))
 							gototilde = true;
 						end
-					elseif any(rf_sol_zero(:, number_measurements + 1:end))
+					elseif any(sol_zero(:, number_measurements + number_measurements_xdot + 1:end))
 						gototilde = true;
 					end
 				else
 					if combined_constraints
-						message = 'X_comb*rf=z_comb has no solution. Allow calculation of approximate solution, using GammaDecouplingStrategy.APPROXIMATE.';
+						message = 'X_comb*rkf=z_comb has no solution. Allow calculation of approximate solution, using GammaDecouplingStrategy.APPROXIMATE.';
 					else
 						message = 'X_R*r=z_R has no solution. Allow calculation of approximate solution, using GammaDecouplingStrategy.APPROXIMATE.';
 					end
 					valid = false;
 					return;
 				end
-			elseif any(rf_sol_zero(:, number_measurements + 1:end))
+			elseif any(sol_zero(:, number_measurements + number_measurements_xdot + 1:end))
 				if allowApproxSol
 					gototilde = true;
 				else
@@ -337,9 +330,9 @@ function [RKF_fixed, RKF_bounds, valid, message] = decoupling_RKF_fixed(systems,
 					disp('----------------Calculate approximate solution.---------------');
 				end
 				add_ones = [
-					zeros(number_references, number_controls*number_measurements), kron(eye(number_references, number_references), ones(1, number_controls))
+					zeros(number_references, number_controls*(number_measurements + number_measurements_xdot)), kron(eye(number_references, number_references), ones(1, number_controls))
 				];
-				add_ones(~rf_sol_zero(:, number_measurements + 1:end), :) = [];
+				add_ones(~sol_zero(:, number_measurements + number_measurements_xdot + 1:end), :) = [];
 				c_f = objectiveoptions.decouplingcontrol.tolerance_prefilter;% parameter to avoid zero columns in prefilter
 				add_c_f = c_f*ones(size(add_ones, 1), 1);
 
@@ -351,20 +344,23 @@ function [RKF_fixed, RKF_bounds, valid, message] = decoupling_RKF_fixed(systems,
 					z_comb;
 					add_c_f
 				];
-				[Xz_comb, rf_sol, rf_free_params_raw, rf_sol_empty_tilde, rf_sol_zero] = solveandcheck(X_comb_tilde.'*X_comb_tilde, rf, X_comb_tilde.'*z_F_tilde, [number_controls, number_measurements + number_references]);
-				if rf_sol_empty_tilde
+				[Xz_comb, sol, free_params_raw, sol_empty_tilde, sol_zero] = solveandcheck(X_comb_tilde.'*X_comb_tilde, rkf, X_comb_tilde.'*z_F_tilde, size_RKF);
+				if sol_empty_tilde
 					if ~isnan(round_to)
-						[Xz_comb, rf_sol, rf_free_params_raw, rf_sol_empty_tilde_round, rf_sol_zero] = solveandcheck(round(X_comb.'*X_comb, round_to), rf, round(X_comb.'*z_comb, round_to), [number_controls, number_measurements + number_references]);
+						[Xz_comb, sol, free_params_raw, sol_empty_tilde_round, sol_zero] = solveandcheck(round(X_comb.'*X_comb, round_to), rkf, round(X_comb.'*z_comb, round_to), size_RKF);
 					else
-						rf_sol_empty_tilde_round = true;
+						sol_empty_tilde_round = true;
 					end
-					if rf_sol_empty_tilde_round
+					if sol_empty_tilde_round
 						error('control:design:gamma:decoupling', 'Calculation of combined constraints failed due to numerical difficulties.');
 					end
 				end
-				if any(rf_sol_zero)
+				if any(sol_zero)
 					warning('control:design:gamma:decoupling', 'Some prefilter columns are forced to zero due to external prefilter constraints.');
 				end
+			end
+			if ~all(sol_zero(:, number_measurements + (1:number_measurements_xdot)))
+				error('control:design:gamma:decoupling', 'K is not forced to zero.');
 			end
 
 			% Structural constraints of controller for gammasyn
@@ -372,33 +368,31 @@ function [RKF_fixed, RKF_bounds, valid, message] = decoupling_RKF_fixed(systems,
 				Xz_comb{1}, Xz_comb{2}
 			]);
 			Xz_comb_fixed(all(Xz_comb_fixed.' == 0), :) = [];
-			RF_fixed = convert_vectorized2hadamard(Xz_comb_fixed(:, 1:end - 1), Xz_comb_fixed(:, end), [number_controls, number_measurements + number_references]);
+			RKF_fixed = convert_vectorized2hadamard(Xz_comb_fixed(:, 1:end - 1), Xz_comb_fixed(:, end), size_RKF);
 		end
 		% Show results
 		if output_verbosity(solveroptions)
-			if isempty(RF_fixed{1}) && ~solvesymbolic
+			if isempty(RKF_fixed{1}) && ~solvesymbolic
 				disp('----There are no controller and prefilter constraints.--------');
 			else
-				showresults(R, F, rf_sol, rf_free_params_raw);
+				showresults(R, K, F, sol, free_params_raw);
 			end
 		end
 	end
 	%% finalize
-	RKF_fixed = {
+	RKF_fixed_out = {
 		R_fixed;
-		{
-			[], []
-		};
+		K_fixed;
 		F_fixed;
-		RF_fixed
+		RKF_fixed
 	};
-	RKF_bounds = {
+	RKF_bounds_out = {
 		R_bounds;
 		{
 			[], []
 		};
 		F_bounds;
-		RF_bounds
+		RKF_bounds
 	};
 end
 
@@ -488,10 +482,33 @@ function [Ab, sol, parameters, sol_empty, sol_zero] = solveandcheck(A, x, b, sz)
 	end
 end
 
-function showresults(R, F, sol, free_params_raw)
+function [X_rref, z_rref] = reducedecolon(X, z)
+	%REDUCEDECOLON is a wrapper for rref()
+	%	Input:
+	%		X:			coefficient matrix
+	%		z:			coefficient vector
+	%	Output:
+	%		X_rref:		coefficient matrix in reduced ecolon form
+	%		z_rref:		coefficient vector in reduced ecolon form
+	Xz = [
+		X, z
+	];
+	if ~isempty(Xz)
+		Xz_rref = rref(Xz);
+		Xz_rref(all(Xz_rref == 0, 2), :) = [];
+		X_rref = Xz_rref(:, 1:end - 1);
+		z_rref = Xz_rref(:, end);
+	else
+		X_rref = [];
+		z_rref = [];
+	end
+end
+
+function showresults(R, K, F, sol, free_params_raw)
 	%SHOWRESULTS displays constrained controller or prefilter matrix
 	%	Input:
 	%		R:						symbolic controller matrix
+	%		K:						symbolic differential controller matrix
 	%		F:						symbolic prefilter matrix
 	%		sol:					symbolic solution with constraints
 	%		free_params_raw:		free parameters in sol
@@ -502,29 +519,32 @@ function showresults(R, F, sol, free_params_raw)
 	msg5 = '-----Possible controller and prefilter matrices are:----------';
 	
 	if ~isempty(sol)
-		sz_R = size(R);
-		sz_F = size(F);
-		rf = [
-			reshape(R, numel(R), 1);
-			reshape(F, numel(F), 1);
+		[number_controls, number_measurements] = size(R);
+		number_measurements_xdot = size(K, 2);
+		number_references = size(F, 2);
+		rkf = [
+			reshape(R, [], 1);
+			reshape(K, [], 1);
+			reshape(F, [], 1);
 		];
 		[~, idx_intersect] = intersect(sol, free_params_raw);
 		[~, r_idx_intersect] = intersect(sol(1:numel(R)), free_params_raw);
-		[~, f_idx_intersect] = intersect(sol(numel(R) + 1:end), free_params_raw);
-		RF = reshape(sol, sz_R(1), sz_R(2) + sz_F(2));
+		[~, f_idx_intersect] = intersect(sol(numel(R) + numel(K) + 1:end), free_params_raw);
+		RKF = reshape(sol, number_controls, number_measurements + number_measurements_xdot + number_references);
 		if ~isempty(free_params_raw)
 			z_ij = [
-				free_params_raw, rf(idx_intersect)
+				free_params_raw, rkf(idx_intersect)
 			];
 			free_params = z_ij(:, 2);
 			if size(free_params_raw, 1) ~= size(free_params, 1)
 				free_params = transpose(free_params);
 			end
-			RF = subs(RF, free_params_raw, free_params);
+			RKF = subs(RKF, free_params_raw, free_params);
 		end
 
-		R = RF(:, 1:sz_R(2));
-		F = RF(:, sz_R(2) + 1:end);
+		R = RKF(:, 1:number_measurements);
+		K = RKF(:, number_measurements + (1:number_measurements_xdot));
+		F = RKF(:, number_measurements + number_measurements_xdot + 1:end);
 
 		if isempty(r_idx_intersect) && isempty(f_idx_intersect)
 			disp(msg1);
@@ -547,6 +567,10 @@ function showresults(R, F, sol, free_params_raw)
 	disp(msg5);
 	fprintf('\n');
 	disp(vpa(R, 4));
+	if ~isempty(K)
+		fprintf('\n');
+		disp(vpa(K, 4));
+	end
 	fprintf('\n');
 	disp(vpa(F, 4));
 end
