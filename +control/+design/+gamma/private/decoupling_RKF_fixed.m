@@ -188,7 +188,8 @@ function [RKF_fixed, RKF_bounds, valid, message] = decoupling_RKF_fixed(systems,
 		warning('control:design:gamma:decoupling', 'No suitable output feedback exists because at least one controlled invariant subspace is not conditioned invariant. Use different measurement configuration.');
 	end
 
-	[R_fixed_X, R_fixed_z] = convert_hadamard2vectorized(R_fixed_ext{1}); % include constraints given by user
+	% include constraints given by user
+	[R_fixed_X, R_fixed_z] = convert_hadamard2vectorized(R_fixed_ext{1});
 	[F_fixed_X, F_fixed_z] = convert_hadamard2vectorized(R_fixed_ext{3});
 	[RKF_fixed_X, RKF_fixed_z] = convert_hadamard2vectorized(R_fixed_ext{4});
 	RKF_fixed_X(:, number_controls*number_measurements + (1:number_controls*number_measurements_xdot)) = []; % differential feedback is forced to zero anyway
@@ -198,26 +199,15 @@ function [RKF_fixed, RKF_bounds, valid, message] = decoupling_RKF_fixed(systems,
 		X_R = cat(1, X_R_cell{:});
 		z_R = cat(1, z_R_cell{:});
 		X_F = cat(1, Q_orth_T_B_cell{:});
-		z_F = zeros(size(X_F, 1));
+		z_F = zeros(size(X_F, 1), 1);
 		X_comb = [];
 		z_comb = [];
 	else
-		X_R = [
-			cat(1, X_R_cell{:});
-			R_fixed_X
-		];
-		z_R = [
-			cat(1, z_R_cell{:});
-			R_fixed_z
-		];
-		X_F = [
-			cat(1, Q_orth_T_B_cell{:});
-			F_fixed_X
-		];
-		z_F = [
-			zeros(size(X_F, 1) - size(F_fixed_X, 1), 1);
-			F_fixed_z
-		];
+		X_R = [];
+		z_R = [];
+		X_F = [];
+		z_F = [];
+		rows_X_F = size(cat(1, Q_orth_T_B_cell{:}), 1);
 		if combined_constraints
 			X_comb = [
 				blkdiag(cat(1, X_R_cell{:}), cat(1, Q_orth_T_B_cell{:}));
@@ -225,7 +215,7 @@ function [RKF_fixed, RKF_bounds, valid, message] = decoupling_RKF_fixed(systems,
 			];
 			z_comb = [
 				cat(1, z_R_cell{:});
-				zeros(size(X_F, 1) - size(F_fixed_X, 1), 1);
+				zeros(rows_X_F, 1);
 				RKF_fixed_z
 			];
 		else
@@ -235,7 +225,7 @@ function [RKF_fixed, RKF_bounds, valid, message] = decoupling_RKF_fixed(systems,
 			];
 			z_comb = [
 				cat(1, z_R_cell{:});
-				zeros(size(X_F, 1) - size(F_fixed_X, 1), 1);
+				zeros(rows_X_F, 1);
 				R_fixed_z;
 				F_fixed_z
 			];
@@ -252,171 +242,7 @@ function [RKF_fixed, RKF_bounds, valid, message] = decoupling_RKF_fixed(systems,
 		error('RBABS:control:design:gamma:dimensions', 'Dimension m of controlled invariant subspace is equal to the system dimension %d, while there is no feedthrough in the decoupling condition. Specify non-trivial decoupling conditions.', number_states)
 	end
 
-	%% Calculate controller constraints
-% 	if ~combined_constraints
-% 		if control_design_type == GammaDecouplingStrategy.APPROXIMATE_INEQUALITY
-% 			R_bounds = convert_vectorized2hadamard([
-% 				X_R;
-% 				-X_R
-% 			], [
-% 				z_R + objectiveoptions.decouplingcontrol.tolerance_decoupling;
-% 				-z_R - objectiveoptions.decouplingcontrol.tolerance_decoupling
-% 			], [number_controls, number_measurements]);
-% 			R_fixed = R_fixed_ext{1};
-% 		else
-% 			if ~isempty(X_R)
-% 				[Xz_R, r_sol, r_free_params_raw, r_sol_empty] = solveandcheck(X_R, r, z_R);
-% 				if r_sol_empty
-% 					if output_verbosity(solveroptions, 'notify')
-% 						disp('------------------X_R*r=z_R has no solution.------------------');
-% 					end
-% 					if allowApproxSol
-% 						if output_verbosity(solveroptions)
-% 							disp('----------------Calculate approximate solution.---------------');
-% 						end
-% 						[Xz_R, r_sol, r_free_params_raw, r_sol_empty_approx] = solveandcheck(X_R.'*X_R, r, X_R.'*z_R);
-% 						if r_sol_empty_approx
-% 							if ~isnan(round_to)
-% 								[Xz_R, r_sol, r_free_params_raw, r_sol_empty_round] = solveandcheck(round(X_R.'*X_R, round_to), r, round(X_R.'*z_R, round_to));
-% 							else
-% 								r_sol_empty_round = true;
-% 							end
-% 							if r_sol_empty_round
-% 								error('control:design:gamma:decoupling', 'Calculation of controller constraints failed due to numerical difficulties.');
-% 							end
-% 						end
-% 					else
-% 						message = 'X_R*r=z_R has no solution. Allow calculation of approximate solution, using GammaDecouplingStrategy.APPROXIMATE.';
-% 						valid = false;
-% 						return;
-% 					end
-% 				end
-% 
-% 				% Show results
-% 				if output_verbosity(solveroptions) && solvesymbolic
-% 					showresults(R, r_sol, r_free_params_raw, 'controller');
-% 				end
-% 
-% 				% controller constraints for gammasyn					
-% 				Xz_R_fixed = rref([
-% 					Xz_R{1}, Xz_R{2}
-% 				]);
-% 				Xz_R_fixed(all(Xz_R_fixed.' == 0), :) = [];
-% 				R_fixed = convert_vectorized2hadamard(Xz_R_fixed(:, 1:end - 1), Xz_R_fixed(:, end), [number_controls, number_measurements]);
-% 			end
-% 			if isempty(R_fixed{1})
-% 				disp('-------------There are no controller constraints.-------------');
-% 			end
-% 		end
-% 	end
-	%% Calculate prefilter constraints
-	c_f = objectiveoptions.decouplingcontrol.tolerance_prefilter;% parameter to avoid trivial solution for prefilter
-% 	if ~combined_constraints
-% 		if control_design_type == GammaDecouplingStrategy.APPROXIMATE_INEQUALITY
-% 			F_bounds = convert_vectorized2hadamard([
-% 				X_F;
-% 				-X_F
-% 			], [
-% 				z_F + objectiveoptions.decouplingcontrol.tolerance_prefilter;
-% 				-z_F - objectiveoptions.decouplingcontrol.tolerance_prefilter
-% 			], [number_controls, number_references]);
-% 			F_fixed = R_fixed_ext{3};
-% 		else
-% 			if ~isempty(X_F)
-% 				alreadydisplayed = false;
-% 				gototilde = false;
-% 				[Xz_F, f_sol, f_free_params_raw, f_sol_empty, f_sol_zero] = solveandcheck(X_F, f, z_F, [number_controls, number_references]);
-% 				if f_sol_empty
-% 					if output_verbosity(solveroptions, 'notify')
-% 						disp('------------------X_F*f=z_F has no solution.------------------');
-% 					end
-% 					if allowApproxSol
-% 						if output_verbosity(solveroptions)
-% 						disp('----------------Calculate approximate solution.---------------');
-% 							alreadydisplayed = true;
-% 						end
-% 						[Xz_F, f_sol, f_free_params_raw, f_sol_empty_approx, f_sol_zero] = solveandcheck(X_F.'*X_F, f, X_F.'*z_F, [number_controls, number_references]);
-% 						if f_sol_empty_approx
-% 							if ~isnan(round_to)
-% 								[Xz_F, f_sol, f_free_params_raw, f_sol_empty_round, f_sol_zero] = solveandcheck(round(X_F.'*X_F, round_to), f, round(X_F.'*z_F, round_to), [number_controls, number_references]);
-% 							else
-% 								f_sol_empty_round = true;
-% 							end
-% 							if f_sol_empty_round
-% 								error('control:design:gamma:decoupling', 'Calculation of controller constraints failed due to numerical difficulties.');
-% 							elseif any(f_sol_zero)
-% 								gototilde = true;
-% 							end
-% 						elseif any(f_sol_zero)
-% 							gototilde = true;
-% 						end
-% 					else
-% 						message = 'X_F*f=z_F has no solution. Allow calculation of approximate solution, using GammaDecouplingStrategy.APPROXIMATE.';
-% 						valid = false;
-% 						return;
-% 					end
-% 				elseif any(f_sol_zero)
-% 					if allowApproxSol
-% 						gototilde = true;
-% 					else
-% 						message = 'At least one prefilter column is forced to zero. Allow calculation of approximate solution, using GammaDecouplingStrategy.APPROXIMATE.';
-% 						valid = false;
-% 						return;
-% 					end
-% 				end
-% 				if gototilde
-% 					if output_verbosity(solveroptions)
-% 						disp('------At least one prefilter column is forced to zero.--------');
-% 					end
-% 					if output_verbosity(solveroptions) && ~alreadydisplayed
-% 						disp('----------------Calculate approximate solution.---------------');
-% 					end
-% 					add_ones = kron(eye(number_references, number_references), ones(1, number_controls));
-% 					add_ones(~f_sol_zero, :) = [];
-% 					add_c_f = c_f*ones(size(add_ones, 1), 1);
-% 
-% 					X_F_tilde = [
-% 						X_F;
-% 						add_ones
-% 					];
-% 					z_F_tilde = [
-% 						z_F;
-% 						add_c_f
-% 					];
-% 					[Xz_F, f_sol, f_free_params_raw, f_sol_empty_tilde, f_sol_zero] = solveandcheck(X_F_tilde.'*X_F_tilde, f, X_F_tilde.'*z_F_tilde, [number_controls, number_references]);
-% 					if f_sol_empty_tilde
-% 						if ~isnan(round_to)
-% 							[Xz_F, f_sol, f_free_params_raw, f_sol_empty_tilde_round, f_sol_zero] = solveandcheck(round(X_F.'*X_F, round_to), f, round(X_F.'*z_F, round_to), [number_controls, number_references]);
-% 						else
-% 							f_sol_empty_tilde_round = true;
-% 						end
-% 						if f_sol_empty_tilde_round
-% 							error('control:design:gamma:decoupling', 'Calculation of controller constraints failed due to numerical difficulties.');
-% 						end
-% 					end
-% 					if any(f_sol_zero)
-% 						warning('control:design:gamma:decoupling', 'Some prefilter columns are forced to zero due to external prefilter constraints.');
-% 					end
-% 				end
-% 
-% 				% Show results
-% 				if output_verbosity(solveroptions) && solvesymbolic
-% 					showresults(F, f_sol, f_free_params_raw, 'prefilter');
-% 				end
-% 				
-% 				% Structural constraints of controller for gammasyn					
-% 				Xz_F_fixed = rref([
-% 					Xz_F{1}, Xz_F{2}
-% 				]);
-% 				Xz_F_fixed(all(Xz_F_fixed.' == 0), :) = [];
-% 				F_fixed = convert_vectorized2hadamard(Xz_F_fixed(:, 1:end - 1), Xz_F_fixed(:, end), [number_controls, number_references]);
-% 			end
-% 			if isempty(F_fixed{1})
-% 				disp('--------------There are no prefilter constraints.-------------');
-% 			end
-% 		end
-% 	end
-	%% Handle combined constraints
+	%% Calculate controller and prefilter constraints
 	if control_design_type == GammaDecouplingStrategy.APPROXIMATE_INEQUALITY
 		R_bounds = convert_vectorized2hadamard([
 			X_R;
@@ -437,6 +263,8 @@ function [RKF_fixed, RKF_bounds, valid, message] = decoupling_RKF_fixed(systems,
 		F_fixed = R_fixed_ext{3};
 		RF_fixed = R_fixed_ext{4};
 	else
+		rf_sol = [];
+		rf_free_params_raw = [];
 		if ~isempty(X_comb)
 			alreadydisplayed = false;
 			gototilde = false;
@@ -498,6 +326,7 @@ function [RKF_fixed, RKF_bounds, valid, message] = decoupling_RKF_fixed(systems,
 					zeros(number_references, number_controls*number_measurements), kron(eye(number_references, number_references), ones(1, number_controls))
 				];
 				add_ones(~rf_sol_zero(:, number_measurements + 1:end), :) = [];
+				c_f = objectiveoptions.decouplingcontrol.tolerance_prefilter;% parameter to avoid zero columns in prefilter
 				add_c_f = c_f*ones(size(add_ones, 1), 1);
 
 				X_comb_tilde = [
@@ -524,14 +353,6 @@ function [RKF_fixed, RKF_bounds, valid, message] = decoupling_RKF_fixed(systems,
 				end
 			end
 
-			% Show results
-			if output_verbosity(solveroptions) && solvesymbolic
-				RF = [
-					R, F
-				];
-				showresults(RF, rf_sol, rf_free_params_raw, 'combined', number_measurements);
-			end
-
 			% Structural constraints of controller for gammasyn
 			Xz_comb_fixed = rref([
 				Xz_comb{1}, Xz_comb{2}
@@ -539,8 +360,13 @@ function [RKF_fixed, RKF_bounds, valid, message] = decoupling_RKF_fixed(systems,
 			Xz_comb_fixed(all(Xz_comb_fixed.' == 0), :) = [];
 			RF_fixed = convert_vectorized2hadamard(Xz_comb_fixed(:, 1:end - 1), Xz_comb_fixed(:, end), [number_controls, number_measurements + number_references]);
 		end
-		if isempty(RF_fixed{1})
-			disp('----There are no controller and prefilter constraints.--------');
+		% Show results
+		if output_verbosity(solveroptions)
+			if isempty(RF_fixed{1}) && ~solvesymbolic
+				disp('----There are no controller and prefilter constraints.--------');
+			else
+				showresults(R, F, rf_sol, rf_free_params_raw);
+			end
 		end
 	end
 	%% finalize
@@ -648,65 +474,65 @@ function [Ab, sol, parameters, sol_empty, sol_zero] = solveandcheck(A, x, b, sz)
 	end
 end
 
-function showresults(RF, sol, free_params_raw, type, number_measurements)
+function showresults(R, F, sol, free_params_raw)
 	%SHOWRESULTS displays constrained controller or prefilter matrix
 	%	Input:
-	%		RF:						symbolic controller or prefilter matrix
+	%		R:						symbolic controller matrix
+	%		F:						symbolic prefilter matrix
 	%		sol:					symbolic solution with constraints
 	%		free_params_raw:		free parameters in sol
-	%		type:					string specifying type of RF: 'controller', 'prefilter', 'combined'
-	%		number_measurements:	optional: number of measurements
-	iscontroller = false;
-	display_dim = size(RF, 2);
-	if strcmp(type, 'controller')
-		msg1 = '--Only one controller can fulfill the decoupling conditions--.';
-		msg2 = '---------------The structure of the controller is:------------';
-		iscontroller = true;
-	elseif strcmp(type, 'prefilter')
-		msg1 = '---------There are no free parameters in the prefilter--------';
-		msg2 = '-------------------A possible prefilter is:-------------------';
-	elseif strcmp(type, 'combined')
-		if nargin <= 4
-			error('number_measurements needed.')
-		else
-			display_dim = number_measurements;
-		end
-		msg1 = '--There are no free parameters for controller and prefilter.--';
-		msg2 = '-----Possible controller and prefilter matrices are:----------';
-	else
-		error('Wrong type string.')
-	end
-
-	sz = size(RF);
-	rf = reshape(RF, numel(RF), 1);
-
-	[~, idx_intersect] = intersect(sol, free_params_raw);
-	RF = reshape(sol, sz);
-	if ~isempty(free_params_raw)
-		z_ij = [
-			free_params_raw, rf(idx_intersect)
+	msg1 = '--There are no free parameters for controller and prefilter.--';
+	msg2 = '--------There are no free parameters for the controller.------';
+	msg3 = '--------There are no free parameters for the prefilter.-------';
+	msg4 = '----There are no controller and prefilter constraints.--------';
+	msg5 = '-----Possible controller and prefilter matrices are:----------';
+	
+	if ~isempty(sol)
+		sz_R = size(R);
+		sz_F = size(F);
+		rf = [
+			reshape(R, numel(R), 1);
+			reshape(F, numel(F), 1);
 		];
-		free_params = z_ij(:, 2);
-		if size(free_params_raw, 1) ~= size(free_params, 1)
-			free_params = transpose(free_params);
+		[~, idx_intersect] = intersect(sol, free_params_raw);
+		[~, r_idx_intersect] = intersect(sol(1:numel(R)), free_params_raw);
+		[~, f_idx_intersect] = intersect(sol(numel(R) + 1:end), free_params_raw);
+		RF = reshape(sol, sz_R(1), sz_R(2) + sz_F(2));
+		if ~isempty(free_params_raw)
+			z_ij = [
+				free_params_raw, rf(idx_intersect)
+			];
+			free_params = z_ij(:, 2);
+			if size(free_params_raw, 1) ~= size(free_params, 1)
+				free_params = transpose(free_params);
+			end
+			RF = subs(RF, free_params_raw, free_params);
 		end
-		RF = subs(RF, free_params_raw, free_params);
-	else
-		disp(msg1);
-		if ~iscontroller
-			RF = double(RF);
-			minRF = min(RF(:));
-			if minRF ~= 0
-				RF = RF/minRF;
+
+		R = RF(:, 1:sz_R(2));
+		F = RF(:, sz_R(2) + 1:end);
+
+		if isempty(r_idx_intersect) && isempty(f_idx_intersect)
+			disp(msg1);
+		elseif isempty(r_idx_intersect) && ~isempty(f_idx_intersect)
+			disp(msg2);
+		elseif ~isempty(r_idx_intersect) && isempty(f_idx_intersect)
+			disp(msg3);
+		end
+		if isempty(f_idx_intersect)
+			F = double(F);
+			minF = min(F(:));
+			if minF ~= 0
+				F = F/minF;
 			end
 		end
+	else
+		disp(msg4);
 	end
 
-	disp(msg2);
+	disp(msg5);
 	fprintf('\n');
-	disp(vpa(RF(:, 1:display_dim), 4));
-	if strcmp(type, 'combined')
-		fprintf('\n');
-		disp(vpa(RF(:, display_dim + 1:end), 4));
-	end
+	disp(vpa(R, 4));
+	fprintf('\n');
+	disp(vpa(F, 4));
 end

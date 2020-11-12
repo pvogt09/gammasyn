@@ -315,10 +315,10 @@ function [Ropt, Jopt, information] = gammasyn_decouplingcontrol(systems, areafun
 		K_fixed_A_tilde, K_fixed_b_tilde
 	};
 	F_fixed_tilde = {
-		reshape(F_fixed_A_tilde.', number_controls_tilde, number_references, size(F_fixed_A_tilde, 1)), F_fixed_b_tilde
+		reshape(F_fixed_A_tilde.', number_controls_tilde, number_references_tilde, size(F_fixed_A_tilde, 1)), F_fixed_b_tilde
 	};
 	RKF_fixed_tilde = {
-		reshape(RKF_fixed_A_tilde.', number_controls_tilde, number_measurements_tilde + number_measurements_xdot_tilde + number_references, size(RKF_fixed_A_tilde, 1)), RKF_fixed_b_tilde
+		reshape(RKF_fixed_A_tilde.', number_controls_tilde, number_measurements_tilde + number_measurements_xdot_tilde + number_references_tilde, size(RKF_fixed_A_tilde, 1)), RKF_fixed_b_tilde
 	};
 
 	%% transform R_bounds, F_bounds
