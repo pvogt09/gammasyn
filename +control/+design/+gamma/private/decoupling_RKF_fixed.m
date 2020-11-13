@@ -11,7 +11,7 @@ function [RKF_fixed_out, RKF_bounds_out, valid, message] = decoupling_RKF_fixed(
 	%		RKF_bounds_out:				cell array of three cell arrays providing the structural inequality constraints of proportional, derivative and prefilter gain compatible with gammasyn
 	%		valid:						indicator of failure
 	%		message:					failure message
-	if nargin <= 3
+	if nargin <= 4
 		descriptor = false;
 	end
 	RKF_fixed_out = [];
