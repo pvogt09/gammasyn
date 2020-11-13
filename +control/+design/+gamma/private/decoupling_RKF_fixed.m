@@ -225,6 +225,7 @@ function [RKF_fixed_out, RKF_bounds_out, valid, message] = decoupling_RKF_fixed(
 		];
 		z_comb = [
 			z_R_cell_cat;
+			zeros(0, 1);
 			zeros(rows_X_F, 1);
 			R_fixed_z;
 			K_fixed_z;
@@ -238,10 +239,6 @@ function [RKF_fixed_out, RKF_bounds_out, valid, message] = decoupling_RKF_fixed(
 	X_F(abs(X_F) < eps) = 0;
 	X_comb(abs(X_comb) < eps) = 0;
 	z_comb(abs(z_comb) < eps) = 0;
-
-	[X_R, z_R] = reducedecolon(X_R, z_R);
-	[X_F, z_F] = reducedecolon(X_F, z_F);
-	[X_comb, z_comb] = reducedecolon(X_comb, z_comb);
 
 	if any(any((dim_invariant_mat == number_states) & ~sys_feedthrough_mat))
 		error('RBABS:control:design:gamma:dimensions', 'Dimension m of controlled invariant subspace is equal to the system dimension %d, while there is no feedthrough in the decoupling condition. Specify non-trivial decoupling conditions.', number_states)
@@ -479,28 +476,6 @@ function [Ab, sol, parameters, sol_empty, sol_zero] = solveandcheck(A, x, b, sz)
 		b_rref = Ab_rref(:, end);
 		rows_zero = all(A_rref == 0, 2);
 		sol_empty = any(rows_zero & b_rref == 1);
-	end
-end
-
-function [X_rref, z_rref] = reducedecolon(X, z)
-	%REDUCEDECOLON is a wrapper for rref()
-	%	Input:
-	%		X:			coefficient matrix
-	%		z:			coefficient vector
-	%	Output:
-	%		X_rref:		coefficient matrix in reduced ecolon form
-	%		z_rref:		coefficient vector in reduced ecolon form
-	Xz = [
-		X, z
-	];
-	if ~isempty(Xz)
-		Xz_rref = rref(Xz);
-		Xz_rref(all(Xz_rref == 0, 2), :) = [];
-		X_rref = Xz_rref(:, 1:end - 1);
-		z_rref = Xz_rref(:, end);
-	else
-		X_rref = [];
-		z_rref = [];
 	end
 end
 
