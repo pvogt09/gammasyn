@@ -1,4 +1,4 @@
-function [pass] = Decoupling_RKF_fixedTest(~)
+function [pass] = decoupling_RKF_fixed_Test(~)
 	%DECOUPLING_RKF_FIXEDTEST test cases for checking decoupling constraints function
 	%	Input:
 	%		silent:	idicator, if information should be output
@@ -19,7 +19,7 @@ function [pass] = Decoupling_RKF_fixedTest(~)
 		{zeros(number_controls, (number_measurements*2 + number_references), 0), zeros(0, 1)}
 	};
 	
-	tf_structure = nan(number_references);
+	tf_structure = NaN(number_references);
 	
 	systems_standard = struct(...
 		'E',		{eye(number_states), eye(number_states)},...
