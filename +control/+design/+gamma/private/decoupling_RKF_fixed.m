@@ -14,15 +14,6 @@ function [RKF_fixed_out, RKF_bounds_out, valid, message] = decoupling_RKF_fixed(
 	if nargin <= 4
 		descriptor = false;
 	end
-	RKF_fixed_out = [];
-	R_fixed = {[], []};
-	K_fixed = {[], []};
-	F_fixed = {[], []};
-	RKF_fixed = {[], []};
-	RKF_bounds_out = [];
-	R_bounds = {[], []};
-	F_bounds = {[], []};
-	RKF_bounds = {[], []};
 	valid = true;
 	message = '';
 	hassymbolic = configuration.matlab.hassymbolictoolbox();
@@ -37,6 +28,26 @@ function [RKF_fixed_out, RKF_bounds_out, valid, message] = decoupling_RKF_fixed(
 	number_measurements = size(systems(1).C, 1);
 	number_measurements_xdot = size(systems(1).C_dot, 1);
 	number_models = size(systems, 1);
+	R_fixed = {zeros(number_controls, number_measurements, 0), zeros(0, 1)};
+	K_fixed = {zeros(number_controls, number_measurements_xdot, 0), zeros(0, 1)};
+	F_fixed = {zeros(number_controls, number_references, 0), zeros(0, 1)};
+	RKF_fixed = {zeros(number_controls, number_measurements + number_measurements_xdot + number_references, 0), zeros(0, 1)};
+	RKF_fixed_out = {
+		R_fixed;
+		K_fixed;
+		F_fixed;
+		RKF_fixed
+	};
+	R_bounds = {zeros(number_controls, number_measurements, 0), zeros(0, 1)};
+	K_bounds = {zeros(number_controls, number_measurements_xdot, 0), zeros(0, 1)};
+	F_bounds = {zeros(number_controls, number_references, 0), zeros(0, 1)};
+	RKF_bounds = {zeros(number_controls, number_measurements + number_measurements_xdot + number_references, 0), zeros(0, 1)};
+	RKF_bounds_out = {
+		R_bounds;
+		K_bounds;
+		F_bounds;
+		RKF_bounds
+	};
 
 	if solvesymbolic && ~hassymbolic
 		warning('control:design:gamma:decoupling', 'Constraints shall be calculated symbolically, but Symbolic Toolbox was not found.');
@@ -101,6 +112,7 @@ function [RKF_fixed_out, RKF_bounds_out, valid, message] = decoupling_RKF_fixed(
 		C  = systems(ii).C;
 		C_ref = systems(ii).C_ref;
 		D_ref = systems(ii).D_ref;
+		E  = systems(ii).E;
 		kerC = null(C);
 		for jj = 1:number_references
 			g_structure = tf_structure(:, jj);
@@ -113,7 +125,6 @@ function [RKF_fixed_out, RKF_bounds_out, valid, message] = decoupling_RKF_fixed(
 			if any(Djj(:) ~= 0) % this decoupling output has a feedthrough
 				sys_feedthrough_mat(ii, jj) = true;
 			end
-			E  = systems(ii).E;
 			Q = []; %#ok<NASGU> needed for parfor
 
 			if descriptor
@@ -385,9 +396,7 @@ function [RKF_fixed_out, RKF_bounds_out, valid, message] = decoupling_RKF_fixed(
 	};
 	RKF_bounds_out = {
 		R_bounds;
-		{
-			[], []
-		};
+		K_bounds;
 		F_bounds;
 		RKF_bounds
 	};

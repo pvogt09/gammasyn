@@ -279,7 +279,7 @@ function [Ropt, Jopt, information] = gammasyn_decouplingcontrol(systems, areafun
 		number_measurements_tilde =			number_states_tilde_vec(1);
 		number_references_tilde =			number_references_tilde_vec(1);
 		number_measurements_xdot_tilde =	0;
-		% TODO: also transform C_dot
+		% TODO: also transform C_dot. This would require a further system matrix D_dot
 
 		tf_structure = NaN(number_references_tilde, number_references_tilde);
 		tf_structure(number_references + 1:end, 1:number_references_tilde - number_decouplingconditions_vec(1)) = 0;
