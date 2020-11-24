@@ -113,7 +113,7 @@ function [RKF_fixed_out, RKF_bounds_out, valid, message] = decoupling_RKF_fixed(
 		C_ref = systems(ii).C_ref;
 		D_ref = systems(ii).D_ref;
 		E  = systems(ii).E;
-		kerC = null(C);
+		null_C = null(C);
 		for jj = 1:number_references
 			g_structure = tf_structure(:, jj);
 			Cjj = C_ref(g_structure == 0, :);
@@ -126,6 +126,10 @@ function [RKF_fixed_out, RKF_bounds_out, valid, message] = decoupling_RKF_fixed(
 				sys_feedthrough_mat(ii, jj) = true;
 			end
 			Q = []; %#ok<NASGU> needed for parfor
+			null_Cjj = null(Cjj);
+			if isempty(null_Cjj)
+				error('control:design:gamma:input', 'Matrix Cjj must have a null space.');
+			end
 
 			if descriptor
 				if rank(E) ~= number_states
@@ -148,8 +152,8 @@ function [RKF_fixed_out, RKF_bounds_out, valid, message] = decoupling_RKF_fixed(
 				Q = zeros(number_states, 0);
 			end
 			% check if output nulling controlled invariant subspace is also input containing conditioned invariant
-			if size(kerC, 2) > 0 % only in this case, Q might not be conditioned invariant
-				if rank([A*ints(Q, kerC), Q]) > rank(Q) % not the right condition for systems with feedthrough
+			if size(null_C, 2) > 0 % only in this case, Q might not be conditioned invariant
+				if rank([A*ints(Q, null_C), Q]) > rank(Q) % not the right condition for systems with feedthrough
 					% controlled invariant subspace is not conditioned invariant
 					not_con_invariant_mat(ii, jj) = true;
 				end
