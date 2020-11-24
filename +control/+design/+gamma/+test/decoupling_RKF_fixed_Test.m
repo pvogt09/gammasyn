@@ -8,7 +8,8 @@ function [pass, failed_positive_testcases] = decoupling_RKF_fixed_Test(~)
 
 	%% setup
 	pass = identifier.TestResult.PASSED;
-	decoupling_RKF_fixed = get_private_function(realpath(fullfile(mfilename('fullpath'), '..', '..', 'private')), 'decoupling_RKF_fixed'); %#ok<NASGU>
+	path = realpath(fullfile(mfilename('fullpath'), '..', '..', 'private'));
+	decoupling_RKF_fixed = get_private_function(path, 'decoupling_RKF_fixed'); %#ok<NASGU>
 
 	%% default variables
 	number_controls = 2;
@@ -24,82 +25,81 @@ function [pass, failed_positive_testcases] = decoupling_RKF_fixed_Test(~)
 		{zeros(number_controls, (number_measurements + number_measurements_xdot + number_references), 0), zeros(0, 1)}
 	};
 	systems_default = struct(...
-		'E',		{eye(number_states), eye(number_states)},...
-		'A',		{eye(number_states), eye(number_states)},...
-		'B',		{randi(10, [number_states, number_controls]), randi(10, [number_states, number_controls])},...
-		'C',		{randi(10, [number_measurements, number_states]), randi(10, [number_measurements, number_states])},...
-		'C_ref',	{randi(10, [number_references, number_states]), randi(10, [number_references, number_states])},...
-		'C_dot',	{randi(10, [number_measurements_xdot, number_states]), randi(10, [number_measurements_xdot, number_states])},...
-		'D',		{zeros(number_measurements, number_controls), zeros(number_measurements, number_controls)},...
-		'D_ref',	{zeros(number_references, number_controls), zeros(number_references, number_controls)}...
+		'E',		{eye(number_states),									eye(number_states)},...
+		'A',		{randi(10, [number_states, number_states]),				eye(number_states)},...
+		'B',		{randi(10, [number_states, number_controls]),			randi(10, [number_states, number_controls])},...
+		'C',		{randi(10, [number_measurements, number_states]),		randi(10, [number_measurements, number_states])},...
+		'C_ref',	{randi(10, [number_references, number_states]),			randi(10, [number_references, number_states])},...
+		'C_dot',	{randi(10, [number_measurements_xdot, number_states]),	randi(10, [number_measurements_xdot, number_states])},...
+		'D',		{zeros(number_measurements, number_controls),			zeros(number_measurements, number_controls)},...
+		'D_ref',	{zeros(number_references, number_controls),				zeros(number_references, number_controls)}...
 	);
 	tf_structure = zeros(number_measurements, number_references);
 	tf_structure(1:number_references + 1:number_measurements*number_references) = nan;
-	objectiveoptions_default = struct(...
-		'decouplingcontrol', struct(...
-			'solvesymbolic',				true,...
-			'round_equations_to_digits',	4,...
-			'decouplingstrategy',			GammaDecouplingStrategy.EXACT,...
-			'allowoutputdecoupling',		true,...
-			'tf_structure',					tf_structure,...
-			'tolerance_decoupling',			0.4,...
-			'tolerance_prefilter',			0.6...
-		)...
+	objectiveoptions_default.decouplingcontrol = struct(...
+		'decouplingstrategy',			GammaDecouplingStrategy.APPROXIMATE,...
+		'tolerance_prefilter',			0e-0,...
+		'tolerance_decoupling',			1e-0,...
+		'tf_structure',					tf_structure,...
+		'solvesymbolic',				true,...
+		'round_equations_to_digits',	5,...
+		'weight_decoupling',			[],...
+		'allowoutputdecoupling',		true...
 	);
-	solveroptions_default.Display = 'off'; %'iter-detailed';
+	solveroptions_default.Display = 'off';
 	descriptor_default = false;
 	
 	test_object = control.design.gamma.test.decoupling_RKF_fixed_Test_Class(systems_default, R_fixed_ext_default, objectiveoptions_default, solveroptions_default, descriptor_default);
 
 	%% testcases
-	positive_testcases = struct(...
-		'systems',				{ % syntax: which system? which matrix? which element(s)? which value?
-									{{1, 'E', 1, 1}; {2, 'E', 1, 3}}
-									{}
-								},...
-		'R_fixed',				{ % syntax: which constraints? which matrix? which value?
-									{}
-									{}
-								},...
-		'objectiveoptions',		{ % syntax: which option(s)? which value?
-									{}
-									{}
-								},...
-		'solveroptions',		{ % syntax: which option? which value?
-									{}
-									{}
-								},...
-		'descriptor',			{ % syntax: which value?
-									{}
-									{}
-								}...
-	);
-	negative_testcases = struct(...
-		'systems',				{ % syntax: which system? which matrix? which element(s)? which value?
-									{{1, 'E', 1, 0}; {2, 'E', 1, 3}}
-								},...
-		'R_fixed',				{ % syntax: which constraints? which matrix? which value?
-									{}
-								},...
-		'objectiveoptions',		{ % syntax: which option(s)? which value?
-									{}
-								},...
-		'solveroptions',		{ % syntax: which option? which value?
-									{}
-								},...
-		'descriptor',			{ % syntax: which value?
-									{true}
-								}...
-	);
+	positive_testcases = [];
+	positive_testcases = create_testcase(positive_testcases, {'sys', {{1, 'E', 1, 1}; {2, 'E', 1, 3}}}, {'dsc', true});
+	positive_testcases = create_testcase(positive_testcases, {'obj', {{'decouplingcontrol', 'decouplingstrategy'}, GammaDecouplingStrategy.EXACT}});
+	positive_testcases = create_testcase(positive_testcases, {'obj', {{'decouplingcontrol', 'decouplingstrategy'}, GammaDecouplingStrategy.APPROXIMATE_INEQUALITY}});
+	positive_testcases = create_testcase(positive_testcases, {'obj', {{'decouplingcontrol', 'solvesymbolic'}, false}});
+	positive_testcases = create_testcase(positive_testcases, {'dsc', -1});
+	positive_testcases = create_testcase(positive_testcases, {'obj', {{'decouplingcontrol', 'tf_structure'}, nan(number_references, number_references)}});
+	positive_testcases = create_testcase(positive_testcases, {'sys', {{1, 'D_ref', 1, 1}; {2, 'D_ref', 4, -1}}});
+	positive_testcases = create_testcase(positive_testcases, {'sys', {{1, 'D_ref', 1, 1}; {2, 'D_ref', 4, -1}}}, {'dsc', true});
+	positive_testcases = create_testcase(positive_testcases, {'sys', {{1, 'C', [], [0 0 0]}; {2, 'C', [], [0 0 0]}}}, {'obj', {{'decouplingcontrol', 'tf_structure'}, zeros(number_references, number_references)}});
+	positive_testcases = create_testcase(positive_testcases, {'sol', {'Display', 'iter-detailed'}});
+	positive_testcases = create_testcase(positive_testcases, {'fix', {{4, 1, cat(3, [1 0 0 0; 0 0 0 0], [1 0 0 0; 0 0 0 0])}; {4, 2, [1; 2]}}}, {'sol', {'Display', 'iter-detailed'}});
+	positive_testcases = create_testcase(positive_testcases, {'fix', {{4, 1, cat(3, [1 0 0 0; 0 0 0 0], [1 0 0 0; 0 0 0 0])}; {4, 2, [1; 2]}}}, {'sol', {'Display', 'iter-detailed'}}, {'obj', {{'decouplingcontrol', 'decouplingstrategy'}, GammaDecouplingStrategy.EXACT}});
+	positive_testcases = create_testcase(positive_testcases, {'fix', {{1, 1, cat(3, [1 0; 0 0], [1 0; 0 0])}; {1, 2, [1; 2]}}}, {'sol', {'Display', 'iter-detailed'}});
+	positive_testcases = create_testcase(positive_testcases, {'fix', {{1, 1, cat(3, [1 0; 0 0], [1 0; 0 0])}; {1, 2, [1; 2]}}}, {'sol', {'Display', 'iter-detailed'}}, {'obj', {{'decouplingcontrol', 'decouplingstrategy'}, GammaDecouplingStrategy.EXACT}});
+	positive_testcases = create_testcase(positive_testcases, {'fix', {{3, 1, cat(3, [1 0; 0 0], [1 0; 0 0])}; {3, 2, [1; 2]}}}, {'sol', {'Display', 'iter-detailed'}});
+	positive_testcases = create_testcase(positive_testcases, {'fix', {{3, 1, cat(3, [1 0; 0 0], [1 0; 0 0])}; {3, 2, [1; 2]}}}, {'sol', {'Display', 'iter-detailed'}}, {'obj', {{'decouplingcontrol', 'decouplingstrategy'}, GammaDecouplingStrategy.EXACT}});
+	positive_testcases = create_testcase(positive_testcases, {'fix', {{3, 1, cat(3, [1 0; 0 0], [0 0; 1 0])}; {3, 2, [0; 0]}}}, {'sol', {'Display', 'iter-detailed'}});
+	positive_testcases = create_testcase(positive_testcases, {'fix', {{3, 1, cat(3, [1 0; 0 0], [0 0; 1 0])}; {3, 2, [0; 0]}}}, {'sol', {'Display', 'iter-detailed'}}, {'obj', {{'decouplingcontrol', 'decouplingstrategy'}, GammaDecouplingStrategy.EXACT}});
+	positive_testcases = create_testcase(positive_testcases, {'obj', {{'decouplingcontrol', 'solvesymbolic'}, false; {'decouplingcontrol', 'tf_structure'}, nan(number_references, number_references)}}, {'sol', {'Display', 'iter-detailed'}});
+
+	negative_testcases = [];
+	negative_testcases = create_testcase(negative_testcases, {'sys', {{1, 'E', 1, 0}; {2, 'E', 1, 3}}}, {'dsc', true});
+	negative_testcases = create_testcase(negative_testcases, {'obj', {{'decouplingcontrol', 'decouplingstrategy'}, GammaDecouplingStrategy.NUMERIC_NONLINEAR_EQUALITY}});
+	negative_testcases = create_testcase(negative_testcases, {'obj', {{'decouplingcontrol', 'decouplingstrategy'}, GammaDecouplingStrategy.NUMERIC_NONLINEAR_INEQUALITY}});
+	negative_testcases = create_testcase(negative_testcases, {'obj', {{'decouplingcontrol', 'decouplingstrategy'}, GammaDecouplingStrategy.NONE}});
+	negative_testcases = create_testcase(negative_testcases, {'obj', {{'decouplingcontrol', 'decouplingstrategy'}, 'Not a GammaDecouplingStrategy'}});
+	negative_testcases = create_testcase(negative_testcases, {'obj', {{'decouplingcontrol', 'allowoutputdecoupling'}, false}});
+	negative_testcases = create_testcase(negative_testcases, {'sys', {{1, 'C_ref', [], eye(number_states, number_states)}; {1, 'D_ref', [], zeros(number_states, number_states)}; {2, 'C_ref', [], eye(number_states, number_states)}; {2, 'D_ref', [], zeros(number_states, number_states)}}}, {'obj', {{'decouplingcontrol', 'tf_structure'}, zeros(3, 3)}});
+	negative_testcases = create_testcase(negative_testcases, {'sys', {{1, 'C_ref', [], zeros(number_states - 2, number_states)}; {1, 'D_ref', [], zeros(number_states - 2, number_states)}; {2, 'C_ref', [], zeros(number_states - 2, number_states)}; {2, 'D_ref', [], zeros(number_states - 2, number_states)}}}, {'obj', {{'decouplingcontrol', 'tf_structure'}, zeros(1, 1)}});
+	negative_testcases = create_testcase(negative_testcases, {'sys', {{1, 'C_dot', [], eye(number_states - 2, number_states)}; {2, 'C_dot', [], zeros(number_states - 2, number_states)}}});
 
 	%% test
 	ok_positive_testcases = false(size(positive_testcases, 1), 1);
 	for ii = 1:size(positive_testcases, 1)
 		test_object.reset();
 		[systems, R_fixed_ext, objectiveoptions, solveroptions, descriptor] = test_object.implement_testcase(positive_testcases(ii)); %#ok<ASGLU>
-		codetotest = '[RKF_fixed, RKF_bounds, valid, output_message] = decoupling_RKF_fixed(systems, R_fixed_ext, objectiveoptions, solveroptions, descriptor);';
+		number_controls_tmp = size(systems(1).B, 2);
+		number_measurements_tmp = size(systems(1).C, 1);
+		number_measurements_xdot_tmp = size(systems(1).C_dot, 1);
+		number_references_tmp = size(systems(1).C_ref, 1);
+		if descriptor == -1
+			codetotest = '[RKF_fixed, RKF_bounds, valid, output_message] = decoupling_RKF_fixed(systems, R_fixed_ext, objectiveoptions, solveroptions);';
+		else
+			codetotest = '[RKF_fixed, RKF_bounds, valid, output_message] = decoupling_RKF_fixed(systems, R_fixed_ext, objectiveoptions, solveroptions, descriptor);';
+		end
 		test.TestSuite.assertNoException(codetotest, 'any', 'decoupling_RKF_fixed must not throw an exception.');
-		ok_positive_testcases(ii) = check_outputs(RKF_fixed, RKF_bounds, valid, output_message, number_controls, number_measurements, number_measurements_xdot, number_references);
+		ok_positive_testcases(ii) = check_outputs(RKF_fixed, RKF_bounds, valid, output_message, number_controls_tmp, number_measurements_tmp, number_measurements_xdot_tmp, number_references_tmp);
 	end
 	for ii = 1:size(negative_testcases, 1)
 		test_object.reset();
@@ -110,6 +110,45 @@ function [pass, failed_positive_testcases] = decoupling_RKF_fixed_Test(~)
 	failed_positive_testcases = find(~ok_positive_testcases);
 	if ~isempty(failed_positive_testcases)
 		pass = identifier.TestResult.FAILED;
+	end
+end
+
+function struct_out = create_testcase(struct_in, varargin)
+	%CREATE_TESTCASE creates and appends structure specifying the characteristic testcase options different from the default options
+	%	Input:
+	%		struct_in:	structure specifying other testcases. Put [], if this is the first testcase created.
+	%		varargin:	cell array(s) of options of the form {identifier-string, cell-array for specifying testcase options}. For precise information, see amend_... functions in decoupling_RKF_fixed_Test_Class
+	%	Output:
+	%		struct_out:	appended or newly created testcase struct.
+	if ~isstruct(struct_in)
+		struct_out = struct(...
+			'systems',			{},...
+			'R_fixed',			{},...
+			'objectiveoptions',	{},...
+			'solveroptions',	{},...
+			'descriptor',		{}...
+		);
+		size_old_struct = 0;
+	else
+		struct_out = struct_in;
+		size_old_struct = size(struct_in, 1);
+	end
+	for ii = 1:size(varargin, 2)
+		identifier = varargin{1, ii}{1};
+		option = varargin{1, ii}{2};
+		if strcmp(identifier, 'sys')
+			struct_out(size_old_struct + 1, 1).systems = option;
+		elseif strcmp(identifier, 'fix')
+			struct_out(size_old_struct + 1, 1).R_fixed = option;
+		elseif strcmp(identifier, 'obj')
+			struct_out(size_old_struct + 1, 1).objectiveoptions = option;
+		elseif strcmp(identifier, 'sol')
+			struct_out(size_old_struct + 1, 1).solveroptions = option;
+		elseif strcmp(identifier, 'dsc')
+			struct_out(size_old_struct + 1, 1).descriptor = option;
+		else
+			error('Wrong identifier');
+		end
 	end
 end
 

@@ -43,11 +43,15 @@ classdef decoupling_RKF_fixed_Test_Class
 			%		this:			instance
 			%		idx_sys:		index indicating which system should be changed
 			%		field_string:	string indicating which field should be changed
-			%		idx_elements:	index of the field-elements that should be changed
+			%		idx_elements:	index of the field-elements that should be changed. If empty, then whole field is assigned anew.
 			%		value:			value that should be assigned to the chosen option
 			%	Output:
 			%		this:			updated instance
-			this.systems(idx_sys).(field_string)(idx_elements) = value;
+			if ~isempty(idx_elements)
+				this.systems(idx_sys).(field_string)(idx_elements) = value;
+			else
+				this.systems(idx_sys).(field_string) = value;
+			end
 		end
 		
 		function this = amend_R_fixed(this, idx_RKF, idx_Ab, value)
@@ -116,13 +120,13 @@ classdef decoupling_RKF_fixed_Test_Class
 				this = this.amend_R_fixed(testcase_struct.R_fixed{ii}{1}, testcase_struct.R_fixed{ii}{2}, testcase_struct.R_fixed{ii}{3});
 			end
 			for ii = 1:size(testcase_struct.objectiveoptions, 1)
-				this = this.amend_objectiveoptions(testcase_struct.objectiveoptions{ii}{1}, testcase_struct.objectiveoptions{ii}{2});
+				this = this.amend_objectiveoptions(testcase_struct.objectiveoptions{ii, 1}, testcase_struct.objectiveoptions{ii, 2});
 			end
 			for ii = 1:size(testcase_struct.solveroptions, 1)
-				this = this.amend_solveroptions(testcase_struct.solveroptions{ii}{1}, testcase_struct.solveroptions{ii}{2});
+				this = this.amend_solveroptions(testcase_struct.solveroptions{ii, 1}, testcase_struct.solveroptions{ii, 2});
 			end
 			for ii = 1:size(testcase_struct.descriptor, 1)
-				this = this.amend_descriptor(testcase_struct.descriptor{ii});
+				this = this.amend_descriptor(testcase_struct.descriptor(ii));
 			end
 			[systems, R_fixed, objectiveoptions, solveroptions, descriptor] = this.get_options();
 		end
