@@ -386,7 +386,8 @@ function [RKF_fixed_out, RKF_bounds_out, valid, message] = decoupling_RKF_fixed(
 		if output_verbosity(solveroptions)
 			if isempty(RKF_fixed{1}) && ~solvesymbolic
 				disp('----There are no controller and prefilter constraints.--------');
-			else
+			end
+			if solvesymbolic
 				showresults(R, K, F, sol, free_params_raw);
 			end
 		end
