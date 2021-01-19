@@ -69,12 +69,6 @@ function [c, ceq, gradc, gradceq] = calculate_decoupling_conditions(system, R, K
 		[permutations_VR1, permutations_WR2, number_permutations] = set_permutations(number_states, dim_invariant, number_references, numthreads);
 	end
 
-	dFdxi = zeros(number_controls, number_references, number_controls*number_references);
-	if needsgradient
-		indices = 1:(number_controls*number_references+1):(number_controls*number_references)^2;
-		dFdxi(indices) = 1;
-	end
-
 	ceq_out = zeros(number_outputconditions_per_sys, 1, number_models);% output decoupling conditions
 	ceq_in = zeros(number_inputconditions_per_sys, 1, number_models);% input decoupling conditions
 	if needsgradient
@@ -122,7 +116,7 @@ function [c, ceq, gradc, gradceq] = calculate_decoupling_conditions(system, R, K
 			WR2 = eigenvector_l(idx_WR2, :);
 
 			%% input and output decoupling conditions of the system
-			WBF = WR2*B*f;
+			WB = WR2*B;
 			if hasfeedthrough(jj)
 				CVR = (Cjj - Djj*R*C)*VR1;
 			else
@@ -134,14 +128,14 @@ function [c, ceq, gradc, gradceq] = calculate_decoupling_conditions(system, R, K
 			]; %#ok<PFBNS>
 			if hasfeedthrough(jj)
 				ceq_in_jj(sum(number_inputconditions_per_sys_path(1:jj-1)) + (1:number_inputconditions_per_sys_path(jj)), :) = [
-					reshape(real(WBF.'),	(number_states - dim_invariant(jj))*(number_references - number_decouplingconditions(jj)), 1);
-					reshape(imag(WBF.'),	(number_states - dim_invariant(jj))*(number_references - number_decouplingconditions(jj)), 1);
-					reshape(Djj*f,			(number_decouplingconditions(jj))*(number_references - number_decouplingconditions(jj)), 1)
+					real(WB)*f;
+					imag(WB)*f;
+					Djj*f
 				]; %#ok<PFBNS>
 			else
 				ceq_in_jj(sum(number_inputconditions_per_sys_path(1:jj-1)) + (1:number_inputconditions_per_sys_path(jj)), :) = [
-					reshape(real(WBF.'),	(number_states - dim_invariant(jj))*(number_references - number_decouplingconditions(jj)), 1);
-					reshape(imag(WBF.'),	(number_states - dim_invariant(jj))*(number_references - number_decouplingconditions(jj)), 1);
+					real(WB)*f;
+					imag(WB)*f;
 				];
 			end
 
@@ -181,15 +175,11 @@ function [c, ceq, gradc, gradceq] = calculate_decoupling_conditions(system, R, K
 					all_grads_lev_split = reshape(all_grads_lev_mixed, number_states, number_states - dim_invariant(jj), number_measurements*number_controls);
 					all_grads_lev_stacked_below = reshape(all_grads_lev_split, number_states*(number_states - dim_invariant(jj)), number_measurements*number_controls);
 					all_grads_coupl_in_first_part = (kron(eye(number_states - dim_invariant(jj)), f.'*B.')*conj(all_grads_lev_stacked_below)).'; % why conj()?
-					all_grads_coupl_in_secnd_part = NaN((number_references - number_decouplingconditions(jj))*(number_states - dim_invariant(jj)), number_controls*(number_references - number_decouplingconditions(jj))) + 1i*NaN((number_references - number_decouplingconditions(jj))*(number_states - dim_invariant(jj)), number_controls*(number_references - number_decouplingconditions(jj)));
-					dFdxi_tmp = dFdxi(:, jj, (jj - 1)*number_controls + 1:jj*number_controls); %#ok<PFBNS>
-					for kk = 1:number_controls*(number_references - number_decouplingconditions(jj))
-						all_grads_coupl_in_secnd_part(:, kk) = reshape(dFdxi_tmp(:, :, kk).'*B.'*WR2.', (number_references - number_decouplingconditions(jj))*(number_states - dim_invariant(jj)), 1); % dFdxi is constant and calculated before loop
-					end
+					all_grads_coupl_in_secnd_part = WB.';
 					all_grads_coupl_in = [
 						all_grads_coupl_in_first_part;
 						zeros((jj - 1)*number_controls, (number_states - dim_invariant(jj)));
-						all_grads_coupl_in_secnd_part.';
+						all_grads_coupl_in_secnd_part;
 						zeros((number_references - jj)*number_controls, (number_states - dim_invariant(jj)))
 					];
 				else
