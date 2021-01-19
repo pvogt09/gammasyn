@@ -58,17 +58,22 @@ function [Ropt, Jopt, information] = gammasyn_decouplingcontrol(systems, areafun
 		GammaDecouplingStrategy.APPROXIMATE_INEQUALITY
 	])
 		numeric = false;
+		merit = false;
 	elseif any(control_design_type == [
 		GammaDecouplingStrategy.NUMERIC_NONLINEAR_EQUALITY;
 		GammaDecouplingStrategy.NUMERIC_NONLINEAR_INEQUALITY
 	])
 		numeric = true;
+		merit = false;
+	elseif control_design_type == GammaDecouplingStrategy.MERIT_FUNCTION
+		numeric = true;
+		merit = true;
 	elseif control_design_type == GammaDecouplingStrategy.NONE
 		error('control:design:gamma:input', 'Decoupling controller shall be designed but is turned off explicitly.');
 	else
 		error('control:design:gamma:input', 'Wrong decoupling controller option.');
 	end
-	if numeric && objectiveoptions.decouplingcontrol.sortingstrategy_decoupling == GammaDecouplingconditionSortingStrategy.EIGENVALUETRACKING
+	if numeric && ~merit && objectiveoptions.decouplingcontrol.sortingstrategy_decoupling == GammaDecouplingconditionSortingStrategy.EIGENVALUETRACKING
 		warning(' Option GammaDecouplingconditionSortingStrategy.EIGENVALUETRACKING is beta.');
 		if solveroptions.UseParallel && ~isempty(gcp('nocreate'))
 			pctRunOnAll clear calculate_decoupling_conditions; % clear persistent variables in calculate_decoupling_conditions() and local functions on every parpool-worker

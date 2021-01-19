@@ -16,6 +16,8 @@ classdef(Enumeration) GammaDecouplingStrategy < Simulink.IntEnumType
 		NUMERIC_NONLINEAR_EQUALITY(4);
 		% fully numeric decoupling controller design with nonlinear inequality constraints.
 		NUMERIC_NONLINEAR_INEQUALITY(5);
+		% fully numeric decoupling controller design by minimizing merit funtion.
+		MERIT_FUNCTION(6);
 	end
 
 % must not be private to allow for type cast to GammaDecouplingStrategy, types are automatically restricted to the defined ones internally

@@ -59,7 +59,7 @@ function [Ropt, Jopt, information] = gammasyn(systems, areafun, weights, R_fixed
 				[~, ~, ~, ~, ~, ~, number_references] = checkandtransformsystems(systems);
 				decouplingoptions = checkobjectiveoptions_decoupling(number_references, objectiveoptions.decouplingcontrol);
 				if decouplingoptions.decouplingstrategy ~= GammaDecouplingStrategy.NONE
-					systemoptions.decouplingcontrol = GammaDecouplingStrategy_needsdecouplingconditions(decouplingoptions.decouplingstrategy);
+					systemoptions.decouplingcontrol = GammaDecouplingStrategy_needsdecouplingconditions(decouplingoptions.decouplingstrategy) || decouplingoptions.decouplingstrategy == GammaDecouplingStrategy.MERIT_FUNCTION;
 					if systemoptions.decouplingcontrol
 						systemoptions.tf_structure = decouplingoptions.tf_structure;
 						systemoptions.usereferences = true;
@@ -109,6 +109,7 @@ function [Ropt, Jopt, information] = gammasyn(systems, areafun, weights, R_fixed
 		end
 	end
 	solve_decoupling_feasibility = solution_strategy == GammaSolutionStrategy.FEASIBILITYITERATION_DECOUPLING && GammaDecouplingStrategy_needsdecouplingconditions(objective_options_strict.decouplingcontrol.decouplingstrategy);
+	merit_decoupling = decouplingoptions.decouplingstrategy == GammaDecouplingStrategy.MERIT_FUNCTION;
 	if solveroptions.ProblemType == optimization.options.ProblemType.CONSTRAINED
 		if dimensions_loose.areas_max ~= 0
 			if all(objective_options_loose.type == GammaJType.ZERO)
@@ -118,6 +119,8 @@ function [Ropt, Jopt, information] = gammasyn(systems, areafun, weights, R_fixed
 				end
 				if solve_decoupling_feasibility
 					J_decoupling = J;
+				elseif merit_decoupling
+					J_decoupling = J_dispatcher('decoupling', needshessian, system, weight_strict, areafun_strict, dimensions_strict, objective_options_strict);
 				end
 			else
 				if isa(areafun_loose, 'GammaArea') && objective_options_loose.usecompiled
@@ -130,6 +133,8 @@ function [Ropt, Jopt, information] = gammasyn(systems, areafun, weights, R_fixed
 				end
 				if solve_decoupling_feasibility
 					J_decoupling = J_dispatcher('zero', needshessian, system, weight_strict, areafun_strict, dimensions_strict, objective_options_strict);
+				elseif merit_decoupling
+					J_decoupling = J_dispatcher('decoupling', needshessian, system, weight_strict, areafun_strict, dimensions_strict, objective_options_strict);
 				end
 			end
 		else
@@ -147,6 +152,9 @@ function [Ropt, Jopt, information] = gammasyn(systems, areafun, weights, R_fixed
 			end
 			if solve_decoupling_feasibility
 				J_decoupling = J_dispatcher('zero', needshessian, system, weight_strict, areafun_strict, dimensions_strict, objective_options_strict);
+			elseif merit_decoupling
+				J_decoupling = J_dispatcher('decoupling', needshessian, system, weight_strict, areafun_strict, dimensions_strict, objective_options_strict);
+				J = J_decoupling;
 			end
 		end
 		if isa(areafun_strict, 'GammaArea') && objective_options_strict.usecompiled
@@ -209,6 +217,8 @@ function [Ropt, Jopt, information] = gammasyn(systems, areafun, weights, R_fixed
 			end
 			if solve_decoupling_feasibility
 				J_decoupling = J_dispatcher('zero', needshessian, system, weight_strict, areafun_strict, dimensions_strict, objective_options_strict);
+			elseif merit_decoupling
+				J_decoupling = J_dispatcher('decoupling', needshessian, system, weight_strict, areafun_strict, dimensions_strict, objective_options_strict);
 			end
 			dimensions_decoupling = dimensions_strict;
 			dimensions_decoupling.m_invariant = int32(zeros(dimensions_decoupling.references, 1));
@@ -229,6 +239,8 @@ function [Ropt, Jopt, information] = gammasyn(systems, areafun, weights, R_fixed
 					end
 					if solve_decoupling_feasibility
 						J_decoupling = J;
+					elseif merit_decoupling
+						J_decoupling = J_dispatcher('decoupling', needshessian, system, weight_strict, areafun_strict, dimensions_strict, objective_options_strict);
 					end
 				else
 					if isa(areafun_loose, 'GammaArea') && objective_options_loose.usecompiled
@@ -241,6 +253,8 @@ function [Ropt, Jopt, information] = gammasyn(systems, areafun, weights, R_fixed
 					end
 					if solve_decoupling_feasibility
 						J_decoupling = J_dispatcher('zero', needshessian, system, weight_strict, areafun_strict, dimensions_strict, objective_options_strict);
+					elseif merit_decoupling
+						J_decoupling = J_dispatcher('decoupling', needshessian, system, weight_strict, areafun_strict, dimensions_strict, objective_options_strict);
 					end
 				end
 			else
@@ -250,6 +264,8 @@ function [Ropt, Jopt, information] = gammasyn(systems, areafun, weights, R_fixed
 				end
 				if solve_decoupling_feasibility
 					J_decoupling = J;
+				elseif merit_decoupling
+					J_decoupling = J_dispatcher('decoupling', needshessian, system, weight_strict, areafun_strict, dimensions_strict, objective_options_strict);
 				end
 			end
 			if isa(areafun_strict, 'GammaArea') && objective_options_strict.usecompiled
@@ -732,6 +748,13 @@ function [handle] = J_dispatcher(fun, hessian, system, weight, areafun, dimensio
 			J = c_mex_fun_mex(x, system, weight, areafun, dimensions, objective_options);
 		end
 	end
+	function [J, gradJ] = J_merit_decoupling(x)
+		if nargout >= 2
+			[J, gradJ] = J_decoupling(x, system, weight, areafun, dimensions, objective_options);
+		else
+			J = J_decoupling(x, system, weight, areafun, dimensions, objective_options);
+		end
+	end
 	switch lower(fun)
 		case {'zero'}
 			if hessian
@@ -775,6 +798,8 @@ function [handle] = J_dispatcher(fun, hessian, system, weight, areafun, dimensio
 			handle = @J_unconstr_multi_m;
 		case {'unconstr_multi_mex'}
 			handle = @J_unconstr_multi_mex;
+		case {'decoupling'}
+			handle = @J_merit_decoupling;
 		otherwise
 			error('control:design:gamma', 'Undefined function handle type ''%s''.', fun);
 	end
