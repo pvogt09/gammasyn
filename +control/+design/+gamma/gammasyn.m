@@ -748,8 +748,10 @@ function [handle] = J_dispatcher(fun, hessian, system, weight, areafun, dimensio
 			J = c_mex_fun_mex(x, system, weight, areafun, dimensions, objective_options);
 		end
 	end
-	function [J, gradJ] = J_merit_decoupling(x)
-		if nargout >= 2
+	function [J, gradJ, hessJ] = J_merit_decoupling(x)
+		if nargout >= 3
+			[J, gradJ, hessJ] = J_decoupling(x, system, weight, areafun, dimensions, objective_options);
+		elseif nargout >= 2
 			[J, gradJ] = J_decoupling(x, system, weight, areafun, dimensions, objective_options);
 		else
 			J = J_decoupling(x, system, weight, areafun, dimensions, objective_options);
