@@ -103,7 +103,6 @@ function [system, areafun_strict, areafun_loose, weight_strict, weight_loose, di
 				Cjj = C_ref(tf_structure(:, jj) == 0, :); %#ok<PFBNS>
 				Djj = D_ref(tf_structure(:, jj) == 0, :);
 				if isempty(Cjj) || isempty(Djj)
-					m_invariant_mat(ii, jj) = number_states;
 					continue;
 				end
 				hasfeedthrough_decoupling_mat(ii, jj) = any(Djj(:) ~= 0);
