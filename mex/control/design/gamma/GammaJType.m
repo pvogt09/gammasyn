@@ -27,6 +27,8 @@ classdef(Enumeration) GammaJType < Simulink.IntEnumType
 		NORMGAIN(10);
 		% Lyapunov matrix objective function
 		LYAPUNOV(11);
+		% Decoupling objective function
+		DECOUPLING(12);
 	end
 
 % must not be private to allow for type cast to GammaJType, types are automatically restricted to the defined ones internally

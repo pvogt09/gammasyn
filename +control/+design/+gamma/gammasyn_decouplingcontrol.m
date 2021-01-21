@@ -89,6 +89,19 @@ function [Ropt, Jopt, information] = gammasyn_decouplingcontrol(systems, areafun
 			end
 		end
 	end
+	if merit
+		if ~isfield(objectiveoptions, 'type')
+			objectiveoptions.type = GammaJType.DECOUPLING;
+		else
+			if ~any(objectiveoptions.type == GammaJType.DECOUPLING)
+				type_field = objectiveoptions.type;
+				objectiveoptions.type = [
+					type_field(:);
+					GammaJType.DECOUPLING
+				];
+			end
+		end
+	end
 
 	%% inspect systems
 	number_models = size(systems, 1);

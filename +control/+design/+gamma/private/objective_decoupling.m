@@ -1,5 +1,16 @@
-function [J, gradJ, hessJ] = J_decoupling(x, systems, ~, ~, dimensions, options, ~)
-
+function [J, gradJ, hessJ] = objective_decoupling(R, ~, F, systems, dimensions, options)
+	%OBJECTIVE_DECOUPLING calculates quadratic objective function, gradient and hessian that ensures decoupling
+	%	Input:
+	%		R:				proportional gain matrix
+	%		K:				derivative gain matrix
+	%		F:				prefilter gain matrix
+	%		systems:		structure with system description
+	%		dimensions:		structure with dimensions information
+	%		options:		options structure
+	%	Output:
+	%		J:				objective function
+	%		gradJ:			gradient of objective function
+	%		hessJ:			hessian of gradient function
 	needsgradient = nargout >= 2;
 	needshessian = 	nargout >= 3;
 	number_models = dimensions.models;
@@ -8,8 +19,9 @@ function [J, gradJ, hessJ] = J_decoupling(x, systems, ~, ~, dimensions, options,
 	number_measurements = dimensions.measurements;
 	number_measurements_xdot = dimensions.measurements_xdot;
 	number_references = dimensions.references;
+	V_invariant = dimensions.V_invariant;
+	m_invariant = dimensions.m_invariant;
 	tf_structure = options.decouplingcontrol.tf_structure;
-	[R, ~, F] = x2R(x, dimensions);
 	r = reshape(R, [], 1);
 	
 	J = 0;
@@ -19,24 +31,19 @@ function [J, gradJ, hessJ] = J_decoupling(x, systems, ~, ~, dimensions, options,
 		A  = systems(ii).A;
 		B  = systems(ii).B;
 		C  = systems(ii).C;
-		C_ref = systems(ii).C_ref;
 		D_ref = systems(ii).D_ref;
-		E  = systems(ii).E;
 		for jj = 1:number_references
 			g_structure = tf_structure(:, jj); %#ok<PFBNS>
-			Cjj = C_ref(g_structure == 0, :);
 			Djj = D_ref(g_structure == 0, :);
 			if any(any(Djj ~= 0))
 				error('control:design:gamma:decoupling', 'Merit function for decoupling not implemented for feedthrough.');
 			end
-			if isempty(Cjj)
+			m = m_invariant(jj); %#ok<PFBNS>
+			if m == 0
 				continue;
 			end
-			Q = mainco(E\A, E\B, null(Cjj));
-			m = size(Q, 2);
-			Q(abs(Q) < eps) = 0;
-			Q_orth = null(Q.');
-			Q_orth(abs(Q_orth) < eps) = 0;
+			Q = V_invariant(:, 1:m, ii, jj); %#ok<PFBNS>
+			Q_orth = V_invariant(:, m + 1:end, ii, jj);
 			
 			X = kron(Q'*C', Q_orth'*B);
 			z = reshape(Q_orth'*A*Q, (number_states - m)*m, 1);

@@ -88,6 +88,7 @@ function [system, areafun_strict, areafun_loose, weight_strict, weight_loose, di
 		end
 		tf_structure = systemoptions.tf_structure;
 		number_decouplingconditions = int32(sum(tf_structure == 0, 1)).';
+		V_invariant = nan(number_states, number_states, number_models, number_references);
 		m_invariant_mat = zeros(number_models, number_references);
 		hasfeedthrough_decoupling_mat = false(number_models, number_references);
 		not_con_invariant_mat = zeros(number_models, number_references);
@@ -108,11 +109,13 @@ function [system, areafun_strict, areafun_loose, weight_strict, weight_loose, di
 				hasfeedthrough_decoupling_mat(ii, jj) = any(Djj(:) ~= 0);
 				if hasfeedthrough_decoupling_mat(ii, jj)
 					Q = vstar(E\A, E\B, Cjj, Djj);
-					m_invariant_mat(ii, jj) = size(Q, 2);
 				else
 					Q = mainco(E\A, E\B, null(Cjj));
-					m_invariant_mat(ii, jj) = size(Q, 2);
 				end
+				V_invariant(:, :, ii, jj) = [
+					Q, null(Q.')
+				];
+				m_invariant_mat(ii, jj) = size(Q, 2);
 				% check if output nulling controlled invariant subspace is also input containing conditioned invariant
 				if size(kerC, 2) > 0 % only in this case, Q might not be conditioned invariant
 					if rank([A*ints(Q, kerC), Q]) > rank(Q) % not the right condition for systems with feedthrough
@@ -137,6 +140,7 @@ function [system, areafun_strict, areafun_loose, weight_strict, weight_loose, di
 	else
 		tf_structure = NaN(number_references, number_references);
 		number_decouplingconditions = int32(zeros(number_references, 1));
+		V_invariant = nan(number_states, number_states, number_models, number_references);
 		m_invariant = zeros(number_references, 1);
 		hasfeedthrough_decoupling = false(number_references, 1);
 	end
@@ -251,6 +255,7 @@ function [system, areafun_strict, areafun_loose, weight_strict, weight_loose, di
 		'references',					int32(number_references),...% number of reference inputs of multi-models
 		'tf_structure',					double(tf_structure),...% structure of closed loop transfer matrix for all multi-models
 		'number_decouplingconditions',	number_decouplingconditions,...% number of zeros per column of tf_structure
+		'V_invariant',					V_invariant,...% regular transformation matrix to controlled invariant subspace for decoupling control for each column of transfer matrix. May differ between multi-models
 		'm_invariant',					int32(m_invariant),...% dimension of controlled invariant subspace for decoupling control for each column of transfer matrix. Same for all multi-models
 		'hasfeedthrough_decoupling',	hasfeedthrough_decoupling,...% indicator, whether feedthrough D2 ~= 0 in decoupling conditions
 		'descriptor',					descriptor,...% indicator if the multi-models have a descriptor matrix ~= I
@@ -315,6 +320,7 @@ function [system, areafun_strict, areafun_loose, weight_strict, weight_loose, di
 		'references',					int32(number_references),...% number of reference inputs of multi-models
 		'tf_structure',					double(tf_structure),...% structure of closed loop transfer matrix for all multi-models
 		'number_decouplingconditions',	number_decouplingconditions,...% number of zeros per column of tf_structure
+		'V_invariant',					V_invariant,...% regular transformation matrix to controlled invariant subspace for decoupling control for each column of transfer matrix. May differ between multi-models
 		'm_invariant',					int32(m_invariant),...% dimension of controlled invariant subspace for decoupling control for each column of transfer matrix. Same for all multi-models
 		'hasfeedthrough_decoupling',	hasfeedthrough_decoupling,...% indicator, whether feedthrough D2 ~= 0 in decoupling conditions
 		'descriptor',					descriptor,...% indicator if the multi-models have a descriptor matrix ~= I
