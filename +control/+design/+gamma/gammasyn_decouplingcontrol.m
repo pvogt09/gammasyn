@@ -101,6 +101,12 @@ function [Ropt, Jopt, information] = gammasyn_decouplingcontrol(systems, areafun
 				];
 			end
 		end
+	else
+		if isfield(objectiveoptions, 'type')
+			if isempty(objectiveoptions.type)
+				objectiveoptions.type = GammaJType.ZERO;
+			end
+		end
 	end
 
 	%% inspect systems

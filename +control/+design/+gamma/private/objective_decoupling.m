@@ -35,7 +35,7 @@ function [J, gradJ, hessJ] = objective_decoupling(R, ~, F, systems, dimensions, 
 		for jj = 1:number_references
 			g_structure = tf_structure(:, jj); %#ok<PFBNS>
 			Djj = D_ref(g_structure == 0, :);
-			if any(any(Djj ~= 0))
+			if any(Djj(:) ~= 0)
 				error('control:design:gamma:decoupling', 'Merit function for decoupling not implemented for feedthrough.');
 			end
 			m = m_invariant(jj); %#ok<PFBNS>

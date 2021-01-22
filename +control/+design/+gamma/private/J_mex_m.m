@@ -45,7 +45,7 @@ function [J, gradJ, hessianJ] = J_mex_m(x, system, weight, areafun, dimensions, 
 	[R, K, F] = x2R(x, dimensions);
 	if nargout >= 3
 		if any(options.type == GammaJType.DECOUPLING)
-			[J_decoupling, gradJ_decoupling, hessianJ_decoupling] = objective_decoupling(R, K, F, systems, dimensions, options);
+			[J_decoupling, gradJ_decoupling, hessianJ_decoupling] = objective_decoupling(R, K, F, system, dimensions, options);
 		else
 			J_decoupling = 0;
 			gradJ_decoupling = zeros(number_controls*(number_measurements + number_measurements_xdot + number_references), 1);
@@ -53,14 +53,14 @@ function [J, gradJ, hessianJ] = J_mex_m(x, system, weight, areafun, dimensions, 
 		end
 	elseif nargout >= 2
 		if any(options.type == GammaJType.DECOUPLING)
-			[J_decoupling, gradJ_decoupling] = objective_decoupling(R, K, F, systems, dimensions, options);
+			[J_decoupling, gradJ_decoupling] = objective_decoupling(R, K, F, system, dimensions, options);
 		else
 			J_decoupling = 0;
 			gradJ_decoupling = zeros(number_controls*(number_measurements + number_measurements_xdot + number_references), 1);
 		end
 	else
 		if any(options.type == GammaJType.DECOUPLING)
-			J_decoupling = objective_decoupling(R, K, F, systems, dimensions, options);
+			J_decoupling = objective_decoupling(R, K, F, system, dimensions, options);
 		else
 			J_decoupling = 0;
 		end
