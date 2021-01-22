@@ -160,9 +160,7 @@ function [RKF_fixed_out, RKF_bounds_out, valid, message] = decoupling_RKF_fixed(
 			end
 			m = size(Q, 2);
 			dim_invariant_mat(ii, jj) = m;
-			Q(abs(Q) < eps) = 0;
 			Q_orth = null(Q.');
-			Q_orth(abs(Q_orth) < eps) = 0;
 			V = [
 				Q, Q_orth
 			];
