@@ -58,7 +58,7 @@ function [decouplingoptions] = checkobjectiveoptions_decoupling(number_reference
 	if ~isstruct(decouplingoptions)
 		error('control:design:gamma', 'Options for decoupling control must be of type struct.');
 	end
-	if size(decouplingoptions.tf_structure, 1) ~= number_references && size(decouplingoptions.tf_structure, 2) ~= number_references
+	if size(decouplingoptions.tf_structure, 1) ~= number_references || size(decouplingoptions.tf_structure, 2) ~= number_references
 		error('control:design:gamma', 'tf_structure must be a %dX%d matrix.', number_references, number_references);
 	end
 	if size(decouplingoptions.tf_structure, 3) > 1
