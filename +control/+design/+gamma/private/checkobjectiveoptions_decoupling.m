@@ -30,7 +30,7 @@ function [decouplingoptions] = checkobjectiveoptions_decoupling(number_reference
 			end
 			if ~isfield(decouplingoptions, 'sortingstrategy_decoupling')
 				% use default sorting strategy for decoupling conditions
-				decouplingoptions.decouplingstrategy = [];
+				decouplingoptions.sortingstrategy_decoupling = [];
 			end
 			if ~isfield(decouplingoptions, 'tolerance_decoupling')
 				decouplingoptions.tolerance_decoupling = decoupling_prototype.tolerance_decoupling;

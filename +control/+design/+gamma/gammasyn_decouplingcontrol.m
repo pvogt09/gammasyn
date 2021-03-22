@@ -23,6 +23,7 @@ function [Ropt, Jopt, information] = gammasyn_decouplingcontrol(systems, areafun
 	end
 	if nargin <= 6
 		objectiveoptions = struct();
+		objectiveoptions.type = GammaJType.getDefaultValue();
 	end
 	if isa(objectiveoptions, 'control.design.gamma.GammasynOptions')
 		objectiveoptions = struct(objectiveoptions);
@@ -35,6 +36,7 @@ function [Ropt, Jopt, information] = gammasyn_decouplingcontrol(systems, areafun
 		objectiveoptions.decouplingcontrol = checkobjectiveoptions_decoupling(number_references, objectiveoptions.decouplingcontrol);
 	else
 		objectiveoptions.decouplingcontrol = checkobjectiveoptions_decoupling(number_references);
+		objectiveoptions.decouplingcontrol.decouplingstrategy = GammaDecouplingStrategy.APPROXIMATE;
 	end
 
 	%% check Geomteric Approach Toolbox
@@ -46,12 +48,6 @@ function [Ropt, Jopt, information] = gammasyn_decouplingcontrol(systems, areafun
 
 	%% inspect decoupling options
 	control_design_type = objectiveoptions.decouplingcontrol.decouplingstrategy;
-	if ~isscalar(control_design_type)
-		error('control:design:gamma:input', 'Decoupling controller design type must be scalar.');
-	end
-	if ~isa(control_design_type, 'GammaDecouplingStrategy')
-		error('control:design:gamma:input', 'Decoupling controller design type must be of type ''GammaDecouplingStrategy''.');
-	end
 	if any(control_design_type == [
 		GammaDecouplingStrategy.EXACT;
 		GammaDecouplingStrategy.APPROXIMATE;
@@ -116,14 +112,14 @@ function [Ropt, Jopt, information] = gammasyn_decouplingcontrol(systems, areafun
 	end
 	if ~objectiveoptions.decouplingcontrol.allowoutputdecoupling || descriptor
 		if number_states ~= number_measurements
-			error('control:design:gamma:dimensions', 'For decoupling controller design, all states must be measured.');
+			error('control:design:gamma:dimensions', 'For decoupling controller design, all states must be measured, unless ''allowoutputdecoupling'' is false. For descriptor design, all states must always be measured.');
 		end
 	end
 	C_dot = systems(1).C_dot;
 	for ii = 1:number_models %#ok<FORPF> no parfor because of error checking
-		if ~objectiveoptions.decouplingcontrol.allowoutputdecoupling
-			if any(any(systems(ii).C ~= eye(number_states)))
-				error('control:design:gamma:dimensions', 'For decoupling controller design, a complete state feedback must be calculated. Matrix C must be eye(%d)', number_states);
+		if ~objectiveoptions.decouplingcontrol.allowoutputdecoupling || descriptor
+			if rank(systems(ii).C) ~= number_states
+				error('control:design:gamma:dimensions', 'For descriptor or decoupling controller design, a complete state feedback must be calculated. Matrix C must have rank %d', number_states);
 			end
 		end
 		if any(any(systems(ii).D ~= zeros(number_measurements, number_controls)))
@@ -166,7 +162,7 @@ function [Ropt, Jopt, information] = gammasyn_decouplingcontrol(systems, areafun
 		[R_bounds, K_bounds, F_bounds, RKF_bounds] = input_gain_constraint2RKF(R_bounds);
 	end
 	[R_bounds, bound_system, bound_border, rg_bounds, hasbounds_R, onlybounds_R, bound_system_hadamard_R] = checkandtransform_gain_bounds(R_bounds, number_controls, number_measurements, 'proportional');
-	[K_bounds, bound_system_xdot, bound_border_xdot, rg_xdot_bounds, hasbounds_K, onlybounds_K, bound_system_hadamard_K] = checkandtransform_gain_bounds(K_bounds, number_controls, number_measurements_xdot, 'proportional');
+	[K_bounds, bound_system_xdot, bound_border_xdot, rg_xdot_bounds, hasbounds_K, onlybounds_K, bound_system_hadamard_K] = checkandtransform_gain_bounds(K_bounds, number_controls, number_measurements_xdot, 'derivative');
 	[F_bounds, bound_system_prefilter, bound_border_prefilter, rg_prefilter_bounds, hasbounds_F, onlybounds_F, bound_system_hadamard_F] = checkandtransform_gain_bounds(F_bounds, number_controls, number_references, 'prefilter');
 	[RKF_bounds, bound_system_RKF, bound_border_RKF, rg_RKF_bounds, hasbounds_RKF, onlybounds_RKF, bound_system_hadamard_RKF] = checkandtransform_gain_bounds(RKF_bounds, number_controls, number_measurements + number_measurements_xdot + number_references, 'combined');
 	[...
@@ -390,7 +386,7 @@ function [Ropt, Jopt, information] = gammasyn_decouplingcontrol(systems, areafun
 
 	%% check and transform R_0
 	if nargin <= 4
-		R_0 = zeros(number_controls, number_measurements);
+		R_0 = {zeros(number_controls, number_measurements), zeros(number_controls, number_measurements_xdot), zeros(number_controls, number_references)};
 	end
 	if isa(R_0, 'control.design.gamma.InitialValueElement')
 		R_0 = control.design.gamma.InitialValue(R_0);
@@ -470,7 +466,7 @@ function [Ropt, Jopt, information] = gammasyn_decouplingcontrol(systems, areafun
 			R_fixed_tilde, K_fixed_tilde, F_fixed_tilde, RKF_fixed_tilde
 		};
 		% calculate structural constraints
-		[RF_fixed_tilde, RF_bounds_tilde, successful, message] = decoupling_RKF_fixed(systems_tilde, R_fixed_tilde_external, objectiveoptions, solveroptions, descriptor);
+		[RKF_fixed_tilde, RF_bounds_tilde, successful, message] = decoupling_RKF_fixed(systems_tilde, R_fixed_tilde_external, objectiveoptions, solveroptions, descriptor);
 		if ~successful % then abort control design
 			Ropt = {
 				NaN(number_controls, number_measurements);
@@ -486,12 +482,13 @@ function [Ropt, Jopt, information] = gammasyn_decouplingcontrol(systems, areafun
 		R_bounds_tilde_all = cat_RKF_fixed(R_bounds_tilde, RF_bounds_tilde{1}, false);
 		K_bounds_tilde_all = cat_RKF_fixed(K_bounds_tilde, RF_bounds_tilde{2}, false);
 		F_bounds_tilde_all = cat_RKF_fixed(F_bounds_tilde, RF_bounds_tilde{3}, false);
+		RKF_bounds_tilde_all = cat_RKF_fixed(RKF_bounds_tilde, RF_bounds_tilde{4}, false);
 
 		R_fixed_tilde = {
-			RF_fixed_tilde{1}, RF_fixed_tilde{2}, RF_fixed_tilde{3}, RF_fixed_tilde{4}
+			RKF_fixed_tilde{1}, RKF_fixed_tilde{2}, RKF_fixed_tilde{3}, RKF_fixed_tilde{4}
 		};
 		R_bounds_tilde = {
-			R_bounds_tilde_all, K_bounds_tilde_all, F_bounds_tilde_all, RKF_bounds_tilde
+			R_bounds_tilde_all, K_bounds_tilde_all, F_bounds_tilde_all, RKF_bounds_tilde_all
 		};
 	end
 
@@ -553,7 +550,9 @@ function [Ropt, Jopt, information] = gammasyn_decouplingcontrol(systems, areafun
 			end
 		end
 		Ropt = {
-			R, K, F
+			R;
+			K;
+			F
 		};
 	end
 
@@ -641,7 +640,7 @@ function [R_A_tilde, R_b_tilde, K_A_tilde, K_b_tilde, F_A_tilde, F_b_tilde, RKF_
 	F_b_tilde_non_un = F_b;
 	RKF_b_tilde_non_un = RKF_b;
 
-	if strcmpi(type_string, 'bounds') && false
+	if strcmpi(type_string, 'bounds')
 		% add default bounds for tilde gain matrices
 		R_A_tilde_non_un = [
 			eye(number_controls_tilde*number_states_tilde);
@@ -733,25 +732,25 @@ function [R_A_tilde, R_b_tilde, K_A_tilde, K_b_tilde, F_A_tilde, F_b_tilde, RKF_
 			R_A_tilde = R_A_tilde_un(~zero_rows_R, :);
 			R_b_tilde = R_b_tilde_un(~zero_rows_R);
 		else
-			error('control:design:gamma:constraints', 'By the DAE transformation to semi-explicit form, unsolvable constraint for fixed proportional gain is formed.');
+			error('control:design:gamma:constraints', 'By the DAE transformation to semi-explicit form, unsolvable constraint for proportional gain bound is formed.');
 		end
 		if all(K_b_tilde_un(zero_rows_K) > 0) % solvable
 			K_A_tilde = K_A_tilde_un(~zero_rows_K, :);
 			K_b_tilde = K_b_tilde_un(~zero_rows_K);
 		else
-			error('control:design:gamma:constraints', 'By the DAE transformation to semi-explicit form, unsolvable constraint for fixed derivative gain is formed.');
+			error('control:design:gamma:constraints', 'By the DAE transformation to semi-explicit form, unsolvable constraint for derivative gain bound is formed.');
 		end
 		if all(F_b_tilde_un(zero_rows_F) > 0) % solvable
 			F_A_tilde = F_A_tilde_un(~zero_rows_F, :);
 			F_b_tilde = F_b_tilde_un(~zero_rows_F);
 		else
-			error('control:design:gamma:constraints', 'By the DAE transformation to semi-explicit form, unsolvable constraint for fixed prefilter gain is formed.');
+			error('control:design:gamma:constraints', 'By the DAE transformation to semi-explicit form, unsolvable constraint for prefilter gain bound is formed.');
 		end
 		if all(RKF_b_tilde_un(zero_rows_RKF) > 0) % solvable
 			RKF_A_tilde = RKF_A_tilde_un(~zero_rows_RKF, :);
 			RKF_b_tilde = RKF_b_tilde_un(~zero_rows_RKF);
 		else
-			error('control:design:gamma:constraints', 'By the DAE transformation to semi-explicit form, unsolvable constraint for fixed combined gain is formed.');
+			error('control:design:gamma:constraints', 'By the DAE transformation to semi-explicit form, unsolvable constraint for combined bound is formed.');
 		end
 	else
 		error('control:design:gamma:input', 'Wrong type_string. Type ''fixed'' or ''bounds''.');
