@@ -88,7 +88,7 @@ function [system, areafun_strict, areafun_loose, weight_strict, weight_loose, di
 		end
 		tf_structure = systemoptions.tf_structure;
 		number_decouplingconditions = int32(sum(tf_structure == 0, 1)).';
-		V_invariant = nan(number_states, number_states, number_models, number_references);
+		V_invariant = nan(number_models, number_states, number_states, number_references);
 		m_invariant_mat = zeros(number_models, number_references);
 		hasfeedthrough_decoupling_mat = false(number_models, number_references);
 		not_con_invariant_mat = zeros(number_models, number_references);
@@ -112,7 +112,7 @@ function [system, areafun_strict, areafun_loose, weight_strict, weight_loose, di
 				else
 					Q = mainco(E\A, E\B, null(Cjj));
 				end
-				V_invariant(:, :, ii, jj) = [
+				V_invariant(ii, :, :, jj) = [
 					Q, null(Q.')
 				];
 				m_invariant_mat(ii, jj) = size(Q, 2);
@@ -140,7 +140,7 @@ function [system, areafun_strict, areafun_loose, weight_strict, weight_loose, di
 	else
 		tf_structure = NaN(number_references, number_references);
 		number_decouplingconditions = int32(zeros(number_references, 1));
-		V_invariant = nan(number_states, number_states, number_models, number_references);
+		V_invariant = nan(number_models, number_states, number_states, number_references);
 		m_invariant = zeros(number_references, 1);
 		hasfeedthrough_decoupling = false(number_references, 1);
 	end

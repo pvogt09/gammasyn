@@ -1,5 +1,5 @@
-function [J, gradJ, hessJ] = objective_decoupling(R, ~, F, systems, dimensions, options)
-	%OBJECTIVE_DECOUPLING calculates quadratic objective function, gradient and hessian that ensures decoupling
+function [J, gradJ, hessJ] = calculate_objective_decoupling(R, ~, F, systems, dimensions, options)
+	%CALCULATE_OBJECTIVE_DECOUPLING calculates quadratic objective function, gradient and hessian that ensures decoupling
 	%	Input:
 	%		R:				proportional gain matrix
 	%		K:				derivative gain matrix
@@ -43,8 +43,8 @@ function [J, gradJ, hessJ] = objective_decoupling(R, ~, F, systems, dimensions, 
 			if m == 0
 				continue;
 			end
-			Q = V_invariant(:, 1:m, ii, jj); %#ok<PFBNS>
-			Q_orth = V_invariant(:, m + 1:end, ii, jj);
+			Q = permute(V_invariant(ii, :, 1:m, jj), [2, 3, 1]); %#ok<PFBNS>
+			Q_orth = permute(V_invariant(ii, :, m + 1:end, jj), [2, 3, 1]);
 
 			if hasfeedthrough(jj) %#ok<PFBNS>
 				X_R = [
