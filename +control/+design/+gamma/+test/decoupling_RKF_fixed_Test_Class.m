@@ -1,6 +1,6 @@
-classdef decoupling_RKF_fixed_Test_Class
+classdef decoupling_RKF_fixed_Test_Class < handle
 %DECOUPLING_RKF_FIXED_TEST_CLASS class for handling testcases used for decoupling_RKF_fixed_Test
-	
+
 	properties(SetAccess=protected)
 		% default input arguments for decoupling_RKF_fixed
 		systems_default
@@ -34,10 +34,10 @@ classdef decoupling_RKF_fixed_Test_Class
 			this.objectiveoptions_default = objectiveoptions;
 			this.solveroptions_default = solveroptions;
 			this.descriptor_default = descriptor;
-			this = this.reset();
+			this.reset();
 		end
-		
-		function this = amend_systems(this, idx_sys, field_string, idx_elements, value)
+
+		function [this] = amend_systems(this, idx_sys, field_string, idx_elements, value)
 			%AMEND_SYSTEMS changes the chosen property in systems
 			%	Input:
 			%		this:			instance
@@ -53,8 +53,8 @@ classdef decoupling_RKF_fixed_Test_Class
 				this.systems(idx_sys).(field_string) = value;
 			end
 		end
-		
-		function this = amend_R_fixed(this, idx_RKF, idx_Ab, value)
+
+		function [this] = amend_R_fixed(this, idx_RKF, idx_Ab, value)
 			%AMEND_R_fixed changes the chosen property in R_fixed
 			%	Input:
 			%		this:			instance
@@ -65,8 +65,8 @@ classdef decoupling_RKF_fixed_Test_Class
 			%		this:			updated instance
 			this.R_fixed{idx_RKF}{idx_Ab} = value;
 		end
-		
-		function this = amend_objectiveoptions(this, option_string, value)
+
+		function [this] = amend_objectiveoptions(this, option_string, value)
 			%AMEND_OBJECTIVEOPTIONS changes the chosen property in objectiveoptions
 			%	Input:
 			%		this:			instance
@@ -80,8 +80,8 @@ classdef decoupling_RKF_fixed_Test_Class
 				this.objectiveoptions.(option_string) = value;
 			end
 		end
-		
-		function this = amend_solveroptions(this, option_string, value)
+
+		function [this] = amend_solveroptions(this, option_string, value)
 			%AMEND_SOLVEROPTIONS changes the chosen property in solveroptions
 			%	Input:
 			%		this:			instance
@@ -91,8 +91,8 @@ classdef decoupling_RKF_fixed_Test_Class
 			%		this:			updated instance
 			this.solveroptions.(option_string) = value;
 		end
-		
-		function this = amend_descriptor(this, descriptor)
+
+		function [this] = amend_descriptor(this, descriptor)
 			%AMEND_descriptor changes descriptor
 			%	Input:
 			%		this:	instance
@@ -101,7 +101,7 @@ classdef decoupling_RKF_fixed_Test_Class
 			%		this:	updated instance
 			this.descriptor = descriptor;
 		end
-		
+
 		function [systems, R_fixed, objectiveoptions, solveroptions, descriptor] = implement_testcase(this, testcase_struct)
 			%IMPLEMENT_TESTCASE returns input arguments for decoupling_RKF_fixed according to specified testcase
 			%	Input:
@@ -114,19 +114,19 @@ classdef decoupling_RKF_fixed_Test_Class
 			% 		solveroptions:		struct with solver options
 			% 		descriptor:			logical indicator if descriptor system is considered
 			for ii = 1:size(testcase_struct.systems, 1)
-				this = this.amend_systems(testcase_struct.systems{ii}{1}, testcase_struct.systems{ii}{2}, testcase_struct.systems{ii}{3}, testcase_struct.systems{ii}{4});
+				this.amend_systems(testcase_struct.systems{ii}{1}, testcase_struct.systems{ii}{2}, testcase_struct.systems{ii}{3}, testcase_struct.systems{ii}{4});
 			end
 			for ii = 1:size(testcase_struct.R_fixed, 1)
-				this = this.amend_R_fixed(testcase_struct.R_fixed{ii}{1}, testcase_struct.R_fixed{ii}{2}, testcase_struct.R_fixed{ii}{3});
+				this.amend_R_fixed(testcase_struct.R_fixed{ii}{1}, testcase_struct.R_fixed{ii}{2}, testcase_struct.R_fixed{ii}{3});
 			end
 			for ii = 1:size(testcase_struct.objectiveoptions, 1)
-				this = this.amend_objectiveoptions(testcase_struct.objectiveoptions{ii, 1}, testcase_struct.objectiveoptions{ii, 2});
+				this.amend_objectiveoptions(testcase_struct.objectiveoptions{ii, 1}, testcase_struct.objectiveoptions{ii, 2});
 			end
 			for ii = 1:size(testcase_struct.solveroptions, 1)
-				this = this.amend_solveroptions(testcase_struct.solveroptions{ii, 1}, testcase_struct.solveroptions{ii, 2});
+				this.amend_solveroptions(testcase_struct.solveroptions{ii, 1}, testcase_struct.solveroptions{ii, 2});
 			end
 			for ii = 1:size(testcase_struct.descriptor, 1)
-				this = this.amend_descriptor(testcase_struct.descriptor(ii));
+				this.amend_descriptor(testcase_struct.descriptor(ii));
 			end
 			[systems, R_fixed, objectiveoptions, solveroptions, descriptor] = this.get_options();
 		end
@@ -147,7 +147,8 @@ classdef decoupling_RKF_fixed_Test_Class
 			solveroptions = this.solveroptions;
 			descriptor = this.descriptor;
 		end
-		function this = reset(this)
+
+		function [] = reset(this)
 			%RESET resets options systems, R_fixed, objectiveoptions, solveroptions, descriptor to default values
 			%	Input:
 			%		this:	instance

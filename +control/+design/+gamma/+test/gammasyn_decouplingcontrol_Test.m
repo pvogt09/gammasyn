@@ -1,11 +1,11 @@
 function [pass] = gammasyn_decouplingcontrol_Test(~)
-	%GAMMASYNTEST test cases for checking gammasyn_decouplingcontrol for correct argument handling
+	%GAMMASYN_DECOUPLINGONTROLTEST test cases for checking gammasyn_decouplingcontrol for correct argument handling
 	%	Input:
 	%		silent:	idicator, if information should be output
 	%	Output:
 	%		pass:	indicator, if test was passed
 	pass = identifier.TestResult.PASSED;
-	
+
 	%% default variables
 	number_controls = 2;
 	number_measurements = 3;
@@ -34,11 +34,11 @@ function [pass] = gammasyn_decouplingcontrol_Test(~)
 	systems_default = systems_default';
 	R_0_default = {randi(10, [number_controls, number_measurements]), randi(10, [number_controls, number_measurements_xdot]), randi(10, [number_controls, number_references])};
 	tf_structure = zeros(number_references, number_references);
-	tf_structure(1:(number_references + 1):number_references^2) = nan;
+	tf_structure(1:(number_references + 1):number_references^2) = NaN;
 	objectiveoptions_default = struct(...
-		'usecompiled',				true,...											% indicator, if compiled functions should be used 
-		'type',						[],...												% type of pole area weighting in objective function
-		'allowvarorder',			false,...											% allow variable state number for different multi models
+		'usecompiled',				configuration.control.design.gamma.hascompiled(),...	% indicator, if compiled functions should be used
+		'type',						[],...													% type of pole area weighting in objective function
+		'allowvarorder',			false,...												% allow variable state number for different multi models
 		'eigenvaluederivative',		GammaEigenvalueDerivativeType.VANDERAA,...
 		'errorhandler',				GammaErrorHandler.ERROR,...
 		'strategy',					GammaSolutionStrategy.SINGLESHOT...
@@ -87,10 +87,10 @@ function [pass] = gammasyn_decouplingcontrol_Test(~)
 	areafun_default = repmat([
 		control.design.gamma.area.Circle(100), control.design.gamma.area.Hyperbola(1, 1)
 	], number_models, 1);
- 	R_nonlin_default = [];
-	number_passed_parameters_default = inf;
+	R_nonlin_default = [];
+	number_passed_parameters_default = Inf;
 	test_object = control.design.gamma.test.gammasyn_decouplingcontrol_Test_Class(systems_default, areafun_default, weights_default, R_fixed_default, R_0_default, solveroptions_default, objectiveoptions_default, R_bounds_default, R_nonlin_default, number_passed_parameters_default);
-	
+
 	%% testcases
 	testparallelfunctions = false;
 	if testparallelfunctions && isempty(gcp('nocreate'))
@@ -110,11 +110,11 @@ function [pass] = gammasyn_decouplingcontrol_Test(~)
 % 	positive_testcases = create_testcase(positive_testcases, {'num', {6}});
 % 	positive_testcases = create_testcase(positive_testcases, {'num', {7}});
 % 	positive_testcases = create_testcase(positive_testcases, {'num', {8}});
-	positive_testcases = create_testcase(positive_testcases, {'num', {4}}, {'fix', {{[], [], []}}}, {'obj', {{'decouplingcontrol', 'tf_structure'}, nan(number_references, number_references)}});
+	positive_testcases = create_testcase(positive_testcases, {'num', {4}}, {'fix', {{[], [], []}}}, {'obj', {{'decouplingcontrol', 'tf_structure'}, NaN(number_references, number_references)}});
 	positive_testcases = create_testcase(positive_testcases, {'fix', {{1, 1, reshape(eye(number_controls*number_measurements), number_controls, number_measurements, number_controls*number_measurements)}; {1, 2, 10*ones(number_controls*number_measurements, 1)}}});
-	positive_testcases = create_testcase(positive_testcases, {'fix', {{1, 1, [1 0 0; 0 0 0]}; {1, 2, 1}}}, {'obj', {{'decouplingcontrol', 'decouplingstrategy'}, GammaDecouplingStrategy.APPROXIMATE; {'decouplingcontrol', 'tf_structure'}, [nan nan; 0 nan]}});
-	positive_testcases = create_testcase(positive_testcases, {'fix', {{1, 1, [1 0 0; 0 0 0]}; {1, 2, 1}}}, {'obj', {{'decouplingcontrol', 'decouplingstrategy'}, GammaDecouplingStrategy.APPROXIMATE_INEQUALITY; {'decouplingcontrol', 'tf_structure'}, [nan nan; 0 nan]}});
-	positive_testcases = create_testcase(positive_testcases, {'bnd', {{1, 1, [1 0 0; 0 0 0]}; {1, 2, 1e6}}}, {'obj', {{'decouplingcontrol', 'decouplingstrategy'}, GammaDecouplingStrategy.APPROXIMATE_INEQUALITY; {'decouplingcontrol', 'tf_structure'}, [nan nan; 0 nan]}});
+	positive_testcases = create_testcase(positive_testcases, {'fix', {{1, 1, [1 0 0; 0 0 0]}; {1, 2, 1}}}, {'obj', {{'decouplingcontrol', 'decouplingstrategy'}, GammaDecouplingStrategy.APPROXIMATE; {'decouplingcontrol', 'tf_structure'}, [NaN, NaN; 0, NaN]}});
+	positive_testcases = create_testcase(positive_testcases, {'fix', {{1, 1, [1 0 0; 0 0 0]}; {1, 2, 1}}}, {'obj', {{'decouplingcontrol', 'decouplingstrategy'}, GammaDecouplingStrategy.APPROXIMATE_INEQUALITY; {'decouplingcontrol', 'tf_structure'}, [NaN, NaN; 0, NaN]}});
+	positive_testcases = create_testcase(positive_testcases, {'bnd', {{1, 1, [1 0 0; 0 0 0]}; {1, 2, 1e6}}}, {'obj', {{'decouplingcontrol', 'decouplingstrategy'}, GammaDecouplingStrategy.APPROXIMATE_INEQUALITY; {'decouplingcontrol', 'tf_structure'}, [NaN, NaN; 0, NaN]}});
 	positive_testcases = create_testcase(positive_testcases, {'nlin', {@nonlin}});
 
 	negative_testcases = [];
@@ -143,12 +143,12 @@ function [pass] = gammasyn_decouplingcontrol_Test(~)
 	for ii = 1:size(positive_testcases, 1)
 		test_object.reset();
 		[systems, areafun, weights, R_fixed, R_0, solveroptions, objectiveoptions, R_bounds, R_nonlin, number_passed_parameters] = test_object.implement_testcase(positive_testcases(ii)); %#ok<ASGLU>
-		
+
 		number_controls_tmp = size(systems(1).B, 2);
 		number_measurements_tmp = size(systems(1).C, 1);
 		number_measurements_xdot_tmp = size(systems(1).C_dot, 1);
 		number_references_tmp = size(systems(1).C_ref, 1);
-		
+
 		codetotest = create_codetotest(number_passed_parameters);
 		test.TestSuite.assertNoException(codetotest, 'any', 'gammasyn_decouplingcontrol must not throw an exception.');
 		ok_positive_testcases(ii) = check_output(Ropt, number_controls_tmp, number_measurements_tmp, number_measurements_xdot_tmp, number_references_tmp);
@@ -165,7 +165,7 @@ function [pass] = gammasyn_decouplingcontrol_Test(~)
 	end
 end
 
-function codetotest = create_codetotest(number_passed_parameters)
+function [codetotest] = create_codetotest(number_passed_parameters)
 	if number_passed_parameters <= 3
 		codetotest = '[Ropt, Jopt, information] = control.design.gamma.gammasyn_decouplingcontrol(systems, areafun, weights);';
 	elseif number_passed_parameters <= 4
@@ -183,7 +183,7 @@ function codetotest = create_codetotest(number_passed_parameters)
 	end
 end
 
-function struct_out = create_testcase(struct_in, varargin)
+function [struct_out] = create_testcase(struct_in, varargin)
 	%CREATE_TESTCASE creates and appends structure specifying the characteristic testcase options different from the default options
 	%	Input:
 	%		struct_in:	structure specifying other testcases. Put [], if this is the first testcase created.
@@ -229,12 +229,12 @@ function struct_out = create_testcase(struct_in, varargin)
 		elseif strcmp(identifier, 'area')
 			struct_out(size_old_struct + 1, 1).areafun = option;
 		else
-			error('Wrong identifier');
+			error('control:gamma:decoupling:test', 'Wrong identifier');
 		end
 	end
 end
 
-function ok = check_output(R, number_controls, number_measurements, number_measurements_xdot, number_references)
+function [ok] = check_output(R, number_controls, number_measurements, number_measurements_xdot, number_references)
 	ok = true;
 	dim_2 = [
 		number_measurements, number_measurements_xdot, number_references
@@ -271,4 +271,3 @@ function [c_R, ceq_R, c_K, ceq_K, c_F, ceq_F, gradc_R, gradceq_R, gradc_K, gradc
 	gradc_F = [];
 	gradceq_F = [];
 end
-

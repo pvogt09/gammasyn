@@ -48,7 +48,7 @@ function [pass, failed_positive_testcases] = decoupling_RKF_fixed_Test(~)
 	);
 	solveroptions_default.Display = 'off';
 	descriptor_default = false;
-	
+
 	test_object = control.design.gamma.test.decoupling_RKF_fixed_Test_Class(systems_default, R_fixed_ext_default, objectiveoptions_default, solveroptions_default, descriptor_default);
 
 	%% testcases
