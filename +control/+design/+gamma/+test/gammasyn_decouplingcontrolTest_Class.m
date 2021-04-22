@@ -1,5 +1,5 @@
-classdef gammasyn_decouplingcontrol_Test_Class < handle
-	%GAMMASYN_DECOUPLINGCONTROL_TEST_CLASS class for handling testcases used for gammasyn_decouplingcontrol_Test
+classdef gammasyn_decouplingcontrolTest_Class < handle
+	%GAMMASYN_DECOUPLINGCONTROLTEST_CLASS class for handling testcases used for gammasyn_decouplingcontrolTest
 
 	properties(SetAccess=protected)
 		% default input arguments for gammasyn_decouplingcontrol
@@ -28,7 +28,7 @@ classdef gammasyn_decouplingcontrol_Test_Class < handle
 	end
 
 	methods
-		function [this] = gammasyn_decouplingcontrol_Test_Class(systems, areafun, weights, R_fixed, R_0, solveroptions, objectiveoptions, R_bounds, R_nonlin, number_passed_parameters)
+		function [this] = gammasyn_decouplingcontrolTest_Class(systems, areafun, weights, R_fixed, R_0, solveroptions, objectiveoptions, R_bounds, R_nonlin, number_passed_parameters)
 			%GAMMASYN_DECOUPLINGCONTROL_TEST_CLASS create new gammasyn_decouplingcontrol_Test_Class
 			%	Input:
 			%		systems:					systems struct

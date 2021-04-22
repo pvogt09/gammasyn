@@ -1,4 +1,4 @@
-function [pass] = gammasyn_decouplingcontrol_Test(~)
+function [pass] = gammasyn_decouplingcontrolTest(~)
 	%GAMMASYN_DECOUPLINGONTROLTEST test cases for checking gammasyn_decouplingcontrol for correct argument handling
 	%	Input:
 	%		silent:	idicator, if information should be output
@@ -89,7 +89,7 @@ function [pass] = gammasyn_decouplingcontrol_Test(~)
 	], number_models, 1);
 	R_nonlin_default = [];
 	number_passed_parameters_default = Inf;
-	test_object = control.design.gamma.test.gammasyn_decouplingcontrol_Test_Class(systems_default, areafun_default, weights_default, R_fixed_default, R_0_default, solveroptions_default, objectiveoptions_default, R_bounds_default, R_nonlin_default, number_passed_parameters_default);
+	test_object = control.design.gamma.test.gammasyn_decouplingcontrolTest_Class(systems_default, areafun_default, weights_default, R_fixed_default, R_0_default, solveroptions_default, objectiveoptions_default, R_bounds_default, R_nonlin_default, number_passed_parameters_default);
 
 	%% testcases
 	testparallelfunctions = false;

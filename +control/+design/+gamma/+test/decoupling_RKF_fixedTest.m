@@ -1,5 +1,5 @@
-function [pass, failed_positive_testcases] = decoupling_RKF_fixed_Test(~)
-	%DECOUPLING_RKF_FIXED_TEST test cases for checking decoupling constraints function
+function [pass, failed_positive_testcases] = decoupling_RKF_fixedTest(~)
+	%DECOUPLING_RKF_FIXEDTEST test cases for checking decoupling constraints function
 	%	Input:
 	%		silent:						idicator, if information should be output
 	%	Output:
@@ -49,7 +49,7 @@ function [pass, failed_positive_testcases] = decoupling_RKF_fixed_Test(~)
 	solveroptions_default.Display = 'off';
 	descriptor_default = false;
 
-	test_object = control.design.gamma.test.decoupling_RKF_fixed_Test_Class(systems_default, R_fixed_ext_default, objectiveoptions_default, solveroptions_default, descriptor_default);
+	test_object = control.design.gamma.test.decoupling_RKF_fixedTest_Class(systems_default, R_fixed_ext_default, objectiveoptions_default, solveroptions_default, descriptor_default);
 
 	%% testcases
 	positive_testcases = [];
@@ -113,7 +113,7 @@ function [pass, failed_positive_testcases] = decoupling_RKF_fixed_Test(~)
 	end
 end
 
-function struct_out = create_testcase(struct_in, varargin)
+function [struct_out] = create_testcase(struct_in, varargin)
 	%CREATE_TESTCASE creates and appends structure specifying the characteristic testcase options different from the default options
 	%	Input:
 	%		struct_in:	structure specifying other testcases. Put [], if this is the first testcase created.
@@ -147,12 +147,12 @@ function struct_out = create_testcase(struct_in, varargin)
 		elseif strcmp(identifier, 'dsc')
 			struct_out(size_old_struct + 1, 1).descriptor = option;
 		else
-			error('Wrong identifier');
+			error('control:gamma:RKF_fixed:test', 'Wrong identifier');
 		end
 	end
 end
 
-function ok = check_outputs(RKF_fixed, RKF_bounds, valid, output_message, number_controls, number_measurements, number_measurements_xdot, number_references)
+function [ok] = check_outputs(RKF_fixed, RKF_bounds, valid, output_message, number_controls, number_measurements, number_measurements_xdot, number_references)
 	%CHECK_OUTPUTS checks dimensions and correctness of output arguments of decoupling_RKF_fixed
 	%	Input:
 	%		RKF_fixed:					cell array of RKF constraints
@@ -175,7 +175,7 @@ function ok = check_outputs(RKF_fixed, RKF_bounds, valid, output_message, number
 	ok = ok_fixed && ok_bounds && ok_valid && ok_message;
 end
 
-function ok = check_fixed(RKF_fixed, number_controls, number_measurements, number_measurements_xdot, number_references)
+function [ok] = check_fixed(RKF_fixed, number_controls, number_measurements, number_measurements_xdot, number_references)
 	%CHECK_FIXED checks dimensions and correctness of RKF_fixed and RKF_bounds
 	%	Input:
 	%		RKF_fixed:					cell array of RKF constraints (or bounds)
@@ -211,8 +211,12 @@ function ok = check_fixed(RKF_fixed, number_controls, number_measurements, numbe
 		if ~isnumeric(A) || ~isnumeric(b)
 			return;
 		end
-		size_A = size(A, 1, 2, 3);
-		size_b = size(b, 1, 2, 3);
+		size_A = [
+			size(A, 1),	size(A, 2),	size(A, 3)
+		];
+		size_b = [
+			size(b, 1),	size(b, 2),	size(b, 3)
+		];
 		if any(size_A(1:2) ~= [number_controls, sizes_RKF_dim2(jj)])
 			return;
 		end

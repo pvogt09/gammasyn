@@ -1,5 +1,5 @@
-classdef decoupling_RKF_fixed_Test_Class < handle
-%DECOUPLING_RKF_FIXED_TEST_CLASS class for handling testcases used for decoupling_RKF_fixed_Test
+classdef decoupling_RKF_fixedTest_Class < handle
+%DECOUPLING_RKF_FIXEDTEST_CLASS class for handling testcases used for decoupling_RKF_fixedTest
 
 	properties(SetAccess=protected)
 		% default input arguments for decoupling_RKF_fixed
@@ -18,8 +18,8 @@ classdef decoupling_RKF_fixed_Test_Class < handle
 	end
 
 	methods
-		function [this] = decoupling_RKF_fixed_Test_Class(systems, R_fixed, objectiveoptions, solveroptions, descriptor)
-			%DECOUPLING_RKF_FIXED_TEST_CLASS create new decoupling_RKF_fixed_Test_Class
+		function [this] = decoupling_RKF_fixedTest_Class(systems, R_fixed, objectiveoptions, solveroptions, descriptor)
+			%DECOUPLING_RKF_FIXEDTEST_CLASS create new decoupling_RKF_fixed_Test_Class
 			%	Input:
 			%		systems:			systems struct
 			% 		R_fixed:			R_fixed cell
