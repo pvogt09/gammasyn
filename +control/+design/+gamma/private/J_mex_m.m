@@ -117,7 +117,7 @@ function [J, gradJ, hessianJ] = J_mex_m(x, system, weight, areafun, dimensions, 
 					J_gain = 0;
 					gradJ_gain = zeros(number_controls, number_measurements + number_references, 1);
 				end
-				J = J + J_eigenvector + J_gain +  + J_decoupling;
+				J = J + J_eigenvector + J_gain + J_decoupling;
 				gradJtemp = gradJtemp + gradJtemp_eigenvector + gradJ_gain;
 				gradJ_row = reshape(sum(gradJtemp, 3), number_controls*(number_measurements + number_references), 1) + gradJ_decoupling;
 				if RKF_fixed_has

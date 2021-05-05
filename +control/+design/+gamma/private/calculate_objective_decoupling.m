@@ -35,6 +35,7 @@ function [J, gradJ, hessJ] = calculate_objective_decoupling(R, ~, F, systems, di
 		C  = systems(ii).C;
 		C_ref = systems(ii).C_ref;
 		D_ref = systems(ii).D_ref;
+		V_ii = V_invariant(ii, :, :, :);
 		for jj = 1:number_references
 			g_structure = tf_structure(:, jj); %#ok<PFBNS>
 			Cjj = C_ref(g_structure == 0, :);
@@ -43,8 +44,8 @@ function [J, gradJ, hessJ] = calculate_objective_decoupling(R, ~, F, systems, di
 			if m == 0
 				continue;
 			end
-			Q = permute(V_invariant(ii, :, 1:m, jj), [2, 3, 1]); %#ok<PFBNS>
-			Q_orth = permute(V_invariant(ii, :, m + 1:end, jj), [2, 3, 1]);
+			Q = reshape(V_ii(1, :, 1:m, jj), number_states, m);
+			Q_orth = reshape(V_ii(1, :, m + 1:end, jj), number_states, number_states - m);
 
 			if hasfeedthrough(jj) %#ok<PFBNS>
 				X_R = [
