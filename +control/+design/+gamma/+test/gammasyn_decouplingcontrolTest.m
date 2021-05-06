@@ -43,6 +43,7 @@ function [pass] = gammasyn_decouplingcontrolTest(~)
 		'errorhandler',				GammaErrorHandler.ERROR,...
 		'strategy',					GammaSolutionStrategy.SINGLESHOT...
 	);
+% 	objectiveoptions_default.usecompiled = false;
 	control_design_types = {
 		GammaDecouplingStrategy.EXACT;
 		GammaDecouplingStrategy.APPROXIMATE;
@@ -72,10 +73,10 @@ function [pass] = gammasyn_decouplingcontrolTest(~)
 		'MaxFunctionEvaluations',		5E3,...
 		'MaxIterations',				5E3,...
 		'MaxSQPIter',					5E3,...
-		'SpecifyObjectiveGradient',		true,...
+		'SpecifyObjectiveGradient',		false,...
 		'SpecifyConstraintGradient',	true,...
-		'SpecifyObjectiveHessian',		true,...
-		'SpecifyConstraintHessian',		true,...
+		'SpecifyObjectiveHessian',		false,...
+		'SpecifyConstraintHessian',		false,...
 		'CheckGradients',				false,...
 		'FunValCheck',					false,...
 		'FiniteDifferenceType',			'forward',...
@@ -97,25 +98,54 @@ function [pass] = gammasyn_decouplingcontrolTest(~)
 		parpool;
 	end
 	positive_testcases = [];
-% 	positive_testcases = create_testcase(positive_testcases, {'sys', {{1, 'E', 1, 2}; {2, 'E', 1, 3}}});
-% 	positive_testcases = create_testcase(positive_testcases, {'sys', {{1, 'E', 1, 0}; {2, 'E', 1, 0}}});
-% 	positive_testcases = create_testcase(positive_testcases, {'sys', {{1, 'E', 1, 0}; {2, 'E', 1, 0}}}, {'bnd', {{1, 1, [1 0 0; 0 0 0]}; {1, 2, 10}}});
-% 	positive_testcases = create_testcase(positive_testcases, {'obj', {{'decouplingcontrol', 'decouplingstrategy'}, GammaDecouplingStrategy.NUMERIC_NONLINEAR_EQUALITY}});
-% 	positive_testcases = create_testcase(positive_testcases, {'obj', {{'decouplingcontrol', 'decouplingstrategy'}, GammaDecouplingStrategy.NUMERIC_NONLINEAR_EQUALITY; {'decouplingcontrol', 'sortingstrategy_decoupling'}, GammaDecouplingconditionSortingStrategy.EIGENVALUETRACKING}});
-% 	positive_testcases = create_testcase(positive_testcases, {'obj', {{'decouplingcontrol', 'decouplingstrategy'}, GammaDecouplingStrategy.NUMERIC_NONLINEAR_EQUALITY; {'decouplingcontrol', 'sortingstrategy_decoupling'}, GammaDecouplingconditionSortingStrategy.EIGENVALUETRACKING}}, {'sol', {'UseParallel', true}});
-% 	positive_testcases = create_testcase(positive_testcases, {'obj', {{'decouplingcontrol', 'decouplingstrategy'}, GammaDecouplingStrategy.MERIT_FUNCTION}});
-% 	positive_testcases = create_testcase(positive_testcases, {'num', {3}});
-% 	positive_testcases = create_testcase(positive_testcases, {'num', {4}});
-% 	positive_testcases = create_testcase(positive_testcases, {'num', {5}});
-% 	positive_testcases = create_testcase(positive_testcases, {'num', {6}});
-% 	positive_testcases = create_testcase(positive_testcases, {'num', {7}});
-% 	positive_testcases = create_testcase(positive_testcases, {'num', {8}});
+	positive_testcases = create_testcase(positive_testcases, {'sys', {{1, 'E', 1, 2}; {2, 'E', 1, 3}}});
+	positive_testcases = create_testcase(positive_testcases, {'sys', {{1, 'E', 1, 0}; {2, 'E', 1, 0}}});
+	positive_testcases = create_testcase(positive_testcases, {'sys', {{1, 'E', 1, 0}; {2, 'E', 1, 0}}}, {'bnd', {{1, 1, [1 0 0; 0 0 0]}; {1, 2, 10}}});
+	positive_testcases = create_testcase(positive_testcases, {'obj', {{'decouplingcontrol', 'decouplingstrategy'}, GammaDecouplingStrategy.NUMERIC_NONLINEAR_EQUALITY}});
+	positive_testcases = create_testcase(positive_testcases, {'obj', {{'decouplingcontrol', 'decouplingstrategy'}, GammaDecouplingStrategy.NUMERIC_NONLINEAR_EQUALITY; {'decouplingcontrol', 'sortingstrategy_decoupling'}, GammaDecouplingconditionSortingStrategy.EIGENVALUETRACKING}});
+	positive_testcases = create_testcase(positive_testcases, {'obj', {{'decouplingcontrol', 'decouplingstrategy'}, GammaDecouplingStrategy.NUMERIC_NONLINEAR_EQUALITY; {'decouplingcontrol', 'sortingstrategy_decoupling'}, GammaDecouplingconditionSortingStrategy.EIGENVALUETRACKING}}, {'sol', {'UseParallel', true}});
+	positive_testcases = create_testcase(positive_testcases, {'obj', {{'decouplingcontrol', 'decouplingstrategy'}, GammaDecouplingStrategy.MERIT_FUNCTION}});
+	positive_testcases = create_testcase(positive_testcases, {'num', {3}});
+	positive_testcases = create_testcase(positive_testcases, {'num', {4}});
+	positive_testcases = create_testcase(positive_testcases, {'num', {5}});
+	positive_testcases = create_testcase(positive_testcases, {'num', {6}});
+	positive_testcases = create_testcase(positive_testcases, {'num', {7}});
+	positive_testcases = create_testcase(positive_testcases, {'num', {8}});
 	positive_testcases = create_testcase(positive_testcases, {'num', {4}}, {'fix', {{[], [], []}}}, {'obj', {{'decouplingcontrol', 'tf_structure'}, NaN(number_references, number_references)}});
 	positive_testcases = create_testcase(positive_testcases, {'fix', {{1, 1, reshape(eye(number_controls*number_measurements), number_controls, number_measurements, number_controls*number_measurements)}; {1, 2, 10*ones(number_controls*number_measurements, 1)}}});
 	positive_testcases = create_testcase(positive_testcases, {'fix', {{1, 1, [1 0 0; 0 0 0]}; {1, 2, 1}}}, {'obj', {{'decouplingcontrol', 'decouplingstrategy'}, GammaDecouplingStrategy.APPROXIMATE; {'decouplingcontrol', 'tf_structure'}, [NaN, NaN; 0, NaN]}});
 	positive_testcases = create_testcase(positive_testcases, {'fix', {{1, 1, [1 0 0; 0 0 0]}; {1, 2, 1}}}, {'obj', {{'decouplingcontrol', 'decouplingstrategy'}, GammaDecouplingStrategy.APPROXIMATE_INEQUALITY; {'decouplingcontrol', 'tf_structure'}, [NaN, NaN; 0, NaN]}});
 	positive_testcases = create_testcase(positive_testcases, {'bnd', {{1, 1, [1 0 0; 0 0 0]}; {1, 2, 1e6}}}, {'obj', {{'decouplingcontrol', 'decouplingstrategy'}, GammaDecouplingStrategy.APPROXIMATE_INEQUALITY; {'decouplingcontrol', 'tf_structure'}, [NaN, NaN; 0, NaN]}});
 	positive_testcases = create_testcase(positive_testcases, {'nlin', {@nonlin}});
+	for n = 1:3
+		for p = 1:n
+			for q = 1:n
+				for r = 1:p
+					for q_dot = 0:n
+						positive_testcases = create_testcase(positive_testcases,	{'sys', {{1, 'E', [], eye(n, n)}; {2, 'E', [], eye(n, n)};
+																							{1, 'A', [], diag(linspace(-5, -1, n))}; {2, 'A', [], diag(linspace(-5, -1, n))};
+																							{1, 'B', [], eye(n, p)}; {2, 'B', [], eye(n, p)};
+																							{1, 'C', [], eye(q, n)}; {2, 'C', [], eye(q, n)};
+																							{1, 'C_dot', [], eye(q_dot, n)}; {2, 'C_dot', [], eye(q_dot, n)};
+																							{1, 'C_ref', [], eye(r, n)}; {2, 'C_ref', [], eye(r, n)};
+																							{1, 'D', [], zeros(q, p)}; {2, 'D', [], zeros(q, p)};
+																							{1, 'D_ref', [], zeros(r, p)}; {2, 'D_ref', [], zeros(r, p)}}},...
+																					{'obj', {{'decouplingcontrol', 'tf_structure'}, diag(nan(1, r))}},...
+																					{'fix', {{1, 1, zeros(p, q, 0)}; {1, 2, zeros(0, 1)};
+																							{2, 1, reshape(eye(p*q_dot, p*q_dot), p, q_dot, p*q_dot)}; {2, 2, zeros(p*q_dot, 1)};
+																							{3, 1, zeros(p, r, 0)}; {3, 2, zeros(0, 1)};
+																							{4, 1, zeros(p, q + q_dot + r, 0)}; {4, 2, zeros(0, 1)}}},...
+																					{'bnd', {{1, 1, zeros(p, q, 0)}; {1, 2, zeros(0, 1)};
+																							{2, 1, zeros(p, q_dot, 0)}; {2, 2, zeros(0, 1)};
+																							{3, 1, zeros(p, r, 0)}; {3, 2, zeros(0, 1)};
+																							{4, 1, zeros(p, q + q_dot + r, 0)}; {4, 2, zeros(0, 1)}}},...
+																					{'init', {{1, [], zeros(p, q)}; {2, [], zeros(p, q_dot)}; {3, [], zeros(p, r)}}});
+																					% '**** WARNING: a matrix is empty in INTS' is no computational problem. It is simply a mathematical fact that is indicated.
+					end
+				end
+			end
+		end
+	end
 
 	negative_testcases = [];
 	negative_testcases = create_testcase(negative_testcases, {'obj', {[], control.design.gamma.GammasynOptions}}); % because tf_structure == [] by default
@@ -141,6 +171,7 @@ function [pass] = gammasyn_decouplingcontrolTest(~)
 	%% test
 	ok_positive_testcases = false(size(positive_testcases, 1), 1);
 	for ii = 1:size(positive_testcases, 1)
+		fprintf('\n========================== \nPositive Testcase %d\n==========================\n', ii);
 		test_object.reset();
 		[systems, areafun, weights, R_fixed, R_0, solveroptions, objectiveoptions, R_bounds, R_nonlin, number_passed_parameters] = test_object.implement_testcase(positive_testcases(ii)); %#ok<ASGLU>
 
@@ -154,6 +185,7 @@ function [pass] = gammasyn_decouplingcontrolTest(~)
 		ok_positive_testcases(ii) = check_output(Ropt, number_controls_tmp, number_measurements_tmp, number_measurements_xdot_tmp, number_references_tmp);
 	end
 	for ii = 1:size(negative_testcases, 1)
+		fprintf('\n========================== \nNegative Testcase %d\n==========================\n', ii);
 		test_object.reset();
 		[systems, areafun, weights, R_fixed, R_0, solveroptions, objectiveoptions, R_bounds, R_nonlin, number_passed_parameters] = test_object.implement_testcase(negative_testcases(ii)); %#ok<ASGLU>
 		codetotest = create_codetotest(number_passed_parameters);
