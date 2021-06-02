@@ -320,7 +320,8 @@ gradientfigure = figure;
 if calculate_hessian
 	hessianfigure = figure;
 end
-opt = control.design.gamma.objectiveoptions_prototype();
+opt = control.design.gamma.GammasynOptions.PROTOTYPE;
+opt = rmfield(opt, 'decouplingcontrol');
 opt.type = [GammaJType.LYAPUNOV];
 opt.usecompiled = false;
 opt.weight = 1;
@@ -464,7 +465,8 @@ gradientfigure = figure;
 if calculate_hessian
 	hessianfigure = figure;
 end
-opt = control.design.gamma.objectiveoptions_prototype();
+opt = control.design.gamma.GammasynOptions.PROTOTYPE;
+opt = rmfield(opt, 'decouplingcontrol');
 opt.type = GammaJType.LINEAR;
 opt.usecompiled = true;
 opt.weight = 1;
