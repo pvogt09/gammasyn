@@ -70,7 +70,7 @@ function [Ropt, Jopt, information] = gammasyn_decouplingcontrol(systems, areafun
 		error('control:design:gamma:input', 'Wrong decoupling controller option.');
 	end
 	if numeric && ~merit && objectiveoptions.decouplingcontrol.sortingstrategy_decoupling == GammaDecouplingconditionSortingStrategy.EIGENVALUETRACKING
-		warning(' Option GammaDecouplingconditionSortingStrategy.EIGENVALUETRACKING is beta.');
+		warning('control:design:gamma:input:sortingstrtegy:beta', 'Option GammaDecouplingconditionSortingStrategy.EIGENVALUETRACKING is beta.');
 		if solveroptions.UseParallel && ~isempty(gcp('nocreate'))
 			pctRunOnAll clear calculate_decoupling_conditions; % clear persistent variables in calculate_decoupling_conditions() and local functions on every parpool-worker
 			if objectiveoptions.usecompiled

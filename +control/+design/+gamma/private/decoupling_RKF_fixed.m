@@ -256,7 +256,7 @@ function [RKF_fixed_out, RKF_bounds_out, valid, message] = decoupling_RKF_fixed(
 	z_comb(abs(z_comb) < eps) = 0;
 
 	if any(any((dim_invariant_mat == number_states) & ~sys_feedthrough_mat))
-		error('RBABS:control:design:gamma:dimensions', 'Dimension m of controlled invariant subspace is equal to the system dimension %d, while there is no feedthrough in the decoupling condition. Specify non-trivial decoupling conditions.', number_states)
+		error('control:design:gamma:dimensions', 'Dimension m of controlled invariant subspace is equal to the system dimension %d, while there is no feedthrough in the decoupling condition. Specify non-trivial decoupling conditions.', number_states)
 	end
 
 	%% Calculate controller and prefilter constraints
