@@ -1,9 +1,12 @@
-function [pass] = gammasynTest(~)
+function [pass] = gammasynTest(silent)
 	%GAMMASYNTEST test cases for checking gammasyn for correct argument handling
 	%	Input:
 	%		silent:	idicator, if information should be output
 	%	Output:
 	%		pass:	indicator, if test was passed
+	if nargin <= 1
+		silent = false;
+	end
 	pass = identifier.TestResult.PASSED;
 	solvers = [
 		optimization.solver.Optimizer.FMINCON;% should be used to check constrained optimization
@@ -86,6 +89,8 @@ function [pass] = gammasynTest(~)
 	nohessianobjective = [false, true];
 	usecompiled = [false, true];
 	preventnan = [false, true];
+	combinations = size(use_measurements_xdot, 2)*size(use_references, 2)*size(areafunflag, 2)*size(areacombine, 2)*size(areasizeflag, 2)*size(allowvarorder, 2)*size(derivativetype, 2)*size(needsderivative, 1)*size(preventnan, 1)*size(solvers, 1)*size(eigenvectorobjective, 2)*size(nohessianobjective, 2)*size(usecompiled, 2)*size(number_states, 2)*size(number_controls, 2)*size(number_measurements, 2)*size(number_measurements_xdot, 2)*size(number_references, 2)*size(descriptor, 2);
+	iter = 0;
 	for gg = 1:size(number_models, 2) %#ok<FORPF> parfor is used in optimization functions and parfor here would prevent parfor in the optimization functions from being parallelized
 		for hh = 1:size(use_measurements_xdot, 2)
 			for ii = 1:size(use_references, 2)
@@ -106,6 +111,7 @@ function [pass] = gammasynTest(~)
 																		for xx = 1:size(number_measurements_xdot, 2)
 																			for yy = 1:size(number_references, 2)
 																				for zz = 1:size(descriptor, 2)
+																					iter = iter + 1;
 																					R_0 = zeros(number_controls(1, vv), number_measurements(1, ww));
 																					K_0 = zeros(number_controls(1, vv), number_measurements_xdot(1, xx));
 																					F_0 = zeros(number_controls(1, vv), number_references(1, yy));
@@ -254,9 +260,9 @@ function [pass] = gammasynTest(~)
 																						'FunctionTolerance',			1E-8,...
 																						'StepTolerance',				1E-8,...
 																						'ConstraintTolerance',			1E-5,...
-																						'MaxFunctionEvaluations',		5,...
-																						'MaxIterations',				5,...
-																						'MaxSQPIter',					5,...
+																						'MaxFunctionEvaluations',		3,...
+																						'MaxIterations',				3,...
+																						'MaxSQPIter',					3,...
 																						'SpecifyObjectiveGradient',		needsderivative(oo, 1),...
 																						'SpecifyObjectiveHessian',		needsderivative(oo, 3) && solver.getHessianSupport(),...
 																						'SpecifyConstraintGradient',	needsderivative(oo, 2),...
@@ -270,6 +276,9 @@ function [pass] = gammasynTest(~)
 																						'MaxTime',						(0.5)...
 																					);
 
+																					if ~silent
+																						fprintf('iteration: %d/%d\t(%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d)\n', iter, combinations, gg, hh, ii, jj, kk, ll, mm, nn, oo, pp, qq, rr, ss, tt, uu, vv, ww, xx, yy, zz);
+																					end
 																					test.TestSuite.assertNoException('[R_opt, J_opt, info] = control.design.gamma.gammasyn(systems, areafun, weight, [], R_init, options, objectiveoptions);', 'control:gammasyn:test', 'gammasyn must not throw an exception.');
 																					if use_measurements_xdot(1, hh)
 																						if use_references(1, ii)
