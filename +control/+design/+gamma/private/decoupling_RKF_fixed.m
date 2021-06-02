@@ -493,7 +493,7 @@ function [Ab, sol, parameters, sol_empty, sol_zero] = solveandcheck(A, x, b, sz)
 	end
 end
 
-function showresults(R, K, F, sol, free_params_raw)
+function [] = showresults(R, K, F, sol, free_params_raw)
 	%SHOWRESULTS displays constrained controller or prefilter matrix
 	%	Input:
 	%		R:						symbolic controller matrix

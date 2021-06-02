@@ -74,7 +74,7 @@ function [J, gradJ, hessJ] = calculate_objective_decoupling(R, ~, F, systems, di
 			end
 			e_F = X_F*f;
 			J_F = e_F.'*e_F;
-			
+
 			J = J + J_R + J_F;
 			if needsgradient
 				gradJ = gradJ + 2*[
