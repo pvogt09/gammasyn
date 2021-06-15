@@ -84,7 +84,7 @@ function [pass] = gammasynTest(silent)
 	info = struct();
 	areafunflag = [0, 1, 2, 3];
 	areacombine = [false, true];
-	areasizeflag = [0, 1, 2];
+	areasizeflag = 0;% TODO: use different sizes of areas [0, 1, 2];
 	eigenvectorobjective = [false, true];
 	nohessianobjective = [false, true];
 	usecompiled = [false, true];
@@ -245,7 +245,12 @@ function [pass] = gammasynTest(silent)
 																						'errorhandler_function',	@control.design.gamma.test.errorhandler_log...
 																					);
 																					objectiveoptions.objective.preventnan = preventnan(1, pp);
-																					objectiveoptions.objective.lyapunov.Q = eye(number_states(1, uu));
+																					if allowvarorder(1, mm) && sample_models == number_models(1, gg)
+																						number_usestates = number_states_var;
+																					else
+																						number_usestates = number_states(1, uu);
+																					end
+																					objectiveoptions.objective.lyapunov.Q = eye(number_usestates);
 																					solver = solvers(qq, 1);
 																					if solver == optimization.solver.Optimizer.IPOPT && (~needsderivative(oo, 1) || ~needsderivative(oo, 2))
 																						continue;
