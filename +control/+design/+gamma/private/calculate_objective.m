@@ -491,6 +491,9 @@ function [hessianJ] = calculate_objective_hesse_helper(number_models, number_sta
 	number_gain_coefficients = number_R_coefficients + number_K_coefficients; % number of parameters
 	hessianJ_RK = zeros(number_gain_coefficients, number_gain_coefficients);
 	for jj = 1:size(objective_type, 1) %#ok<FORPF> number of objective functions is usually smaller than number of models, so parfor is used for models
+		if objective_weight(jj, 1) == 0
+			continue;
+		end
 		Jhesse_objective = NaN(number_gain_coefficients, number_gain_coefficients);
 		for z = 1:number_gain_coefficients % first control parameter
 			for q = 1:number_gain_coefficients % second control parameter
@@ -550,8 +553,8 @@ function [hessianJ] = calculate_objective_hesse_helper(number_models, number_sta
 							continue;
 						end
 						for ll = 1:number_areas_max
-							dfdre = areaval_derivative(kk, 1, 1, ii);
-							dfdim = areaval_derivative(kk, 1, 2, ii);
+							dfdre = areaval_derivative(kk, ll, 1, ii);
+							dfdim = areaval_derivative(kk, ll, 2, ii);
 							d2fdredre = areaval_2_derivative(kk, ll, 1, ii);
 							d2fdimdre = areaval_2_derivative(kk, ll, 2, ii);
 							d2fdredim = areaval_2_derivative(kk, ll, 3, ii);
