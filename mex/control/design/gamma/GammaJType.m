@@ -158,14 +158,13 @@ classdef(Enumeration) GammaJType < Simulink.IntEnumType
 
 	methods(Static=true)
 		function [hashessian] = hashessian(this)
-			%HASHESSIAN return if GammaJType has hessian inforamtion implemented
+			%HASHESSIAN return if GammaJType has hessian information implemented
 			%	Input:
 			%		this:		instance (must be static to work with code generation)
 			%	Output:
 			%		hashessian:	true, if the supplied type supplies hessian information
 			if isscalar(this)
 				hashessian = ~any(this == [
-					GammaJType.KREISSELMEIER;
 					GammaJType.EIGENVALUECONDITION;
 					GammaJType.LYAPUNOV
 				]);
@@ -175,7 +174,6 @@ classdef(Enumeration) GammaJType < Simulink.IntEnumType
 				gain = false(size(t, 1), 1);
 				for ii = 1:size(t, 1)
 					gain(ii, 1) = ~any(t(ii) == [
-						GammaJType.KREISSELMEIER;
 						GammaJType.EIGENVALUECONDITION;
 						GammaJType.LYAPUNOV
 					]);

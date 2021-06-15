@@ -195,6 +195,20 @@ function [J, gradJ, hessianJ] = calculate_objective(areaval, weight, eigenvalue_
 					else
 						Jtempgrad(ii, :, :, :) = 1./sumJ.*Jtemp;
 					end
+					if needshessian
+						if isinf(sumJ)
+							% TODO: replace hessian with limit value, if any exponential function in sum overflows
+							[~, maxidx] = max(tempexp(:));
+							tempexp = zeros(size(areaval));
+							tempexp(maxidx) = 1;
+							Jtemphesse(ii, :, :, :) = tempexp;
+						elseif sumJ == 0 || abs(sumJ) < abs(realmin('double'))
+							% prevent division by 0 if all exponential functions are close to zero
+							Jtemphesse(ii, :, :, :) = 1;
+						else
+							Jtemphesse(ii, :, :, :) = objective_settings_KREISSELMEIER_rho./sumJ.*Jtemp;
+						end
+					end
 				end
 			case GammaJType.EIGENVALUECONDITION
 				Jtemp = areaval_zero;
@@ -312,7 +326,7 @@ function [J, gradJ, hessianJ] = calculate_objective(areaval, weight, eigenvalue_
 % 		end
 		gradJ = calculate_objective_gradient_helper(numthreads, derivative_feedback, number_models, number_states, number_controls, number_measurements, number_measurements_xdot, number_references, number_areas_max, eigenvalue_derivative, eigenvalue_derivative_xdot, areaval_derivative, weight, objective_type, objective_weight, Jtempgrad, options.objective.preventNaN);
 		if needshessian
-			hessianJ = calculate_objective_hesse_helper(number_models, number_states, number_controls, number_measurements, number_measurements_xdot, number_references, number_areas_max, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvalue_2derivative, eigenvalue_2derivative_xdot, eigenvalue_2derivative_mixed, eigenvalue_2derivative_xdot_mixed,areaval_derivative, areval_2_derivative,weight, objective_type, objective_weight, Jtempgrad, Jtemphesse, options.objective.preventNaN);
+			hessianJ = calculate_objective_hesse_helper(number_models, number_states, number_controls, number_measurements, number_measurements_xdot, number_references, number_areas_max, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvalue_2derivative, eigenvalue_2derivative_xdot, eigenvalue_2derivative_mixed, eigenvalue_2derivative_xdot_mixed,areaval_derivative, areval_2_derivative,weight, objective_type, objective_weight, Jtempgrad, Jtemphesse, options.objective.preventNaN, options);
 		end
 	end
 end
@@ -485,7 +499,8 @@ function [gradJ] = calculate_objective_gradient_helper(numthreads, derivative_fe
 	end
 end
 
-function [hessianJ] = calculate_objective_hesse_helper(number_models, number_states, number_controls, number_measurements, number_measurements_xdot, number_references, number_areas_max, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvalue_2derivative, eigenvalue_2derivative_xdot, eigenvalue_2derivative_mixed, eigenvalue_2derivative_xdot_mixed, areaval_derivative, areaval_2_derivative, weight, objective_type, objective_weight, Jtempgrad, Jtemphesse, preventNaN)
+function [hessianJ] = calculate_objective_hesse_helper(number_models, number_states, number_controls, number_measurements, number_measurements_xdot, number_references, number_areas_max, eigenvalue_derivative, eigenvalue_derivative_xdot, eigenvalue_2derivative, eigenvalue_2derivative_xdot, eigenvalue_2derivative_mixed, eigenvalue_2derivative_xdot_mixed, areaval_derivative, areaval_2_derivative, weight, objective_type, objective_weight, Jtempgrad, Jtemphesse, preventNaN, options)
+	objective_settings_KREISSELMEIER_rho = options.objective.kreisselmeier.rho;
 	number_R_coefficients = number_controls*number_measurements;% number of proportional parameters
 	number_K_coefficients = number_controls*number_measurements_xdot; % number of derivative parameters
 	number_gain_coefficients = number_R_coefficients + number_K_coefficients; % number of parameters
@@ -495,6 +510,7 @@ function [hessianJ] = calculate_objective_hesse_helper(number_models, number_sta
 			continue;
 		end
 		Jhesse_objective = NaN(number_gain_coefficients, number_gain_coefficients);
+		iskreisselmeier = objective_type(jj, 1) == GammaJType.KREISSELMEIER;
 		for z = 1:number_gain_coefficients % first control parameter
 			for q = 1:number_gain_coefficients % second control parameter
 				% controller indices
@@ -516,6 +532,7 @@ function [hessianJ] = calculate_objective_hesse_helper(number_models, number_sta
 					t = idivide(tmpQ - 1, number_controls) + 1;
 				end
 				J_2_grad_temp = 0;
+				J_2_grad_temp_kreisselmeier = zeros(2, 1);
 				% TODO: parfor?
 				for ii = 1:number_models
 					for kk = 1:number_states
@@ -579,13 +596,14 @@ function [hessianJ] = calculate_objective_hesse_helper(number_models, number_sta
 								case GammaJType.MAX
 									weighted_Jtemphesse = 0*Jtemphesse(jj, ii, ll, kk);
 								case GammaJType.KREISSELMEIER
-									% TODO: case GammaJType.KREISSELMEIER and EIGENVECTORCONDITION
-									error('control:design:gamma:hessian', 'Hessian for Kreisselmeier objective not yet implemented.');
+									weighted_Jtemphesse = weight(ii, ll)^2*Jtemphesse(jj, ii, ll, kk);
 								case GammaJType.EIGENVALUECONDITION
+									% TODO: case GammaJType.EIGENVALUECONDITION
 									error('control:design:gamma:hessian', 'Hessian for eigenvector matrix condition objective not yet implemented.');
 								case GammaJType.NORMGAIN
 									weighted_Jtemphesse = zeros(size(Jtemphesse(jj, ii, ll, kk)));
 								case GammaJType.LYAPUNOV
+									% TODO: case GammaJType.LYAPUNOV
 									error('control:design:gamma:hessian', 'Hessian for Lyapunov objective not yet implemented.');
 								otherwise
 									weighted_Jtemphesse = zeros(size(Jtemphesse(jj, ii, ll, kk)));
@@ -618,6 +636,26 @@ function [hessianJ] = calculate_objective_hesse_helper(number_models, number_sta
 								end
 							end
 							tmpVal = sum(tmpVal_parts(:));
+							if iskreisselmeier
+								tmpVal_kreisselmeier = [
+									Jtempgrad(jj, ii, ll, kk)*weight(ii, ll)*(dfdre*real(eigDerivative_st) + dfdim*imag(eigDerivative_st));
+									Jtempgrad(jj, ii, ll, kk)*weight(ii, ll)*(dfdre*real(eigDerivative_ij) + dfdim*imag(eigDerivative_ij))
+								];
+								if isinf(tmpVal_kreisselmeier(1)) && tmpVal_kreisselmeier(1) > 0 && isinf(J_2_grad_temp_kreisselmeier(1)) && J_2_grad_temp_kreisselmeier(1) <= 0
+									% prevent -Inf + Inf = NaN
+								elseif isinf(tmpVal_kreisselmeier(1)) && tmpVal_kreisselmeier(1) <= 0 && isinf(J_2_grad_temp_kreisselmeier(1)) && J_2_grad_temp_kreisselmeier(1) > 0
+									% prevent Inf + -Inf = NaN
+								else
+									J_2_grad_temp_kreisselmeier(1) = J_2_grad_temp_kreisselmeier(1) + tmpVal_kreisselmeier(1);
+								end
+								if isinf(tmpVal_kreisselmeier(2)) && tmpVal_kreisselmeier(2) > 0 && isinf(J_2_grad_temp_kreisselmeier(2)) && J_2_grad_temp_kreisselmeier(2) <= 0
+									% prevent -Inf + Inf = NaN
+								elseif isinf(tmpVal_kreisselmeier(2)) && tmpVal_kreisselmeier(2) <= 0 && isinf(J_2_grad_temp_kreisselmeier(2)) && J_2_grad_temp_kreisselmeier(2) > 0
+									% prevent Inf + -Inf = NaN
+								else
+									J_2_grad_temp_kreisselmeier(2) = J_2_grad_temp_kreisselmeier(2) + tmpVal_kreisselmeier(2);
+								end
+							end
 							if isinf(tmpVal) && tmpVal > 0 && isinf(J_2_grad_temp) && J_2_grad_temp <= 0
 								% prevent -Inf + Inf = NaN
 							elseif isinf(tmpVal) && tmpVal <= 0 && isinf(J_2_grad_temp) && J_2_grad_temp > 0
@@ -628,7 +666,7 @@ function [hessianJ] = calculate_objective_hesse_helper(number_models, number_sta
 						end
 					end
 				end
-				Jhesse_objective(z, q) = J_2_grad_temp;
+				Jhesse_objective(z, q) = J_2_grad_temp - J_2_grad_temp_kreisselmeier(1)*J_2_grad_temp_kreisselmeier(2)*objective_settings_KREISSELMEIER_rho;
 			end
 		end
 		if objective_weight(jj, 1) ~= 0

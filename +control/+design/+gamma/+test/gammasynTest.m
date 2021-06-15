@@ -226,13 +226,6 @@ function [pass] = gammasynTest(silent)
 																							objective = objective_types;
 																						end
 																					end
-																					if needsderivative(oo, 3) && solver.getHessianSupport()
-																						if any(objective == GammaJType.KREISSELMEIER)
-																							warning('Kreisselmeier objective does not have an implementation of the hessian matrix.');
-																							objweight(objective == GammaJType.KREISSELMEIER) = [];
-																							objective(objective == GammaJType.KREISSELMEIER) = [];
-																						end
-																					end
 																					prototype = control.design.gamma.GammasynOptions.PROTOTYPE;
 																					objectiveoptions = struct(...
 																						'usecompiled',				usecompiled(1, tt),...% indicator, if compiled functions should be used
