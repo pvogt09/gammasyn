@@ -180,10 +180,10 @@ function [pass] = gammasynTest(silent)
 																							areafun = cat(2, poleareatypes{:});
 																							areafun = {areafun, areafun};
 																						elseif areafunflag(jj) == 2
-																							areafun = cat(2, poleareatypes', poleareafun);
+																							areafun = cat(2, poleareatypes', {poleareafun});
 																							areafun = {areafun, areafun};
 																						elseif areafunflag(jj) == 3
-																							areafun = cat(2, poleareatypes', poleareafun);
+																							areafun = cat(2, poleareatypes', {poleareafun});
 																							areafun = {poleareafun, areafun};
 																						else
 																							error('control:gamma:arguments:test', 'Undefined area type.');
@@ -258,9 +258,9 @@ function [pass] = gammasynTest(silent)
 																						'FunctionTolerance',			1E-8,...
 																						'StepTolerance',				1E-8,...
 																						'ConstraintTolerance',			1E-5,...
-																						'MaxFunctionEvaluations',		3,...
-																						'MaxIterations',				3,...
-																						'MaxSQPIter',					3,...
+																						'MaxFunctionEvaluations',		2,...
+																						'MaxIterations',				2,...
+																						'MaxSQPIter',					2,...
 																						'SpecifyObjectiveGradient',		needsderivative(oo, 1),...
 																						'SpecifyObjectiveHessian',		needsderivative(oo, 3) && solver.getHessianSupport(),...
 																						'SpecifyConstraintGradient',	needsderivative(oo, 2),...
@@ -278,25 +278,29 @@ function [pass] = gammasynTest(silent)
 																						fprintf('iteration: %d/%d\t(%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d)\n', iter, combinations, gg, hh, ii, jj, kk, ll, mm, nn, oo, pp, qq, rr, ss, tt, uu, vv, ww, xx, yy, zz);
 																					end
 																					test.TestSuite.assertNoException('[R_opt, J_opt, info] = control.design.gamma.gammasyn(systems, areafun, weight, [], R_init, options, objectiveoptions);', 'control:gammasyn:test', 'gammasyn must not throw an exception.');
-																					if use_measurements_xdot(1, hh)
-																						if use_references(1, ii)
-																							test.TestSuite.assertSameSize(length(R_opt), 3, 'control:gamma:arguments:test', 'Optimal gain matrix must have %d elements.', 3);
-																							test.TestSuite.assertSameSize(R_opt{1}, R_0, 'control:gamma:arguments:test', 'Optimal proportional gain matrix must have have same dimension as inital proportional gain matrix.');
-																							test.TestSuite.assertSameSize(R_opt{2}, K_0, 'control:gamma:arguments:test', 'Optimal derivative gain matrix must have have same dimension as inital derivative gain matrix.');
-																							test.TestSuite.assertSameSize(R_opt{3}, F_0, 'control:gamma:arguments:test', 'Optimal prefilter matrix must have same dimension as inital prefilter matrix.');
+																					if (number_references(1, yy) > 0 && use_references(1, ii)) || (number_measurements_xdot(1, xx) > 0 && use_measurements_xdot(1, hh))
+																						if use_measurements_xdot(1, hh)
+																							if use_references(1, ii)
+																								test.TestSuite.assertSameSize(length(R_opt), 3, 'control:gamma:arguments:test', 'Optimal gain matrix must have %d elements.', 3);
+																								test.TestSuite.assertSameSize(R_opt{1}, R_0, 'control:gamma:arguments:test', 'Optimal proportional gain matrix must have have same dimension as inital proportional gain matrix.');
+																								test.TestSuite.assertSameSize(R_opt{2}, K_0, 'control:gamma:arguments:test', 'Optimal derivative gain matrix must have have same dimension as inital derivative gain matrix.');
+																								test.TestSuite.assertSameSize(R_opt{3}, F_0, 'control:gamma:arguments:test', 'Optimal prefilter matrix must have same dimension as inital prefilter matrix.');
+																							else
+																								test.TestSuite.assertSameSize(length(R_opt), 2, 'control:gamma:arguments:test', 'Optimal gain matrix must have %d elements.', 2);
+																								test.TestSuite.assertSameSize(R_opt{1}, R_0, 'control:gamma:arguments:test', 'Optimal proportional gain matrix must have have same dimension as inital proportional gain matrix.');
+																								test.TestSuite.assertSameSize(R_opt{2}, K_0, 'control:gamma:arguments:test', 'Optimal derivative gain matrix must have same dimension as inital derivative gain matrix.');
+																							end
 																						else
-																							test.TestSuite.assertSameSize(length(R_opt), 2, 'control:gamma:arguments:test', 'Optimal gain matrix must have %d elements.', 2);
-																							test.TestSuite.assertSameSize(R_opt{1}, R_0, 'control:gamma:arguments:test', 'Optimal proportional gain matrix must have have same dimension as inital proportional gain matrix.');
-																							test.TestSuite.assertSameSize(R_opt{2}, K_0, 'control:gamma:arguments:test', 'Optimal derivative gain matrix must have same dimension as inital derivative gain matrix.');
+																							if use_references(1, ii)
+																								test.TestSuite.assertSameSize(length(R_opt), 3, 'control:gamma:arguments:test', 'Optimal gain matrix must have %d elements.', 3);
+																								test.TestSuite.assertSameSize(R_opt{1}, R_0, 'control:gamma:arguments:test', 'Optimal gain matrix must have have same dimension as inital gain matrix.');
+																								test.TestSuite.assertSameSize(R_opt{3}, F_0, 'control:gamma:arguments:test', 'Optimal prefilter matrix must have same dimension as inital prefilter matrix.');
+																							else
+																								test.TestSuite.assertSameSize(R_opt, R_0, 'control:gamma:arguments:test', 'Optimal gain matrix must have %d elements.');
+																							end
 																						end
 																					else
-																						if use_references(1, ii)
-																							test.TestSuite.assertSameSize(length(R_opt), 3, 'control:gamma:arguments:test', 'Optimal gain matrix must have %d elements.', 3);
-																							test.TestSuite.assertSameSize(R_opt{1}, R_0, 'control:gamma:arguments:test', 'Optimal gain matrix must have have same dimension as inital gain matrix.');
-																							test.TestSuite.assertSameSize(R_opt{3}, F_0, 'control:gamma:arguments:test', 'Optimal prefilter matrix must have same dimension as inital prefilter matrix.');
-																						else
-																							test.TestSuite.assertSameSize(R_opt, R_0, 'control:gamma:arguments:test', 'Optimal gain matrix must have %d elements.');
-																						end
+																						test.TestSuite.assertSameSize(R_opt, R_0, 'control:gamma:arguments:test', 'Optimal gain matrix must have %d elements.');
 																					end
 																					test.TestSuite.assert(~any(isnan(J_opt(:))), 'control:gamma:arguments:test', 'Optimal objective value must not contain NaN.');
 																					test.TestSuite.assertFieldnames(info, optimization.options.Options.OUTPUTPROTOTYPEMULTIPLE, 'control:gamma:arguments:test', 'Fieldnames must match.');
