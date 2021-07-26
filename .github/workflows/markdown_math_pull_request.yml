@@ -51,10 +51,10 @@ jobs:
       # set environment variables for texify
       - name: Set Environment
         run: |
-          echo "{GITHUB_REPOSITORY}={${{ github.repository }}}" >> $GITHUB_ENV
-          echo "{GITHUB_REF}={${{ github.ref }}}" >> $GITHUB_ENV
-          echo "{GITHUB_HEAD_REF}={${{ github.head_ref }}}" >> $GITHUB_ENV
-          echo "{GITHUB_BASE_REF}={${{ github.base_ref }}}" >> $GITHUB_ENV
+          echo "GITHUB_REPOSITORY=${{ github.repository }}" >> $GITHUB_ENV
+          echo "GITHUB_REF=${{ github.ref }}" >> $GITHUB_ENV
+          echo "GITHUB_HEAD_REF=${{ github.head_ref }}" >> $GITHUB_ENV
+          echo "GITHUB_BASE_REF=${{ github.base_ref }}" >> $GITHUB_ENV
       # run tex conversion for pull request
       - name: Texify
         if: ${{ github.event_name == 'pull_request' }}
