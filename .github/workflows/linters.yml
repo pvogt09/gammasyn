@@ -1,6 +1,6 @@
 name: Linting
 on:
-  [push, pull_request]
+  [push, pull_request_target]
 
 jobs:
   lint:
@@ -17,10 +17,12 @@ jobs:
         uses: ludeeus/action-shellcheck@0.3.0
         env:
           SHELLCHECK_OPTS: -e SC2181 -e SC2039 -e SC2162 -e SC1091
+      # set environment variables for eclint
+      - name: Set Environment
+        run: |
+          echo "{EC_FIX_ERROR}={false}" >> $GITHUB_ENV
+          echo "{ALWAYS_LINT_ALL_FILES}={false}" >> $GITHUB_ENV
       - name: EditorConfig
-        env:
-          EC_FIX_ERROR: false
-          ALWAYS_LINT_ALL_FILES: false
         uses: zbeekman/EditorConfig-Action@master
       - name: Set up Python environment
         uses: actions/setup-python@v2
@@ -34,7 +36,7 @@ jobs:
           exclude: ".svn,CVS,.bzr,.hg,.git,lib/optimization/NLOPT/interface/NLOPT/*"
       - name: Update status
         if: ${{ github.event_name == 'pull_request' }}
-        uses: ouzi-dev/commit-status-updater@v1.0.4
+        uses: ouzi-dev/commit-status-updater@v1
         with:
           status: "${{ job.status }}"
           token: ${{ secrets.GITHUB_TOKEN }}
