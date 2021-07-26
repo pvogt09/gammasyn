@@ -8,20 +8,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      # set environment variables for linters
+      - name: Set Environment
+        run: |
+          echo "{EC_FIX_ERROR}={false}" >> $GITHUB_ENV
+          echo "{ALWAYS_LINT_ALL_FILES}={false}" >> $GITHUB_ENV
+          echo "{SHELLCHECK_OPTS}={-e SC2181 -e SC2039 -e SC2162 -e SC1091}" >> $GITHUB_ENV
       - name: YAML Lint
         uses: bewuethr/yamllint-action@v1
         with:
           # file_or_dir: .
           config-file: .github/workflows/linters.yamllint
       - name: shellcheck
-        uses: ludeeus/action-shellcheck@0.3.0
-        env:
-          SHELLCHECK_OPTS: -e SC2181 -e SC2039 -e SC2162 -e SC1091
-      # set environment variables for eclint
-      - name: Set Environment
-        run: |
-          echo "{EC_FIX_ERROR}={false}" >> $GITHUB_ENV
-          echo "{ALWAYS_LINT_ALL_FILES}={false}" >> $GITHUB_ENV
+        uses: ludeeus/action-shellcheck@1
       - name: EditorConfig
         uses: zbeekman/EditorConfig-Action@master
       - name: Set up Python environment
