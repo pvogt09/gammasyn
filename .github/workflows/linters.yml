@@ -20,7 +20,7 @@ jobs:
           # file_or_dir: .
           config-file: .github/workflows/linters.yamllint
       - name: shellcheck
-        uses: ludeeus/action-shellcheck@v1.1.0
+        uses: ludeeus/action-shellcheck@master
       - name: EditorConfig
         uses: zbeekman/EditorConfig-Action@master
       - name: Set up Python environment
@@ -35,7 +35,7 @@ jobs:
           exclude: ".svn,CVS,.bzr,.hg,.git,lib/optimization/NLOPT/interface/NLOPT/*"
       - name: Update status
         if: ${{ github.event_name == 'pull_request' }}
-        uses: ouzi-dev/commit-status-updater@v1.1.2
+        uses: ouzi-dev/commit-status-updater@master
         with:
           status: "${{ job.status }}"
           token: ${{ secrets.GITHUB_TOKEN }}
