@@ -48,14 +48,16 @@ jobs:
         if: ${{ github.event_name == 'pull_request' && (github.base_ref == 'master' || github.base_ref == 'development') }}
         run: |
           rm -rfv docs/svgs/*.svg
+      # set environment variables for texify
+      - name: Set Environment
+        run: |
+          echo "{GITHUB_REPOSITORY}={${{ github.repository }}}" >> $GITHUB_ENV
+          echo "{GITHUB_REF}={${{ github.ref }}}" >> $GITHUB_ENV
+          echo "{GITHUB_HEAD_REF}={${{ github.head_ref }}}" >> $GITHUB_ENV
+          echo "{GITHUB_BASE_REF}={${{ github.base_ref }}}" >> $GITHUB_ENV
       # run tex conversion for pull request
       - name: Texify
         if: ${{ github.event_name == 'pull_request' }}
-        env:
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          GITHUB_REF: ${{ github.ref }}
-          GITHUB_HEAD_REF: ${{ github.head_ref }}
-          GITHUB_BASE_REF: ${{ github.base_ref }}
         run: |
           sh docs/markdown_gitlab2github.sh "$GITHUB_BASE_REF"
       # commit changes for pull request
