@@ -89,7 +89,7 @@ function [pass] = gammasynTest(silent)
 	nohessianobjective = [false, true];
 	usecompiled = [false, true];
 	preventnan = [false, true];
-	combinations = size(use_measurements_xdot, 2)*size(use_references, 2)*size(areafunflag, 2)*size(areacombine, 2)*size(areasizeflag, 2)*size(allowvarorder, 2)*size(derivativetype, 2)*size(needsderivative, 1)*size(preventnan, 1)*size(solvers, 1)*size(eigenvectorobjective, 2)*size(nohessianobjective, 2)*size(usecompiled, 2)*size(number_states, 2)*size(number_controls, 2)*size(number_measurements, 2)*size(number_measurements_xdot, 2)*size(number_references, 2)*size(descriptor, 2);
+	combinations = size(number_models, 2)*size(use_measurements_xdot, 2)*size(use_references, 2)*size(areafunflag, 2)*size(areacombine, 2)*size(areasizeflag, 2)*size(allowvarorder, 2)*size(derivativetype, 2)*size(needsderivative, 1)*size(preventnan, 1)*size(solvers, 1)*size(eigenvectorobjective, 2)*size(nohessianobjective, 2)*size(usecompiled, 2)*size(number_states, 2)*size(number_controls, 2)*size(number_measurements, 2)*size(number_measurements_xdot, 2)*size(number_references, 2)*size(descriptor, 2);
 	iter = 0;
 	for gg = 1:size(number_models, 2) %#ok<FORPF> parfor is used in optimization functions and parfor here would prevent parfor in the optimization functions from being parallelized
 		for hh = 1:size(use_measurements_xdot, 2)
@@ -167,9 +167,9 @@ function [pass] = gammasynTest(silent)
 																						elseif areafunflag(jj) == 1
 																							areafun = cat(2, poleareatypes{:});
 																						elseif areafunflag(jj) == 2
-																							areafun = cat(2, poleareatypes', poleareafun);
+																							areafun = cat(2, poleareatypes', {poleareafun});
 																						elseif areafunflag(jj) == 3
-																							areafun = cat(2, poleareafun, poleareatypes');
+																							areafun = cat(2, {poleareafun}, poleareatypes');
 																						else
 																							error('control:gamma:arguments:test', 'Undefined area type.');
 																						end
