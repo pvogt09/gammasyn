@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # download, configure and build IPOPT mex file with MinGW (in a Msys2 console)
 # configuration
 # version of IPOPT to build
