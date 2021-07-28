@@ -36,6 +36,8 @@ addpath(realpath(fullfile(path, 'lib', 'optimization', 'SLQP-GS')));
 addpath(realpath(fullfile(path, 'lib', 'optimization', 'SC-BFGS')));
 addpath(realpath(fullfile(path, 'lib', 'optimization', 'KSOPT')));
 addpath(realpath(fullfile(path, 'lib', 'optimization', 'SolvOpt')));
+addpath(genpath(realpath(fullfile(path, 'lib', 'optimization', 'minFunc'))));
+addpath(realpath(fullfile(path, 'lib', 'optimization', 'minimize')));
 GUROBI_HOME = getenv('GUROBI_HOME');
 if ~isempty(GUROBI_HOME) && exist(GUROBI_HOME, 'dir')
 	addpath(realpath(fullfile(GUROBI_HOME, 'matlab')));
