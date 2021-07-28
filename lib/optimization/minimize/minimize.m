@@ -145,7 +145,7 @@ while i < abs(length)                                          % while not finis
 		end
 		x3 = x3 * min(RATIO, d3/(d0-realmin));          % slope ratio but max RATIO
 		ls_failed = 0;                              % this line search did not fail
-	  else
+	else
 		X = X0; f0 = F0; df0 = dF0;                     % restore best point so far
 		if ls_failed || i > abs(length)         % line search failed twice in a row
 			break;                           % or we ran out of time, so we give up
