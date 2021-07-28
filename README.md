@@ -1491,9 +1491,15 @@ controllerdata.save();
 after a call to `gammasyn` and expects the controller type used as `OutputFeedback` and the arguments passed to and returned by `gammasyn`.
 It has the ability to plot the closed loop eigenvalues and pole regions with the `plot` method, plot step responses with the `step` method and solve the problem again with possibly different initial values or different optimizers with the `rerun` method.
 
-## Robust Coupling Control
-`gammasyn` is prepared for the synthesis of coupling controllers and will be extended to handle decoupling controllers as well.
-For archieving this a specialized wrapper function named `gammasyn_couplingcontrol` is used that converts the supplied system to the needed description for coupling controller design.
+## Robust Coupling and Decoupling Control
+`gammasyn` is prepared for the synthesis of coupling and decoupling controllers. It is also possible to specify any arbitrary structure that the closed-loop transfer matrices should have. This way, a customized decoupling structure can be applied.
+
+The synthesis of coupling controllers is also known as triangular decoupling and is a weaker form of the well-known diagonal decoupling, which has, e.g., been approached by Falb-Wolovich.
+
+For the purpose of (de)coupling, we use a specialized wrapper function named `gammasyn_couplingcontrol`.
+
+We demonstrate the used methodology in a brief form for the example of a coupling controller. Decoupling controllers or controllers realizing arbitrary transfer structures are synthesized analogously.
+
 The task of a coupling controller is to ensure
 
 <p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/facf054b88ea95ba0659bc479687e5d8.svg?invert_in_darkmode" align=middle width=206.13289124999997pt height=15.936036599999998pt/></p>
@@ -1559,7 +1565,7 @@ Furthermore, the `objectiveoptions` structure has to be extended by the field `c
 	* `GammaCouplingStrategy.APPROXIMATE_INEQUALITY`: Use geometric method but also allow <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/915780e7044163dbc382e1a9f98adea3.svg?invert_in_darkmode" align=middle width=77.47939814999998pt height=24.65753399999998pt/> if <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/498d5adf4367e026127219d184eaaaac.svg?invert_in_darkmode" align=middle width=77.47939814999998pt height=24.65753399999998pt/> is not solvable and formulate inequality constraint system with tolerance.
 	* `GammaCouplingStrategy.NUMERIC_NONLINEAR_EQUALITY`: directly use coupling conditions as non-linear equality constraints of the form `ceq(x) = 0` with `x` denoting the vector of optimization variables
 	* `GammaCouplingStrategy.NUMERIC_NONLINEAR_INEQUALITY`: directly use coupling conditions as non-linear inequality constraints of the form `c(x) < tolerance_coupling` and `-c(x) < tolerance_coupling` with `x` denoting the vector of optimization variables
-* `couplingconditions`: (`uint32`) the number of coupling conditions specified in <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/fc8611f3dc01d5ede1c5fd180b2e52f2.svg?invert_in_darkmode" align=middle width=27.72499289999999pt height=22.465723500000017pt/>
+* `tf_structure`: (`double`) array that indicates the desired closed-loop transfer matrix structure. `0` indicates a zero element, `NaN` indicates an unconstrained element.
 * `tolerance_coupling`: (`double`) the tolerance when using `GammaCouplingStrategy.NUMERIC_NONLINEAR_INEQUALITY`
 * `solvesymbolic`: (`logical`) only for `EXACT` and `APPROXIMATE`: use symbolic toolbox if available to increase precision of obtained equality constraints.
 * `round_equations_to_digits`: (`double`, whole number) only for `EXACT` and `APPROXIMATE`: decimal places to which linear equality constraints are rounded in case of numerical precision difficulties. Use `NaN` if no rounding is desired.
