@@ -13,7 +13,7 @@ jobs:
         run: |
           echo "EC_FIX_ERROR=false" >> $GITHUB_ENV
           echo "ALWAYS_LINT_ALL_FILES=false" >> $GITHUB_ENV
-          echo "SHELLCHECK_OPTS=-e SC2181 -e SC2039 -e SC2162 -e SC1091" >> $GITHUB_ENV
+          echo "SHELLCHECK_OPTS=-e SC2181 -e SC2039 -e SC3037 -e SC2162 -e SC1091" >> $GITHUB_ENV
       - name: YAML Lint
         uses: bewuethr/yamllint-action@v1
         with:
@@ -21,8 +21,6 @@ jobs:
           config-file: .github/workflows/linters.yamllint
       - name: shellcheck
         uses: ludeeus/action-shellcheck@master
-        env:
-          SHELLCHECK_OPTS: -e SC2181 -e SC2039 -e SC2162 -e SC1091
       - name: EditorConfig
         uses: zbeekman/EditorConfig-Action@master
       - name: Set up Python environment
