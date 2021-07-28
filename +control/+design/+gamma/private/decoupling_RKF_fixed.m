@@ -200,12 +200,12 @@ function [RKF_fixed_out, RKF_bounds_out, valid, message] = decoupling_RKF_fixed(
 	[F_fixed_X, F_fixed_z] = convert_hadamard2vectorized(R_fixed_ext{3});
 	[RKF_fixed_X, RKF_fixed_z] = convert_hadamard2vectorized(R_fixed_ext{4});
 	combined_constraints = ~isempty(RKF_fixed_X);
-	
+
 	X_R_cell_cat = cat(1, X_R_cell{:});
 	z_R_cell_cat = cat(1, z_R_cell{:});
 	X_F_cell_cat = cat(1, Q_orth_T_B_cell{:});
 	rows_X_F = size(X_F_cell_cat, 1);
-	
+
 	if control_design_type == GammaDecouplingStrategy.APPROXIMATE_INEQUALITY
 		X_R = X_R_cell_cat;
 		z_R = z_R_cell_cat;
@@ -238,7 +238,7 @@ function [RKF_fixed_out, RKF_bounds_out, valid, message] = decoupling_RKF_fixed(
 	X_F(abs(X_F) < eps) = 0;
 	X_comb(abs(X_comb) < eps) = 0;
 	z_comb(abs(z_comb) < eps) = 0;
-	
+
 	[X_R, z_R] = reducedecolon(X_R, z_R);
 	[X_F, z_F] = reducedecolon(X_F, z_F);
 	[X_comb, z_comb] = reducedecolon(X_comb, z_comb);
@@ -263,7 +263,7 @@ function [RKF_fixed_out, RKF_bounds_out, valid, message] = decoupling_RKF_fixed(
 			z_F + objectiveoptions.decouplingcontrol.tolerance_prefilter;
 			-z_F + objectiveoptions.decouplingcontrol.tolerance_prefilter
 		], [number_controls, number_references]);
-	
+
 		R_fixed = R_fixed_ext{1};
 		K_fixed = R_fixed_ext{2};
 		F_fixed = R_fixed_ext{3};
@@ -469,9 +469,9 @@ function [Ab, sol, parameters, sol_empty, sol_zero] = solveandcheck(A, x, b, sz)
 		];
 		zero_params = all(comb == 0, 2);
 		zero_reshape = reshape(zero_params, sz);
-		sol_zero = all(zero_reshape, 1);		
+		sol_zero = all(zero_reshape, 1);
 	end
-	
+
 	function [A_rref, b_rref, sol_empty] = checkempty(Ab_mat)
 		Ab_rref = rref(Ab_mat);
 		Ab_rref(all(Ab_rref == 0, 2), :) = [];
@@ -517,7 +517,7 @@ function showresults(R, K, F, sol, free_params_raw)
 	msg3 = '--------There are no free parameters for the prefilter.-------';
 	msg4 = '----There are no controller and prefilter constraints.--------';
 	msg5 = '-----Possible controller and prefilter matrices are:----------';
-	
+
 	if ~isempty(sol)
 		[number_controls, number_measurements] = size(R);
 		number_measurements_xdot = size(K, 2);
