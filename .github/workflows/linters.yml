@@ -21,6 +21,8 @@ jobs:
           config-file: .github/workflows/linters.yamllint
       - name: shellcheck
         uses: ludeeus/action-shellcheck@master
+        env:
+          SHELLCHECK_OPTS: -e SC2181 -e SC2039 -e SC2162 -e SC1091
       - name: EditorConfig
         uses: zbeekman/EditorConfig-Action@master
       - name: Set up Python environment
