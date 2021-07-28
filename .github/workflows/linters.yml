@@ -21,6 +21,8 @@ jobs:
           config-file: .github/workflows/linters.yamllint
       - name: shellcheck
         uses: ludeeus/action-shellcheck@master
+        with:
+          severity: warning
       - name: EditorConfig
         uses: zbeekman/EditorConfig-Action@master
       - name: Set up Python environment
