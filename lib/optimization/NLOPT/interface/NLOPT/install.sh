@@ -221,7 +221,7 @@ else
 	sed -i "s,@COIN_CXX_IS_CL_TRUE@,," "$directoryMEX/Makefile"
 	sed -i "s,@COIN_CXX_IS_CL_FALSE@,#," "$directoryMEX/Makefile"
 	sed -i "s,@MATLAB_CYGPATH_W@,cygpath -w," "$directoryMEX/Makefile"
-	if [ ! "$static" == "" ]; then
+	if [ ! "$static" = "" ]; then
 		sed -i "s,@MEX_STATIC_FALSE@,#," "$directoryMEX/Makefile"
 		sed -i "s,@MEX_STATIC_TRUE@,," "$directoryMEX/Makefile"
 	else
