@@ -234,6 +234,14 @@ function [J, gradJ, hessianJ] = calculate_objective(areaval, weight, eigenvalue_
 						Jtemphesse(ii, :, :, :) = zeros(size(areaval));
 					end
 				end
+			case GammaJType.DECOUPLING
+				Jtemp = areaval_zero;
+				if needsgradient
+					Jtempgrad(ii, :, :, :) = 0*Jtemp;
+					if needshessian
+						Jtemphesse(ii, :, :, :) = zeros(size(areaval));
+					end
+				end
 			otherwise
 				Jtemp = areaval_zero;
 				if needsgradient
@@ -605,6 +613,8 @@ function [hessianJ] = calculate_objective_hesse_helper(number_models, number_sta
 								case GammaJType.LYAPUNOV
 									% TODO: case GammaJType.LYAPUNOV
 									error('control:design:gamma:hessian', 'Hessian for Lyapunov objective not yet implemented.');
+								case GammaJType.DECOUPLING
+									weighted_Jtemphesse = zeros(size(Jtemphesse(jj, ii, ll, kk)));
 								otherwise
 									weighted_Jtemphesse = zeros(size(Jtemphesse(jj, ii, ll, kk)));
 							end

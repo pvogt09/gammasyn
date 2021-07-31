@@ -59,7 +59,7 @@ function [Ropt, Jopt, information] = gammasyn(systems, areafun, weights, R_fixed
 				[~, ~, ~, ~, ~, ~, number_references] = checkandtransformsystems(systems);
 				decouplingoptions = checkobjectiveoptions_decoupling(number_references, objectiveoptions.decouplingcontrol);
 				if decouplingoptions.decouplingstrategy ~= GammaDecouplingStrategy.NONE
-					systemoptions.decouplingcontrol = GammaDecouplingStrategy_needsdecouplingconditions(decouplingoptions.decouplingstrategy);
+					systemoptions.decouplingcontrol = GammaDecouplingStrategy_needsdecouplingconditions(decouplingoptions.decouplingstrategy) || decouplingoptions.decouplingstrategy == GammaDecouplingStrategy.MERIT_FUNCTION;
 					if systemoptions.decouplingcontrol
 						systemoptions.tf_structure = decouplingoptions.tf_structure;
 						systemoptions.usereferences = true;

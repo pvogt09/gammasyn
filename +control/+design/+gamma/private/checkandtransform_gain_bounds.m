@@ -229,10 +229,15 @@ function [R_bounds, bound_system, bound_border, rg_bounds, hasbounds_R, onlyboun
 		if all(sum(bound_positions, 2) == 1)
 			for ii = 1:size(R_bounds{1}, 3) %#ok<FORPF> no parfor because of sub2ind
 				[idxrow, idxcol] = find(R_bounds{1}(:, :, ii), 1, 'first');
+				bnd = R_bounds{2}(ii, 1)/R_bounds{1}(idxrow, idxcol, ii);
 				if R_bounds{1}(idxrow, idxcol, ii) > 0
-					R_bounds_upper(sub2ind(size(R_bounds{1}), idxrow, idxcol), 1) = R_bounds{2}(ii, 1)/R_bounds{1}(idxrow, idxcol, ii);
+					if ~(isinf(bnd) && bnd > 0)
+						R_bounds_upper(sub2ind(size(R_bounds{1}), idxrow, idxcol), 1) = bnd;
+					end
 				else
-					R_bounds_lower(sub2ind(size(R_bounds{1}), idxrow, idxcol), 1) = R_bounds{2}(ii, 1)/R_bounds{1}(idxrow, idxcol, ii);
+					if ~(isinf(bnd) && bnd < 0)
+						R_bounds_lower(sub2ind(size(R_bounds{1}), idxrow, idxcol), 1) = bnd;
+					end
 				end
 			end
 			R_bounds = {reshape(R_bounds_lower, number_controls, number_measurements), reshape(R_bounds_upper, number_controls, number_measurements)};

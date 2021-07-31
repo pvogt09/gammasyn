@@ -9,7 +9,7 @@ function [config] = constant(config)
 	end
 	config = isset(config, 'max_system_states',							20);
 	config = isset(config, 'max_system_controls',						10);
-	config = isset(config, 'max_system_measurements',					10);
+	config = isset(config, 'max_system_measurements',					20);
 	config = isset(config, 'max_system_references',						10);
 	config = isset(config, 'max_number_of_systems',						1000);
 	config = isset(config, 'max_number_of_objective_functions',			max([10, length(enumeration('GammaJType')) + 1]));

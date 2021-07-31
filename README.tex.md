@@ -1372,7 +1372,7 @@ is to be used, the following options are to be set:
 | --- | --- |
 | SINGLESHOT | solve pole region assignment problem "as is" |
 | FEASIBILITYITERATION | solve a feasibility problem before solving the actual problem and use the solution of the feasibility problem as initial value |
-| FEASIBILITYITERATION_COUPLING | solve a feasibility problem with only coupling conditions before solving the actual problem and use the solution of the feasibility problem as initial value |
+| FEASIBILITYITERATION_DECOUPLING | solve a feasibility problem with only decoupling conditions before solving the actual problem and use the solution of the feasibility problem as initial value |
 
 
 #### Error handling
@@ -1609,12 +1609,12 @@ controllerdata.save();
 after a call to `gammasyn` and expects the controller type used as `OutputFeedback` and the arguments passed to and returned by `gammasyn`.
 It has the ability to plot the closed loop eigenvalues and pole regions with the `plot` method, plot step responses with the `step` method and solve the problem again with possibly different initial values or different optimizers with the `rerun` method.
 
-## Robust Coupling and Decoupling Control
-`gammasyn` is prepared for the synthesis of coupling and decoupling controllers. It is also possible to specify any arbitrary structure that the closed-loop transfer matrices should have. This way, a customized decoupling structure can be applied.
+## Robust Structure Assignment, Coupling and Decoupling Control
+`gammasyn` is prepared for the synthesis of coupling and decoupling controllers. It is also possible to specify any arbitrary structure that the closed-loop transfer matrices should have. This way, a customized partial decoupling structure can be applied.
 
 The synthesis of coupling controllers is also known as triangular decoupling and is a weaker form of the well-known diagonal decoupling, which has, e.g., been approached by Falb-Wolovich.
 
-For the purpose of (de)coupling, we use a specialized wrapper function named `gammasyn_couplingcontrol`.
+For the purpose of (de)coupling, we use a specialized wrapper function named `gammasyn_decouplingcontrol`.
 
 We demonstrate the used methodology in a brief form for the example of a coupling controller. Decoupling controllers or controllers realizing arbitrary transfer structures are synthesized analogously.
 
@@ -1674,9 +1674,15 @@ are obtained.
 Here, $`m`$ denotes the dimension of the output nulling space of the system $`(A, B, C_\mathrm{ref,2}, D_\mathrm{ref,2})`$.
 In case of $`D_\mathrm{ref,2} = 0`$, this space is equivalent to the largest controlled invariant subspace within the kernel of $`C_\mathrm{ref,2}`$.
 
-The conditions found can directly be included in the synthesis process using the built-in non-linear constraint function. Alternatively, using geometric concepts, the coupling conditions can be transformed to linear equality constraints which reduce the set of feasible controllers and prefilters.
+The above conditions can directly be included in the synthesis process using the built-in non-linear constraint function (option `GammaDecouplingStrategy.NUMERIC_NONLINEAR_EQUALITY` or `GammaDecouplingStrategy.NUMERIC_NONLINEAR_INEQUALITY`). Alternatively, using geometric concepts, the coupling conditions can be transformed to linear matrix equality constraints of the form
+```math
+	\begin{aligned}
+		X \cdot \begin{bmatrix} \mathrm{vec}(R) \\ \mathrm{vec}(K) \\ \mathrm{vec}(F) \end{bmatrix} = z
+	\end{aligned}
+```
+which reduce the set of feasible controllers and prefilters (option `GammaDecouplingStrategy.EXACT`, `GammaDecouplingStrategy.APPROXIMATE` or `GammaDecouplingStrategy.APPROXIMATE_INEQUALITY`).It is possible to let gammasyn transform these equality constraints into a quadratic objective function which is minimized during optimization (option `GammaDecouplingStrategy.MERIT_FUNCTION`).
 
-The coupling control design implemented in `gammasyn` is only available for the design of a complete state feedback, i.e. $`C`$ must be chosen as identity matrix.
+If any structure assignment should be performed using an output feedback, this must be allowed in the options (option `allowoutputdecoupling`).
 
 ### Robust DAE synthesis
 The methodology for designing robust coupling controllers using pole region assignment, can immediately be transferred to systems in differential-algebraic form (DAE systems, descriptor systems).
@@ -1684,24 +1690,28 @@ The methodology for designing robust coupling controllers using pole region assi
 Therefore, the systems handed over are transformed using a singular value decomposition of the descriptor matrix $`E`$ in order to obtain state space systems with feedthrough.
 For these, a robust coupling control best possibly fulfilling the algebraic equations is calculated.
 
+`gammasyn_decouplingcontrol` checks the descriptor matrix $`E`$ to choose between a regular structure assignment and DAE design.
+
 ### Usage
-To perform the coupling control synthesis or robust DAE synthesis, `gammasyn_couplingcontrol` has to be used.
-Furthermore, the `objectiveoptions` structure has to be extended by the field `couplingcontrol` which in turn is a structure containing the following fields
-* `couplingstrategy`: the coupling design method, an instance of `GammaCouplingStrategy`.
-	* `GammaCouplingStrategy.EXACT`: Only allow $`G_{21}(s) = 0`$ and use geometric methods.
-	* `GammaCouplingStrategy.APPROXIMATE`: Use geometric method but also allow $`G_{21}(s) \approx 0`$ if $`G_{21}(s) = 0`$ is not solvable.
-	* `GammaCouplingStrategy.APPROXIMATE_INEQUALITY`: Use geometric method but also allow $`G_{21}(s) \approx 0`$ if $`G_{21}(s) = 0`$ is not solvable and formulate inequality constraint system with tolerance.
-	* `GammaCouplingStrategy.NUMERIC_NONLINEAR_EQUALITY`: directly use coupling conditions as non-linear equality constraints of the form `ceq(x) = 0` with `x` denoting the vector of optimization variables
-	* `GammaCouplingStrategy.NUMERIC_NONLINEAR_INEQUALITY`: directly use coupling conditions as non-linear inequality constraints of the form `c(x) < tolerance_coupling` and `-c(x) < tolerance_coupling` with `x` denoting the vector of optimization variables
-* `tf_structure`: (`double`) array that indicates the desired closed-loop transfer matrix structure. `0` indicates a zero element, `NaN` indicates an unconstrained element.
-* `tolerance_coupling`: (`double`) the tolerance when using `GammaCouplingStrategy.NUMERIC_NONLINEAR_INEQUALITY`
+To perform structure assignment or robust DAE synthesis, `gammasyn_decouplingcontrol` has to be used.
+Furthermore, the `objectiveoptions` structure has to be extended by the field `decouplingcontrol` which in turn is a structure containing the following fields
+* `decouplingstrategy`: the decoupling design method, an instance of `GammaDecouplingStrategy`.
+	* `GammaDecouplingStrategy.EXACT`: Only allow (*) $`G_{21}(s) = 0`$ and use geometric methods.
+	* `GammaDecouplingStrategy.APPROXIMATE`: Use geometric method but also allow (*) $`G_{21}(s) \approx 0`$ if (\*) $`G_{21}(s) = 0`$ is not solvable.
+	* `GammaDecouplingStrategy.APPROXIMATE_INEQUALITY`: Use geometric method and transform linear equality constraints to inequality constraint system with tolerance.
+	* `GammaDecouplingStrategy.MERIT_FUNCTION`: Use geometric method and transform matrix equality constraints to a quadratic objective function which is subject to minimization during the optimization.
+	* `GammaDecouplingStrategy.NUMERIC_NONLINEAR_EQUALITY`: directly use decoupling conditions as non-linear equality constraints of the form `ceq(x) = 0` with `x` denoting the vector of optimization variables
+	* `GammaDecouplingStrategy.NUMERIC_NONLINEAR_INEQUALITY`: directly use decoupling conditions as non-linear inequality constraints of the form `c(x) < tolerance_decoupling` and `-c(x) < tolerance_decoupling` with `x` denoting the vector of optimization variables
+* `tf_structure`: (`number_references X number_references double`) array that indicates the desired closed-loop transfer matrix structure. `0` indicates a zero element, `NaN` indicates an unconstrained element.
+* `tolerance_decoupling`: (`double`) the tolerance when using `GammaDecouplingStrategy.NUMERIC_NONLINEAR_INEQUALITY`
 * `solvesymbolic`: (`logical`) only for `EXACT` and `APPROXIMATE`: use symbolic toolbox if available to increase precision of obtained equality constraints.
 * `round_equations_to_digits`: (`double`, whole number) only for `EXACT` and `APPROXIMATE`: decimal places to which linear equality constraints are rounded in case of numerical precision difficulties. Use `NaN` if no rounding is desired.
-* `weight_coupling`: (`double`, nonnegative) weighting factor for nonlinear coupling conditions to increase/decrease importance in comparison with pole region constraints
+* `weight_decoupling`: (`double`, nonnegative) weighting factor for nonlinear decoupling conditions to increase/decrease importance in comparison with pole region constraints
 * `weight_prefilter`: (`double`, nonnegative) weighting factor for prefilter regularity condition to increase/decrease importance in comparison with pole region constraints
-* `allowoutputcoupling`: (`logical`) allow output feedback form for coupling control
+* `allowoutputdecoupling`: (`logical`) allow output feedback form for structure assignment
+* `sortingstrategy_decoupling`: (`GammaDecouplingconditionSortingStrategy.MINIMUMNORM` or `GammaDecouplingconditionSortingStrategy.EIGENVALUETRACKING`) only for `NUMERIC_NONLINEAR`. This parameter specifies how the eigenvalues and eigenvectors are sorted in each optimization step in order to calculate the new nonlinear constraints. Eigenvalues can be tracked approximately in the complex plane using their gradient (beta) or eigenvalues can be sorted such that the resulting norm of the nonlinear constraint violation is as low as possible. The latter is a combination problem.
 
-`gammasyn_couplingcontrol` checks the descriptor matrix $`E`$ to choose between a regular coupling control design and DAE design.
+(*) The condition for $`G_{21}(s)`$ is an example for the coupling control case. In case of general structure assignment, this condition differs in its particular structure.
 
 ## Examples
 

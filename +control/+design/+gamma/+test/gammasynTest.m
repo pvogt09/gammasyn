@@ -66,6 +66,7 @@ function [pass] = gammasynTest(silent)
 	weight = 0.001;
 	objective_types = enumeration('GammaJType');
 	objective_types_cell = num2cell(objective_types);
+	objective_types_cell(objective_types == GammaJType.DECOUPLING, :) = []; % has its own test
 	objective_types_cell(objective_types == GammaJType.LYAPUNOV, :) = [];
 	objective_types_cell(objective_types == GammaJType.EIGENVALUECONDITION, :) = [];
 	objective_types_cell(objective_types == GammaJType.LOG, :) = [];% TODO: can not be used unsupervised automatically because J == Inf

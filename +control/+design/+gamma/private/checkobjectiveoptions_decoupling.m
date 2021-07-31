@@ -30,7 +30,7 @@ function [decouplingoptions] = checkobjectiveoptions_decoupling(number_reference
 			end
 			if ~isfield(decouplingoptions, 'sortingstrategy_decoupling')
 				% use default sorting strategy for decoupling conditions
-				decouplingoptions.decouplingstrategy = [];
+				decouplingoptions.sortingstrategy_decoupling = [];
 			end
 			if ~isfield(decouplingoptions, 'tolerance_decoupling')
 				decouplingoptions.tolerance_decoupling = decoupling_prototype.tolerance_decoupling;
@@ -58,14 +58,14 @@ function [decouplingoptions] = checkobjectiveoptions_decoupling(number_reference
 	if ~isstruct(decouplingoptions)
 		error('control:design:gamma', 'Options for decoupling control must be of type struct.');
 	end
-	if size(decouplingoptions.tf_structure, 1) ~= number_references && size(decouplingoptions.tf_structure, 2) ~= number_references
+	if size(decouplingoptions.tf_structure, 1) ~= number_references || size(decouplingoptions.tf_structure, 2) ~= number_references
 		error('control:design:gamma', 'tf_structure must be a %dX%d matrix.', number_references, number_references);
-	end
-	if sum(isnan(decouplingoptions.tf_structure(:))) + sum(decouplingoptions.tf_structure(:) == 0) ~= numel(decouplingoptions.tf_structure)
-		error('control:design:gamma', 'tf_structure must only contains 0 and NaN elements.');
 	end
 	if size(decouplingoptions.tf_structure, 3) > 1
 		error('control:design:gamma', 'Stacking of tf_structures in the third dimension is not allowed.');
+	end
+	if sum(isnan(decouplingoptions.tf_structure(:))) + sum(decouplingoptions.tf_structure(:) == 0) ~= number_references^2
+		error('control:design:gamma', 'tf_structure must only contains 0 and NaN elements.');
 	end
 	if isempty(decouplingoptions.decouplingstrategy)
 		if any(decouplingoptions.tf_structure(:) == 0)
