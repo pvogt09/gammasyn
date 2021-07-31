@@ -1266,7 +1266,7 @@ is to be used, the following options are to be set:
 | --- | --- |
 | SINGLESHOT | solve pole region assignment problem "as is" |
 | FEASIBILITYITERATION | solve a feasibility problem before solving the actual problem and use the solution of the feasibility problem as initial value |
-| FEASIBILITYITERATION_COUPLING | solve a feasibility problem with only coupling conditions before solving the actual problem and use the solution of the feasibility problem as initial value |
+| FEASIBILITYITERATION_DECOUPLING | solve a feasibility problem with only decoupling conditions before solving the actual problem and use the solution of the feasibility problem as initial value |
 
 
 #### Error handling
@@ -1297,6 +1297,8 @@ The optimizers marked with (*) are included in this repository.
 | FMINSEARCH     |   |   | Matlab                                                 | prop.      |  |
 | GA             | * | * | Matlab, Global Optimization Toolbox                    | prop.      |  |
 | KSOPT          | * | * | https://github.com/madebr/pyOpt                        | LGPL       |  |
+| MINFUNC        |   |   | https://www.cs.ubc.ca/~schmidtm/Software/minFunc.html  | FreeBSD    |  |
+| MINIMIZE       |   |   | http://learning.eng.cam.ac.uk/carl/code/minimize/      | MIT Lizenz |  |
 | NLOPTUNC       |   |   | https://nlopt.readthedocs.io/en/latest/                | MIT Lizenz |  |
 | NLOPTCON       | * |   | https://nlopt.readthedocs.io/en/latest/                | MIT Lizenz |  |
 | NLOPTUNCGLOBAL |   |   | https://nlopt.readthedocs.io/en/latest/                | MIT Lizenz |  |
@@ -1491,9 +1493,15 @@ controllerdata.save();
 after a call to `gammasyn` and expects the controller type used as `OutputFeedback` and the arguments passed to and returned by `gammasyn`.
 It has the ability to plot the closed loop eigenvalues and pole regions with the `plot` method, plot step responses with the `step` method and solve the problem again with possibly different initial values or different optimizers with the `rerun` method.
 
-## Robust Coupling Control
-`gammasyn` is prepared for the synthesis of coupling controllers and will be extended to handle decoupling controllers as well.
-For archieving this a specialized wrapper function named `gammasyn_couplingcontrol` is used that converts the supplied system to the needed description for coupling controller design.
+## Robust Structure Assignment, Coupling and Decoupling Control
+`gammasyn` is prepared for the synthesis of coupling and decoupling controllers. It is also possible to specify any arbitrary structure that the closed-loop transfer matrices should have. This way, a customized partial decoupling structure can be applied.
+
+The synthesis of coupling controllers is also known as triangular decoupling and is a weaker form of the well-known diagonal decoupling, which has, e.g., been approached by Falb-Wolovich.
+
+For the purpose of (de)coupling, we use a specialized wrapper function named `gammasyn_decouplingcontrol`.
+
+We demonstrate the used methodology in a brief form for the example of a coupling controller. Decoupling controllers or controllers realizing arbitrary transfer structures are synthesized analogously.
+
 The task of a coupling controller is to ensure
 
 <p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/facf054b88ea95ba0659bc479687e5d8.svg?invert_in_darkmode" align=middle width=206.13289124999997pt height=15.936036599999998pt/></p>
@@ -1540,9 +1548,14 @@ are obtained.
 Here, <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/0e51a2dede42189d77627c4d742822c3.svg?invert_in_darkmode" align=middle width=14.433101099999991pt height=14.15524440000002pt/> denotes the dimension of the output nulling space of the system <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/6d853014106627ade5b7d08d062745df.svg?invert_in_darkmode" align=middle width=140.19312449999998pt height=24.65753399999998pt/>.
 In case of <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/77f7e377b6681b54b06cedab816bcebe.svg?invert_in_darkmode" align=middle width=71.0011335pt height=22.465723500000017pt/>, this space is equivalent to the largest controlled invariant subspace within the kernel of <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/f44cb040bfa9a432f2b1cbeb66a38f0c.svg?invert_in_darkmode" align=middle width=38.18166989999999pt height=22.465723500000017pt/>.
 
-The conditions found can directly be included in the synthesis process using the built-in non-linear constraint function. Alternatively, using geometric concepts, the coupling conditions can be transformed to linear equality constraints which reduce the set of feasible controllers and prefilters.
+The above conditions can directly be included in the synthesis process using the built-in non-linear constraint function (option `GammaDecouplingStrategy.NUMERIC_NONLINEAR_EQUALITY` or `GammaDecouplingStrategy.NUMERIC_NONLINEAR_INEQUALITY`). Alternatively, using geometric concepts, the coupling conditions can be transformed to linear matrix equality constraints of the form
 
-The coupling control design implemented in `gammasyn` is only available for the design of a complete state feedback, i.e. <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/9b325b9e31e85137d1de765f43c0f8bc.svg?invert_in_darkmode" align=middle width=12.92464304999999pt height=22.465723500000017pt/> must be chosen as identity matrix.
+<p align="center"><img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/9631771689701c99c339c2346f331a3e.svg?invert_in_darkmode" align=middle width=129.73725105pt height=59.1786591pt/></p>
+
+
+which reduce the set of feasible controllers and prefilters (option `GammaDecouplingStrategy.EXACT`, `GammaDecouplingStrategy.APPROXIMATE` or `GammaDecouplingStrategy.APPROXIMATE_INEQUALITY`).It is possible to let gammasyn transform these equality constraints into a quadratic objective function which is minimized during optimization (option `GammaDecouplingStrategy.MERIT_FUNCTION`).
+
+If any structure assignment should be performed using an output feedback, this must be allowed in the options (option `allowoutputdecoupling`).
 
 ### Robust DAE synthesis
 The methodology for designing robust coupling controllers using pole region assignment, can immediately be transferred to systems in differential-algebraic form (DAE systems, descriptor systems).
@@ -1550,24 +1563,28 @@ The methodology for designing robust coupling controllers using pole region assi
 Therefore, the systems handed over are transformed using a singular value decomposition of the descriptor matrix <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/84df98c65d88c6adf15d4645ffa25e47.svg?invert_in_darkmode" align=middle width=13.08219659999999pt height=22.465723500000017pt/> in order to obtain state space systems with feedthrough.
 For these, a robust coupling control best possibly fulfilling the algebraic equations is calculated.
 
+`gammasyn_decouplingcontrol` checks the descriptor matrix <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/84df98c65d88c6adf15d4645ffa25e47.svg?invert_in_darkmode" align=middle width=13.08219659999999pt height=22.465723500000017pt/> to choose between a regular structure assignment and DAE design.
+
 ### Usage
-To perform the coupling control synthesis or robust DAE synthesis, `gammasyn_couplingcontrol` has to be used.
-Furthermore, the `objectiveoptions` structure has to be extended by the field `couplingcontrol` which in turn is a structure containing the following fields
-* `couplingstrategy`: the coupling design method, an instance of `GammaCouplingStrategy`.
-	* `GammaCouplingStrategy.EXACT`: Only allow <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/498d5adf4367e026127219d184eaaaac.svg?invert_in_darkmode" align=middle width=77.47939814999998pt height=24.65753399999998pt/> and use geometric methods.
-	* `GammaCouplingStrategy.APPROXIMATE`: Use geometric method but also allow <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/915780e7044163dbc382e1a9f98adea3.svg?invert_in_darkmode" align=middle width=77.47939814999998pt height=24.65753399999998pt/> if <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/498d5adf4367e026127219d184eaaaac.svg?invert_in_darkmode" align=middle width=77.47939814999998pt height=24.65753399999998pt/> is not solvable.
-	* `GammaCouplingStrategy.APPROXIMATE_INEQUALITY`: Use geometric method but also allow <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/915780e7044163dbc382e1a9f98adea3.svg?invert_in_darkmode" align=middle width=77.47939814999998pt height=24.65753399999998pt/> if <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/498d5adf4367e026127219d184eaaaac.svg?invert_in_darkmode" align=middle width=77.47939814999998pt height=24.65753399999998pt/> is not solvable and formulate inequality constraint system with tolerance.
-	* `GammaCouplingStrategy.NUMERIC_NONLINEAR_EQUALITY`: directly use coupling conditions as non-linear equality constraints of the form `ceq(x) = 0` with `x` denoting the vector of optimization variables
-	* `GammaCouplingStrategy.NUMERIC_NONLINEAR_INEQUALITY`: directly use coupling conditions as non-linear inequality constraints of the form `c(x) < tolerance_coupling` and `-c(x) < tolerance_coupling` with `x` denoting the vector of optimization variables
-* `couplingconditions`: (`uint32`) the number of coupling conditions specified in <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/fc8611f3dc01d5ede1c5fd180b2e52f2.svg?invert_in_darkmode" align=middle width=27.72499289999999pt height=22.465723500000017pt/>
-* `tolerance_coupling`: (`double`) the tolerance when using `GammaCouplingStrategy.NUMERIC_NONLINEAR_INEQUALITY`
+To perform structure assignment or robust DAE synthesis, `gammasyn_decouplingcontrol` has to be used.
+Furthermore, the `objectiveoptions` structure has to be extended by the field `decouplingcontrol` which in turn is a structure containing the following fields
+* `decouplingstrategy`: the decoupling design method, an instance of `GammaDecouplingStrategy`.
+	* `GammaDecouplingStrategy.EXACT`: Only allow (*) <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/498d5adf4367e026127219d184eaaaac.svg?invert_in_darkmode" align=middle width=77.47939814999998pt height=24.65753399999998pt/> and use geometric methods.
+	* `GammaDecouplingStrategy.APPROXIMATE`: Use geometric method but also allow (*) <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/915780e7044163dbc382e1a9f98adea3.svg?invert_in_darkmode" align=middle width=77.47939814999998pt height=24.65753399999998pt/> if (\*) <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/498d5adf4367e026127219d184eaaaac.svg?invert_in_darkmode" align=middle width=77.47939814999998pt height=24.65753399999998pt/> is not solvable.
+	* `GammaDecouplingStrategy.APPROXIMATE_INEQUALITY`: Use geometric method and transform linear equality constraints to inequality constraint system with tolerance.
+	* `GammaDecouplingStrategy.MERIT_FUNCTION`: Use geometric method and transform matrix equality constraints to a quadratic objective function which is subject to minimization during the optimization.
+	* `GammaDecouplingStrategy.NUMERIC_NONLINEAR_EQUALITY`: directly use decoupling conditions as non-linear equality constraints of the form `ceq(x) = 0` with `x` denoting the vector of optimization variables
+	* `GammaDecouplingStrategy.NUMERIC_NONLINEAR_INEQUALITY`: directly use decoupling conditions as non-linear inequality constraints of the form `c(x) < tolerance_decoupling` and `-c(x) < tolerance_decoupling` with `x` denoting the vector of optimization variables
+* `tf_structure`: (`number_references X number_references double`) array that indicates the desired closed-loop transfer matrix structure. `0` indicates a zero element, `NaN` indicates an unconstrained element.
+* `tolerance_decoupling`: (`double`) the tolerance when using `GammaDecouplingStrategy.NUMERIC_NONLINEAR_INEQUALITY`
 * `solvesymbolic`: (`logical`) only for `EXACT` and `APPROXIMATE`: use symbolic toolbox if available to increase precision of obtained equality constraints.
 * `round_equations_to_digits`: (`double`, whole number) only for `EXACT` and `APPROXIMATE`: decimal places to which linear equality constraints are rounded in case of numerical precision difficulties. Use `NaN` if no rounding is desired.
-* `weight_coupling`: (`double`, nonnegative) weighting factor for nonlinear coupling conditions to increase/decrease importance in comparison with pole region constraints
+* `weight_decoupling`: (`double`, nonnegative) weighting factor for nonlinear decoupling conditions to increase/decrease importance in comparison with pole region constraints
 * `weight_prefilter`: (`double`, nonnegative) weighting factor for prefilter regularity condition to increase/decrease importance in comparison with pole region constraints
-* `allowoutputcoupling`: (`logical`) allow output feedback form for coupling control
+* `allowoutputdecoupling`: (`logical`) allow output feedback form for structure assignment
+* `sortingstrategy_decoupling`: (`GammaDecouplingconditionSortingStrategy.MINIMUMNORM` or `GammaDecouplingconditionSortingStrategy.EIGENVALUETRACKING`) only for `NUMERIC_NONLINEAR`. This parameter specifies how the eigenvalues and eigenvectors are sorted in each optimization step in order to calculate the new nonlinear constraints. Eigenvalues can be tracked approximately in the complex plane using their gradient (beta) or eigenvalues can be sorted such that the resulting norm of the nonlinear constraint violation is as low as possible. The latter is a combination problem.
 
-`gammasyn_couplingcontrol` checks the descriptor matrix <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/84df98c65d88c6adf15d4645ffa25e47.svg?invert_in_darkmode" align=middle width=13.08219659999999pt height=22.465723500000017pt/> to choose between a regular coupling control design and DAE design.
+(*) The condition for <img src="https://raw.githubusercontent.com/pvogt09/gammasyn/master/docs/svgs/7aa3fc4ba0f2e3e7ef31ac9b83248053.svg?invert_in_darkmode" align=middle width=47.342558999999994pt height=24.65753399999998pt/> is an example for the coupling control case. In case of general structure assignment, this condition differs in its particular structure.
 
 ## Examples
 

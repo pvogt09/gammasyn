@@ -44,6 +44,28 @@ function [J, gradJ, hessianJ] = J_mex_m(x, system, weight, areafun, dimensions, 
 	end
 	[R, K, F] = x2R(x, dimensions);
 	if nargout >= 3
+		if any(options.type == GammaJType.DECOUPLING)
+			[J_decoupling, gradJ_decoupling, hessianJ_decoupling] = calculate_objective_decoupling(R, K, F, system, dimensions, options);
+		else
+			J_decoupling = 0;
+			gradJ_decoupling = zeros(number_controls*(number_measurements + number_measurements_xdot + number_references), 1);
+			hessianJ_decoupling = zeros(number_controls*(number_measurements + number_measurements_xdot + number_references), number_controls*(number_measurements + number_measurements_xdot + number_references));
+		end
+	elseif nargout >= 2
+		if any(options.type == GammaJType.DECOUPLING)
+			[J_decoupling, gradJ_decoupling] = calculate_objective_decoupling(R, K, F, system, dimensions, options);
+		else
+			J_decoupling = 0;
+			gradJ_decoupling = zeros(number_controls*(number_measurements + number_measurements_xdot + number_references), 1);
+		end
+	else
+		if any(options.type == GammaJType.DECOUPLING)
+			J_decoupling = calculate_objective_decoupling(R, K, F, system, dimensions, options);
+		else
+			J_decoupling = 0;
+		end
+	end
+	if nargout >= 3
 		if all(options.type == GammaJType.ZERO)
 			J = 0;
 			gradJ = zeros(number_controls*(number_measurements + number_measurements_xdot + number_references), 1);
@@ -63,9 +85,9 @@ function [J, gradJ, hessianJ] = J_mex_m(x, system, weight, areafun, dimensions, 
 					J_gain = 0;
 					gradJ_gain = zeros(number_controls, number_measurements + number_measurements_xdot + number_references, 1);
 				end
-				J = J + J_eigenvector + J_gain;
+				J = J + J_eigenvector + J_gain + J_decoupling;
 				gradJtemp = gradJtemp + gradJtemp_eigenvector + gradJ_gain;
-				gradJ_row = reshape(sum(gradJtemp, 3), number_controls*(number_measurements + number_measurements_xdot + number_references), 1);
+				gradJ_row = reshape(sum(gradJtemp, 3), number_controls*(number_measurements + number_measurements_xdot + number_references), 1) + gradJ_decoupling;
 				if RKF_fixed_has
 					if options.objective.preventNaN
 						gradJ = mtimes_preventNaN(gradJ_row.', T_inv_RKF).';
@@ -95,9 +117,9 @@ function [J, gradJ, hessianJ] = J_mex_m(x, system, weight, areafun, dimensions, 
 					J_gain = 0;
 					gradJ_gain = zeros(number_controls, number_measurements + number_references, 1);
 				end
-				J = J + J_eigenvector + J_gain;
+				J = J + J_eigenvector + J_gain + J_decoupling;
 				gradJtemp = gradJtemp + gradJtemp_eigenvector + gradJ_gain;
-				gradJ_row = reshape(sum(gradJtemp, 3), number_controls*(number_measurements + number_references), 1);
+				gradJ_row = reshape(sum(gradJtemp, 3), number_controls*(number_measurements + number_references), 1) + gradJ_decoupling;
 				if RKF_fixed_has
 					if options.objective.preventNaN
 						gradJ = mtimes_preventNaN(gradJ_row.', T_inv_RKF).';
@@ -136,10 +158,10 @@ function [J, gradJ, hessianJ] = J_mex_m(x, system, weight, areafun, dimensions, 
 					gradJ_gain = zeros(number_controls, number_measurements + number_measurements_xdot + number_references, 1);
 					hessianJ_gain = zeros(number_controls*(number_measurements + number_measurements_xdot + number_references), number_controls*(number_measurements + number_measurements_xdot + number_references));
 				end
-				J = J + J_gain;
+				J = J + J_gain + J_decoupling;
 				gradJtemp = gradJtemp + gradJ_gain;
-				hessianJ = hessianJ + hessianJ_gain;
-				gradJ_row = reshape(sum(gradJtemp, 3), number_controls*(number_measurements + number_measurements_xdot + number_references), 1);
+				hessianJ = hessianJ + hessianJ_gain + hessianJ_decoupling;
+				gradJ_row = reshape(sum(gradJtemp, 3), number_controls*(number_measurements + number_measurements_xdot + number_references), 1) + gradJ_decoupling;
 				if RKF_fixed_has
 					if options.objective.preventNaN
 						gradJ = mtimes_preventNaN(gradJ_row.', T_inv_RKF).';
@@ -182,10 +204,10 @@ function [J, gradJ, hessianJ] = J_mex_m(x, system, weight, areafun, dimensions, 
 					gradJ_gain = zeros(number_controls, number_measurements + number_measurements_xdot + number_references, 1);
 					hessianJ_gain = zeros(number_controls*(number_measurements + number_measurements_xdot + number_references), number_controls*(number_measurements + number_measurements_xdot + number_references));
 				end
-				J = J + J_gain;
+				J = J + J_gain + J_decoupling;
 				gradJtemp = gradJtemp + gradJ_gain;
-				hessianJ = hessianJ + hessianJ_gain;
-				gradJ_row = reshape(sum(gradJtemp, 3), number_controls*(number_measurements + number_references), 1);
+				hessianJ = hessianJ + hessianJ_gain + hessianJ_decoupling;
+				gradJ_row = reshape(sum(gradJtemp, 3), number_controls*(number_measurements + number_references), 1) + gradJ_decoupling;
 				if RKF_fixed_has
 					if options.objective.preventNaN
 						gradJ = mtimes_preventNaN(gradJ_row.', T_inv_RKF).';
@@ -232,9 +254,9 @@ function [J, gradJ, hessianJ] = J_mex_m(x, system, weight, areafun, dimensions, 
 					J_gain = 0;
 					gradJ_gain = zeros(number_controls, number_measurements + number_measurements_xdot + number_references, 1);
 				end
-				J = J + J_eigenvector + J_gain;
+				J = J + J_eigenvector + J_gain + J_decoupling;
 				gradJtemp = gradJtemp + gradJtemp_eigenvector + gradJ_gain;
-				gradJ_row = reshape(sum(gradJtemp, 3), number_controls*(number_measurements + number_measurements_xdot + number_references), 1);
+				gradJ_row = reshape(sum(gradJtemp, 3), number_controls*(number_measurements + number_measurements_xdot + number_references), 1) + gradJ_decoupling;
 				if RKF_fixed_has
 					if options.objective.preventNaN
 						gradJ = mtimes_preventNaN(gradJ_row.', T_inv_RKF).';
@@ -264,9 +286,9 @@ function [J, gradJ, hessianJ] = J_mex_m(x, system, weight, areafun, dimensions, 
 					J_gain = 0;
 					gradJ_gain = zeros(number_controls, number_measurements + number_references, 1);
 				end
-				J = J + J_eigenvector + J_gain;
+				J = J + J_eigenvector + J_gain + J_decoupling;
 				gradJtemp = gradJtemp + gradJtemp_eigenvector + gradJ_gain;
-				gradJ_row = reshape(sum(gradJtemp, 3), number_controls*(number_measurements + number_references), 1);
+				gradJ_row = reshape(sum(gradJtemp, 3), number_controls*(number_measurements + number_references), 1) + gradJ_decoupling;
 				if RKF_fixed_has
 					if options.objective.preventNaN
 							gradJ = mtimes_preventNaN(gradJ_row.', T_inv_RKF).';
@@ -303,9 +325,9 @@ function [J, gradJ, hessianJ] = J_mex_m(x, system, weight, areafun, dimensions, 
 					J_gain = 0;
 					gradJ_gain = zeros(number_controls, number_measurements + number_measurements_xdot + number_references, 1);
 				end
-				J = J + J_gain;
+				J = J + J_gain + J_decoupling;
 				gradJtemp = gradJtemp + gradJ_gain;
-				gradJ_row = reshape(sum(gradJtemp, 3), number_controls*(number_measurements + number_measurements_xdot + number_references), 1);
+				gradJ_row = reshape(sum(gradJtemp, 3), number_controls*(number_measurements + number_measurements_xdot + number_references), 1) + gradJ_decoupling;
 				if RKF_fixed_has
 					if options.objective.preventNaN
 						gradJ = mtimes_preventNaN(gradJ_row.', T_inv_RKF).';
@@ -341,9 +363,9 @@ function [J, gradJ, hessianJ] = J_mex_m(x, system, weight, areafun, dimensions, 
 					J_gain = 0;
 					gradJ_gain = zeros(number_controls, number_measurements + number_references, 1);
 				end
-				J = J + J_gain;
+				J = J + J_gain + J_decoupling;
 				gradJtemp = gradJtemp + gradJ_gain;
-				gradJ_row = reshape(sum(gradJtemp, 3), number_controls*(number_measurements + number_references), 1);
+				gradJ_row = reshape(sum(gradJtemp, 3), number_controls*(number_measurements + number_references), 1) + gradJ_decoupling;
 				if RKF_fixed_has
 					if options.objective.preventNaN
 						gradJ = mtimes_preventNaN(gradJ_row.', T_inv_RKF).';
@@ -381,7 +403,7 @@ function [J, gradJ, hessianJ] = J_mex_m(x, system, weight, areafun, dimensions, 
 			else
 				J_gain = 0;
 			end
-			J = J + J_eigenvector + J_gain;
+			J = J + J_eigenvector + J_gain + J_decoupling;
 		else
 			% HINT: matlab R2015B does not recognize size of needseigenvalues correctly and assumes :?x:? instead of :?x1
 			needseigenvalues = GammaJType_needseigenvalues(options.type);
@@ -398,7 +420,7 @@ function [J, gradJ, hessianJ] = J_mex_m(x, system, weight, areafun, dimensions, 
 			else
 				J_gain = 0;
 			end
-			J = J + J_gain;
+			J = J + J_gain + J_decoupling;
 		end
 	end
 end

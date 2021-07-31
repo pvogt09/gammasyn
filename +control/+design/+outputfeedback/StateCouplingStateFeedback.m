@@ -1,5 +1,5 @@
 classdef StateCouplingStateFeedback < control.design.outputfeedback.AbstractCouplingFeedback
-	%STATECOUPLINGSTATEFEEDBACK class for casting a control system in state feedback form ready for gammasyn_couplingcontrol to perform a state coupling control design and specify the needed constraints on the resulting gain matrix
+	%STATECOUPLINGSTATEFEEDBACK class for casting a control system in state feedback form ready for gammasyn_decouplingcontrol to perform a state coupling control design and specify the needed constraints on the resulting gain matrix
 	%	For the control system
 	%		Ex' = Ax + Bu
 	%		y = Cx + Du
@@ -18,15 +18,16 @@ classdef StateCouplingStateFeedback < control.design.outputfeedback.AbstractCoup
 	end
 
 	methods
-		function [this] = StateCouplingStateFeedback(number_couplingconditions, varargin) %#ok<VANUS> varargin is not used but allowes to call the constructor with arguments
+		function [this] = StateCouplingStateFeedback(number_couplingconditions, number_references, varargin) %#ok<VANUS> varargin is not used but allowes to call the constructor with arguments
 			%STATECOUPLINGSTATEFEEDBACK create new state feedback coupling class
 			%	Input:
 			%		number_couplingconditions:	number of coupling conditions in C_ref
+			%		number_references:			number of references
 			%		varargin:					unused input arguments
 			%	Output:
 			%		this:						instance
 			narginchk(1, Inf);
-			this@control.design.outputfeedback.AbstractCouplingFeedback(number_couplingconditions);
+			this@control.design.outputfeedback.AbstractCouplingFeedback(number_couplingconditions, number_references);
 		end
 	end
 
@@ -57,6 +58,9 @@ classdef StateCouplingStateFeedback < control.design.outputfeedback.AbstractCoup
 				error('control:design:outputfeedback:input', 'Descriptor matrix must be regular for a state feedback controller.');
 			end
 			nc = this.number_couplingconditions;
+			if size(C, 1) ~= this.number_references
+				error('control:design:outputfeedback:input', 'Number of references (%d) must match number of measurements (%d).', this.number_references, size(C, 1));
+			end
 			if size(C, 1) <= nc
 				error('control:design:outputfeedback:input', 'Number of coupling conditions (%d) must be smaller than number of measurements (%d).', nc, size(C, 1));
 			end
@@ -312,15 +316,14 @@ classdef StateCouplingStateFeedback < control.design.outputfeedback.AbstractCoup
 			end
 		end
 
-		function [couplingoptions] = get_couplingoptions_system(this, couplingoptions)
-			%GET_COUPLINGOPTIONS_SYSTEM return structure with options for coupling controller design
+		function [decouplingoptions] = get_decouplingoptions_system(this, decouplingoptions)
+			%GET_DECOUPLINGOPTIONS_SYSTEM return structure with options for decoupling controller design
 			%	Input:
 			%		this:				instance
 			%		options:			structure with options to append to
 			%	Output:
-			%		couplingoptions:	structure with appended coupling options
-			couplingoptions.couplingconditions = this.number_couplingconditions;% number of coupling conditions
-			couplingoptions.couplingstrategy = GammaCouplingStrategy.EXACT;% method chosen to solve coupling design
+			%		decouplingoptions:	structure with appended decoupling options
+			decouplingoptions.decouplingstrategy = GammaDecouplingStrategy.EXACT;% method chosen to solve decoupling design
 		end
 	end
 

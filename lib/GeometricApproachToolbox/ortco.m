@@ -3,14 +3,19 @@ function Q = ortco(A)
 %  Q=ortco(A) is an orthonormal basis for the orthogonal complement of imA .
 
 %  Basile and Marro 4-20-90
-
-if isempty(A), error('GEOAPPR:input', ' *** empty matrix in ortco'), end
-[ma,na] = size(A);
-if norm(A,'fro')<10^(-10), Q = eye(ma); return, end
-[ma,na] = size(ima(A,1));
-RR = ima([A/norm(A,'fro'),eye(ma)],0);
-Q = RR(:,na+1:ma);
-if isempty(Q)
-	Q = zeros(ma,1);
+original = false;
+if original
+	if isempty(A), error('GEOAPPR:input', ' *** empty matrix in ortco'), end
+	[ma,na] = size(A);
+	if norm(A,'fro')<10^(-10), Q = eye(ma); return, end
+	[ma,na] = size(ima(A,1));
+	RR = ima([A/norm(A,'fro'),eye(ma)],0);
+	Q = RR(:,na+1:ma);
+	if isempty(Q)
+		Q = zeros(ma,1);
+	end
+else
+	Q = null(A.');
+% 	Q = null(A.', 'r');
 end
 % --- last line of ortco ---

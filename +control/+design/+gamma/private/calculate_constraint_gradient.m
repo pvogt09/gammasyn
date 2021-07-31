@@ -31,7 +31,7 @@ function [gradc] = calculate_constraint_gradient(weight, eigenvalue_derivative, 
 	parfor (ii = 1:number_models, numthreads)
 		wii = weight(ii, :);
 		for kk = 1:number_states
-			if all(all(isnan(eigenvalue_derivative(kk, :, :, ii))))
+			if all(all(isnan(eigenvalue_derivative(kk, :, :, ii)), 1), 2)
 				continue;
 			end
 			re = real(squeeze(eigenvalue_derivative(kk, :, :, ii)));

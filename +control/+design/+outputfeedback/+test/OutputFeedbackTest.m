@@ -211,18 +211,23 @@ function [pass] = OutputFeedbackTest(~)
 					'D',		Dtemp...
 				);
 			end
-			if issubclassof(meta.class.fromName(char(cls)), ?control.design.outputfeedback.AbstractCouplingFeedback)
+			if issubclassof(meta.class.fromName(char(cls)), ?control.design.outputfeedback.AbstractDecouplingFeedback)
 				if size(basesystem.C, 1) <= 1
-					% coupling control does not work with only 1 output
+					% decoupling control does not work with only 1 output
 					continue;
 				end
-				if issubclassof(meta.class.fromName(char(cls)), ?control.design.outputfeedback.OutputCouplingStateFeedback)
+				if issubclassof(meta.class.fromName(char(cls)), ?control.design.outputfeedback.OutputCouplingStateFeedback) ...
+						|| issubclassof(meta.class.fromName(char(cls)), ?control.design.outputfeedback.OutputCouplingOutputFeedback)
 					transformation = eye(size(basesystem.C, 1));
-					test.TestSuite.assertNoException('cls(1, transformation, systems{jj});', 'control:outputfeedback:test', 'Construction of an outputfeedback class must not throw an exception.');
-					controller = cls(1, transformation, systems{jj});
+					test.TestSuite.assertNoException('cls(1, size(systems{jj}.C_ref, 1), transformation, systems{jj});', 'control:outputfeedback:test', 'Construction of an outputfeedback class must not throw an exception.');
+					controller = cls(1, size(systems{jj}.C_ref, 1), transformation, systems{jj});
+				elseif issubclassof(meta.class.fromName(char(cls)), ?control.design.outputfeedback.StateCouplingStateFeedback) ...
+						|| issubclassof(meta.class.fromName(char(cls)), ?control.design.outputfeedback.StateCouplingOutputFeedback)
+					test.TestSuite.assertNoException('cls(1, size(systems{jj}.C_ref, 1), systems{jj});', 'control:outputfeedback:test', 'Construction of an outputfeedback class must not throw an exception.');
+					controller = cls(1, size(systems{jj}.C_ref, 1), systems{jj});
 				else
-					test.TestSuite.assertNoException('cls(1, systems{jj});', 'control:outputfeedback:test', 'Construction of an outputfeedback class must not throw an exception.');
-					controller = cls(1, systems{jj});
+					test.TestSuite.assertNoException('cls(size(systems{jj}.C_ref, 1), systems{jj});', 'control:outputfeedback:test', 'Construction of an outputfeedback class must not throw an exception.');
+					controller = cls(size(systems{jj}.C_ref, 1), systems{jj});
 				end
 			else
 				test.TestSuite.assertNoException('cls(systems{jj});', 'control:outputfeedback:test', 'Construction of an outputfeedback class must not throw an exception.');
@@ -632,7 +637,7 @@ function [pass] = OutputFeedbackTest(~)
 
 			testsystem = systems{jj};
 			checkdim = (~isstruct(testsystem) && isct(testsystem)) || (isstruct(testsystem) && (~isfield(testsystem, 'T') || testsystem.T == -1));
-			checkdim = checkdim && ~isa(controller, 'control.design.outputfeedback.DynamicOutputFeedback');% DynamicOutputFeedback does not have size(C, 1) desired values
+			checkdim = checkdim && ~isa(controller, 'control.design.outputfeedback.DynamicOutputFeedback') && ~isa(controller, 'control.design.outputfeedback.AbstractDecouplingFeedback');% DynamicOutputFeedback and AbstractDecouplingFeedback do not have size(C, 1) desired values
 			if checkdim% only valid for continuous time systems
 				test.TestSuite.assertEqual(size(basesystem.B, 2), size(system_controller.C, 1), 'control:outputfeedback:test', 'Output matrix of controller must have as much rows as B.');
 				test.TestSuite.assertEqual(size(basesystem.B, 2), size(system_controller.D, 1), 'control:outputfeedback:test', 'Throughput matrix of controller must have as much rows as B.');
@@ -723,18 +728,23 @@ function [pass] = OutputFeedbackTest(~)
 			else
 				s = systems{jj};
 			end
-			if issubclassof(meta.class.fromName(char(cls)), ?control.design.outputfeedback.AbstractCouplingFeedback)
+			if issubclassof(meta.class.fromName(char(cls)), ?control.design.outputfeedback.AbstractDecouplingFeedback)
 				if size(basesystem.C, 1) <= 1
-					% coupling control does not work with only 1 output
+					% decoupling control does not work with only 1 output
 					continue;
 				end
-				if issubclassof(meta.class.fromName(char(cls)), ?control.design.outputfeedback.OutputCouplingStateFeedback)
+				if issubclassof(meta.class.fromName(char(cls)), ?control.design.outputfeedback.OutputCouplingStateFeedback) ...
+						|| issubclassof(meta.class.fromName(char(cls)), ?control.design.outputfeedback.OutputCouplingOutputFeedback)
 					transformation = eye(size(basesystem.C, 1));
-					test.TestSuite.assertNoException('cls(1, transformation, s, T);', 'control:outputfeedback:test', 'Construction of a discrete outputfeedback class must not throw an exception.');
-					controllerT = cls(1, transformation, s, T);
+					test.TestSuite.assertNoException('cls(1, size(s.C_ref, 1), transformation, s, T);', 'control:outputfeedback:test', 'Construction of a discrete outputfeedback class must not throw an exception.');
+					controllerT = cls(1, size(s.C_ref, 1), transformation, s, T);
+				elseif issubclassof(meta.class.fromName(char(cls)), ?control.design.outputfeedback.StateCouplingStateFeedback) ...
+						|| issubclassof(meta.class.fromName(char(cls)), ?control.design.outputfeedback.StateCouplingOutputFeedback)
+					test.TestSuite.assertNoException('cls(1, size(s.C_ref, 1), s, T);', 'control:outputfeedback:test', 'Construction of a discrete outputfeedback class must not throw an exception.');
+					controllerT = cls(1, size(s.C_ref, 1), s, T);
 				else
-					test.TestSuite.assertNoException('cls(1, s, T);', 'control:outputfeedback:test', 'Construction of a discrete outputfeedback class must not throw an exception.');
-					controllerT = cls(1, s, T);
+					test.TestSuite.assertNoException('cls(size(s.C_ref, 1), s, T);', 'control:outputfeedback:test', 'Construction of a discrete outputfeedback class must not throw an exception.');
+					controllerT = cls(size(s.C_ref, 1), s, T);
 				end
 			else
 				test.TestSuite.assertNoException('cls(s, T);', 'control:outputfeedback:test', 'Construction of a discrete outputfeedback class must not throw an exception.');
@@ -1141,7 +1151,7 @@ function [pass] = OutputFeedbackTest(~)
 			test.TestSuite.assertEqual(size(system_controller.C_ref, 2), size(system_controller.A, 1), 'control:outputfeedback:test', 'Output matrix of references of controller must have same number of columns as system matrix.');
 			test.TestSuite.assertEqual(size(system_controller.C_ref, 1), size(system_controller.D_ref, 1), 'control:outputfeedback:test', 'Throughput matrix of references of controller must have same number of rows as output matrix of references.');
 
-			checkdim = ~isa(controller, 'control.design.outputfeedback.DynamicOutputFeedback');
+			checkdim = ~isa(controller, 'control.design.outputfeedback.DynamicOutputFeedback') && ~isa(controller, 'control.design.outputfeedback.AbstractDecouplingFeedback');
 			if checkdim
 				test.TestSuite.assertEqual(size(basesystem.B, 2), size(system_controller.C, 1), 'control:outputfeedback:test', 'Output matrix of controller must have as much rows as B.');
 				test.TestSuite.assertEqual(size(basesystem.B, 2), size(system_controller.D, 1), 'control:outputfeedback:test', 'Throughput matrix of controller must have as much rows as B.');

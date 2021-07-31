@@ -52,17 +52,14 @@ function [system, areafun_strict, areafun_loose, weight_strict, weight_loose, di
 		systemoptions = struct(systemoptions);
 		systemoptions = systemoptions.system;
 	end
-	if ~isfield(systemoptions, 'couplingcontrol')
-		systemoptions.couplingcontrol = false;
+	if ~isfield(systemoptions, 'decouplingcontrol')
+		systemoptions.decouplingcontrol = false;
 	end
-	if ~isfield(systemoptions, 'couplingconditions')
-		systemoptions.couplingconditions = 0;
+	if ~isscalar(systemoptions.decouplingcontrol)
+		error('control:design:gamma:dimension', 'Indicator for decoupling controller design must be scalar.');
 	end
-	if ~isscalar(systemoptions.couplingcontrol)
-		error('control:design:gamma:dimension', 'Indicator for coupling controller design must be scalar.');
-	end
-	if ~islogical(systemoptions.couplingcontrol)
-		error('control:design:gamma:dimension', 'Indicator for coupling controller design must be of type ''logical'', not ''%s''.', class(systemoptions.couplingcontrol));
+	if ~islogical(systemoptions.decouplingcontrol)
+		error('control:design:gamma:dimension', 'Indicator for decoupling controller design must be of type ''logical'', not ''%s''.', class(systemoptions.decouplingcontrol));
 	end
 	[system, number_states, number_states_all, number_controls, number_measurements, number_measurements_xdot, number_references, descriptor, number_descriptors_all, ~, sample_time, expanded_models] = checkandtransformsystems(systems, systemoptions);
 	if ~allowdifferentorder && any(number_states_all(1) ~= number_states_all)
@@ -83,56 +80,69 @@ function [system, areafun_strict, areafun_loose, weight_strict, weight_loose, di
 	] = checkandtransform_areas(areafun, number_models, number_systems, expanded_models);
 	% check weights for validity
 	[weight_strict, weight_loose] = checkandtransform_weight(weight, allownegativeweight, number_models, number_systems, expanded_models, areafun_strict, number_areas_max_strict, areafun_loose, number_areas_max_loose);
-	hasfeedthrough_coupling = false(number_models, 1);
-	if systemoptions.couplingcontrol
-		number_couplingconditions = systemoptions.couplingconditions;
-		if ~isscalar(number_couplingconditions) || ~isnumeric(number_couplingconditions)
-			error('control:design:gamma:dimension', 'Number of coupling conditions must be scalar.');
-		end
-		if isinf(number_couplingconditions) || isnan(number_couplingconditions)
-			error('control:design:gamma:dimension', 'Number of coupling consditions must be finite.');
-		end
-		if number_couplingconditions <= 0
-			error('control:design:gamma:dimension', 'Number of coupling conditions must be positive.');
-		end
-		if floor(number_couplingconditions) ~= ceil(number_couplingconditions)
-			error('control:design:gamma:dimension', 'Number of coupling conditions must be an integer.');
-		end
-		if number_couplingconditions >= number_controls
-			error('control:design:gamma:dimension', 'Number of coupling conditions has to be smaller than number of inputs.');
-		end
-		if number_references < number_couplingconditions
-			error('control:design:gamma:dimension', 'Number of coupling conditions must not exceed number of reference outputs.');
-		end
+	if systemoptions.decouplingcontrol
 		if ~configuration.control.design.hasGeometricApproachToolbox()
 			% VSTAR function needs "Geometric Approach Toolbox" installed
 			% http://www3.deis.unibo.it/Staff/FullProf/GiovanniMarro/geometric.htm
-			error('control:design:gamma:GeomtricApproachToolboxMissing', 'Coupling controller synthesis needs ''Geometric Approach Toolbox'' installed. See http://www3.deis.unibo.it/Staff/FullProf/GiovanniMarro/geometric.htm');
+			error('control:design:gamma:GeomtricApproachToolboxMissing', 'Decoupling controller synthesis needs ''Geometric Approach Toolbox'' installed. See http://www3.deis.unibo.it/Staff/FullProf/GiovanniMarro/geometric.htm');
 		end
-		m_invariant_vec = zeros(number_models, 1);
-		parfor jj = 1:number_models
-			E = system(jj).E;
-			A = system(jj).A;
-			B = system(jj).B;
-			C_ref = system(jj).C_ref;
-			D_ref = system(jj).D_ref;
-			C2 = C_ref(end - number_couplingconditions + 1:end, :);
-			D2 = D_ref(end - number_couplingconditions + 1:end, :);
-			hasfeedthrough_coupling(jj, 1) = any(D2(:) ~= 0);
-			if hasfeedthrough_coupling(jj, 1)
-				m_invariant_vec(jj, 1) = size(vstar(E\A, E\B, C2, D2), 2);
-			else
-				m_invariant_vec(jj, 1) = size(mainco(E\A, E\B, null(C2)), 2);
+		tf_structure = systemoptions.tf_structure;
+		number_decouplingconditions = int32(sum(tf_structure == 0, 1)).';
+		V_invariant = nan(number_models, number_states, number_states, number_references);
+		m_invariant_mat = zeros(number_models, number_references);
+		hasfeedthrough_decoupling_mat = false(number_models, number_references);
+		not_con_invariant_mat = zeros(number_models, number_references);
+		parfor ii = 1:number_models
+			E = system(ii).E;
+			A = system(ii).A;
+			B = system(ii).B;
+			C = system(ii).C;
+			C_ref = system(ii).C_ref;
+			D_ref = system(ii).D_ref;
+			kerC = null(C);
+			for jj = 1:number_references
+				Cjj = C_ref(tf_structure(:, jj) == 0, :); %#ok<PFBNS>
+				Djj = D_ref(tf_structure(:, jj) == 0, :);
+				if isempty(Cjj) || isempty(Djj)
+					continue;
+				end
+				hasfeedthrough_decoupling_mat(ii, jj) = any(Djj(:) ~= 0);
+				if hasfeedthrough_decoupling_mat(ii, jj)
+					Q = vstar(E\A, E\B, Cjj, Djj);
+				else
+					Q = mainco(E\A, E\B, null(Cjj));
+				end
+				V_invariant(ii, :, :, jj) = [
+					Q, null(Q.')
+				];
+				m_invariant_mat(ii, jj) = size(Q, 2);
+				% check if output nulling controlled invariant subspace is also input containing conditioned invariant
+				if size(kerC, 2) > 0 % only in this case, Q might not be conditioned invariant
+					if rank([A*ints(Q, kerC), Q]) > rank(Q) % not the right condition for systems with feedthrough
+						% controlled invariant subspace is not conditioned invariant
+						not_con_invariant_mat(ii, jj) = true;
+					end
+				end
 			end
 		end
-		if any(m_invariant_vec ~= m_invariant_vec(1))
+		hasfeedthrough_decoupling = any(hasfeedthrough_decoupling_mat, 1).';
+		if any(any(m_invariant_mat ~= repmat(m_invariant_mat(1, :), number_models, 1)))
 			error('control:design:gamma:dimension', 'Controlled invariant subspace must have same dimension for every system.')
 		else
-			m_invariant = m_invariant_vec(1);
+			m_invariant = m_invariant_mat(1, :).';
+		end
+		if any(hasfeedthrough_decoupling) && systemoptions.allowoutputdecoupling && number_measurements < number_states
+			warning('control:design:gamma:decoupling', 'Using feedthrough decoupling and outputfeedback is "beta" since in this case, controlled invariant subspace is not properly checked for being conditioned invariant.');
+		end
+		if any(any(not_con_invariant_mat))
+			warning('control:design:gamma:decoupling', 'No suitable output feedback exists because at least one controlled invariant subspace is not conditioned invariant. Use different measurement configuration.');
 		end
 	else
-		number_couplingconditions = 0;
-		m_invariant = 0;
+		tf_structure = NaN(number_references, number_references);
+		number_decouplingconditions = int32(zeros(number_references, 1));
+		V_invariant = nan(number_models, number_states, number_states, number_references);
+		m_invariant = zeros(number_references, 1);
+		hasfeedthrough_decoupling = false(number_references, 1);
 	end
 	% create uniform fixed constraints and check for validity
 	if nargin <= 4 || isempty(R_fixed)
@@ -237,130 +247,134 @@ function [system, areafun_strict, areafun_loose, weight_strict, weight_loose, di
 	index_free_RKF((size(constraint_border_RKF, 1) + 1):(number_controls*(number_measurements + number_measurements_xdot + number_references)), 1) = true;
 	index_free_all = index_free_R | index_free_K | index_free_F;
 	dimensions_strict = struct(...
-		'models',					int32(number_models),...%number of multi-models
-		'states',					int32(number_states),...% number of states of multi-models
-		'controls',					int32(number_controls),...% number of controls of multi-models
-		'measurements',				int32(number_measurements),...% number of measurements of multi-models
-		'measurements_xdot',		int32(number_measurements_xdot),...% number of derivative measurements of multi-models
-		'references',				int32(number_references),...% number of reference inputs of multi-models
-		'couplingconditions',		int32(number_couplingconditions),...% number of coupling conditions for all multi-models
-		'm_invariant',				int32(m_invariant),...% dimension of controlled invariant subspace for coupling control. Same for all multi-models
-		'hasfeedthrough_coupling',	any(hasfeedthrough_coupling),...% indicator, whether feedthrough D2 ~= 0 in coupling conditions
-		'descriptor',				descriptor,...% indicator if the multi-models have a descriptor matrix ~= I
-		'isdiscrete',				sample_time > 0,...% indicator if systems are discrete time
-		'areas_max',				int32(number_areas_max_strict),...% maximum number of areas per multi-model
-		'area_args',				int32(number_areaargs_strict),...% number of arguments of area functions
-		'area_parts',				int32(area_parts_strict),...% number of areas per multi-model
-		'area_hasgrad',				area_hasgrad_strict,...% indicator if areafunction has gradient
-		'area_hashess',				area_hashess_strict,...% indicator if areafunction has hessian
-		'area_parameters',			area_parameters_strict,...% structure with area function parameters
-		'R_fixed_has',				hasfixed_R,...% indicator if proportional gain matrix has fixed elements
-		'R_fixed_only',				onlyfixed_R,...% indicator if proportional gain matrix has only fixed elements
-		'R_fixed_constraints',		int32(rg),...% number of fixed proportional gain coefficients
-		'R_fixed',					R_fixed{1},...% indcator matrix for fixed proportional gain coefficients
-		'R_fixed_values',			R_fixed{2},...% value matrix for fixed proportional gain coefficients
-		'R_fixed_A',				constraint_system,...% fixed proportional gain constraint system A vec(R) = b
-		'R_fixed_b',				constraint_border,...% fixed proportional gain constraint system A vec(R) = b
-		'R_fixed_T',				T,...% transformation matrix from proportional gain coefficients to optimization variables and fixed coefficients
-		'R_fixed_T_inv',			T_inv,...% transformation matrix from optimization variables and fixed coefficients to proportional gain coefficients
-		'R_isforced2zero',			isforced2zero_R,...% indicator if all coefficients of K are forced to zero (not needed)
-		'K_fixed_has',				hasfixed_K,...% indicator if derivative gain matrix has fixed elements
-		'K_fixed_only',				onlyfixed_K,...% indicator if derivative gain matrix has only fixed elements
-		'K_fixed_constraints',		int32(rg_xdot),...% number of fixed derivative gain coefficients
-		'K_fixed',					K_fixed{1},...% indcator matrix for fixed derivative gain coefficients
-		'K_fixed_values',			K_fixed{2},...% value matrix for fixed derivative gain coefficients
-		'K_fixed_A',				constraint_system_xdot,...% fixed derivative gain constraint system A vec(K) = b
-		'K_fixed_b',				constraint_border_xdot,...% fixed derivative gain constraint system A vec(K) = b
-		'K_fixed_T',				T_xdot,...% transformation matrix from derivative gain coefficients to optimization variables and fixed coefficients
-		'K_fixed_T_inv',			T_inv_xdot,...% transformation matrix from optimization variables and fixed coefficients to derivative gain coefficients
-		'K_isforced2zero',			isforced2zero_K || isforced2zero_RKF_K,...% indicator if all coefficients of K are forced to zero
-		'F_fixed_has',				hasfixed_F,...% indicator if prefilter matrix has fixed elements
-		'F_fixed_only',				onlyfixed_F,...% indicator if prefilter matrix has only fixed elements
-		'F_fixed_constraints',		int32(rg_prefilter),...% number of fixed prefilter coefficients
-		'F_fixed',					F_fixed{1},...% indcator matrix for fixed prefilter coefficients
-		'F_fixed_values',			F_fixed{2},...% value matrix for fixed prefilter coefficients
-		'F_fixed_A',				constraint_system_prefilter,...% fixed prefilter constraint system A vec(F) = b
-		'F_fixed_b',				constraint_border_prefilter,...% fixed prefilter constraint system A vec(F) = b
-		'F_fixed_T',				T_prefilter,...% transformation matrix from prefilter coefficients to optimization variables and fixed coefficients
-		'F_fixed_T_inv',			T_inv_prefilter,...% transformation matrix from optimization variables and fixed coefficients to prefilter coefficients
-		'F_isforced2zero',			isforced2zero_F,...% indicator if all coefficients of F are forced to zero (not needed)
-		'RKF_fixed_has',			hasfixed_RKF,...% indicator if combined gain matrix has fixed elements
-		'RKF_fixed_only',			onlyfixed_RKF,...% indicator if combined gain matrix has only fixed elements
-		'RKF_fixed_constraints',	int32(rg_RKF),...% number of fixed combined gain coefficients
-		'RKF_fixed',				RKF_fixed{1},...% indcator matrix for fixed gain coefficients
-		'RKF_fixed_values',			RKF_fixed{2},...% value matrix for fixed gain coefficients
-		'RKF_fixed_A',				constraint_system_RKF,...% fixed gain constraint system A [vec(R);vec(K);vec(F)] = b
-		'RKF_fixed_b',				constraint_border_RKF,...% fixed gain constraint system A [vec(R);vec(K);vec(F)] = b
-		'RKF_fixed_T',				T_RKF,...% transformation matrix from gain coefficients to optimization variables and fixed coefficients
-		'RKF_fixed_T_inv',			T_inv_RKF,...% transformation matrix from optimization variables and fixed coefficients to gain coefficients
-		'index_R_free',				index_free_R,...% logical indices of free proportional gain coefficients (optimization variables) in vectorized combined gain coefficients
-		'index_K_free',				index_free_K,...% logical indices of free derivative gain coefficients (optimization variables) in vectorized combined gain coefficients
-		'index_F_free',				index_free_F,...% logical indices of free prefilter coefficients (optimization variables) in vectorized combined gain coefficients
-		'index_RKF_free',			index_free_RKF,...% logical indices of free gain coefficients (optimization variables) in vectorized combined gain coefficients
-		'index_all_free',			index_free_all...% logical indices of free proportional and derivative gain and prefilter coefficients (optimization variables) in vectorized combined gain coefficients
+		'models',						int32(number_models),...%number of multi-models
+		'states',						int32(number_states),...% number of states of multi-models
+		'controls',						int32(number_controls),...% number of controls of multi-models
+		'measurements',					int32(number_measurements),...% number of measurements of multi-models
+		'measurements_xdot',			int32(number_measurements_xdot),...% number of derivative measurements of multi-models
+		'references',					int32(number_references),...% number of reference inputs of multi-models
+		'tf_structure',					double(tf_structure),...% structure of closed loop transfer matrix for all multi-models
+		'number_decouplingconditions',	number_decouplingconditions,...% number of zeros per column of tf_structure
+		'V_invariant',					V_invariant,...% regular transformation matrix to controlled invariant subspace for decoupling control for each column of transfer matrix. May differ between multi-models
+		'm_invariant',					int32(m_invariant),...% dimension of controlled invariant subspace for decoupling control for each column of transfer matrix. Same for all multi-models
+		'hasfeedthrough_decoupling',	hasfeedthrough_decoupling,...% indicator, whether feedthrough D2 ~= 0 in decoupling conditions
+		'descriptor',					descriptor,...% indicator if the multi-models have a descriptor matrix ~= I
+		'isdiscrete',					sample_time > 0,...% indicator if systems are discrete time
+		'areas_max',					int32(number_areas_max_strict),...% maximum number of areas per multi-model
+		'area_args',					int32(number_areaargs_strict),...% number of arguments of area functions
+		'area_parts',					int32(area_parts_strict),...% number of areas per multi-model
+		'area_hasgrad',					area_hasgrad_strict,...% indicator if areafunction has gradient
+		'area_hashess',					area_hashess_strict,...% indicator if areafunction has hessian
+		'area_parameters',				area_parameters_strict,...% structure with area function parameters
+		'R_fixed_has',					hasfixed_R,...% indicator if proportional gain matrix has fixed elements
+		'R_fixed_only',					onlyfixed_R,...% indicator if proportional gain matrix has only fixed elements
+		'R_fixed_constraints',			int32(rg),...% number of fixed proportional gain coefficients
+		'R_fixed',						R_fixed{1},...% indcator matrix for fixed proportional gain coefficients
+		'R_fixed_values',				R_fixed{2},...% value matrix for fixed proportional gain coefficients
+		'R_fixed_A',					constraint_system,...% fixed proportional gain constraint system A vec(R) = b
+		'R_fixed_b',					constraint_border,...% fixed proportional gain constraint system A vec(R) = b
+		'R_fixed_T',					T,...% transformation matrix from proportional gain coefficients to optimization variables and fixed coefficients
+		'R_fixed_T_inv',				T_inv,...% transformation matrix from optimization variables and fixed coefficients to proportional gain coefficients
+		'R_isforced2zero',				isforced2zero_R,...% indicator if all coefficients of K are forced to zero (not needed)
+		'K_fixed_has',					hasfixed_K,...% indicator if derivative gain matrix has fixed elements
+		'K_fixed_only',					onlyfixed_K,...% indicator if derivative gain matrix has only fixed elements
+		'K_fixed_constraints',			int32(rg_xdot),...% number of fixed derivative gain coefficients
+		'K_fixed',						K_fixed{1},...% indcator matrix for fixed derivative gain coefficients
+		'K_fixed_values',				K_fixed{2},...% value matrix for fixed derivative gain coefficients
+		'K_fixed_A',					constraint_system_xdot,...% fixed derivative gain constraint system A vec(K) = b
+		'K_fixed_b',					constraint_border_xdot,...% fixed derivative gain constraint system A vec(K) = b
+		'K_fixed_T',					T_xdot,...% transformation matrix from derivative gain coefficients to optimization variables and fixed coefficients
+		'K_fixed_T_inv',				T_inv_xdot,...% transformation matrix from optimization variables and fixed coefficients to derivative gain coefficients
+		'K_isforced2zero',				isforced2zero_K || isforced2zero_RKF_K,...% indicator if all coefficients of K are forced to zero
+		'F_fixed_has',					hasfixed_F,...% indicator if prefilter matrix has fixed elements
+		'F_fixed_only',					onlyfixed_F,...% indicator if prefilter matrix has only fixed elements
+		'F_fixed_constraints',			int32(rg_prefilter),...% number of fixed prefilter coefficients
+		'F_fixed',						F_fixed{1},...% indcator matrix for fixed prefilter coefficients
+		'F_fixed_values',				F_fixed{2},...% value matrix for fixed prefilter coefficients
+		'F_fixed_A',					constraint_system_prefilter,...% fixed prefilter constraint system A vec(F) = b
+		'F_fixed_b',					constraint_border_prefilter,...% fixed prefilter constraint system A vec(F) = b
+		'F_fixed_T',					T_prefilter,...% transformation matrix from prefilter coefficients to optimization variables and fixed coefficients
+		'F_fixed_T_inv',				T_inv_prefilter,...% transformation matrix from optimization variables and fixed coefficients to prefilter coefficients
+		'F_isforced2zero',				isforced2zero_F,...% indicator if all coefficients of F are forced to zero (not needed)
+		'RKF_fixed_has',				hasfixed_RKF,...% indicator if combined gain matrix has fixed elements
+		'RKF_fixed_only',				onlyfixed_RKF,...% indicator if combined gain matrix has only fixed elements
+		'RKF_fixed_constraints',		int32(rg_RKF),...% number of fixed combined gain coefficients
+		'RKF_fixed',					RKF_fixed{1},...% indcator matrix for fixed gain coefficients
+		'RKF_fixed_values',				RKF_fixed{2},...% value matrix for fixed gain coefficients
+		'RKF_fixed_A',					constraint_system_RKF,...% fixed gain constraint system A [vec(R);vec(K);vec(F)] = b
+		'RKF_fixed_b',					constraint_border_RKF,...% fixed gain constraint system A [vec(R);vec(K);vec(F)] = b
+		'RKF_fixed_T',					T_RKF,...% transformation matrix from gain coefficients to optimization variables and fixed coefficients
+		'RKF_fixed_T_inv',				T_inv_RKF,...% transformation matrix from optimization variables and fixed coefficients to gain coefficients
+		'index_R_free',					index_free_R,...% logical indices of free proportional gain coefficients (optimization variables) in vectorized combined gain coefficients
+		'index_K_free',					index_free_K,...% logical indices of free derivative gain coefficients (optimization variables) in vectorized combined gain coefficients
+		'index_F_free',					index_free_F,...% logical indices of free prefilter coefficients (optimization variables) in vectorized combined gain coefficients
+		'index_RKF_free',				index_free_RKF,...% logical indices of free gain coefficients (optimization variables) in vectorized combined gain coefficients
+		'index_all_free',				index_free_all...% logical indices of free proportional and derivative gain and prefilter coefficients (optimization variables) in vectorized combined gain coefficients
 	);
 	dimensions_loose = struct(...
-		'models',					int32(number_models),...%number of multi-models
-		'states',					int32(number_states),...% number of states of multi-models
-		'controls',					int32(number_controls),...% number of controls of multi-models
-		'measurements',				int32(number_measurements),...% number of measurements of multi-models
-		'measurements_xdot',		int32(number_measurements_xdot),...% number of derivative measurements of multi-models
-		'references',				int32(number_references),...% number of reference inputs of multi-models
-		'couplingconditions',		int32(number_couplingconditions),...% number of coupling conditions for all multi-models
-		'm_invariant',				int32(m_invariant),...% dimension of controlled invariant subspace for coupling control. Same for all multi-models
-		'hasfeedthrough_coupling',	any(hasfeedthrough_coupling),...% indicator, whether feedthrough D2 ~= 0 in coupling conditions
-		'descriptor',				descriptor,...% indicator if the multi-models have a descriptor matrix ~= I
-		'isdiscrete',				sample_time > 0,...% indicator if systems are discrete time
-		'areas_max',				int32(number_areas_max_loose),...% maximum number of areas per multi-model
-		'area_args',				int32(number_areaargs_loose),...% number of arguments of area functions
-		'area_parts',				int32(area_parts_loose),...% number of areas per multi-model
-		'area_hasgrad',				area_hasgrad_loose,...% indicator if areafunction has gradient
-		'area_hashess',				area_hashess_loose,...% indicator if areafunction has hessian
-		'area_parameters',			area_parameters_loose,...% structure with area function parameters
-		'R_fixed_has',				hasfixed_R,...% indicator if proportional gain matrix has fixed elements
-		'R_fixed_only',				onlyfixed_R,...% indicator if proportional gain matrix has only fixed elements
-		'R_fixed_constraints',		int32(rg),...% number of fixed proportional gain coefficients
-		'R_fixed',					R_fixed{1},...% indcator matrix for fixed proportional gain coefficients
-		'R_fixed_values',			R_fixed{2},...% value matrix for fixed proportional gain coefficients
-		'R_fixed_A',				constraint_system,...% fixed proportional gain constraint system A vec(R) = b
-		'R_fixed_b',				constraint_border,...% fixed proportional gain constraint system A vec(R) = b
-		'R_fixed_T',				T,...% transformation matrix from proportional gain coefficients to optimization variables and fixed coefficients
-		'R_fixed_T_inv',			T_inv,...% transformation matrix from optimization variables and fixed coefficients to proportional gain coefficients
-		'R_isforced2zero',			isforced2zero_R,...% indicator if all coefficients of R are forced to zero (not needed)
-		'K_fixed_has',				hasfixed_K,...% indicator if derivative gain matrix has fixed elements
-		'K_fixed_only',				onlyfixed_K,...% indicator if derivative gain matrix has only fixed elements
-		'K_fixed_constraints',		int32(rg_xdot),...% number of fixed derivative gain coefficients
-		'K_fixed',					K_fixed{1},...% indcator matrix for fixed derivative gain coefficients
-		'K_fixed_values',			K_fixed{2},...% value matrix for fixed derivative gain coefficients
-		'K_fixed_A',				constraint_system_xdot,...% fixed derivative gain constraint system A vec(K) = b
-		'K_fixed_b',				constraint_border_xdot,...% fixed derivative gain constraint system A vec(K) = b
-		'K_fixed_T',				T_xdot,...% transformation matrix from derivative gain coefficients to optimization variables and fixed coefficients
-		'K_fixed_T_inv',			T_inv_xdot,...% transformation matrix from optimization variables and fixed coefficients to derivative gain coefficients
-		'K_isforced2zero',			isforced2zero_K || isforced2zero_RKF_K,...% indicator if all coefficients of K are forced to zero
-		'F_fixed_has',				hasfixed_F,...% indicator if prefilter matrix has fixed elements
-		'F_fixed_only',				onlyfixed_F,...% indicator if prefilter matrix has only fixed elements
-		'F_fixed_constraints',		int32(rg_prefilter),...% number of fixed prefilter coefficients
-		'F_fixed',					F_fixed{1},...% indcator matrix for fixed prefilter coefficients
-		'F_fixed_values',			F_fixed{2},...% value matrix for fixed prefilter coefficients
-		'F_fixed_A',				constraint_system_prefilter,...% fixed prefilter constraint system A vec(F) = b
-		'F_fixed_b',				constraint_border_prefilter,...% fixed prefilter constraint system A vec(F) = b
-		'F_fixed_T',				T_prefilter,...% transformation matrix from prefilter coefficients to optimization variables and fixed coefficients
-		'F_fixed_T_inv',			T_inv_prefilter,...% transformation matrix from optimization variables and fixed coefficients to prefilter coefficients
-		'F_isforced2zero',			isforced2zero_F,...% indicator if all coefficients of F are forced to zero (not needed)
-		'RKF_fixed_has',			hasfixed_RKF,...% indicator if combined gain matrix has fixed elements
-		'RKF_fixed_only',			onlyfixed_RKF,...% indicator if combined gain matrix has only fixed elements
-		'RKF_fixed_constraints',	int32(rg_RKF),...% number of fixed combined gain coefficients
-		'RKF_fixed',				RKF_fixed{1},...% indcator matrix for fixed gain coefficients
-		'RKF_fixed_values',			RKF_fixed{2},...% value matrix for fixed gain coefficients
-		'RKF_fixed_A',				constraint_system_RKF,...% fixed gain constraint system A [vec(R);vec(K);vec(F)] = b
-		'RKF_fixed_b',				constraint_border_RKF,...% fixed gain constraint system A [vec(R);vec(K);vec(F)] = b
-		'RKF_fixed_T',				T_RKF,...% transformation matrix from gain coefficients to optimization variables and fixed coefficients
-		'RKF_fixed_T_inv',			T_inv_RKF,...% transformation matrix from optimization variables and fixed coefficients to gain coefficients
-		'index_R_free',				index_free_R,...% logical indices of free proportional gain coefficients (optimization variables) in vectorized combined gain coefficients
-		'index_K_free',				index_free_K,...% logical indices of free derivative gain coefficients (optimization variables) in vectorized combined gain coefficients
-		'index_F_free',				index_free_F,...% logical indices of free prefilter coefficients (optimization variables) in vectorized combined gain coefficients
-		'index_RKF_free',			index_free_RKF,...% logical indices of free gain coefficients (optimization variables) in vectorized combined gain coefficients
-		'index_all_free',			index_free_all...% logical indices of free proportional and derivative gain and prefilter coefficients (optimization variables) in vectorized combined gain coefficients
+		'models',						int32(number_models),...%number of multi-models
+		'states',						int32(number_states),...% number of states of multi-models
+		'controls',						int32(number_controls),...% number of controls of multi-models
+		'measurements',					int32(number_measurements),...% number of measurements of multi-models
+		'measurements_xdot',			int32(number_measurements_xdot),...% number of derivative measurements of multi-models
+		'references',					int32(number_references),...% number of reference inputs of multi-models
+		'tf_structure',					double(tf_structure),...% structure of closed loop transfer matrix for all multi-models
+		'number_decouplingconditions',	number_decouplingconditions,...% number of zeros per column of tf_structure
+		'V_invariant',					V_invariant,...% regular transformation matrix to controlled invariant subspace for decoupling control for each column of transfer matrix. May differ between multi-models
+		'm_invariant',					int32(m_invariant),...% dimension of controlled invariant subspace for decoupling control for each column of transfer matrix. Same for all multi-models
+		'hasfeedthrough_decoupling',	hasfeedthrough_decoupling,...% indicator, whether feedthrough D2 ~= 0 in decoupling conditions
+		'descriptor',					descriptor,...% indicator if the multi-models have a descriptor matrix ~= I
+		'isdiscrete',					sample_time > 0,...% indicator if systems are discrete time
+		'areas_max',					int32(number_areas_max_loose),...% maximum number of areas per multi-model
+		'area_args',					int32(number_areaargs_loose),...% number of arguments of area functions
+		'area_parts',					int32(area_parts_loose),...% number of areas per multi-model
+		'area_hasgrad',					area_hasgrad_loose,...% indicator if areafunction has gradient
+		'area_hashess',					area_hashess_loose,...% indicator if areafunction has hessian
+		'area_parameters',				area_parameters_loose,...% structure with area function parameters
+		'R_fixed_has',					hasfixed_R,...% indicator if proportional gain matrix has fixed elements
+		'R_fixed_only',					onlyfixed_R,...% indicator if proportional gain matrix has only fixed elements
+		'R_fixed_constraints',			int32(rg),...% number of fixed proportional gain coefficients
+		'R_fixed',						R_fixed{1},...% indcator matrix for fixed proportional gain coefficients
+		'R_fixed_values',				R_fixed{2},...% value matrix for fixed proportional gain coefficients
+		'R_fixed_A',					constraint_system,...% fixed proportional gain constraint system A vec(R) = b
+		'R_fixed_b',					constraint_border,...% fixed proportional gain constraint system A vec(R) = b
+		'R_fixed_T',					T,...% transformation matrix from proportional gain coefficients to optimization variables and fixed coefficients
+		'R_fixed_T_inv',				T_inv,...% transformation matrix from optimization variables and fixed coefficients to proportional gain coefficients
+		'R_isforced2zero',				isforced2zero_R,...% indicator if all coefficients of R are forced to zero (not needed)
+		'K_fixed_has',					hasfixed_K,...% indicator if derivative gain matrix has fixed elements
+		'K_fixed_only',					onlyfixed_K,...% indicator if derivative gain matrix has only fixed elements
+		'K_fixed_constraints',			int32(rg_xdot),...% number of fixed derivative gain coefficients
+		'K_fixed',						K_fixed{1},...% indcator matrix for fixed derivative gain coefficients
+		'K_fixed_values',				K_fixed{2},...% value matrix for fixed derivative gain coefficients
+		'K_fixed_A',					constraint_system_xdot,...% fixed derivative gain constraint system A vec(K) = b
+		'K_fixed_b',					constraint_border_xdot,...% fixed derivative gain constraint system A vec(K) = b
+		'K_fixed_T',					T_xdot,...% transformation matrix from derivative gain coefficients to optimization variables and fixed coefficients
+		'K_fixed_T_inv',				T_inv_xdot,...% transformation matrix from optimization variables and fixed coefficients to derivative gain coefficients
+		'K_isforced2zero',				isforced2zero_K || isforced2zero_RKF_K,...% indicator if all coefficients of K are forced to zero
+		'F_fixed_has',					hasfixed_F,...% indicator if prefilter matrix has fixed elements
+		'F_fixed_only',					onlyfixed_F,...% indicator if prefilter matrix has only fixed elements
+		'F_fixed_constraints',			int32(rg_prefilter),...% number of fixed prefilter coefficients
+		'F_fixed',						F_fixed{1},...% indcator matrix for fixed prefilter coefficients
+		'F_fixed_values',				F_fixed{2},...% value matrix for fixed prefilter coefficients
+		'F_fixed_A',					constraint_system_prefilter,...% fixed prefilter constraint system A vec(F) = b
+		'F_fixed_b',					constraint_border_prefilter,...% fixed prefilter constraint system A vec(F) = b
+		'F_fixed_T',					T_prefilter,...% transformation matrix from prefilter coefficients to optimization variables and fixed coefficients
+		'F_fixed_T_inv',				T_inv_prefilter,...% transformation matrix from optimization variables and fixed coefficients to prefilter coefficients
+		'F_isforced2zero',				isforced2zero_F,...% indicator if all coefficients of F are forced to zero (not needed)
+		'RKF_fixed_has',				hasfixed_RKF,...% indicator if combined gain matrix has fixed elements
+		'RKF_fixed_only',				onlyfixed_RKF,...% indicator if combined gain matrix has only fixed elements
+		'RKF_fixed_constraints',		int32(rg_RKF),...% number of fixed combined gain coefficients
+		'RKF_fixed',					RKF_fixed{1},...% indcator matrix for fixed gain coefficients
+		'RKF_fixed_values',				RKF_fixed{2},...% value matrix for fixed gain coefficients
+		'RKF_fixed_A',					constraint_system_RKF,...% fixed gain constraint system A [vec(R);vec(K);vec(F)] = b
+		'RKF_fixed_b',					constraint_border_RKF,...% fixed gain constraint system A [vec(R);vec(K);vec(F)] = b
+		'RKF_fixed_T',					T_RKF,...% transformation matrix from gain coefficients to optimization variables and fixed coefficients
+		'RKF_fixed_T_inv',				T_inv_RKF,...% transformation matrix from optimization variables and fixed coefficients to gain coefficients
+		'index_R_free',					index_free_R,...% logical indices of free proportional gain coefficients (optimization variables) in vectorized combined gain coefficients
+		'index_K_free',					index_free_K,...% logical indices of free derivative gain coefficients (optimization variables) in vectorized combined gain coefficients
+		'index_F_free',					index_free_F,...% logical indices of free prefilter coefficients (optimization variables) in vectorized combined gain coefficients
+		'index_RKF_free',				index_free_RKF,...% logical indices of free gain coefficients (optimization variables) in vectorized combined gain coefficients
+		'index_all_free',				index_free_all...% logical indices of free proportional and derivative gain and prefilter coefficients (optimization variables) in vectorized combined gain coefficients
 	);
 	% check inequality constraints for feasibility under equality constraints
 	if configuration.optimization.hasoptimization()

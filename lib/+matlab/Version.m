@@ -4,6 +4,12 @@ classdef(Enumeration) Version < handle
 	enumeration
 		% currently running version
 		CURRENT();
+		% R2021A
+		R2021A('R2021A', 45, 9.10,	10.3);
+		% R2020B
+		R2020B('R2020B', 44, 9.9,	10.2);
+		% R2020A
+		R2020A('R2020A', 43, 9.8,	10.1);
 		% R2019B
 		R2019B('R2019B', 42, 9.7,	10.0);
 		% R2019A
