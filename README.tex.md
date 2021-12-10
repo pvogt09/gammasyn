@@ -19,6 +19,10 @@ The accompanying publication can be found at https://doi.org/10.1515/auto-2020-0
 Vogt, P., Lenz, E., and Konigorski, U. (2020). gammasyn – eine Toolbox zur robusten Polbereichsvorgabe mittels beschränkter Optimierung und Straffunktionen, at - Automatisierungstechnik, 68(10), 893-904
 ```
 
+The theory behind robust coupling control with pole region assignment is published in https://doi.org/10.1016/j.sysconle.2021.105067 and can be cited as:
+```
+Schaub, P., Vogt, P. and Konigorski, U. (2021). Robust Coupling Control Using Pole Region Assignment, Systems & Control Letters, 158, 105067
+```
 
 
 ### Pole region assignment
