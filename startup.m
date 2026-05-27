@@ -84,9 +84,9 @@ end
 if verLessThan('matlab', '9.1')
 	addpath(genpath(realpath(fullfile(path, 'lib', 'compat', 'R2016A'))));
 end
-%if verLessThan('matlab', '9.2')
-%	addpath(genpath(realpath(fullfile(path, 'lib', 'compat', 'R2016B'))));
-%end
+if verLessThan('matlab', '9.2')
+	addpath(genpath(realpath(fullfile(path, 'lib', 'compat', 'R2016B'))));
+end
 % if verLessThan('matlab', '9.3')
 % 	addpath(genpath(realpath(fullfile(path, 'lib', 'compat', 'R2017A'))));
 % end
