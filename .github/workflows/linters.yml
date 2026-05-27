@@ -7,7 +7,7 @@ jobs:
     name: Linting
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v6
       # set environment variables for linters
       - name: Set Environment
         run: |
@@ -26,9 +26,9 @@ jobs:
       - name: EditorConfig
         uses: zbeekman/EditorConfig-Action@master
       - name: Set up Python environment
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.8"
+          python-version: "3.12"
       - name: Setup flake8 annotations
         uses: rbialon/flake8-annotations@v1
       - name: flake8 Lint
