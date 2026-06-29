@@ -90,7 +90,7 @@ function [J, gradJ, hessJ] = calculate_objective_decoupling(R, ~, F, systems, di
 						if needsgradient
 							gradJ_decoupling_temp_parfor = gradJ_decoupling_temp_parfor + 2*[
 								r.'*(X_R.'*X_R) - z_R.'*X_R, zeros(1, number_controls*number_measurements_xdot), zeros(1, (jj - 1)*number_controls), f.'*(X_F.'*X_F), zeros(1, (number_references - jj)*number_controls)
-							].';
+							];
 						end
 						if needshessian
 							hessJ_tmp = 2*blkdiag(...
@@ -100,7 +100,7 @@ function [J, gradJ, hessJ] = calculate_objective_decoupling(R, ~, F, systems, di
 								X_F.'*X_F,...
 								zeros((number_references - jj)*number_controls, (number_references - jj)*number_controls)...
 							);
-							hessJ_decoupling_temp_parfor = hessJ_decoupling_temp_parfor + hessJ_tmp;
+							hessJ_decoupling_temp_parfor = hessJ_decoupling_temp_parfor + reshape(hessJ_tmp, 1, size(hessJ_tmp, 1), size(hessJ_tmp, 2));
 						end
 					end
 					J_decoupling_temp(ii, 1) = J_decoupling_temp_parfor;
