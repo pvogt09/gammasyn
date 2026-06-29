@@ -1,45 +1,63 @@
-Feature:Area:
-  - +control/+design/+area/*
-  - +control/+design/+area/**/*
-Feature:Documentation:
-  - docs/**/*
-  - README.md
-  - README.tex.md
-  - README.md.tex
-Feature:gammasyn:
-  - +control/+design/+gamma/gammsyn.m
-Feature:optimize:
-  - +optimization/*
-  - +optimization/**/*
-  - lib/optimization/*
-  - lib/optimization/**/*
-Feature:OutputFeedback:
-  - +control/+design/+outputfeedback/*
-  - +control/+design/+outputfeedback/**/*
-Feature:oplace:
-  - lib/oplace/*
-  - lib/oplace/**/*
-Feature:CodeGeneration:
-  - +compile/*
-  - +compile/**/*
-Feature:Couplingcontrol:
-  - +control/+design/+gamma/gammsyn_decoupling.m
-  - +control/+design/+gamma/objectiveoptions_prototype_decoupling.m
-  - +control/+design/+gamma/private/calculate_decoupling_conditions.m
-  - +control/+design/+gamma/private/checkobjectiveoptions_decoupling
-  - +control/+design/+gamma/private/decoupling_RF_fixed.m
-  - +control/+design/+gamma/private/decoupling_vectorTwoNorm.m
-  - +control/+design/+gamma/private/GammaDecouplingStrategy_needscouplingconditions.m
-  - +control/+design/+outputfeedback/AbstractCouplingFeedback.m
-  - +control/+design/+outputfeedback/AbstractDecouplingFeedback.m
-  - +control/+design/+outputfeedback/OutputCouplingOutputFeedback.m
-  - +control/+design/+outputfeedback/OutputCouplingStateFeedback.m
-  - +control/+design/+outputfeedback/StateCouplingOutputFeedback.m
-  - +control/+design/+outputfeedback/StateCouplingStateFeedback.m
-  - +control/+design/+outputfeedback/DecouplingOutputFeedback.m
-  - +control/+design/+outputfeedback/DecouplingStateFeedback.m
-  - mex/control/design/gamma/GammaDecouplingconditionSortingStrategy.m
-  - mex/control/design/gamma/GammaDecouplingStrategy.m
-Feature:CI:
-  - .github/**/*
-  - .stickler
+"Feature:Area":
+  - changed-files:
+      - any-glob-to-any-file:
+          - '+control/+design/+area/*'
+          - '+control/+design/+area/**/*'
+"Feature:Documentation":
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'docs/**/*'
+          - 'README.md'
+          - 'README.tex.md'
+          - 'README.md.tex'
+"Feature:gammasyn":
+  - changed-files:
+      - any-glob-to-any-file:
+          - '+control/+design/+gamma/gammsyn.m'
+"Feature:optimize":
+  - changed-files:
+      - any-glob-to-any-file:
+          - '+optimization/*'
+          - '+optimization/**/*'
+          - 'lib/optimization/*'
+          - 'lib/optimization/**/*'
+"Feature:OutputFeedback":
+  - changed-files:
+      - any-glob-to-any-file:
+          - '+control/+design/+outputfeedback/*'
+          - '+control/+design/+outputfeedback/**/*'
+"Feature:oplace":
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'lib/oplace/*'
+          - 'lib/oplace/**/*'
+"Feature:CodeGeneration":
+  - changed-files:
+      - any-glob-to-any-file:
+          - '+compile/*'
+          - '+compile/**/*'
+"Feature:Couplingcontrol":
+  - changed-files:
+      - any-glob-to-any-file:
+          - '+control/+design/+gamma/gammsyn_decoupling.m'
+          - '+control/+design/+gamma/objectiveoptions_prototype_decoupling.m'
+          - '+control/+design/+gamma/private/calculate_decoupling_conditions.m'
+          - '+control/+design/+gamma/private/checkobjectiveoptions_decoupling.m'
+          - '+control/+design/+gamma/private/decoupling_RF_fixed.m'
+          - '+control/+design/+gamma/private/decoupling_vectorTwoNorm.m'
+          - '+control/+design/+gamma/private/GammaDecouplingStrategy_needscouplingconditions.m'
+          - '+control/+design/+outputfeedback/AbstractCouplingFeedback.m'
+          - '+control/+design/+outputfeedback/AbstractDecouplingFeedback.m'
+          - '+control/+design/+outputfeedback/OutputCouplingOutputFeedback.m'
+          - '+control/+design/+outputfeedback/OutputCouplingStateFeedback.m'
+          - '+control/+design/+outputfeedback/StateCouplingOutputFeedback.m'
+          - '+control/+design/+outputfeedback/StateCouplingStateFeedback.m'
+          - '+control/+design/+outputfeedback/DecouplingOutputFeedback.m'
+          - '+control/+design/+outputfeedback/DecouplingStateFeedback.m'
+          - 'mex/control/design/gamma/GammaDecouplingconditionSortingStrategy.m'
+          - 'mex/control/design/gamma/GammaDecouplingStrategy.m'
+"Feature:CI":
+  - changed-files:
+      - any-glob-to-any-file:
+          - '.github/**/*'
+          - '.stickler'

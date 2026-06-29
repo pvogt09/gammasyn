@@ -1,5 +1,5 @@
 name: Markdown Math
-on:
+"on":
   pull_request:
     branches-ignore:
       - '**-docs'
