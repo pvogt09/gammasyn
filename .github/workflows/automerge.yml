@@ -1,5 +1,5 @@
 name: Automerge
-on:
+"on":
   push:
     branches-ignore:
       - master
